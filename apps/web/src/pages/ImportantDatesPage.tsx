@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { api } from '../lib/api'
 import TabBar from '../components/TabBar'
 import QEmoji from '../components/QEmoji'
-import { enableReminders, remindersEnabled } from '../lib/push'
+import { enableReminders, remindersEnabled, lastReminderFailure } from '../lib/push'
 import { isNativeApp } from '../lib/native'
 
 interface ImportantDate {
@@ -171,6 +171,7 @@ export default function ImportantDatesPage() {
             {reminderStatus === 'failed' && (
               <p style={{ marginTop: '8px', fontSize: '12px', color: 'var(--ink-soft, #766E82)', textAlign: 'center' }}>
                 Hmm, that didn't go through. Check your connection and try again in a moment.
+                {lastReminderFailure() && <><br /><span style={{ opacity: 0.6 }}>({lastReminderFailure()})</span></>}
               </p>
             )}
           </div>
