@@ -26,7 +26,11 @@ Written: 2026-10-06 (replaces stale April 10 handoff)
 3. xcodebuild -project ios/App/App.xcodeproj -scheme App -sdk iphoneos -destination 'generic/platform=iOS' -archivePath <path>.xcarchive CODE_SIGNING_ALLOWED=NO archive
 4. xcodebuild -exportArchive -archivePath <path>.xcarchive -exportOptionsPlist scripts/ios/exportOptions.plist -exportPath <dir> -authenticationKeyPath ~/.appstoreconnect/private_keys/AuthKey_Y5NXGFNCFV.p8 -authenticationKeyID Y5NXGFNCFV -authenticationKeyIssuerID a8f9ba85-917d-49e9-888e-e128d4ef6822
 
-## TestFlight status (Oct 12): BUILD 17 APPROVED — current
+## TestFlight status (Oct 12): BUILD 18 IN REVIEW — current
+Build 1.0(18): Handwriting Phase 1 — write your alphabet on-screen (4 sessions: lowercase/uppercase/numbers/punctuation, 68 chars), compiles into a real font client-side (perfect-freehand + opentype.js, free/no paid API), shows up as "You" pen option on Write Note once any letters captured. New HandwritingFont table live.
+Phase 2 (printed card uses the custom font) is deferred — Emerald is printing at home for now, so no Lob-custom-font problem to solve yet. Revisit together once she's tested Phase 1.
+
+## Earlier (Oct 12): BUILD 17 APPROVED
 Build 1.0(17): color brightness pass — index.css ink/lavender tokens now match the design file's tokens.json exactly. Home card 1 + QTs invite box switched from pale lavender-light to vivid lilac (were washed out next to neon-pink/lime siblings).
 
 ## Earlier (Oct 11-12): BUILD 16 APPROVED
