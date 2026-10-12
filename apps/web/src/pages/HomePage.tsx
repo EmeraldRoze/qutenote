@@ -6,6 +6,7 @@ import QEmoji from '../components/QEmoji'
 import TabBar from '../components/TabBar'
 import { StatusComposer, type MyStatus } from '../components/Happenings'
 import { fetchHandwritingProgress } from '../lib/handwriting/api'
+import QRCodeSheet from '../components/QRCodeSheet'
 
 interface OfferCard {
   bg: string
@@ -72,11 +73,13 @@ function OfferCarousel() {
 
 interface SetupTask { key: string; art: string; label: string; done: boolean; onClick: (navigate: ReturnType<typeof useNavigate>) => void }
 
-function SetupChecklist({ tasks }: { tasks: SetupTask[] }) {
+function SetupChecklist({ tasks, hasSentCard }: { tasks: SetupTask[]; hasSentCard: boolean }) {
   const navigate = useNavigate()
   const done = tasks.filter((t) => t.done).length
   const total = tasks.length
-  if (done >= total) return null
+  // Stays around (in its trimmed, all-done form) until the first card actually
+  // ships — a fresh profile with nothing sent yet still deserves this nudge.
+  if (done >= total && hasSentCard) return null
   return (
     <div style={{ marginTop: '28px' }}>
       <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
@@ -87,15 +90,6 @@ function SetupChecklist({ tasks }: { tasks: SetupTask[] }) {
         <div style={{ height: '100%', width: `${(done / total) * 100}%`, background: 'var(--ultraviolet)', borderRadius: '3px' }} />
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginTop: '14px' }}>
-        {tasks.filter((t) => !t.done).map((t) => (
-          <button key={t.key} onClick={() => t.onClick(navigate)} style={{
-            padding: '18px 14px', borderRadius: '18px', background: '#fff', border: '1px solid var(--stone)',
-            cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', textAlign: 'center',
-          }}>
-            <QEmoji name={t.art} size={44} />
-            <span style={{ fontSize: '13px', fontFamily: 'var(--font-body)', color: 'var(--ink)', fontWeight: 400, textTransform: 'none', letterSpacing: 0 }}>{t.label}</span>
-          </button>
-        ))}
         {tasks.filter((t) => t.done).map((t) => (
           <div key={t.key} style={{
             padding: '14px', borderRadius: '18px', background: 'var(--lavender-pale)', border: '1px solid var(--lavender-light)',
@@ -104,6 +98,15 @@ function SetupChecklist({ tasks }: { tasks: SetupTask[] }) {
             <QEmoji name={t.art} size={28} />
             <span style={{ fontSize: '12px', fontFamily: 'var(--font-body)', color: 'var(--ink-mid)' }}>{t.label} ✓</span>
           </div>
+        ))}
+        {tasks.filter((t) => !t.done).map((t) => (
+          <button key={t.key} onClick={() => t.onClick(navigate)} style={{
+            padding: '18px 14px', borderRadius: '18px', background: '#fff', border: '1px solid var(--stone)',
+            cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', textAlign: 'center',
+          }}>
+            <QEmoji name={t.art} size={44} />
+            <span style={{ fontSize: '13px', fontFamily: 'var(--font-body)', color: 'var(--ink)', fontWeight: 400, textTransform: 'none', letterSpacing: 0 }}>{t.label}</span>
+          </button>
         ))}
       </div>
     </div>
@@ -166,6 +169,7 @@ export default function HomePage() {
   const [hasAddress, setHasAddress] = useState<boolean | null>(null)
   const [friendCount, setFriendCount] = useState<number | null>(null)
   const [hasHandwriting, setHasHandwriting] = useState(false)
+  const [showQR, setShowQR] = useState(false)
   const [composing, setComposing] = useState(false)
   const [lastSeen] = useState(() => Number(localStorage.getItem('qn_feed_seen') ?? 0))
   const [search, setSearch] = useState('')
@@ -185,10 +189,10 @@ export default function HomePage() {
   const setupTasks: SetupTask[] = [
     { key: 'address', art: 'house', label: 'Add your address', done: hasAddress === true, onClick: (nav) => nav('/address') },
     { key: 'friends', art: 'bff', label: 'Find your people', done: !!friendCount && friendCount > 0, onClick: (nav) => nav('/connections') },
-    { key: 'birthday', art: 'heart-sparkle', label: 'Add your birthday. Get Qute Notes.', done: !!user?.birthday, onClick: (nav) => nav('/settings/account') },
     { key: 'status', art: 'thought-bubble', label: 'Set your status', done: !!myStatus, onClick: () => setComposing(true) },
     { key: 'handwriting', art: 'pen', label: 'Teach us your handwriting', done: hasHandwriting, onClick: (nav) => nav('/handwriting') },
   ]
+  const hasSentCard = !!user?.notesUsed
   const setupDone = setupTasks.filter((t) => t.done).length >= setupTasks.length
 
   const nudge = useMemo(() => {
@@ -223,7 +227,7 @@ export default function HomePage() {
               style={{ flex: 1, border: 'none', outline: 'none', background: 'transparent', fontFamily: 'var(--font-body)', fontSize: '14px', color: 'var(--ink)', textTransform: 'none', letterSpacing: 0 }}
             />
           </div>
-          <button onClick={() => navigate(`/profile/${user?.username ?? ''}`)} aria-label="Your QR code" style={{
+          <button onClick={() => setShowQR(true)} aria-label="Your QR code" style={{
             width: '44px', height: '44px', borderRadius: '50%', background: '#fff', border: '1px solid var(--stone)',
             display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0,
           }}>
@@ -240,7 +244,7 @@ export default function HomePage() {
         </p>
 
         {!setupDone && <OfferCarousel />}
-        <SetupChecklist tasks={setupTasks} />
+        <SetupChecklist tasks={setupTasks} hasSentCard={hasSentCard} />
 
         {/* Happenings status row */}
         <button onClick={() => setComposing(true)} style={{
@@ -318,18 +322,9 @@ export default function HomePage() {
         {feed.length === 0 && (
           <div style={{ marginTop: '14px', padding: '22px 20px', borderRadius: '20px', background: 'var(--lavender-pale)', border: `1.5px dashed var(--lavender-soft)`, display: 'flex', alignItems: 'center', gap: '16px' }}>
             <QEmoji name="mailbox" size={52} />
-            <div style={{ flex: 1 }}>
-              <p style={{ fontFamily: 'var(--font-body)', fontSize: '14px', color: 'var(--ink)', lineHeight: 1.4, marginBottom: '10px' }}>
-                It's quiet in here. Once friends join, their birthdays, news and sends show up here.
-              </p>
-              <button onClick={() => navigate('/connections')} style={{
-                padding: '10px 18px', borderRadius: '999px', border: 'none', cursor: 'pointer',
-                background: uv, color: '#fff', fontFamily: 'var(--font-body)', fontWeight: 700,
-                fontSize: '11px', letterSpacing: '0.1em',
-              }}>
-Find your people
-              </button>
-            </div>
+            <p style={{ fontFamily: 'var(--font-body)', fontSize: '14px', color: 'var(--ink)', lineHeight: 1.4 }}>
+              It's quiet in here. Once friends join, their birthdays, news and sends show up here.
+            </p>
           </div>
         )}
 
@@ -398,6 +393,7 @@ Find your people
 
       {/* Status composer */}
       {composing && <StatusComposer onDone={(s) => { if (s) setMyStatus(s); setComposing(false) }} />}
+      {showQR && user?.username && <QRCodeSheet username={user.username} onClose={() => setShowQR(false)} />}
 
       <TabBar />
     </div>

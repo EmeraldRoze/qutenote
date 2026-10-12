@@ -6,6 +6,7 @@ import QEmoji from '../components/QEmoji'
 import TabBar from '../components/TabBar'
 import { HappeningsRow, STATUS_EMOJI } from '../components/Happenings'
 import { CARD_LOOKUP } from '../lib/cards'
+import QRCodeSheet from '../components/QRCodeSheet'
 
 const OVERAGE_PRICE = '$3.49' // real Stripe price — mockup showed a placeholder $2.95
 
@@ -301,23 +302,7 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        {showQR && (
-          <div style={{ position: 'fixed', inset: 0, zIndex: 100, background: 'rgba(43,34,56,0.45)', display: 'flex', alignItems: 'flex-end' }} onClick={() => setShowQR(false)}>
-            <div style={{ width: '100%', background: 'var(--cream)', borderRadius: '16px 16px 0 0', padding: '24px 24px calc(24px + env(safe-area-inset-bottom))', textAlign: 'center' }} onClick={(e) => e.stopPropagation()}>
-              <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '20px', fontWeight: 400, marginBottom: '10px' }}>Add in person</h2>
-              <p style={{ fontFamily: 'var(--font-body)', fontSize: '14px', color: 'var(--ink-mid)', marginBottom: '16px' }}>
-                Scanning isn't live yet — send them your link instead.
-              </p>
-              <div style={{ padding: '14px', background: '#fff', borderRadius: '14px', border: '1px solid var(--stone)', fontFamily: 'var(--font-body)', fontSize: '14px', color: uv, marginBottom: '14px', wordBreak: 'break-all' }}>
-                qutenote.com/profile/{profile.username}
-              </div>
-              <button onClick={() => { navigator.clipboard?.writeText(`https://qutenote.com/profile/${profile.username}`); setShowQR(false) }} style={{
-                width: '100%', height: '48px', borderRadius: '10px', border: 'none', cursor: 'pointer',
-                background: uv, color: '#fff', fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '13px', textTransform: 'uppercase', letterSpacing: '0.12em',
-              }}>Copy link</button>
-            </div>
-          </div>
-        )}
+        {showQR && <QRCodeSheet username={profile.username} onClose={() => setShowQR(false)} />}
 
         {pickingAvatar && (
           <div style={{ position: 'fixed', inset: 0, zIndex: 100, background: 'rgba(43,34,56,0.45)', display: 'flex', alignItems: 'flex-end' }} onClick={() => setPickingAvatar(false)}>

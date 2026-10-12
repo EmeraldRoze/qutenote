@@ -283,8 +283,9 @@ function CardPicker({ note, update, uploading, setUploading, uploadError, setUpl
             try {
               const url = await uploadPhoto(file)
               update({ cardDesignType: 'USER_UPLOAD', cardImageUrl: url, cardDesignId: undefined })
-            } catch {
-              setUploadError("That photo didn't upload. Try again, or pick a different one.")
+            } catch (err: any) {
+              const detail = err?.response?.data?.error ?? err?.message ?? 'unknown'
+              setUploadError(`That photo didn't upload (${detail}). Try again, or pick a different one.`)
             } finally {
               setUploading(false)
               e.target.value = ''

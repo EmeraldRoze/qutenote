@@ -10,12 +10,17 @@ const inputStyle: React.CSSProperties = {
   background: '#fff', color: 'var(--ink)', outline: 'none', fontFamily: 'var(--font-body)',
 }
 const labelStyle: React.CSSProperties = { fontSize: '13px', fontWeight: 500, color: 'var(--ink)', marginBottom: '8px' }
+const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+const THIS_YEAR = new Date().getFullYear()
 
 export default function AccountSettingsPage() {
   const navigate = useNavigate()
   const { user, refreshUser } = useAuth()
   const [displayName, setDisplayName] = useState(user?.displayName ?? '')
-  const [birthday, setBirthday] = useState(user?.birthday ? user.birthday.slice(0, 10) : '')
+  const existing = user?.birthday ? user.birthday.slice(0, 10).split('-') : null // [year, month, day]
+  const [bYear, setBYear] = useState(existing?.[0] ?? '')
+  const [bMonth, setBMonth] = useState(existing ? String(Number(existing[1])) : '')
+  const [bDay, setBDay] = useState(existing ? String(Number(existing[2])) : '')
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
   const [error, setError] = useState('')
@@ -24,6 +29,7 @@ export default function AccountSettingsPage() {
     setSaving(true)
     setError('')
     setSaved(false)
+    const birthday = bYear && bMonth && bDay ? `${bYear}-${bMonth.padStart(2, '0')}-${bDay.padStart(2, '0')}` : ''
     try {
       await api.put('/users/me', { displayName: displayName.trim(), ...(birthday ? { birthday } : {}) })
       refreshUser?.()
@@ -61,7 +67,20 @@ export default function AccountSettingsPage() {
         </div>
         <div>
           <p style={labelStyle}>Your birthday</p>
-          <input type="date" style={inputStyle} value={birthday} onChange={(e) => setBirthday(e.target.value)} />
+          <div style={{ display: 'flex', gap: '8px' }}>
+            <select value={bMonth} onChange={(e) => setBMonth(e.target.value)} style={{ ...inputStyle, flex: 1.6 }}>
+              <option value="" disabled>Month</option>
+              {MONTHS.map((m, i) => <option key={m} value={String(i + 1)}>{m}</option>)}
+            </select>
+            <select value={bDay} onChange={(e) => setBDay(e.target.value)} style={{ ...inputStyle, flex: 1 }}>
+              <option value="" disabled>Day</option>
+              {Array.from({ length: 31 }, (_, i) => i + 1).map((d) => <option key={d} value={String(d)}>{d}</option>)}
+            </select>
+            <select value={bYear} onChange={(e) => setBYear(e.target.value)} style={{ ...inputStyle, flex: 1.2 }}>
+              <option value="" disabled>Year</option>
+              {Array.from({ length: 100 }, (_, i) => THIS_YEAR - i).map((y) => <option key={y} value={String(y)}>{y}</option>)}
+            </select>
+          </div>
           <p style={{ fontSize: '12px', fontFamily: 'var(--font-body)', color: 'var(--ink-muted)', marginTop: '6px' }}>
             We'll send you a Qute Note when it rolls around.
           </p>

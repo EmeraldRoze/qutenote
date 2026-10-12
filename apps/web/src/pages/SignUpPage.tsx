@@ -5,12 +5,24 @@ import { useAuth } from '../context/AuthContext'
 import { isNativeApp } from '../lib/native'
 import { appleSignIn, openGoogleSignIn } from '../lib/nativeAuth'
 
+const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+const THIS_YEAR = new Date().getFullYear()
+
 export default function SignUpPage() {
   const { login } = useAuth()
   const navigate = useNavigate()
   const [form, setForm] = useState({ email: '', password: '', displayName: '', username: '', birthday: '' })
+  const [bMonth, setBMonth] = useState('')
+  const [bDay, setBDay] = useState('')
+  const [bYear, setBYear] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+
+  function updateBirthday(month: string, day: string, year: string) {
+    if (month && day && year) {
+      setForm((f) => ({ ...f, birthday: `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}` }))
+    }
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -142,14 +154,35 @@ export default function SignUpPage() {
             </div>
             <div>
               <label style={{ display: 'block', fontSize: '13px', fontWeight: 500, color: 'var(--ink)', marginBottom: '6px' }}>Birthday</label>
-              <input
-                type="date"
-                value={form.birthday}
-                onChange={(e) => setForm({ ...form, birthday: e.target.value })}
-                style={inputStyle}
-                onFocus={e => { e.target.style.borderColor = 'var(--lavender)'; e.target.style.boxShadow = 'var(--shadow-input)' }}
-                onBlur={e => { e.target.style.borderColor = 'var(--border-default)'; e.target.style.boxShadow = 'none' }}
-              />
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <select
+                  required
+                  value={bMonth}
+                  onChange={(e) => { setBMonth(e.target.value); updateBirthday(e.target.value, bDay, bYear) }}
+                  style={{ ...inputStyle, flex: 1.6 }}
+                >
+                  <option value="" disabled>Month</option>
+                  {MONTHS.map((m, i) => <option key={m} value={String(i + 1)}>{m}</option>)}
+                </select>
+                <select
+                  required
+                  value={bDay}
+                  onChange={(e) => { setBDay(e.target.value); updateBirthday(bMonth, e.target.value, bYear) }}
+                  style={{ ...inputStyle, flex: 1 }}
+                >
+                  <option value="" disabled>Day</option>
+                  {Array.from({ length: 31 }, (_, i) => i + 1).map((d) => <option key={d} value={String(d)}>{d}</option>)}
+                </select>
+                <select
+                  required
+                  value={bYear}
+                  onChange={(e) => { setBYear(e.target.value); updateBirthday(bMonth, bDay, e.target.value) }}
+                  style={{ ...inputStyle, flex: 1.2 }}
+                >
+                  <option value="" disabled>Year</option>
+                  {Array.from({ length: 100 }, (_, i) => THIS_YEAR - i).map((y) => <option key={y} value={String(y)}>{y}</option>)}
+                </select>
+              </div>
               <p style={{ fontSize: '11px', color: 'var(--ink-muted)', marginTop: '4px' }}>So your QTs know when to celebrate you!</p>
             </div>
             <div>
