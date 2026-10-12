@@ -531,15 +531,13 @@ function ReviewStep({ note, onSent, onEdit, onEditCard, editingNoteId }: { note:
         <button onClick={onEditCard} style={{
           padding: 0, borderRadius: '6px', overflow: 'hidden', cursor: 'pointer',
           border: '1px solid var(--stone)', boxShadow: '0 6px 18px rgba(43,34,56,0.1)',
-          aspectRatio: '2/3', background: note.cardImageUrl
+          aspectRatio: '2/3',
+          background: note.cardImageUrl
             ? `url(${note.cardImageUrl}) center/cover`
-            : design?.bg ?? 'var(--lavender-pale)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-        }}>
-          {!note.cardImageUrl && design && (
-            <img src={`/site/${design.art}.png`} alt="" style={{ width: '70%', maxHeight: '60%', objectFit: 'contain' }} />
-          )}
-        </button>
+            : design?.art
+              ? `url(${design.art}) center/cover`
+              : design?.bg ?? 'var(--lavender-pale)',
+        }} />
         <button onClick={onEdit} style={{
           padding: '12px', borderRadius: '6px', cursor: 'pointer', textAlign: 'left',
           display: 'flex', alignItems: 'flex-start',
