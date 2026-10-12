@@ -26,7 +26,11 @@ Written: 2026-10-06 (replaces stale April 10 handoff)
 3. xcodebuild -project ios/App/App.xcodeproj -scheme App -sdk iphoneos -destination 'generic/platform=iOS' -archivePath <path>.xcarchive CODE_SIGNING_ALLOWED=NO archive
 4. xcodebuild -exportArchive -archivePath <path>.xcarchive -exportOptionsPlist scripts/ios/exportOptions.plist -exportPath <dir> -authenticationKeyPath ~/.appstoreconnect/private_keys/AuthKey_Y5NXGFNCFV.p8 -authenticationKeyID Y5NXGFNCFV -authenticationKeyIssuerID a8f9ba85-917d-49e9-888e-e128d4ef6822
 
-## TestFlight status (Oct 9): BUILD 15 APPROVED — current
+## TestFlight status (Oct 11-12): BUILD 16 IN REVIEW — current
+Build 1.0(16): full design update from qutenote-screens.zip -- Welcome, Home, QTs, Profile, Settings (new), Send all rebuilt to match. New card catalog (lib/cards.ts) replaces Round D's 5 fictional artists with @ellis_tolsma (real) + 4 placeholders. Settings route /settings + /settings/account new. Push-failure-reason fix included (surfaces real error instead of generic message).
+Still pending: Emerald's device has never registered a push token -- "Turn on reminders" tap needed to run the live test (check DeviceToken table, fire sendPush from scripts if it lands).
+
+## Earlier (Oct 9): BUILD 15 APPROVED
 Build 1.0(15): Round D — 5-artist card gallery, real photo uploads (Upload table on prod; photos stored in Postgres, served at /api/uploads/:id, Lob fetches card fronts there), side-by-side tap-to-edit preview, personalized invite links (/i/username-xxxx), logout on profile, annual checkbox on dates, date-save fix, invite buttons on Home. Server card catalog lives in submitNote.ts — keep in sync with apps/web/src/lib/cards.ts.
 Still pending: Emerald taps "Turn on reminders" (build 14+) -> live test push fires automatically (6h watcher running).
 
