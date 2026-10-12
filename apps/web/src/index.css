@@ -24,6 +24,8 @@
   --cream-ruled:    #EFE8DE;
   --stone:          #E6E1DC;
   --lime:           #C6FF3D;  /* countdown pills and new dots ONLY */
+  --neon-pink:      #FF6EB4;  /* carousel card accent only */
+  --lilac:          #BE8EF5;  /* carousel/decorative only — never on Write/Send buttons */
   --white:          #FFFFFF;
 
   --error:          #E04E6B;

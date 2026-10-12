@@ -1,10 +1,113 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { useNavigate } from 'react-router-dom'
 import { api } from '../lib/api'
 import QEmoji from '../components/QEmoji'
 import TabBar from '../components/TabBar'
 import { StatusComposer, type MyStatus } from '../components/Happenings'
+
+interface OfferCard {
+  bg: string
+  art: string
+  title: string
+  cta: string
+  onClick: (navigate: ReturnType<typeof useNavigate>) => void
+}
+const OFFER_CARDS: OfferCard[] = [
+  { bg: 'var(--lavender-light)', art: 'heart-sparkle', title: 'Your first card is on us', cta: 'Send a card', onClick: (nav) => nav('/send') },
+  { bg: 'var(--neon-pink)', art: 'bff', title: 'Invite a friend. You both get a free card.', cta: 'Invite', onClick: (nav) => nav('/invite') },
+  { bg: 'var(--lime)', art: 'mailbox', title: 'Know when something is in the mail', cta: 'Turn on alerts', onClick: (nav) => nav('/dates') },
+  { bg: 'var(--lilac)', art: 'camera', title: 'Got a good photo? Mail it.', cta: 'Upload a photo', onClick: (nav) => nav('/send') },
+]
+
+function OfferCarousel() {
+  const navigate = useNavigate()
+  const trackRef = useRef<HTMLDivElement>(null)
+  const [active, setActive] = useState(0)
+
+  function onScroll() {
+    const el = trackRef.current
+    if (!el) return
+    setActive(Math.round(el.scrollLeft / el.clientWidth))
+  }
+
+  return (
+    <div style={{ marginTop: '18px' }}>
+      <div
+        ref={trackRef}
+        onScroll={onScroll}
+        style={{
+          display: 'flex', overflowX: 'auto', scrollSnapType: 'x mandatory',
+          gap: '12px', scrollbarWidth: 'none', borderRadius: '26px',
+        }}
+      >
+        {OFFER_CARDS.map((c, i) => (
+          <div key={i} style={{
+            flex: '0 0 100%', scrollSnapAlign: 'start', background: c.bg,
+            borderRadius: '26px', padding: '28px 24px', display: 'flex',
+            flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: '14px',
+          }}>
+            <QEmoji name={c.art} size={64} />
+            <div style={{ fontFamily: 'var(--font-display)', fontSize: '20px', fontWeight: 400, color: 'var(--ink)', lineHeight: 1.2 }}>{c.title}</div>
+            <button onClick={() => c.onClick(navigate)} style={{
+              height: '44px', padding: '0 22px', borderRadius: '999px', border: 'none', cursor: 'pointer',
+              background: 'var(--ink)', color: '#fff', fontFamily: 'var(--font-body)', fontWeight: 700,
+              fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.1em',
+            }}>{c.cta}</button>
+          </div>
+        ))}
+      </div>
+      <div style={{ display: 'flex', justifyContent: 'center', gap: '6px', marginTop: '10px' }}>
+        {OFFER_CARDS.map((_, i) => (
+          <span key={i} style={{
+            width: i === active ? '18px' : '6px', height: '6px', borderRadius: '3px',
+            background: i === active ? 'var(--ink)' : 'var(--stone)', transition: 'width 0.2s',
+          }} />
+        ))}
+      </div>
+    </div>
+  )
+}
+
+interface SetupTask { key: string; art: string; label: string; done: boolean; onClick: (navigate: ReturnType<typeof useNavigate>) => void }
+
+function SetupChecklist({ tasks }: { tasks: SetupTask[] }) {
+  const navigate = useNavigate()
+  const done = tasks.filter((t) => t.done).length
+  const total = tasks.length
+  if (done >= total) return null
+  return (
+    <div style={{ marginTop: '28px' }}>
+      <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
+        <div style={{ fontFamily: 'var(--font-display)', fontSize: '18px', fontWeight: 400, letterSpacing: '-0.01em' }}>Get set up</div>
+        <div style={{ fontSize: '12px', fontFamily: 'var(--font-body)', color: 'var(--ink-mid)' }}>{done} of {total} done</div>
+      </div>
+      <div style={{ height: '5px', borderRadius: '3px', background: 'var(--stone)', marginTop: '8px', overflow: 'hidden' }}>
+        <div style={{ height: '100%', width: `${(done / total) * 100}%`, background: 'var(--ultraviolet)', borderRadius: '3px' }} />
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginTop: '14px' }}>
+        {tasks.filter((t) => !t.done).map((t) => (
+          <button key={t.key} onClick={() => t.onClick(navigate)} style={{
+            padding: '18px 14px', borderRadius: '18px', background: '#fff', border: '1px solid var(--stone)',
+            cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', textAlign: 'center',
+          }}>
+            <QEmoji name={t.art} size={44} />
+            <span style={{ fontSize: '13px', fontFamily: 'var(--font-body)', color: 'var(--ink)', fontWeight: 400, textTransform: 'none', letterSpacing: 0 }}>{t.label}</span>
+          </button>
+        ))}
+        {tasks.filter((t) => t.done).map((t) => (
+          <div key={t.key} style={{
+            padding: '14px', borderRadius: '18px', background: 'var(--lavender-pale)', border: '1px solid var(--lavender-light)',
+            display: 'flex', alignItems: 'center', gap: '8px', opacity: 0.7,
+          }}>
+            <QEmoji name={t.art} size={28} />
+            <span style={{ fontSize: '12px', fontFamily: 'var(--font-body)', color: 'var(--ink-mid)' }}>{t.label} ✓</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
 
 const uv = '#5A32D6'
 const label: React.CSSProperties = { fontSize: '11px', fontWeight: 700, letterSpacing: '1.4px', textTransform: 'uppercase', color: 'var(--ink-mid)' }
@@ -60,23 +163,30 @@ export default function HomePage() {
   const [dates, setDates] = useState<ImportantDate[]>([])
   const [myStatus, setMyStatus] = useState<MyStatus | null>(null)
   const [hasAddress, setHasAddress] = useState<boolean | null>(null)
+  const [friendCount, setFriendCount] = useState<number | null>(null)
   const [composing, setComposing] = useState(false)
   const [lastSeen] = useState(() => Number(localStorage.getItem('qn_feed_seen') ?? 0))
+  const [search, setSearch] = useState('')
 
   useEffect(() => {
     api.get('/statuses/home-feed').then((r) => setFeed(r.data.data)).catch(() => {})
     api.get('/important-dates').then((r) => setDates(r.data.data)).catch(() => {})
     api.get('/statuses/mine').then((r) => setMyStatus(r.data.data)).catch(() => {})
     api.get('/address/me').then((r) => setHasAddress(!!r.data.data)).catch(() => setHasAddress(null))
+    api.get('/connections').then((r) => setFriendCount(r.data.data.length)).catch(() => setFriendCount(null))
     localStorage.setItem('qn_feed_seen', String(Date.now()))
   }, [])
 
-  const greeting = useMemo(() => {
-    const h = new Date().getHours()
-    const part = h < 12 ? 'morning' : h < 17 ? 'afternoon' : 'evening'
-    return `Good ${part},`
-  }, [])
   const firstName = user?.displayName?.split(' ')[0] ?? ''
+
+  const setupTasks: SetupTask[] = [
+    { key: 'address', art: 'house', label: 'Add your address', done: hasAddress === true, onClick: (nav) => nav('/address') },
+    { key: 'friends', art: 'bff', label: 'Find your people', done: !!friendCount && friendCount > 0, onClick: (nav) => nav('/connections') },
+    { key: 'birthday', art: 'heart-sparkle', label: 'Add your birthday. Get Qute Notes.', done: !!user?.birthday, onClick: (nav) => nav('/settings/account') },
+    { key: 'status', art: 'thought-bubble', label: 'Set your status', done: !!myStatus, onClick: () => setComposing(true) },
+    { key: 'handwriting', art: 'pen', label: 'Teach us your handwriting', done: false, onClick: (nav) => nav(`/profile/${user?.username ?? ''}`) },
+  ]
+  const setupDone = setupTasks.filter((t) => t.done).length >= setupTasks.length
 
   const nudge = useMemo(() => {
     const upcoming = dates
@@ -98,14 +208,40 @@ export default function HomePage() {
     <div style={{ minHeight: '100vh', paddingBottom: '110px' }}>
       <div style={{ maxWidth: '480px', margin: '0 auto', padding: '18px 24px 0' }}>
 
-        {/* Logo row */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: '44px', marginBottom: '12px' }}>
-          <img src="/site/logo-ink.png" alt="QuteNote" style={{ width: '128px', display: 'block' }} />
+        {/* Search + scan row */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '4px' }}>
+          <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '8px', height: '44px', padding: '0 14px', borderRadius: '999px', background: '#fff', border: '1px solid var(--stone)' }}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--ink-muted)" strokeWidth="1.7" strokeLinecap="round"><circle cx="11" cy="11" r="7" /><path d="M21 21l-4.3-4.3" /></svg>
+            <input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              onKeyDown={(e) => { if (e.key === 'Enter' && search.trim()) navigate(`/connections?q=${encodeURIComponent(search.trim())}`) }}
+              placeholder="Find a QT"
+              style={{ flex: 1, border: 'none', outline: 'none', background: 'transparent', fontFamily: 'var(--font-body)', fontSize: '14px', color: 'var(--ink)', textTransform: 'none', letterSpacing: 0 }}
+            />
+          </div>
+          <button onClick={() => navigate(`/profile/${user?.username ?? ''}`)} aria-label="Your QR code" style={{
+            width: '44px', height: '44px', borderRadius: '50%', background: '#fff', border: '1px solid var(--stone)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0,
+          }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" /><rect x="3" y="14" width="7" height="7" /><path d="M14 14h3v3M21 14v3h-3M14 21h3" /></svg>
+          </button>
         </div>
+
+        {/* Greeting */}
+        <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '27px', lineHeight: 1.18, color: 'var(--ink)', fontWeight: 400, letterSpacing: '-0.01em', margin: '22px 0 0' }}>
+          Hi, {firstName}.
+        </h1>
+        <p style={{ fontFamily: 'var(--font-body)', fontSize: '15px', color: 'var(--ink-mid)', marginTop: '4px' }}>
+          {setupDone ? "What's new with you?" : "Let's get your first card in the mail."}
+        </p>
+
+        {!setupDone && <OfferCarousel />}
+        <SetupChecklist tasks={setupTasks} />
 
         {/* Happenings status row */}
         <button onClick={() => setComposing(true)} style={{
-          display: 'flex', alignItems: 'center', gap: '10px', width: '100%',
+          display: 'flex', alignItems: 'center', gap: '10px', width: '100%', marginTop: '18px',
           padding: '8px 12px 8px 8px', borderRadius: '30px', border: '1px solid var(--stone)',
           background: '#fff', boxShadow: '0 4px 14px rgba(43,34,56,0.05)', cursor: 'pointer', textAlign: 'left',
         }}>
@@ -122,11 +258,6 @@ export default function HomePage() {
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M4 20l4-1 11-11-3-3L5 16z" /></svg>
           </span>
         </button>
-
-        {/* Greeting */}
-        <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '27px', lineHeight: 1.18, color: 'var(--ink)', fontWeight: 400, letterSpacing: '-0.01em', margin: '22px 0 0' }}>
-          {greeting}<br />{firstName}.
-        </h1>
 
         {/* Date nudge */}
         {nudge && (
@@ -156,8 +287,8 @@ export default function HomePage() {
           </div>
         )}
 
-        {/* Address nudge (kept — people need it to receive mail) */}
-        {hasAddress === false && (
+        {/* Address nudge — safety net once the checklist above is no longer showing it */}
+        {setupDone && hasAddress === false && (
           <button onClick={() => navigate('/address')} style={{
             width: '100%', marginTop: '14px', padding: '12px 16px', borderRadius: '12px',
             border: '1.5px dashed var(--lavender-soft)', background: '#fff', cursor: 'pointer',
@@ -170,7 +301,7 @@ export default function HomePage() {
 
         {/* Feed */}
         <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', margin: '26px 0 2px' }}>
-          <div style={{ fontFamily: 'var(--font-display)', fontSize: '16px', fontWeight: 400, letterSpacing: '-0.01em' }}>Your QTs, lately</div>
+          <div style={{ fontFamily: 'var(--font-display)', fontSize: '16px', fontWeight: 400, letterSpacing: '-0.01em' }}>From your QTs</div>
           <button onClick={() => navigate('/invite')} style={{
             padding: '7px 14px', borderRadius: '999px', border: 'none', cursor: 'pointer',
             background: uv, color: '#fff', fontFamily: 'var(--font-body)', fontWeight: 700,
@@ -182,17 +313,20 @@ export default function HomePage() {
         <div style={{ fontSize: '13px', fontFamily: 'var(--font-body)', color: 'var(--ink-mid)' }}>Statuses and public sends. Messages are never shown.</div>
 
         {feed.length === 0 && (
-          <div style={{ padding: '28px 0', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '14px' }}>
-            <p style={{ fontFamily: 'var(--font-body)', fontSize: '14px', color: 'var(--ink-muted)' }}>
-              Quiet in here. Add some QTs and the good stuff follows.
-            </p>
-            <button onClick={() => navigate('/invite')} style={{
-              padding: '12px 20px', borderRadius: '999px', border: 'none', cursor: 'pointer',
-              background: uv, color: '#fff', fontFamily: 'var(--font-body)', fontWeight: 700,
-              fontSize: '12px', letterSpacing: '0.1em',
-            }}>
-              Invite friends by text
-            </button>
+          <div style={{ marginTop: '14px', padding: '22px 20px', borderRadius: '20px', background: 'var(--lavender-pale)', border: `1.5px dashed var(--lavender-soft)`, display: 'flex', alignItems: 'center', gap: '16px' }}>
+            <QEmoji name="mailbox" size={52} />
+            <div style={{ flex: 1 }}>
+              <p style={{ fontFamily: 'var(--font-body)', fontSize: '14px', color: 'var(--ink)', lineHeight: 1.4, marginBottom: '10px' }}>
+                It's quiet in here. Once friends join, their birthdays, news and sends show up here.
+              </p>
+              <button onClick={() => navigate('/connections')} style={{
+                padding: '10px 18px', borderRadius: '999px', border: 'none', cursor: 'pointer',
+                background: uv, color: '#fff', fontFamily: 'var(--font-body)', fontWeight: 700,
+                fontSize: '11px', letterSpacing: '0.1em',
+              }}>
+Find your people
+              </button>
+            </div>
           </div>
         )}
 

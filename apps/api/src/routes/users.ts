@@ -78,6 +78,7 @@ const updateSchema = z.object({
   isPrivate: z.boolean().optional(),
   // Profile emoji: only our own torn-paper art paths are allowed
   avatarUrl: z.string().regex(/^\/emoji\/[a-z]+\.png$/, 'Pick one of the QuteNote emoji.').nullable().optional(),
+  birthday: z.string().optional(),
 })
 
 usersRouter.put('/me', requireAuth, async (req: AuthRequest, res: Response) => {
@@ -85,10 +86,11 @@ usersRouter.put('/me', requireAuth, async (req: AuthRequest, res: Response) => {
   if (!result.success) {
     return res.status(400).json({ error: result.error.errors[0].message })
   }
+  const { birthday, ...rest } = result.data
 
   const user = await prisma.user.update({
     where: { id: req.userId },
-    data: result.data,
+    data: { ...rest, ...(birthday ? { birthday: new Date(birthday) } : {}) },
     select: {
       id: true,
       username: true,
@@ -96,6 +98,7 @@ usersRouter.put('/me', requireAuth, async (req: AuthRequest, res: Response) => {
       avatarUrl: true,
       bio: true,
       isPrivate: true,
+      birthday: true,
     },
   })
   return res.json({ data: user })

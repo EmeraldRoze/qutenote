@@ -19,6 +19,7 @@ interface User {
   currentStreak: number
   isAdmin?: boolean
   isPrivate?: boolean
+  birthday?: string | null
 }
 
 interface AuthContextType {

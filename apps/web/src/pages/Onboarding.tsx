@@ -24,18 +24,24 @@ const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', '
 export function WelcomePage() {
   const navigate = useNavigate()
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '24px', textAlign: 'center' }}>
-      <div style={{ display: 'flex', gap: '8px', marginBottom: '20px' }}>
-        <QEmoji name="heart" size={64} style={{ transform: 'rotate(-8deg)' }} />
-        <QEmoji name="envelope" size={64} style={{ transform: 'rotate(6deg)' }} />
-        <QEmoji name="popper" size={64} style={{ transform: 'rotate(-4deg)' }} />
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', padding: '24px' }}>
+      <img src="/site/logo-ink.png" alt="QuteNote" style={{ width: '150px' }} />
+
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', maxWidth: '340px' }}>
+        <h1 style={{ ...title, fontSize: '42px', lineHeight: 1.08, display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+          <span>Send</span>
+          <img src="/site/postmark-stamp-lime.png" alt="" style={{ width: '108px', height: 'auto', objectFit: 'contain' }} />
+          <span style={{ width: '100%' }}>something</span>
+          <span>real.</span>
+        </h1>
+        <p style={{ ...sub, fontSize: '16px', marginTop: '18px' }}>
+          Real postcards for birthdays, hard days and everything between. Connect with friends, no addresses needed.
+        </p>
       </div>
-      <img src="/site/logo-ink.png" alt="QuteNote" style={{ width: '220px', marginBottom: '12px' }} />
-      <h1 style={{ ...title, fontSize: '22px' }}>Send something real.</h1>
-      <p style={{ ...sub, maxWidth: '300px' }}>Real postcards, mailed to the people you love. You bring the feeling.</p>
-      <div style={{ width: '100%', maxWidth: '340px', marginTop: '32px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-        <button style={primaryBtn} onClick={() => navigate('/signup')}>Get started</button>
-        <button style={{ ...primaryBtn, background: '#fff', color: uv, border: `1.5px solid ${uv}` }} onClick={() => navigate('/login')}>Log in</button>
+
+      <div style={{ display: 'flex', gap: '12px' }}>
+        <button style={{ ...primaryBtn, flex: 1, background: '#fff', color: 'var(--ink)', border: '1.5px solid var(--ink)' }} onClick={() => navigate('/login')}>Log in</button>
+        <button style={{ ...primaryBtn, flex: 1.3 }} onClick={() => navigate('/signup')}>Sign up</button>
       </div>
     </div>
   )

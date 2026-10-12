@@ -4,16 +4,24 @@ import { useAuth } from '../context/AuthContext'
 const UV = '#5A32D6'
 const INACTIVE = '#766E82'
 
+function LineIcon({ d, extra }: { d: string; extra?: React.ReactNode }) {
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+      <path d={d} />{extra}
+    </svg>
+  )
+}
+
 export default function TabBar() {
   const navigate = useNavigate()
   const { pathname } = useLocation()
   const { user } = useAuth()
 
-  const tabs: { label: string; path: string; emojiIcon: string }[] = [
+  const tabs: { label: string; path: string; emojiIcon?: string; icon?: React.ReactNode }[] = [
     { label: 'Home', path: '/home', emojiIcon: '/emoji/house.png' },
     { label: 'QTs', path: '/connections', emojiIcon: '/emoji/bff.png' },
-    { label: 'Dates', path: '/dates', emojiIcon: '/emoji/calendar.png' },
-    { label: 'Profile', path: `/profile/${user?.username ?? ''}`, emojiIcon: '/emoji/blush.png' },
+    { label: 'Dates', path: '/dates', icon: <LineIcon d="M4 10h16M9 3v4M15 3v4" extra={<rect x="4" y="5" width="16" height="15" rx="2" />} /> },
+    { label: 'Profile', path: `/profile/${user?.username ?? ''}`, icon: <LineIcon d="M9 10h.01M15 10h.01M8.5 14.5c.9.9 2.1 1.5 3.5 1.5s2.6-.6 3.5-1.5" extra={<circle cx="12" cy="12" r="9" />} /> },
   ]
 
   function tab(t: typeof tabs[number]) {
@@ -26,10 +34,12 @@ export default function TabBar() {
         fontSize: '11px', fontWeight: 700, fontFamily: 'var(--font-body)',
         textTransform: 'none', letterSpacing: 0,
       }}>
-        <img src={t.emojiIcon} alt="" style={{
-          height: '22px', width: 'auto',
-          filter: active ? 'none' : 'grayscale(1) opacity(0.6)',
-        }} />
+        {t.emojiIcon
+          ? <img src={t.emojiIcon} alt="" style={{
+              height: '22px', width: 'auto',
+              filter: active ? 'none' : 'grayscale(1) opacity(0.55)',
+            }} />
+          : <span style={{ opacity: active ? 1 : 0.55 }}>{t.icon}</span>}
         {t.label}
       </button>
     )
