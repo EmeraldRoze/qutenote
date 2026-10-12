@@ -44,9 +44,8 @@ const primaryBtn: React.CSSProperties = {
 export default function SendFlow() {
   const navigate = useNavigate()
   const [params] = useSearchParams()
-  const [step, setStep] = useState<'card' | 'write' | 'review' | 'sent'>('card')
+  const [step, setStep] = useState<'card' | 'recipient' | 'write' | 'review' | 'sent'>('card')
   const [note, setNote] = useState<Partial<NoteData>>({ occasionType: 'JUST_BECAUSE', fontChoice: 'CAVEAT', toneUsed: 'HEARTFELT' })
-  const [pickingRecipient, setPickingRecipient] = useState(false)
   const [sentNoteId, setSentNoteId] = useState<string | null>(null)
   const [uploading, setUploading] = useState(false)
   const [uploadError, setUploadError] = useState('')
@@ -57,7 +56,8 @@ export default function SendFlow() {
     setNote((prev) => ({ ...prev, ...data }))
   }
 
-  const stepIndex = { card: 1, write: 2, review: 3, sent: 3 }[step]
+  const stepIndex = { card: 1, recipient: 2, write: 3, review: 4, sent: 4 }[step]
+  const STEP_COUNT = 4
 
   return (
     <div style={{ minHeight: '100vh', paddingBottom: '40px' }}>
@@ -69,7 +69,8 @@ export default function SendFlow() {
           <button
             onClick={() => {
               if (step === 'card') navigate('/home')
-              else if (step === 'write') setStep('card')
+              else if (step === 'recipient') setStep('card')
+              else if (step === 'write') setStep('recipient')
               else setStep('write')
             }}
             style={{
@@ -78,7 +79,7 @@ export default function SendFlow() {
             }}
           >←</button>
         )}
-        {step !== 'sent' && <span style={label}>Step {stepIndex} of 3</span>}
+        {step !== 'sent' && <span style={label}>Step {stepIndex} of {STEP_COUNT}</span>}
       </nav>
 
       <div style={{ maxWidth: '480px', margin: '0 auto', padding: '8px 24px 0' }}>
@@ -88,28 +89,11 @@ export default function SendFlow() {
           <>
             <h2 style={sectionTitle}>Choose a card</h2>
 
-            {/* To: row */}
-            <button
-              onClick={() => setPickingRecipient(true)}
-              style={{
-                display: 'flex', alignItems: 'center', gap: '10px', width: '100%',
-                margin: '16px 0 20px', padding: '10px 14px', borderRadius: '10px',
-                background: '#fff', cursor: 'pointer', textAlign: 'left',
-                border: note.recipientId ? '1px solid var(--stone)' : `1.5px dashed var(--lavender-soft)`,
-              }}
-            >
-              <span style={label}>To</span>
-              <span style={{ flex: 1, fontSize: '15px', fontFamily: 'var(--font-body)', color: note.recipientName ? 'var(--ink)' : 'var(--ink-muted)', textTransform: 'none', letterSpacing: 0, fontWeight: 400 }}>
-                {note.recipientName ?? (toName ? `Find ${toName}` : 'Pick your person')}
-              </span>
-              <span style={{ color: uv, fontWeight: 700, fontSize: '13px' }}>{note.recipientId ? 'CHANGE' : 'CHOOSE'}</span>
-            </button>
-
             <CardPicker
               note={note} update={update}
               uploading={uploading} setUploading={setUploading}
               uploadError={uploadError} setUploadError={setUploadError}
-              onWrite={() => { if (note.recipientId) setStep('write'); else setPickingRecipient(true) }}
+              onWrite={() => setStep(note.recipientId ? 'write' : 'recipient')}
             />
 
             {note.cardImageUrl && (
@@ -119,21 +103,29 @@ export default function SendFlow() {
             )}
 
             <button
-              style={{ ...primaryBtn, marginTop: '18px', opacity: note.recipientId && (note.cardDesignId || note.cardImageUrl) && !uploading ? 1 : 0.45 }}
-              disabled={!note.recipientId || !(note.cardDesignId || note.cardImageUrl) || uploading}
-              onClick={() => setStep('write')}
+              style={{ ...primaryBtn, marginTop: '18px', opacity: (note.cardDesignId || note.cardImageUrl) && !uploading ? 1 : 0.45 }}
+              disabled={!(note.cardDesignId || note.cardImageUrl) || uploading}
+              onClick={() => setStep(note.recipientId ? 'write' : 'recipient')}
             >
-              Write your note →
+              Next →
             </button>
           </>
         )}
 
-        {/* ── STEP 2: WRITE YOUR NOTE ───────────────────────────── */}
+        {/* ── STEP 2: WHO'S IT FOR ──────────────────────────────── */}
+        {step === 'recipient' && (
+          <StepRecipient
+            initialQuery={toName}
+            onNext={(data) => { update(data); setStep('write') }}
+          />
+        )}
+
+        {/* ── STEP 3: WRITE YOUR NOTE ───────────────────────────── */}
         {step === 'write' && (
           <WriteStep note={note} update={update} onNext={() => setStep('review')} />
         )}
 
-        {/* ── STEP 3: READY TO SEND ─────────────────────────────── */}
+        {/* ── STEP 4: READY TO SEND ─────────────────────────────── */}
         {step === 'review' && (
           <ReviewStep note={note as NoteData} editingNoteId={sentNoteId} onSent={(id) => { setSentNoteId(id); setStep('sent') }} onEdit={() => setStep('write')} onEditCard={() => setStep('card')} />
         )}
@@ -171,19 +163,6 @@ export default function SendFlow() {
         )}
       </div>
 
-      {/* Recipient sheet */}
-      {pickingRecipient && (
-        <div style={{ position: 'fixed', inset: 0, zIndex: 100, background: 'rgba(43,34,56,0.45)', display: 'flex', alignItems: 'flex-end' }}
-          onClick={() => setPickingRecipient(false)}>
-          <div style={{ width: '100%', maxHeight: '80vh', overflowY: 'auto', background: 'var(--cream)', borderRadius: '16px 16px 0 0', padding: '24px' }}
-            onClick={(e) => e.stopPropagation()}>
-            <StepRecipient
-              initialQuery={toName}
-              onNext={(data) => { update(data); setPickingRecipient(false) }}
-            />
-          </div>
-        </div>
-      )}
     </div>
   )
 }
