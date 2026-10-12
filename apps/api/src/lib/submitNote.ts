@@ -52,10 +52,22 @@ export async function submitNoteToLob(noteId: string): Promise<void> {
 
   const safeText = note.noteText.replace(/</g, '&lt;').replace(/>/g, '&gt;')
 
-  // Front of the card: the sender's photo full-bleed, or the chosen artist
-  // artwork centered on its tint. Art files live on the public site.
+  // Front of the card: the sender's photo full-bleed, the chosen artist's
+  // real artwork, or — most cards right now — a solid tint placeholder
+  // while we're still onboarding artists. Art files live on the public site.
   const SITE = process.env.WEB_URL ?? 'https://qutenote.com'
-  const CARD_FRONTS: Record<string, { art: string; bg: string }> = {
+  // Full-bleed real artwork (currently just @ellis_tolsma's first card)
+  const CARD_ART: Record<string, string> = {
+    'et-1': '/cards/ellis-tolsma/insects.jpg',
+  }
+  // Solid-color placeholders for cards without real art yet, plus legacy ids
+  // from before this catalog (torn-paper emoji centered on a tint)
+  const CARD_TINTS: Record<string, { art?: string; bg: string }> = {
+    'et-2': { bg: '#FF6EB4' }, 'et-3': { bg: '#C6FF3D' },
+    'a2-1': { bg: '#F3EEFF' }, 'a2-2': { bg: '#D9C9F1' }, 'a2-3': { bg: '#5A32D6' },
+    'a3-1': { bg: '#F2FBDA' }, 'a3-2': { bg: '#C6FF3D' }, 'a3-3': { bg: '#9FE870' },
+    'a4-1': { bg: '#FDE8F2' }, 'a4-2': { bg: '#FF6EB4' }, 'a4-3': { bg: '#D6407F' },
+    'a5-1': { bg: '#BE8EF5' }, 'a5-2': { bg: '#D9C9F1' }, 'a5-3': { bg: '#4A28B4' },
     'lp-1': { art: 'flower', bg: '#EEE6FA' }, 'lp-2': { art: 'clover', bg: '#F2FBDA' }, 'lp-3': { art: 'heart-torn', bg: '#FBF8F4' },
     'tm-1': { art: 'waves', bg: '#FBF8F4' }, 'tm-2': { art: 'rainbow', bg: '#EEE6FA' }, 'tm-3': { art: 'finger', bg: '#F2FBDA' },
     'id-1': { art: 'coffee', bg: '#FBF8F4' }, 'id-2': { art: 'cake', bg: '#EEE6FA' }, 'id-3': { art: 'gift', bg: '#F2FBDA' },
@@ -63,12 +75,15 @@ export async function submitNoteToLob(noteId: string): Promise<void> {
     'ra-1': { art: 'envelope-heart', bg: '#EEE6FA' }, 'ra-2': { art: 'heart-lime', bg: '#FBF8F4' }, 'ra-3': { art: 'popper', bg: '#F2FBDA' },
     'design-1': { art: 'flower', bg: '#EEE6FA' }, 'design-2': { art: 'popper', bg: '#F2FBDA' }, 'design-3': { art: 'star-gold', bg: '#EEE6FA' },
   }
-  const front = note.cardDesignId ? CARD_FRONTS[note.cardDesignId] : undefined
+  const realArt = note.cardDesignId ? CARD_ART[note.cardDesignId] : undefined
+  const tint = note.cardDesignId ? CARD_TINTS[note.cardDesignId] : undefined
   const frontHtml = note.cardImageUrl
     ? `<html><body style="margin:0;width:6in;height:4in;"><img src="${note.cardImageUrl}" style="width:6in;height:4in;object-fit:cover;display:block;" /></body></html>`
-    : front
-      ? `<html><body style="margin:0;background:${front.bg};width:6in;height:4in;display:flex;align-items:center;justify-content:center;"><img src="${SITE}/site/${front.art}.png" style="width:2.6in;height:2.6in;object-fit:contain;" /></body></html>`
-      : `<html><body style="margin:0;background:linear-gradient(135deg,#D9C9F1,#EEE6FA);width:6in;height:4in;display:flex;align-items:center;justify-content:center;"><p style="font-family:Georgia,serif;font-size:48px;color:#5A32D6;text-align:center;">💌</p></body></html>`
+    : realArt
+      ? `<html><body style="margin:0;width:6in;height:4in;"><img src="${SITE}${realArt}" style="width:6in;height:4in;object-fit:cover;display:block;" /></body></html>`
+      : tint
+        ? `<html><body style="margin:0;background:${tint.bg};width:6in;height:4in;display:flex;align-items:center;justify-content:center;">${tint.art ? `<img src="${SITE}/site/${tint.art}.png" style="width:2.6in;height:2.6in;object-fit:contain;" />` : ''}</body></html>`
+        : `<html><body style="margin:0;background:linear-gradient(135deg,#D9C9F1,#EEE6FA);width:6in;height:4in;display:flex;align-items:center;justify-content:center;"><p style="font-family:Georgia,serif;font-size:48px;color:#5A32D6;text-align:center;">💌</p></body></html>`
   const backHtml = `<html><body style="margin:0;padding:40px;font-family:Georgia,serif;width:6in;height:4in;background:#FBF8F4;"><p style="font-size:22px;color:#2B2238;line-height:1.6;font-style:italic;">${safeText}</p><p style="margin-top:20px;font-size:14px;color:#766E82;">With love, ${note.sender.displayName}</p></body></html>`
 
   try {

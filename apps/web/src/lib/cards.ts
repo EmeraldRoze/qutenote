@@ -1,61 +1,63 @@
-// The featured-artist card catalog — five artists, three cards each,
-// straight from the App Screens board, rendered in the Oct 2026 system.
-// Artworks are the torn-paper pieces in /site/.
+// The featured-artist card catalog — App Screens board, Send tab.
+// Five artists, three cards each. Only @ellis_tolsma has real artwork so
+// far (the insect postcard); everyone else is a color placeholder until
+// more artists are onboarded.
 
 export interface CardDesign {
   id: string
   title: string
-  art: string // /site/<art>.png
+  art?: string // /cards/<artist>/<file> — real artwork, when present
   bg: string
+  placeholder?: boolean
 }
 
 export interface Artist {
+  key: string
   name: string
-  initials: string
-  style: string
-  chip: string
+  handle?: string // real Instagram handle, when the artist is real
+  featured?: boolean
   cards: CardDesign[]
 }
 
 export const ARTISTS: Artist[] = [
   {
-    name: 'Luna Park', initials: 'LP', style: 'Watercolor florals', chip: '#E4D9F7',
+    key: 'ellis-tolsma', name: 'Ellis Tolsma', handle: '@ellis_tolsma', featured: true,
     cards: [
-      { id: 'lp-1', title: 'Fresh Daisies', art: 'flower', bg: '#EEE6FA' },
-      { id: 'lp-2', title: 'Garden Party', art: 'clover', bg: '#F2FBDA' },
-      { id: 'lp-3', title: 'Petal Post', art: 'heart-torn', bg: '#FBF8F4' },
+      { id: 'et-1', title: 'Insect Collection', art: '/cards/ellis-tolsma/insects.jpg', bg: '#D9C9F1' },
+      { id: 'et-2', title: 'Coming soon', bg: 'var(--neon-pink)', placeholder: true },
+      { id: 'et-3', title: 'Coming soon', bg: 'var(--lime)', placeholder: true },
     ],
   },
   {
-    name: 'Theo Marsh', initials: 'TM', style: 'Paper collage', chip: '#F2FBDA',
+    key: 'artist-2', name: 'Artist 2',
     cards: [
-      { id: 'tm-1', title: 'Sunny Side', art: 'waves', bg: '#FBF8F4' },
-      { id: 'tm-2', title: 'Over the Rainbow', art: 'rainbow', bg: '#EEE6FA' },
-      { id: 'tm-3', title: 'Lucky You', art: 'finger', bg: '#F2FBDA' },
+      { id: 'a2-1', title: 'Coming soon', bg: 'var(--lavender-pale)', placeholder: true },
+      { id: 'a2-2', title: 'Coming soon', bg: 'var(--lavender-light)', placeholder: true },
+      { id: 'a2-3', title: 'Coming soon', bg: 'var(--ultraviolet)', placeholder: true },
     ],
   },
   {
-    name: 'Ines Duarte', initials: 'ID', style: 'Cozy still life', chip: '#EEE6FA',
+    key: 'artist-3', name: 'Artist 3',
     cards: [
-      { id: 'id-1', title: 'Morning Ritual', art: 'coffee', bg: '#FBF8F4' },
-      { id: 'id-2', title: 'Little Treat', art: 'cake', bg: '#EEE6FA' },
-      { id: 'id-3', title: 'Wrapped Up', art: 'gift', bg: '#F2FBDA' },
+      { id: 'a3-1', title: 'Coming soon', bg: '#F2FBDA', placeholder: true },
+      { id: 'a3-2', title: 'Coming soon', bg: 'var(--lime)', placeholder: true },
+      { id: 'a3-3', title: 'Coming soon', bg: '#9FE870', placeholder: true },
     ],
   },
   {
-    name: 'Kofi Mensah', initials: 'KM', style: 'Night skies', chip: '#E4D9F7',
+    key: 'artist-4', name: 'Artist 4',
     cards: [
-      { id: 'km-1', title: 'Moonlight', art: 'moon', bg: '#E4D9F7' },
-      { id: 'km-2', title: 'Goodnight', art: 'star-gold', bg: '#EEE6FA' },
-      { id: 'km-3', title: 'Golden Hour', art: 'sun', bg: '#FBF8F4' },
+      { id: 'a4-1', title: 'Coming soon', bg: '#FDE8F2', placeholder: true },
+      { id: 'a4-2', title: 'Coming soon', bg: 'var(--neon-pink)', placeholder: true },
+      { id: 'a4-3', title: 'Coming soon', bg: '#D6407F', placeholder: true },
     ],
   },
   {
-    name: 'Ruth Abel', initials: 'RA', style: 'Love letters', chip: '#F2FBDA',
+    key: 'artist-5', name: 'Artist 5',
     cards: [
-      { id: 'ra-1', title: 'Sealed with Love', art: 'envelope-heart', bg: '#EEE6FA' },
-      { id: 'ra-2', title: 'Full Heart', art: 'heart-lime', bg: '#FBF8F4' },
-      { id: 'ra-3', title: 'Hooray', art: 'popper', bg: '#F2FBDA' },
+      { id: 'a5-1', title: 'Coming soon', bg: 'var(--lilac)', placeholder: true },
+      { id: 'a5-2', title: 'Coming soon', bg: 'var(--lavender-light)', placeholder: true },
+      { id: 'a5-3', title: 'Coming soon', bg: 'var(--lavender-dark)', placeholder: true },
     ],
   },
 ]
@@ -63,7 +65,9 @@ export const ARTISTS: Artist[] = [
 export const CARD_LOOKUP: Record<string, CardDesign & { artist: string }> = {}
 for (const a of ARTISTS) for (const c of a.cards) CARD_LOOKUP[c.id] = { ...c, artist: a.name }
 
-// Notes sent before this catalog existed reference the old three ids.
-CARD_LOOKUP['design-1'] = CARD_LOOKUP['lp-1']
-CARD_LOOKUP['design-2'] = CARD_LOOKUP['ra-3']
-CARD_LOOKUP['design-3'] = CARD_LOOKUP['km-2']
+// Notes sent before this catalog existed reference older ids — keep their
+// thumbnails from breaking.
+const FALLBACK = { title: 'A QuteNote card', bg: 'var(--lavender-pale)', artist: 'QuteNote' }
+for (const old of ['design-1', 'design-2', 'design-3', 'lp-1', 'lp-2', 'lp-3', 'tm-1', 'tm-2', 'tm-3', 'id-1', 'id-2', 'id-3', 'km-1', 'km-2', 'km-3', 'ra-1', 'ra-2', 'ra-3']) {
+  if (!CARD_LOOKUP[old]) CARD_LOOKUP[old] = { id: old, ...FALLBACK }
+}

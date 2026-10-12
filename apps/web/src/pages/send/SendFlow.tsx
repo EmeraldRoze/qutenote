@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { api } from '../../lib/api'
 import { PROMPTS, OCCASIONS } from '../../lib/prompts'
@@ -102,97 +102,21 @@ export default function SendFlow() {
               <span style={{ color: uv, fontWeight: 700, fontSize: '13px' }}>{note.recipientId ? 'CHANGE' : 'CHOOSE'}</span>
             </button>
 
-            {/* Upload-your-own tile */}
-            <label style={{
-              display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px',
-              padding: '20px', borderRadius: '6px', cursor: 'pointer', marginBottom: '24px',
-              border: note.cardImageUrl ? `1.5px solid ${uv}` : `1.5px dashed var(--lavender-soft)`,
-              background: note.cardImageUrl ? `url(${note.cardImageUrl}) center/cover` : 'transparent',
-            }}>
-              {!note.cardImageUrl && <QEmoji name="camera" size={30} />}
-              <span style={{
-                fontSize: '13px', fontFamily: 'var(--font-body)', fontWeight: note.cardImageUrl ? 700 : 400,
-                color: note.cardImageUrl ? '#fff' : 'var(--ink-mid)',
-                textShadow: note.cardImageUrl ? '0 1px 6px rgba(43,34,56,0.6)' : 'none',
-              }}>
-                {uploading ? 'Uploading your photo…' : note.cardImageUrl ? 'Your photo is on the front. Tap to swap it.' : 'Upload a picture — put your own photo on the front'}
-              </span>
-              <input type="file" accept="image/*" style={{ display: 'none' }}
-                onChange={async (e) => {
-                  const file = e.target.files?.[0]
-                  if (!file) return
-                  setUploading(true); setUploadError('')
-                  try {
-                    const url = await uploadPhoto(file)
-                    update({ cardDesignType: 'USER_UPLOAD', cardImageUrl: url, cardDesignId: undefined })
-                  } catch {
-                    setUploadError("That photo didn't upload. Try again, or pick a different one.")
-                  } finally {
-                    setUploading(false)
-                    e.target.value = ''
-                  }
-                }} />
-            </label>
-            {uploadError && (
-              <p style={{ fontSize: '12px', fontFamily: 'var(--font-body)', color: '#B3261E', margin: '-14px 0 18px' }}>{uploadError}</p>
-            )}
+            <CardPicker
+              note={note} update={update}
+              uploading={uploading} setUploading={setUploading}
+              uploadError={uploadError} setUploadError={setUploadError}
+              onWrite={() => { if (note.recipientId) setStep('write'); else setPickingRecipient(true) }}
+            />
 
-            {/* Featured artists */}
-            <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: '4px' }}>
-              <p style={label}>October's featured artists</p>
-              <span style={{ fontSize: '11px', fontFamily: 'var(--font-body)', fontWeight: 700, color: 'var(--lime-ink, #5a7a00)', background: '#F2FBDA', padding: '3px 10px', borderRadius: '999px' }}>New lineup Nov 1</span>
-            </div>
-            <p style={{ fontSize: '13px', fontFamily: 'var(--font-body)', color: 'var(--ink-mid)', margin: '0 0 16px' }}>
-              Five artists this month. Three cards each.
-            </p>
-
-            {ARTISTS.map((a) => (
-              <div key={a.name} style={{ marginBottom: '22px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
-                  <span style={{
-                    width: '32px', height: '32px', borderRadius: '16px', background: a.chip,
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '11px', color: 'var(--ink)',
-                  }}>{a.initials}</span>
-                  <div>
-                    <div style={{ fontFamily: 'var(--font-display)', fontSize: '14px', color: 'var(--ink)' }}>{a.name}</div>
-                    <div style={{ fontFamily: 'var(--font-body)', fontSize: '11px', color: 'var(--ink-mid)' }}>{a.style}</div>
-                  </div>
-                </div>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px' }}>
-                  {a.cards.map((c) => {
-                    const selected = note.cardDesignId === c.id
-                    return (
-                      <button
-                        key={c.id}
-                        onClick={() => update({ cardDesignType: 'ARTIST', cardDesignId: c.id, cardImageUrl: undefined })}
-                        style={{
-                          aspectRatio: '3/4', borderRadius: '6px', overflow: 'hidden', padding: 0, cursor: 'pointer',
-                          border: selected ? `2px solid ${uv}` : '1px solid var(--stone)',
-                          boxShadow: selected ? '0 4px 14px rgba(90,50,214,0.25)' : 'none',
-                        }}
-                      >
-                        <div style={{ width: '100%', height: '100%', background: c.bg, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '6px', padding: '6px' }}>
-                          <img src={`/site/${c.art}.png`} alt="" style={{ width: '60%', maxHeight: '58%', objectFit: 'contain' }} />
-                          <span style={{ fontFamily: 'var(--font-body)', fontSize: '9px', color: 'var(--ink)', textTransform: 'none', letterSpacing: 0, fontWeight: 700, lineHeight: 1.2 }}>{c.title}</span>
-                        </div>
-                      </button>
-                    )
-                  })}
-                </div>
-              </div>
-            ))}
-
-            {(note.cardDesignId || note.cardImageUrl) && (
-              <p style={{ fontSize: '12px', fontFamily: 'var(--font-body)', color: 'var(--ink-mid)', margin: '0 0 12px' }}>
-                Selected: <strong style={{ color: 'var(--ink)' }}>
-                  {note.cardImageUrl ? 'Your photo' : `${CARD_LOOKUP[note.cardDesignId!]?.title} by ${CARD_LOOKUP[note.cardDesignId!]?.artist}`}
-                </strong>
+            {note.cardImageUrl && (
+              <p style={{ fontSize: '12px', fontFamily: 'var(--font-body)', color: 'var(--ink-mid)', margin: '14px 0 12px' }}>
+                Selected: <strong style={{ color: 'var(--ink)' }}>Your photo</strong>
               </p>
             )}
 
             <button
-              style={{ ...primaryBtn, opacity: note.recipientId && (note.cardDesignId || note.cardImageUrl) && !uploading ? 1 : 0.45 }}
+              style={{ ...primaryBtn, marginTop: '18px', opacity: note.recipientId && (note.cardDesignId || note.cardImageUrl) && !uploading ? 1 : 0.45 }}
               disabled={!note.recipientId || !(note.cardDesignId || note.cardImageUrl) || uploading}
               onClick={() => setStep('write')}
             >
@@ -258,6 +182,174 @@ export default function SendFlow() {
         </div>
       )}
     </div>
+  )
+}
+
+/* ── Card picker: search, swipeable featured panel, upload tile, artist rows ── */
+function CardPicker({ note, update, uploading, setUploading, uploadError, setUploadError, onWrite }: {
+  note: Partial<NoteData>
+  update: (d: Partial<NoteData>) => void
+  uploading: boolean
+  setUploading: (v: boolean) => void
+  uploadError: string
+  setUploadError: (v: string) => void
+  onWrite: () => void
+}) {
+  const [query, setQuery] = useState('')
+  const [artistIdx, setArtistIdx] = useState(0)
+  const [cardIdx, setCardIdx] = useState(0)
+  const panelRef = useRef<HTMLDivElement>(null)
+
+  const q = query.trim().toLowerCase()
+  const visibleArtists = q
+    ? ARTISTS.filter((a) => a.name.toLowerCase().includes(q) || a.handle?.toLowerCase().includes(q) || a.cards.some((c) => c.title.toLowerCase().includes(q)))
+    : ARTISTS
+
+  const artist = ARTISTS[artistIdx]
+
+  function selectArtist(i: number) {
+    setArtistIdx(i)
+    setCardIdx(0)
+    update({ cardDesignType: 'ARTIST', cardDesignId: ARTISTS[i].cards[0].id, cardImageUrl: undefined })
+    panelRef.current?.scrollTo({ left: 0 })
+  }
+
+  function onPanelScroll() {
+    const el = panelRef.current
+    if (!el) return
+    const i = Math.round(el.scrollLeft / el.clientWidth)
+    if (i !== cardIdx) {
+      setCardIdx(i)
+      update({ cardDesignType: 'ARTIST', cardDesignId: artist.cards[i].id, cardImageUrl: undefined })
+    }
+  }
+
+  // The first time a card is picked (or the flow loads), make sure something is selected.
+  useEffect(() => {
+    if (!note.cardDesignId && !note.cardImageUrl) {
+      update({ cardDesignType: 'ARTIST', cardDesignId: artist.cards[0].id })
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  return (
+    <>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', height: '44px', padding: '0 14px', borderRadius: '999px', background: '#fff', border: '1px solid var(--stone)', marginBottom: '18px' }}>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--ink-muted)" strokeWidth="1.7" strokeLinecap="round"><circle cx="11" cy="11" r="7" /><path d="M21 21l-4.3-4.3" /></svg>
+        <input
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="Search cards and artists"
+          style={{ flex: 1, border: 'none', outline: 'none', background: 'transparent', fontFamily: 'var(--font-body)', fontSize: '14px', color: 'var(--ink)', textTransform: 'none', letterSpacing: 0 }}
+        />
+      </div>
+
+      {/* Featured panel */}
+      <div
+        key={artistIdx}
+        ref={panelRef}
+        onScroll={onPanelScroll}
+        style={{ display: 'flex', overflowX: 'auto', scrollSnapType: 'x mandatory', borderRadius: '28px', marginBottom: '10px', scrollbarWidth: 'none' }}
+      >
+        {artist.cards.map((c) => (
+          <div key={c.id} style={{
+            flex: '0 0 100%', scrollSnapAlign: 'start', aspectRatio: '4/5', background: c.bg,
+            display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden',
+          }}>
+            {c.art && <img src={c.art} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />}
+          </div>
+        ))}
+      </div>
+      <div style={{ display: 'flex', justifyContent: 'center', gap: '6px', marginBottom: '16px' }}>
+        {artist.cards.map((_, i) => (
+          <span key={i} style={{ width: i === cardIdx ? '18px' : '6px', height: '6px', borderRadius: '3px', background: i === cardIdx ? uv : 'var(--stone)', transition: 'width 0.2s' }} />
+        ))}
+      </div>
+
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
+        <div>
+          <div style={{ ...label, marginBottom: '2px' }}>{artist.featured ? 'Featured this month' : `October artist`}</div>
+          <div style={{ fontFamily: 'var(--font-body)', fontSize: '15px', fontWeight: 700, color: 'var(--ink)' }}>{artist.handle ?? artist.name}</div>
+        </div>
+        <button onClick={onWrite} style={{
+          height: '42px', padding: '0 18px', borderRadius: '999px', border: 'none', cursor: 'pointer',
+          background: uv, color: '#fff', fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '12px', letterSpacing: '0.1em',
+        }}>Write on it</button>
+      </div>
+
+      {/* Upload-your-own */}
+      <label style={{
+        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px',
+        padding: '16px', borderRadius: '14px', cursor: 'pointer', marginBottom: '26px',
+        border: note.cardImageUrl ? `1.5px solid ${uv}` : `1.5px dashed var(--lavender-soft)`,
+        background: note.cardImageUrl ? `url(${note.cardImageUrl}) center/cover` : 'transparent',
+        minHeight: note.cardImageUrl ? '70px' : 'auto',
+      }}>
+        {!note.cardImageUrl && <QEmoji name="camera" size={22} />}
+        <span style={{
+          fontSize: '12px', fontFamily: 'var(--font-body)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em',
+          color: note.cardImageUrl ? '#fff' : uv,
+          textShadow: note.cardImageUrl ? '0 1px 6px rgba(43,34,56,0.6)' : 'none',
+        }}>
+          {uploading ? 'Uploading…' : note.cardImageUrl ? 'Your photo is on it. Tap to swap.' : 'Upload your own photo'}
+        </span>
+        <input type="file" accept="image/*" style={{ display: 'none' }}
+          onChange={async (e) => {
+            const file = e.target.files?.[0]
+            if (!file) return
+            setUploading(true); setUploadError('')
+            try {
+              const url = await uploadPhoto(file)
+              update({ cardDesignType: 'USER_UPLOAD', cardImageUrl: url, cardDesignId: undefined })
+            } catch {
+              setUploadError("That photo didn't upload. Try again, or pick a different one.")
+            } finally {
+              setUploading(false)
+              e.target.value = ''
+            }
+          }} />
+      </label>
+      {uploadError && (
+        <p style={{ fontSize: '12px', fontFamily: 'var(--font-body)', color: '#B3261E', margin: '-18px 0 18px' }}>{uploadError}</p>
+      )}
+
+      {/* Artist list */}
+      <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: '4px' }}>
+        <p style={{ fontFamily: 'var(--font-display)', fontSize: '16px', fontWeight: 400, color: 'var(--ink)' }}>October artists</p>
+        <span style={{ fontSize: '11px', fontFamily: 'var(--font-body)', fontWeight: 700, color: '#5a7a00', background: '#F2FBDA', padding: '3px 10px', borderRadius: '999px' }}>New lineup Nov 1</span>
+      </div>
+      <p style={{ fontSize: '13px', fontFamily: 'var(--font-body)', color: 'var(--ink-mid)', margin: '0 0 16px' }}>
+        Five artists this month. Three cards each.
+      </p>
+
+      {visibleArtists.map((a) => {
+        const i = ARTISTS.indexOf(a)
+        const active = i === artistIdx
+        return (
+          <div key={a.key} style={{
+            marginBottom: '14px', padding: '10px', borderRadius: '16px',
+            border: active ? `1.5px solid ${uv}` : '1px solid transparent',
+          }}>
+            <button onClick={() => selectArtist(i)} style={{
+              display: 'block', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left',
+              width: '100%', padding: 0, marginBottom: '8px', textTransform: 'none', letterSpacing: 0, fontWeight: 400,
+            }}>
+              <span style={{ fontFamily: 'var(--font-body)', fontSize: '14px', fontWeight: 700, color: 'var(--ink)' }}>{a.handle ?? a.name}</span>
+            </button>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
+              {a.cards.map((c) => (
+                <button key={c.id} onClick={() => selectArtist(i)} style={{
+                  aspectRatio: '1/1', borderRadius: '8px', overflow: 'hidden', padding: 0, cursor: 'pointer',
+                  border: '1px solid var(--stone)', background: c.bg,
+                }}>
+                  {c.art && <img src={c.art} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />}
+                </button>
+              ))}
+            </div>
+          </div>
+        )
+      })}
+    </>
   )
 }
 

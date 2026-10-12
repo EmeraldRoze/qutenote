@@ -239,11 +239,15 @@ export default function ProfilePage() {
                   <div key={n.id} style={{
                     height: '96px', borderRadius: '8px', border: '4px solid #fff',
                     boxShadow: '0 2px 8px rgba(43,34,56,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    background: n.cardImageUrl ? `url(${n.cardImageUrl}) center/cover` : CARD_LOOKUP[n.cardDesignId ?? '']?.bg ?? 'var(--lavender-pale)',
+                    background: n.cardImageUrl
+                      ? `url(${n.cardImageUrl}) center/cover`
+                      : CARD_LOOKUP[n.cardDesignId ?? '']?.art
+                        ? `url(${CARD_LOOKUP[n.cardDesignId ?? ''].art}) center/cover`
+                        : CARD_LOOKUP[n.cardDesignId ?? '']?.bg ?? 'var(--lavender-pale)',
                   }}>
-                    {!n.cardImageUrl && (CARD_LOOKUP[n.cardDesignId ?? '']
-                      ? <img src={`/site/${CARD_LOOKUP[n.cardDesignId ?? ''].art}.png`} alt="" style={{ width: '55%', maxHeight: '60%', objectFit: 'contain' }} />
-                      : <QEmoji name={OCCASION_ART[n.occasionType] ?? 'envelope'} size={48} />)}
+                    {!n.cardImageUrl && !CARD_LOOKUP[n.cardDesignId ?? '']?.art && (
+                      <QEmoji name={OCCASION_ART[n.occasionType] ?? 'envelope'} size={48} />
+                    )}
                   </div>
                 ))}
               </div>
