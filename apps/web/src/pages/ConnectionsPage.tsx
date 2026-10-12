@@ -127,7 +127,7 @@ export default function ConnectionsPage() {
         {/* Invite box */}
         <div style={{
           display: 'flex', alignItems: 'center', gap: '16px', width: '100%', padding: '18px',
-          borderRadius: '22px', background: 'var(--lavender-light)', marginBottom: '16px',
+          borderRadius: '22px', background: 'var(--lilac)', marginBottom: '16px',
         }}>
           <QEmoji name="bff" size={56} />
           <span style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '10px' }}>

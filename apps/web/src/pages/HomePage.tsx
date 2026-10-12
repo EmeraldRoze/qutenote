@@ -14,10 +14,10 @@ interface OfferCard {
   onClick: (navigate: ReturnType<typeof useNavigate>) => void
 }
 const OFFER_CARDS: OfferCard[] = [
-  { bg: 'var(--lavender-light)', art: 'heart-sparkle', title: 'Your first card is on us', cta: 'Send a card', onClick: (nav) => nav('/send') },
+  { bg: 'var(--lilac)', art: 'heart-sparkle', title: 'Your first card is on us', cta: 'Send a card', onClick: (nav) => nav('/send') },
   { bg: 'var(--neon-pink)', art: 'bff', title: 'Invite a friend. You both get a free card.', cta: 'Invite', onClick: (nav) => nav('/invite') },
   { bg: 'var(--lime)', art: 'mailbox', title: 'Know when something is in the mail', cta: 'Turn on alerts', onClick: (nav) => nav('/dates') },
-  { bg: 'var(--lilac)', art: 'camera', title: 'Got a good photo? Mail it.', cta: 'Upload a photo', onClick: (nav) => nav('/send') },
+  { bg: 'var(--lavender-light)', art: 'camera', title: 'Got a good photo? Mail it.', cta: 'Upload a photo', onClick: (nav) => nav('/send') },
 ]
 
 function OfferCarousel() {

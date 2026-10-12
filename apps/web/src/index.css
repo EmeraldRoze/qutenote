@@ -6,22 +6,22 @@
   /* QuteNote iOS Design Guide, Oct 2026 — typed mail on good paper */
   --ultraviolet:    #5A32D6;  /* the one action color */
   --lavender:       #5A32D6;  /* legacy alias: old action color -> ultraviolet */
-  --lavender-light: #D9C9F1;
-  --lavender-pale:  #EEE6FA;
+  --lavender-light: #E9E2FB;  /* brightened to match the Oct 2026 design file's "lavender" token */
+  --lavender-pale:  #F3EEFF;  /* brightened to match the design file's "lavenderPale" token */
   --lavender-dark:  #4A28B4;  /* pressed/hover: darker ultraviolet */
   --lavender-deep:  #2B2238;  /* legacy alias: heading color -> ink */
   --lavender-soft:  #A78BC7;  /* dashed borders, outline accents */
 
-  --blush:          #D9C9F1;  /* pink is retired; legacy aliases map to lavender */
-  --blush-pale:     #EEE6FA;
+  --blush:          #E9E2FB;  /* pink is retired; legacy aliases map to lavender */
+  --blush-pale:     #F3EEFF;
 
-  --ink:            #2B2238;
-  --ink-mid:        #5C5468;
-  --ink-muted:      #766E82;
+  --ink:            #231A3A;  /* darker/crisper per the design file (was #2B2238) */
+  --ink-mid:        #4A4163;  /* darker per the design file (was #5C5468) */
+  --ink-muted:      #7A7389;  /* per the design file (was #766E82) */
 
-  --cream:          #FBF8F4;
-  --cream-warm:     #EEE6FA;  /* panels that matter sit on lavender-pale */
-  --cream-ruled:    #EFE8DE;
+  --cream:          #FBF8F2;  /* matches the design file's "paper" token */
+  --cream-warm:     #F3EEFF;  /* panels that matter sit on lavender-pale */
+  --cream-ruled:    #E7E1EF;  /* matches the design file's "paperRuleLine" token */
   --stone:          #E6E1DC;
   --lime:           #C6FF3D;  /* countdown pills and new dots ONLY */
   --neon-pink:      #FF6EB4;  /* carousel card accent only */
