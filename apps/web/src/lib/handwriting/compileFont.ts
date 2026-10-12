@@ -18,7 +18,8 @@ const CANVAS_SIZE = 300 // the writing box is CANVAS_SIZE x CANVAS_SIZE px
 const BASELINE_Y = 220 // where the letter "sits"; room above for ascenders, below for descenders
 const UNITS_PER_EM = 1000
 const SCALE = UNITS_PER_EM / CANVAS_SIZE
-const SIDE_BEARING = 70 // breathing room on either side of a letter
+const SIDE_BEARING = 36 // breathing room on either side of a letter — tight, so words read as words
+const SPACE_ADVANCE = 340 // a space must look clearly wider than any letter gap, or words run together
 
 function toFontSpace(p: Point): Point {
   // Canvas Y grows downward; font space Y grows upward from the baseline.
@@ -26,7 +27,20 @@ function toFontSpace(p: Point): Point {
 }
 
 function strokeToPath(path: opentype.Path, stroke: Stroke) {
-  if (stroke.length < 2) return
+  if (stroke.length === 0) return
+  // A tap with no drag — same convention as the preview canvas: a small dot
+  // (the tittle on an i/j, a period), not nothing.
+  if (stroke.length === 1) {
+    const c = toFontSpace(stroke[0])
+    const r = 24
+    path.moveTo(c.x + r, c.y)
+    path.curveTo(c.x + r, c.y + r * 0.55, c.x + r * 0.55, c.y + r, c.x, c.y + r)
+    path.curveTo(c.x - r * 0.55, c.y + r, c.x - r, c.y + r * 0.55, c.x - r, c.y)
+    path.curveTo(c.x - r, c.y - r * 0.55, c.x - r * 0.55, c.y - r, c.x, c.y - r)
+    path.curveTo(c.x + r * 0.55, c.y - r, c.x + r, c.y - r * 0.55, c.x + r, c.y)
+    path.close()
+    return
+  }
   const outline = getStroke(stroke.map((p) => [p.x, p.y]), {
     size: 14, // pen thickness in canvas px — a confident, visible stroke
     thinning: 0.5, // tapers at stroke ends, like a real pen lifting off
@@ -55,7 +69,7 @@ function glyphPath(strokes: Stroke[]): { path: opentype.Path; advanceWidth: numb
     }
   }
   const inkWidth = Number.isFinite(minX) ? (maxX - minX) * SCALE : 0
-  const advanceWidth = Math.max(inkWidth + SIDE_BEARING * 2, 260)
+  const advanceWidth = Math.max(inkWidth + SIDE_BEARING * 2, 190)
   return { path, advanceWidth }
 }
 
@@ -66,7 +80,7 @@ function blankGlyph(unicode: number | undefined, name: string, advanceWidth: num
 
 export function compileFont(fontName: string, glyphs: GlyphStrokes): ArrayBuffer {
   const notdef = blankGlyph(undefined, '.notdef', 300)
-  const space = blankGlyph(32, 'space', 260)
+  const space = blankGlyph(32, 'space', SPACE_ADVANCE)
   const builtGlyphs: opentype.Glyph[] = [notdef, space]
 
   for (const [char, strokes] of Object.entries(glyphs)) {
