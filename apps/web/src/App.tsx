@@ -20,6 +20,7 @@ import CollectAddressPage from './pages/CollectAddressPage'
 import ImportantDatesPage from './pages/ImportantDatesPage'
 import SettingsPage from './pages/SettingsPage'
 import AccountSettingsPage from './pages/AccountSettingsPage'
+import HandwritingPage from './pages/HandwritingPage'
 import { WelcomePage, OnboardingQTs, OnboardingBirthdays, OnboardingReminders } from './pages/Onboarding'
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -63,6 +64,8 @@ function AppRoutes() {
       <Route path="/invite" element={<ProtectedRoute><InvitePage /></ProtectedRoute>} />
       <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
       <Route path="/settings/account" element={<ProtectedRoute><AccountSettingsPage /></ProtectedRoute>} />
+      <Route path="/handwriting" element={<ProtectedRoute><HandwritingPage /></ProtectedRoute>} />
+      <Route path="/handwriting/:sessionKey" element={<ProtectedRoute><HandwritingPage /></ProtectedRoute>} />
       <Route path="/collect-address/:token" element={<CollectAddressPage />} />
       <Route path="/i/:token" element={<CollectAddressPage />} />
     </Routes>

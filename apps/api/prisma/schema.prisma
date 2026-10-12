@@ -56,6 +56,7 @@ model User {
   hearts           Heart[]
   deviceTokens     DeviceToken[]
   uploads          Upload[]
+  handwritingFont  HandwritingFont?
   invitesSent      Invite[]
 }
 
@@ -365,4 +366,19 @@ model Upload {
   createdAt DateTime @default(now())
 
   @@index([userId])
+}
+
+// One handwriting font per person. `glyphs` holds the raw strokes captured
+// so far (character -> array of strokes -> array of {x,y} points), so
+// writing sessions can be resumed. `fontData` is the compiled TTF, recompiled
+// each time a new letter is added — the preview and the note-writing pen
+// both read from it directly.
+model HandwritingFont {
+  id        String   @id @default(uuid())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  glyphs    Json     @default("{}")
+  fontData  Bytes?
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
 }

@@ -4,6 +4,8 @@ import { api } from '../../lib/api'
 import { PROMPTS, OCCASIONS } from '../../lib/prompts'
 import { ARTISTS, CARD_LOOKUP } from '../../lib/cards'
 import { uploadPhoto } from '../../lib/uploadPhoto'
+import { useHandwritingFontFace, HANDWRITING_FONT_FAMILY } from '../../lib/handwriting/useHandwritingFontFace'
+import { fetchHandwritingProgress } from '../../lib/handwriting/api'
 import QEmoji from '../../components/QEmoji'
 import StepRecipient from './StepRecipient'
 
@@ -26,6 +28,7 @@ const PENS = [
   { value: 'PATRICK_HAND', label: 'Patrick', family: "'Patrick Hand', cursive" },
 ]
 const PEN_FAMILY: Record<string, string> = Object.fromEntries(PENS.map(p => [p.value, p.family]))
+PEN_FAMILY['YOUR_HANDWRITING'] = `'${HANDWRITING_FONT_FAMILY}', 'Caveat', cursive`
 
 const uv = '#5A32D6'
 
@@ -361,11 +364,14 @@ function WriteStep({ note, update, onNext }: {
 }) {
   const [promptsOpen, setPromptsOpen] = useState(false)
   const [promptPage, setPromptPage] = useState(0)
+  const [hasHandwriting, setHasHandwriting] = useState(false)
   const occasion = note.occasionType ?? 'JUST_BECAUSE'
   const allPrompts = PROMPTS[occasion] ?? PROMPTS['JUST_BECAUSE'] ?? []
   const visible = allPrompts.slice(promptPage * 3, promptPage * 3 + 3)
+  useHandwritingFontFace() // loads + registers the font (if any) so the preview can use it
 
   useEffect(() => { setPromptPage(0) }, [occasion])
+  useEffect(() => { fetchHandwritingProgress().then((r) => setHasHandwriting(r.hasFont)).catch(() => {}) }, [])
 
   return (
     <>
@@ -452,13 +458,28 @@ function WriteStep({ note, update, onNext }: {
 
       {/* Pen row */}
       <p style={{ ...label, margin: '20px 0 4px' }}>Your pen</p>
-      <p style={{ fontFamily: 'var(--font-body)', fontSize: '12px', color: 'var(--ink-muted)', margin: '0 0 10px' }}>Soon: teach QuteNote your own handwriting.</p>
-      <div style={{ display: 'flex', gap: '8px', marginBottom: '28px' }}>
+      {hasHandwriting ? (
+        <p style={{ fontFamily: 'var(--font-body)', fontSize: '12px', color: 'var(--ink-muted)', margin: '0 0 10px' }}>Your handwriting is ready — pick it below.</p>
+      ) : (
+        <a href="/handwriting" style={{ display: 'block', fontFamily: 'var(--font-body)', fontSize: '12px', color: uv, margin: '0 0 10px', textDecoration: 'underline' }}>Teach QuteNote your own handwriting →</a>
+      )}
+      <div style={{ display: 'flex', gap: '8px', marginBottom: '28px', flexWrap: 'wrap' }}>
+        {hasHandwriting && (
+          <button onClick={() => update({ fontChoice: 'YOUR_HANDWRITING' })} style={{
+            flex: 1, minWidth: '70px', padding: '10px 4px', borderRadius: '10px', cursor: 'pointer',
+            background: note.fontChoice === 'YOUR_HANDWRITING' ? 'var(--lavender-pale)' : '#fff',
+            border: note.fontChoice === 'YOUR_HANDWRITING' ? `1.5px solid ${uv}` : '1px solid var(--stone)',
+            fontFamily: PEN_FAMILY['YOUR_HANDWRITING'], fontSize: '17px', color: 'var(--ink)',
+            textTransform: 'none', letterSpacing: 0, fontWeight: 400,
+          }}>
+            You
+          </button>
+        )}
         {PENS.map((p) => {
           const selected = (note.fontChoice ?? 'CAVEAT') === p.value
           return (
             <button key={p.value} onClick={() => update({ fontChoice: p.value })} style={{
-              flex: 1, padding: '10px 4px', borderRadius: '10px', cursor: 'pointer',
+              flex: 1, minWidth: '70px', padding: '10px 4px', borderRadius: '10px', cursor: 'pointer',
               background: selected ? 'var(--lavender-pale)' : '#fff',
               border: selected ? `1.5px solid ${uv}` : '1px solid var(--stone)',
               fontFamily: p.family, fontSize: '17px', color: 'var(--ink)',
@@ -487,6 +508,7 @@ function ReviewStep({ note, onSent, onEdit, onEditCard, editingNoteId }: { note:
   const [sending, setSending] = useState(false)
   const [error, setError] = useState('')
   const [needsSub, setNeedsSub] = useState(false)
+  useHandwritingFontFace()
 
   const design = note.cardDesignId ? CARD_LOOKUP[note.cardDesignId] : undefined
 

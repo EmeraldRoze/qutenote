@@ -5,6 +5,7 @@ import { api } from '../lib/api'
 import { enableReminders, remindersEnabled, lastReminderFailure, type ReminderResult } from '../lib/push'
 import { isNativeApp } from '../lib/native'
 import QEmoji from '../components/QEmoji'
+import { fetchHandwritingProgress } from '../lib/handwriting/api'
 
 // Settings — App Screens board screen 07. No tab bar; reached from the gear on Profile.
 // Several rows link to real existing flows (Address, Membership, Privacy, Notifications).
@@ -30,10 +31,12 @@ export default function SettingsPage() {
   const [scheduledCount, setScheduledCount] = useState<number | null>(null)
   const [reminderStatus, setReminderStatus] = useState<ReminderResult | 'idle' | 'working'>('idle')
   const [showHelp, setShowHelp] = useState(false)
+  const [hasHandwriting, setHasHandwriting] = useState(false)
 
   useEffect(() => {
     api.get('/address/me').then((r) => setHasAddress(!!r.data.data)).catch(() => setHasAddress(null))
     api.get('/notes/sent').then((r) => setScheduledCount(r.data.data.filter((n: any) => n.status === 'PENDING').length)).catch(() => {})
+    fetchHandwritingProgress().then((r) => setHasHandwriting(r.hasFont)).catch(() => {})
   }, [])
 
   async function toggleNotifications() {
@@ -108,9 +111,9 @@ export default function SettingsPage() {
               That didn't go through{lastReminderFailure() ? ` (${lastReminderFailure()})` : ''}. Try again in a moment.
             </p>
           )}
-          <button style={rowStyle} onClick={() => navigate(`/profile/${user?.username ?? ''}`)}>
+          <button style={rowStyle} onClick={() => navigate('/handwriting')}>
             <span style={rowLabel}>Handwriting</span>
-            <span style={rowValue}>Not set up{chevron}</span>
+            <span style={rowValue}>{hasHandwriting ? 'Set up' : 'Not set up'}{chevron}</span>
           </button>
           <button style={rowStyle} onClick={() => setShowHelp(true)}>
             <span style={rowLabel}>Get help</span>

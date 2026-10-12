@@ -68,7 +68,6 @@ export default function ProfilePage() {
   const [requested, setRequested] = useState(false)
   const [pickingAvatar, setPickingAvatar] = useState(false)
   const [showQR, setShowQR] = useState(false)
-  const [showHandwriting, setShowHandwriting] = useState(false)
 
   useEffect(() => {
     setLoading(true)
@@ -194,7 +193,7 @@ export default function ProfilePage() {
                 <QEmoji name="envelope" size={30} />
                 <span style={{ fontFamily: 'var(--font-body)', fontSize: '12px', color: 'var(--ink)', textTransform: 'none', letterSpacing: 0, textAlign: 'center' }}>Invite, get a card</span>
               </button>
-              <button onClick={() => setShowHandwriting(true)} style={{ padding: '14px 8px', borderRadius: '16px', background: '#fff', border: '1px solid var(--stone)', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
+              <button onClick={() => navigate('/handwriting')} style={{ padding: '14px 8px', borderRadius: '16px', background: '#fff', border: '1px solid var(--stone)', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
                 <QEmoji name="pen" size={30} />
                 <span style={{ fontFamily: 'var(--font-body)', fontSize: '12px', color: 'var(--ink)', textTransform: 'none', letterSpacing: 0, textAlign: 'center' }}>Handwriting</span>
               </button>
@@ -316,16 +315,6 @@ export default function ProfilePage() {
                 width: '100%', height: '48px', borderRadius: '10px', border: 'none', cursor: 'pointer',
                 background: uv, color: '#fff', fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '13px', textTransform: 'uppercase', letterSpacing: '0.12em',
               }}>Copy link</button>
-            </div>
-          </div>
-        )}
-
-        {showHandwriting && (
-          <div style={{ position: 'fixed', inset: 0, zIndex: 100, background: 'rgba(43,34,56,0.45)', display: 'flex', alignItems: 'flex-end' }} onClick={() => setShowHandwriting(false)}>
-            <div style={{ width: '100%', background: 'var(--cream)', borderRadius: '16px 16px 0 0', padding: '24px 24px calc(24px + env(safe-area-inset-bottom))', textAlign: 'center' }} onClick={(e) => e.stopPropagation()}>
-              <span style={{ display: 'inline-flex', width: '56px', height: '56px', borderRadius: '14px', background: 'var(--lavender-pale)', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--font-body)', fontStyle: 'italic', fontSize: '20px', color: uv, marginBottom: '14px' }}>Aa</span>
-              <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '20px', fontWeight: 400, marginBottom: '8px' }}>Your handwriting</h2>
-              <p style={{ fontFamily: 'var(--font-body)', fontSize: '14px', color: 'var(--ink-mid)' }}>Teach QuteNote to write like you. Coming soon.</p>
             </div>
           </div>
         )}

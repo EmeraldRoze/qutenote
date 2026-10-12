@@ -18,6 +18,7 @@ import { statusesRouter } from './routes/statuses'
 import { earlyAccessRouter } from './routes/early-access'
 import { devicesRouter } from './routes/devices'
 import { uploadsRouter } from './routes/uploads'
+import { handwritingRouter } from './routes/handwriting'
 import { startScheduler } from './lib/scheduler'
 import { usersRouter } from './routes/users'
 import { notesRouter } from './routes/notes'
@@ -55,9 +56,11 @@ app.use(compression())
 // Stripe webhook needs raw body — must be registered BEFORE express.json()
 app.post('/stripe/webhook', express.raw({ type: 'application/json' }), handleStripeWebhook)
 
-// /uploads parses its own (bigger) JSON body — skip the app-wide 1mb cap there
+// /uploads and /handwriting parse their own (bigger) JSON bodies — skip the app-wide 1mb cap there
 const jsonBody = express.json({ limit: '1mb' })
-app.use((req, res, next) => (req.path.startsWith('/uploads') ? next() : jsonBody(req, res, next)))
+app.use((req, res, next) => (
+  req.path.startsWith('/uploads') || req.path.startsWith('/handwriting') ? next() : jsonBody(req, res, next)
+))
 
 // ─── Routes ───────────────────────────────────────────────────────────────────
 app.use('/auth', authRouter)
@@ -67,6 +70,7 @@ app.use('/statuses', statusesRouter)
 app.use('/early-access', earlyAccessRouter)
 app.use('/devices', devicesRouter)
 app.use('/uploads', uploadsRouter)
+app.use('/handwriting', handwritingRouter)
 app.use('/users', usersRouter)
 app.use('/notes', notesRouter)
 app.use('/ai', aiRouter)

@@ -5,6 +5,7 @@ import { api } from '../lib/api'
 import QEmoji from '../components/QEmoji'
 import TabBar from '../components/TabBar'
 import { StatusComposer, type MyStatus } from '../components/Happenings'
+import { fetchHandwritingProgress } from '../lib/handwriting/api'
 
 interface OfferCard {
   bg: string
@@ -164,6 +165,7 @@ export default function HomePage() {
   const [myStatus, setMyStatus] = useState<MyStatus | null>(null)
   const [hasAddress, setHasAddress] = useState<boolean | null>(null)
   const [friendCount, setFriendCount] = useState<number | null>(null)
+  const [hasHandwriting, setHasHandwriting] = useState(false)
   const [composing, setComposing] = useState(false)
   const [lastSeen] = useState(() => Number(localStorage.getItem('qn_feed_seen') ?? 0))
   const [search, setSearch] = useState('')
@@ -174,6 +176,7 @@ export default function HomePage() {
     api.get('/statuses/mine').then((r) => setMyStatus(r.data.data)).catch(() => {})
     api.get('/address/me').then((r) => setHasAddress(!!r.data.data)).catch(() => setHasAddress(null))
     api.get('/connections').then((r) => setFriendCount(r.data.data.length)).catch(() => setFriendCount(null))
+    fetchHandwritingProgress().then((r) => setHasHandwriting(r.hasFont)).catch(() => {})
     localStorage.setItem('qn_feed_seen', String(Date.now()))
   }, [])
 
@@ -184,7 +187,7 @@ export default function HomePage() {
     { key: 'friends', art: 'bff', label: 'Find your people', done: !!friendCount && friendCount > 0, onClick: (nav) => nav('/connections') },
     { key: 'birthday', art: 'heart-sparkle', label: 'Add your birthday. Get Qute Notes.', done: !!user?.birthday, onClick: (nav) => nav('/settings/account') },
     { key: 'status', art: 'thought-bubble', label: 'Set your status', done: !!myStatus, onClick: () => setComposing(true) },
-    { key: 'handwriting', art: 'pen', label: 'Teach us your handwriting', done: false, onClick: (nav) => nav(`/profile/${user?.username ?? ''}`) },
+    { key: 'handwriting', art: 'pen', label: 'Teach us your handwriting', done: hasHandwriting, onClick: (nav) => nav('/handwriting') },
   ]
   const setupDone = setupTasks.filter((t) => t.done).length >= setupTasks.length
 
