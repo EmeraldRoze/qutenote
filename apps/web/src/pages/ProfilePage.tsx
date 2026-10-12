@@ -7,6 +7,8 @@ import TabBar from '../components/TabBar'
 import { HappeningsRow, STATUS_EMOJI } from '../components/Happenings'
 import { CARD_LOOKUP } from '../lib/cards'
 
+const OVERAGE_PRICE = '$3.49' // real Stripe price — mockup showed a placeholder $2.95
+
 // Profile — App Screens board layout in the Oct 2026 system:
 // membership card, stats, privacy, handwriting teaser, stamp book, postcards.
 
@@ -57,7 +59,7 @@ const OCCASION_ART: Record<string, string> = {
 export default function ProfilePage() {
   const { username } = useParams()
   const navigate = useNavigate()
-  const { user, refreshUser, logout } = useAuth()
+  const { user, refreshUser } = useAuth()
   const [profile, setProfile] = useState<Profile | null>(null)
   const [loading, setLoading] = useState(true)
   const [tab, setTab] = useState<'sent' | 'received'>('sent')
@@ -65,6 +67,8 @@ export default function ProfilePage() {
   const [received, setReceived] = useState<NoteThumb[]>([])
   const [requested, setRequested] = useState(false)
   const [pickingAvatar, setPickingAvatar] = useState(false)
+  const [showQR, setShowQR] = useState(false)
+  const [showHandwriting, setShowHandwriting] = useState(false)
 
   useEffect(() => {
     setLoading(true)
@@ -116,107 +120,87 @@ export default function ProfilePage() {
   const notes = tab === 'sent' ? sent : received
   const earned = profile.badges.map((b) => b.badgeType).filter((t) => STAMPS[t])
 
-  return (
-    <div style={{ minHeight: '100vh', paddingBottom: '110px' }}>
-      <div style={{ maxWidth: '480px', margin: '0 auto', padding: '24px 24px 0' }}>
+  const cardsLeft = user ? Math.max(0, (user.notesAllowance ?? 0) + (user.giftedCredits ?? 0) - (user.notesUsed ?? 0)) : 0
+  const cardsTotal = user ? (user.notesAllowance ?? 0) + (user.giftedCredits ?? 0) : 0
+  const totalStampTypes = Object.keys(STAMPS).length
 
-        {/* Header */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', marginBottom: '14px' }}>
-          {isMe && (
-            <button onClick={() => navigate('/subscribe')} aria-label="Membership" style={{
-              height: '32px', padding: '0 12px', borderRadius: '999px', border: '1px solid var(--stone)',
-              background: '#fff', color: 'var(--ink-mid)', cursor: 'pointer',
-              fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '11px', letterSpacing: '0.1em',
-            }}>Membership</button>
-          )}
+  if (isMe) {
+    return (
+      <div style={{ minHeight: '100vh', paddingBottom: '110px' }}>
+        {/* Purple header */}
+        <div style={{ background: uv, borderRadius: '0 0 32px 32px', padding: '24px 24px 54px' }}>
+          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+            <div>
+              <div style={{ fontFamily: 'var(--font-display)', fontSize: '20px', color: '#fff', letterSpacing: '-0.01em' }}>{profile.displayName}</div>
+              <div style={{ fontFamily: 'var(--font-body)', fontSize: '14px', color: 'rgba(255,255,255,0.75)' }}>@{profile.username}</div>
+            </div>
+            <div style={{ display: 'flex', gap: '8px' }}>
+              <span aria-hidden style={{ width: '38px', height: '38px', borderRadius: '50%', background: 'rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9" /><path d="M13.73 21a2 2 0 01-3.46 0" /></svg>
+              </span>
+              <button onClick={() => navigate('/settings')} aria-label="Settings" style={{ width: '38px', height: '38px', borderRadius: '50%', border: 'none', background: 'rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09a1.65 1.65 0 00-1-1.51 1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09a1.65 1.65 0 001.51-1 1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9c.14.54.5.99 1 1.21.14.06.3.09.46.1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z" /></svg>
+              </button>
+            </div>
+          </div>
         </div>
 
-        {/* Identity */}
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-          <div style={{
-            width: '96px', height: '96px', borderRadius: '48px', background: 'var(--lavender-light)',
-            border: '3px solid #fff', boxShadow: '0 4px 14px rgba(43,34,56,0.1)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontFamily: 'var(--font-display)', fontSize: '28px', color: uv, overflow: 'hidden',
-          }}>
-            {profile.avatarUrl?.startsWith('/emoji/')
-              ? <QEmoji name={profile.avatarUrl.replace('/emoji/', '').replace('.png', '')} size={62} />
-              : profile.avatarUrl
-                ? <img src={profile.avatarUrl} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                : initials(profile.displayName)}
-          </div>
-          {isMe && (
-            <button onClick={() => setPickingAvatar(true)} aria-label="Pick your profile emoji" style={{
-              marginTop: '-26px', marginLeft: '72px', width: '30px', height: '30px', borderRadius: '15px',
-              border: '2px solid #fff', background: uv, padding: 0,
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              cursor: 'pointer', boxShadow: '0 2px 8px rgba(43,34,56,0.2)',
-            }}>
-              <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true">
-                <path d="M7 2v10M2 7h10" stroke="#fff" strokeWidth="2" strokeLinecap="round" />
-              </svg>
-            </button>
-          )}
-          <div style={{ fontFamily: 'var(--font-display)', fontSize: '22px', marginTop: '10px', letterSpacing: '-0.01em' }}>{profile.displayName}</div>
-          <div style={{ fontFamily: 'var(--font-body)', fontSize: '15px', color: 'var(--ink-mid)' }}>@{profile.username}</div>
-          {profile.bio && <p style={{ fontFamily: 'var(--font-body)', fontSize: '14px', color: 'var(--ink-mid)', marginTop: '6px', textAlign: 'center' }}>{profile.bio}</p>}
-
-          {!isMe && (
-            <button
-              onClick={addQT}
-              disabled={requested || profile.connectionStatus === 'ACCEPTED' || profile.connectionStatus === 'PENDING'}
-              style={{
-                marginTop: '12px', height: '40px', padding: '0 18px', borderRadius: '999px', cursor: 'pointer',
-                border: `1.5px solid ${uv}`,
-                background: profile.connectionStatus === 'ACCEPTED' ? 'var(--lavender-pale)' : '#fff',
-                color: uv, fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '12px', letterSpacing: '0.12em',
-              }}
-            >
-              {profile.connectionStatus === 'ACCEPTED' ? 'Your QT' : requested || profile.connectionStatus === 'PENDING' ? 'Requested' : 'Add QT'}
-            </button>
-          )}
-
-          {isMe && <div style={{ width: '100%', marginTop: '16px' }}><HappeningsRow /></div>}
-
-          {/* Membership card (me only) */}
-          {isMe && user && (
-            <div style={{
-              width: '100%', boxSizing: 'border-box', marginTop: '18px', padding: '14px 16px',
-              borderRadius: '14px', background: 'var(--lavender-pale)', border: '1px solid var(--lavender-light)',
-              display: 'flex', alignItems: 'center', gap: '14px',
-            }}>
-              <QEmoji name="envelope" size={36} />
-              <span style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-                <span style={{ fontFamily: 'var(--font-body)', fontSize: '15px', fontWeight: 700 }}>
-                  {user.subscriptionStatus === 'ACTIVE'
-                    ? `${Math.max(0, (user.notesAllowance ?? 0) + (user.giftedCredits ?? 0) - (user.notesUsed ?? 0))} of ${(user.notesAllowance ?? 0) + (user.giftedCredits ?? 0)} cards left this month`
-                    : 'No membership yet'}
-                </span>
-                <span style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--ink-mid)' }}>
-                  {user.subscriptionStatus === 'ACTIVE' ? 'Member · $7.95/mo' : 'Join for $7.95/mo · two postcards a month'}
-                </span>
-              </span>
-              {user.subscriptionStatus !== 'ACTIVE' && (
-                <button onClick={() => navigate('/subscribe')} style={{
-                  height: '34px', padding: '0 12px', borderRadius: '999px', border: 'none', background: uv, color: '#fff',
-                  fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '11px', letterSpacing: '0.12em', cursor: 'pointer',
-                }}>Join</button>
-              )}
+        <div style={{ maxWidth: '480px', margin: '0 auto', padding: '0 24px' }}>
+          {/* Avatar overlapping the header */}
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '-40px' }}>
+            <div style={{ position: 'relative' }}>
+              <div style={{
+                width: '96px', height: '96px', borderRadius: '48px', background: 'var(--lavender-light)',
+                border: '3px solid #fff', boxShadow: '0 4px 14px rgba(43,34,56,0.1)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontFamily: 'var(--font-display)', fontSize: '28px', color: uv, overflow: 'hidden',
+              }}>
+                {profile.avatarUrl?.startsWith('/emoji/')
+                  ? <QEmoji name={profile.avatarUrl.replace('/emoji/', '').replace('.png', '')} size={62} />
+                  : profile.avatarUrl
+                    ? <img src={profile.avatarUrl} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    : initials(profile.displayName)}
+              </div>
+              <button onClick={() => setPickingAvatar(true)} aria-label="Pick your profile emoji" style={{
+                position: 'absolute', top: '-4px', left: '-4px', width: '30px', height: '30px', borderRadius: '15px',
+                border: '2px solid #fff', background: uv, padding: 0,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                cursor: 'pointer', boxShadow: '0 2px 8px rgba(43,34,56,0.2)',
+              }}>
+                <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true">
+                  <path d="M7 2v10M2 7h10" stroke="#fff" strokeWidth="2" strokeLinecap="round" />
+                </svg>
+              </button>
+              <button onClick={() => setShowQR(true)} aria-label="Your QR code" style={{
+                position: 'absolute', bottom: '-4px', right: '-4px', width: '30px', height: '30px', borderRadius: '15px',
+                border: '2px solid #fff', background: '#fff', padding: 0,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                cursor: 'pointer', boxShadow: '0 2px 8px rgba(43,34,56,0.2)',
+              }}>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={uv} strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" /><rect x="3" y="14" width="7" height="7" /><path d="M14 14h3v3M21 14v3h-3M14 21h3" /></svg>
+              </button>
             </div>
-          )}
+            {profile.bio && <p style={{ fontFamily: 'var(--font-body)', fontSize: '14px', color: 'var(--ink-mid)', marginTop: '10px', textAlign: 'center' }}>{profile.bio}</p>}
 
-          {/* Stats */}
-          <div style={{
-            display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', width: '100%', marginTop: '16px',
-            padding: '14px 0', borderTop: '1px solid var(--stone)', borderBottom: '1px solid var(--stone)', textAlign: 'center',
-          }}>
-            <button onClick={() => { setTab('sent'); document.getElementById('postcards')?.scrollIntoView({ behavior: 'smooth' }) }} style={{ background: 'none', border: 'none', cursor: 'pointer', textTransform: 'none', letterSpacing: 0, fontWeight: 400 }}><div style={{ fontFamily: 'var(--font-display)', fontSize: '22px', color: 'var(--ink)' }}>{profile._count.notesSent}</div><div style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--ink-mid)' }}>cards sent</div></button>
-            <button onClick={() => { setTab('received'); document.getElementById('postcards')?.scrollIntoView({ behavior: 'smooth' }) }} style={{ background: 'none', border: 'none', cursor: 'pointer', textTransform: 'none', letterSpacing: 0, fontWeight: 400 }}><div style={{ fontFamily: 'var(--font-display)', fontSize: '22px', color: 'var(--ink)' }}>{profile._count.notesReceived}</div><div style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--ink-mid)' }}>cards received</div></button>
-            <div><div style={{ fontFamily: 'var(--font-display)', fontSize: '22px' }}>{profile._count.following}</div><div style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--ink-mid)' }}>QTs</div></div>
-          </div>
+            <div style={{ width: '100%', marginTop: '16px' }}><HappeningsRow /></div>
 
-          {/* Privacy (me only) */}
-          {isMe && (
+            {/* Add friends / Invite / Handwriting */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px', width: '100%', marginTop: '14px' }}>
+              <button onClick={() => navigate('/connections')} style={{ padding: '14px 8px', borderRadius: '16px', background: '#fff', border: '1px solid var(--stone)', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
+                <QEmoji name="bff" size={30} />
+                <span style={{ fontFamily: 'var(--font-body)', fontSize: '12px', color: 'var(--ink)', textTransform: 'none', letterSpacing: 0, textAlign: 'center' }}>Add friends</span>
+              </button>
+              <button onClick={() => navigate('/invite')} style={{ padding: '14px 8px', borderRadius: '16px', background: '#fff', border: '1px solid var(--stone)', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
+                <QEmoji name="envelope" size={30} />
+                <span style={{ fontFamily: 'var(--font-body)', fontSize: '12px', color: 'var(--ink)', textTransform: 'none', letterSpacing: 0, textAlign: 'center' }}>Invite, get a card</span>
+              </button>
+              <button onClick={() => setShowHandwriting(true)} style={{ padding: '14px 8px', borderRadius: '16px', background: '#fff', border: '1px solid var(--stone)', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
+                <QEmoji name="pen" size={30} />
+                <span style={{ fontFamily: 'var(--font-body)', fontSize: '12px', color: 'var(--ink)', textTransform: 'none', letterSpacing: 0, textAlign: 'center' }}>Handwriting</span>
+              </button>
+            </div>
+
+            {/* Privacy */}
             <div style={{ width: '100%', marginTop: '14px', padding: '14px 16px', boxSizing: 'border-box', borderRadius: '14px', background: '#fff', border: '1px solid var(--stone)', display: 'flex', flexDirection: 'column', gap: '10px' }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <span style={{ fontFamily: 'var(--font-body)', fontSize: '15px', fontWeight: 700 }}>Who sees your sends</span>
@@ -231,30 +215,194 @@ export default function ProfilePage() {
                   : "Public: your sends show on your QTs' feeds and on your profile. Messages are never shown."}
               </div>
             </div>
-          )}
 
-          {/* Handwriting teaser (me only) */}
-          {isMe && (
-            <div style={{
-              display: 'flex', alignItems: 'center', gap: '14px', width: '100%', boxSizing: 'border-box',
-              marginTop: '14px', padding: '14px', borderRadius: '14px', background: '#fff',
-              border: `1.5px dashed var(--lavender-soft)`,
-            }}>
-              <span style={{ width: '48px', height: '48px', minWidth: '48px', borderRadius: '12px', background: 'var(--lavender-pale)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--font-body)', fontStyle: 'italic', fontSize: '16px', color: uv }}>Aa</span>
-              <span style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                <span style={{ fontFamily: 'var(--font-body)', fontSize: '15px', fontWeight: 700 }}>Your handwriting</span>
-                <span style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--ink-mid)' }}>Teach QuteNote to write like you. Coming soon.</span>
+            {/* Sent / Received grid */}
+            <div id="postcards" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', margin: '26px 0 12px' }}>
+              <div style={sectionTitle}>Your Postcards</div>
+              <span style={{ display: 'flex', padding: '3px', borderRadius: '10px', background: 'var(--lavender-pale)' }}>
+                <button onClick={() => setTab('sent')} style={{ height: '32px', padding: '0 12px', border: 'none', borderRadius: '8px', background: tab === 'sent' ? '#fff' : 'transparent', fontFamily: 'var(--font-body)', fontSize: '11px', fontWeight: 700, letterSpacing: '0.1em', color: 'var(--ink)', cursor: 'pointer' }}>Sent</button>
+                <button onClick={() => setTab('received')} style={{ height: '32px', padding: '0 12px', border: 'none', borderRadius: '8px', background: tab === 'received' ? '#fff' : 'transparent', fontFamily: 'var(--font-body)', fontSize: '11px', fontWeight: 700, letterSpacing: '0.1em', color: 'var(--ink)', cursor: 'pointer' }}>Received</button>
               </span>
             </div>
-          )}
+            {tab === 'sent' && user?.isPrivate && (
+              <div style={{ width: '100%', fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--ink-mid)', marginBottom: '10px' }}>
+                Only you can see your sent cards.
+              </div>
+            )}
+            {notes.length === 0 ? (
+              <p style={{ width: '100%', fontFamily: 'var(--font-body)', fontSize: '14px', color: 'var(--ink-muted)', padding: '10px 0 20px' }}>
+                {tab === 'sent' ? 'Nothing sent yet. Someone came to mind, didn’t they?' : 'No postcards received yet.'}
+              </p>
+            ) : (
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px', width: '100%' }}>
+                {notes.map((n) => (
+                  <div key={n.id} style={{
+                    height: '96px', borderRadius: '8px', border: '4px solid #fff',
+                    boxShadow: '0 2px 8px rgba(43,34,56,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    background: n.cardImageUrl ? `url(${n.cardImageUrl}) center/cover` : CARD_LOOKUP[n.cardDesignId ?? '']?.bg ?? 'var(--lavender-pale)',
+                  }}>
+                    {!n.cardImageUrl && (CARD_LOOKUP[n.cardDesignId ?? '']
+                      ? <img src={`/site/${CARD_LOOKUP[n.cardDesignId ?? ''].art}.png`} alt="" style={{ width: '55%', maxHeight: '60%', objectFit: 'contain' }} />
+                      : <QEmoji name={OCCASION_ART[n.occasionType] ?? 'envelope'} size={48} />)}
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Left this month */}
+            <div style={{ width: '100%', boxSizing: 'border-box', marginTop: '22px', padding: '16px', borderRadius: '18px', background: '#fff', border: '1px solid var(--stone)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                <span style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--ink-mid)' }}>Left this month</span>
+              </div>
+              <div style={{ fontFamily: 'var(--font-display)', fontSize: '30px', color: 'var(--ink)', margin: '2px 0 12px' }}>
+                {user?.subscriptionStatus === 'ACTIVE' ? cardsLeft : 0} <span style={{ fontFamily: 'var(--font-body)', fontSize: '15px', fontWeight: 400, color: 'var(--ink-mid)' }}>of {user?.subscriptionStatus === 'ACTIVE' ? cardsTotal : 2} cards</span>
+              </div>
+              <button onClick={() => navigate(user?.subscriptionStatus === 'ACTIVE' ? '/send' : '/subscribe')} style={{
+                width: '100%', height: '46px', borderRadius: '10px', border: 'none', cursor: 'pointer',
+                background: uv, color: '#fff', fontFamily: 'var(--font-body)', fontWeight: 700,
+                fontSize: '13px', textTransform: 'uppercase', letterSpacing: '0.12em',
+              }}>{user?.subscriptionStatus === 'ACTIVE' ? 'Send a card' : 'Join for $7.95/mo'}</button>
+              <p style={{ fontFamily: 'var(--font-body)', fontSize: '12px', color: 'var(--ink-muted)', textAlign: 'center', marginTop: '10px' }}>
+                Extra cards are {OVERAGE_PRICE} each
+              </p>
+            </div>
+
+            {/* Stamp collection */}
+            <div style={{ width: '100%', boxSizing: 'border-box', marginTop: '14px', padding: '16px', borderRadius: '18px', background: '#fff', border: '1px solid var(--stone)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '12px' }}>
+                <span style={{ fontFamily: 'var(--font-body)', fontSize: '15px', fontWeight: 700, color: 'var(--ink)' }}>Your stamp collection</span>
+                <span style={{ fontFamily: 'var(--font-body)', fontSize: '12px', color: 'var(--ink-mid)' }}>{earned.length} of {totalStampTypes}</span>
+              </div>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                {earned.slice(0, 4).map((t) => (
+                  <span key={t} style={{ width: '48px', height: '48px', borderRadius: '10px', border: `2px dashed var(--lavender-soft)`, background: STAMPS[t].bg, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <QEmoji name={STAMPS[t].art} size={26} />
+                  </span>
+                ))}
+                {Array.from({ length: Math.max(0, 4 - earned.length) }).map((_, i) => (
+                  <span key={i} style={{ width: '48px', height: '48px', borderRadius: '10px', border: '2px dashed var(--lavender-light)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--lavender-light)', fontSize: '16px' }}>?</span>
+                ))}
+              </div>
+            </div>
+
+            {/* Address */}
+            <button onClick={() => navigate('/address')} style={{
+              display: 'flex', alignItems: 'center', gap: '14px', width: '100%', boxSizing: 'border-box',
+              marginTop: '14px', marginBottom: '20px', padding: '14px 16px', borderRadius: '18px', background: '#fff',
+              border: '1px solid var(--stone)', cursor: 'pointer', textAlign: 'left',
+            }}>
+              <QEmoji name="house" size={32} />
+              <span style={{ flex: 1, fontFamily: 'var(--font-body)', fontSize: '15px', fontWeight: 700, color: 'var(--ink)', textTransform: 'none', letterSpacing: 0 }}>Your address</span>
+              <span style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--ink-mid)', textTransform: 'none', letterSpacing: 0, fontWeight: 400 }}>Hidden from senders</span>
+            </button>
+          </div>
+        </div>
+
+        {showQR && (
+          <div style={{ position: 'fixed', inset: 0, zIndex: 100, background: 'rgba(43,34,56,0.45)', display: 'flex', alignItems: 'flex-end' }} onClick={() => setShowQR(false)}>
+            <div style={{ width: '100%', background: 'var(--cream)', borderRadius: '16px 16px 0 0', padding: '24px 24px calc(24px + env(safe-area-inset-bottom))', textAlign: 'center' }} onClick={(e) => e.stopPropagation()}>
+              <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '20px', fontWeight: 400, marginBottom: '10px' }}>Add in person</h2>
+              <p style={{ fontFamily: 'var(--font-body)', fontSize: '14px', color: 'var(--ink-mid)', marginBottom: '16px' }}>
+                Scanning isn't live yet — send them your link instead.
+              </p>
+              <div style={{ padding: '14px', background: '#fff', borderRadius: '14px', border: '1px solid var(--stone)', fontFamily: 'var(--font-body)', fontSize: '14px', color: uv, marginBottom: '14px', wordBreak: 'break-all' }}>
+                qutenote.com/profile/{profile.username}
+              </div>
+              <button onClick={() => { navigator.clipboard?.writeText(`https://qutenote.com/profile/${profile.username}`); setShowQR(false) }} style={{
+                width: '100%', height: '48px', borderRadius: '10px', border: 'none', cursor: 'pointer',
+                background: uv, color: '#fff', fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '13px', textTransform: 'uppercase', letterSpacing: '0.12em',
+              }}>Copy link</button>
+            </div>
+          </div>
+        )}
+
+        {showHandwriting && (
+          <div style={{ position: 'fixed', inset: 0, zIndex: 100, background: 'rgba(43,34,56,0.45)', display: 'flex', alignItems: 'flex-end' }} onClick={() => setShowHandwriting(false)}>
+            <div style={{ width: '100%', background: 'var(--cream)', borderRadius: '16px 16px 0 0', padding: '24px 24px calc(24px + env(safe-area-inset-bottom))', textAlign: 'center' }} onClick={(e) => e.stopPropagation()}>
+              <span style={{ display: 'inline-flex', width: '56px', height: '56px', borderRadius: '14px', background: 'var(--lavender-pale)', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--font-body)', fontStyle: 'italic', fontSize: '20px', color: uv, marginBottom: '14px' }}>Aa</span>
+              <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '20px', fontWeight: 400, marginBottom: '8px' }}>Your handwriting</h2>
+              <p style={{ fontFamily: 'var(--font-body)', fontSize: '14px', color: 'var(--ink-mid)' }}>Teach QuteNote to write like you. Coming soon.</p>
+            </div>
+          </div>
+        )}
+
+        {pickingAvatar && (
+          <div style={{ position: 'fixed', inset: 0, zIndex: 100, background: 'rgba(43,34,56,0.45)', display: 'flex', alignItems: 'flex-end' }} onClick={() => setPickingAvatar(false)}>
+            <div style={{ width: '100%', background: 'var(--cream)', borderRadius: '16px 16px 0 0', padding: '24px 24px calc(24px + env(safe-area-inset-bottom))' }} onClick={(e) => e.stopPropagation()}>
+              <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '22px', fontWeight: 400, marginBottom: '14px' }}>Pick your emoji</h2>
+              <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                {STATUS_EMOJI.map((e) => (
+                  <button key={e} onClick={async () => {
+                    await api.put('/users/me', { avatarUrl: `/emoji/${e}.png` })
+                    setProfile((p) => (p ? { ...p, avatarUrl: `/emoji/${e}.png` } : p))
+                    refreshUser?.()
+                    setPickingAvatar(false)
+                  }} style={{
+                    width: '52px', height: '52px', borderRadius: '26px', cursor: 'pointer',
+                    background: '#fff', border: '1px solid var(--stone)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  }}>
+                    <QEmoji name={e} size={32} />
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        <TabBar />
+      </div>
+    )
+  }
+
+  // ── Someone else's profile: simpler centered layout ──
+  return (
+    <div style={{ minHeight: '100vh', paddingBottom: '110px' }}>
+      <div style={{ maxWidth: '480px', margin: '0 auto', padding: '24px 24px 0' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <div style={{
+            width: '96px', height: '96px', borderRadius: '48px', background: 'var(--lavender-light)',
+            border: '3px solid #fff', boxShadow: '0 4px 14px rgba(43,34,56,0.1)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontFamily: 'var(--font-display)', fontSize: '28px', color: uv, overflow: 'hidden',
+          }}>
+            {profile.avatarUrl?.startsWith('/emoji/')
+              ? <QEmoji name={profile.avatarUrl.replace('/emoji/', '').replace('.png', '')} size={62} />
+              : profile.avatarUrl
+                ? <img src={profile.avatarUrl} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                : initials(profile.displayName)}
+          </div>
+          <div style={{ fontFamily: 'var(--font-display)', fontSize: '22px', marginTop: '10px', letterSpacing: '-0.01em' }}>{profile.displayName}</div>
+          <div style={{ fontFamily: 'var(--font-body)', fontSize: '15px', color: 'var(--ink-mid)' }}>@{profile.username}</div>
+          {profile.bio && <p style={{ fontFamily: 'var(--font-body)', fontSize: '14px', color: 'var(--ink-mid)', marginTop: '6px', textAlign: 'center' }}>{profile.bio}</p>}
+
+          <button
+            onClick={addQT}
+            disabled={requested || profile.connectionStatus === 'ACCEPTED' || profile.connectionStatus === 'PENDING'}
+            style={{
+              marginTop: '12px', height: '40px', padding: '0 18px', borderRadius: '999px', cursor: 'pointer',
+              border: `1.5px solid ${uv}`,
+              background: profile.connectionStatus === 'ACCEPTED' ? 'var(--lavender-pale)' : '#fff',
+              color: uv, fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '12px', letterSpacing: '0.12em',
+            }}
+          >
+            {profile.connectionStatus === 'ACCEPTED' ? 'Your QT' : requested || profile.connectionStatus === 'PENDING' ? 'Requested' : 'Add QT'}
+          </button>
+
+          {/* Stats */}
+          <div style={{
+            display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', width: '100%', marginTop: '16px',
+            padding: '14px 0', borderTop: '1px solid var(--stone)', borderBottom: '1px solid var(--stone)', textAlign: 'center',
+          }}>
+            <div><div style={{ fontFamily: 'var(--font-display)', fontSize: '22px', color: 'var(--ink)' }}>{profile._count.notesSent}</div><div style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--ink-mid)' }}>cards sent</div></div>
+            <div><div style={{ fontFamily: 'var(--font-display)', fontSize: '22px', color: 'var(--ink)' }}>{profile._count.notesReceived}</div><div style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--ink-mid)' }}>cards received</div></div>
+            <div><div style={{ fontFamily: 'var(--font-display)', fontSize: '22px' }}>{profile._count.following}</div><div style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--ink-mid)' }}>QTs</div></div>
+          </div>
 
           {/* Stamp book */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', width: '100%', margin: '26px 0 4px' }}>
             <div style={sectionTitle}>Stamp Book</div>
             <div style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--ink-mid)' }}>{earned.length} collected</div>
-          </div>
-          <div style={{ width: '100%', fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--ink-mid)', marginBottom: '14px' }}>
-            Stamps arrive as you send, connect, and show up. Just for fun.
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '14px 8px', width: '100%' }}>
             {earned.map((t) => (
@@ -267,91 +415,9 @@ export default function ProfilePage() {
                 <span style={{ fontFamily: 'var(--font-body)', fontSize: '11px', lineHeight: 1.25, textAlign: 'center', color: 'var(--ink-mid)' }}>{STAMPS[t].label}</span>
               </div>
             ))}
-            {['Keep sending', 'Coming soon'].map((l) => (
-              <div key={l} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
-                <span style={{ width: '58px', height: '69px', boxSizing: 'border-box', border: '2px dashed var(--lavender-light)', borderRadius: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--lavender-light)', fontSize: '18px' }}>?</span>
-                <span style={{ fontFamily: 'var(--font-body)', fontSize: '11px', lineHeight: 1.25, textAlign: 'center', color: 'var(--ink-muted)' }}>{l}</span>
-              </div>
-            ))}
           </div>
-
-          {/* Postcards (me only — board shows own archive) */}
-          {isMe && (
-            <>
-              <div id="postcards" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', margin: '26px 0 12px' }}>
-                <div style={sectionTitle}>Your Postcards</div>
-                <span style={{ display: 'flex', padding: '3px', borderRadius: '10px', background: 'var(--lavender-pale)' }}>
-                  <button onClick={() => setTab('sent')} style={{ height: '32px', padding: '0 12px', border: 'none', borderRadius: '8px', background: tab === 'sent' ? '#fff' : 'transparent', fontFamily: 'var(--font-body)', fontSize: '11px', fontWeight: 700, letterSpacing: '0.1em', color: 'var(--ink)', cursor: 'pointer' }}>Sent</button>
-                  <button onClick={() => setTab('received')} style={{ height: '32px', padding: '0 12px', border: 'none', borderRadius: '8px', background: tab === 'received' ? '#fff' : 'transparent', fontFamily: 'var(--font-body)', fontSize: '11px', fontWeight: 700, letterSpacing: '0.1em', color: 'var(--ink)', cursor: 'pointer' }}>Received</button>
-                </span>
-              </div>
-              {tab === 'sent' && user?.isPrivate && (
-                <div style={{ width: '100%', fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--ink-mid)', marginBottom: '10px' }}>
-                  Only you can see your sent cards.
-                </div>
-              )}
-              {notes.length === 0 ? (
-                <p style={{ width: '100%', fontFamily: 'var(--font-body)', fontSize: '14px', color: 'var(--ink-muted)', padding: '10px 0 20px' }}>
-                  {tab === 'sent' ? 'Nothing sent yet. Someone came to mind, didn’t they?' : 'No postcards received yet.'}
-                </p>
-              ) : (
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px', width: '100%' }}>
-                  {notes.map((n) => (
-                    <div key={n.id} style={{
-                      height: '96px', borderRadius: '8px', border: '4px solid #fff',
-                      boxShadow: '0 2px 8px rgba(43,34,56,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      background: n.cardImageUrl ? `url(${n.cardImageUrl}) center/cover` : CARD_LOOKUP[n.cardDesignId ?? '']?.bg ?? 'var(--lavender-pale)',
-                    }}>
-                      {!n.cardImageUrl && (CARD_LOOKUP[n.cardDesignId ?? '']
-                        ? <img src={`/site/${CARD_LOOKUP[n.cardDesignId ?? ''].art}.png`} alt="" style={{ width: '55%', maxHeight: '60%', objectFit: 'contain' }} />
-                        : <QEmoji name={OCCASION_ART[n.occasionType] ?? 'envelope'} size={48} />)}
-                    </div>
-                  ))}
-                </div>
-              )}
-            </>
-          )}
-
-          {isMe && (
-            <button
-              onClick={() => { logout(); navigate('/') }}
-              style={{
-                display: 'block', margin: '28px auto 8px', padding: '12px 24px', borderRadius: '999px',
-                border: '1px solid var(--stone)', background: 'none', cursor: 'pointer',
-                fontFamily: 'var(--font-body)', fontSize: '12px', fontWeight: 700,
-                letterSpacing: '0.1em', color: 'var(--ink-muted)',
-              }}
-            >
-              Log out
-            </button>
-          )}
         </div>
       </div>
-
-      {pickingAvatar && (
-        <div style={{ position: 'fixed', inset: 0, zIndex: 100, background: 'rgba(43,34,56,0.45)', display: 'flex', alignItems: 'flex-end' }} onClick={() => setPickingAvatar(false)}>
-          <div style={{ width: '100%', background: 'var(--cream)', borderRadius: '16px 16px 0 0', padding: '24px 24px calc(24px + env(safe-area-inset-bottom))' }} onClick={(e) => e.stopPropagation()}>
-            <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '22px', fontWeight: 400, marginBottom: '14px' }}>Pick your emoji</h2>
-            <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-              {STATUS_EMOJI.map((e) => (
-                <button key={e} onClick={async () => {
-                  await api.put('/users/me', { avatarUrl: `/emoji/${e}.png` })
-                  setProfile((p) => (p ? { ...p, avatarUrl: `/emoji/${e}.png` } : p))
-                  refreshUser?.()
-                  setPickingAvatar(false)
-                }} style={{
-                  width: '52px', height: '52px', borderRadius: '26px', cursor: 'pointer',
-                  background: '#fff', border: '1px solid var(--stone)',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                }}>
-                  <QEmoji name={e} size={32} />
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
-
       <TabBar />
     </div>
   )
