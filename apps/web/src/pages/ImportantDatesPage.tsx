@@ -132,8 +132,11 @@ export default function ImportantDatesPage() {
         padding: '14px 20px',
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
       }}>
-        <button onClick={() => navigate('/home')} style={{ fontSize: '13px', fontWeight: 500, color: 'var(--lavender-dark)', background: 'none', border: 'none', cursor: 'pointer' }}>
-          ← Home
+        <button onClick={() => navigate(-1)} aria-label="Back" style={{
+          width: '36px', height: '36px', borderRadius: '50%', background: 'var(--lavender-pale)',
+          border: 'none', cursor: 'pointer', color: 'var(--lavender-dark)', display: 'flex', alignItems: 'center', justifyContent: 'center',
+        }}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M15 6l-6 6 6 6" /></svg>
         </button>
         <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '18px', fontWeight: 500, color: 'var(--ink)' }}>
           Important Dates

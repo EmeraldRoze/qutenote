@@ -6,6 +6,7 @@ import { enableReminders, remindersEnabled, lastReminderFailure, type ReminderRe
 import { isNativeApp } from '../lib/native'
 import QEmoji from '../components/QEmoji'
 import { fetchHandwritingProgress } from '../lib/handwriting/api'
+import { ALL_CHARS } from '../lib/handwriting/alphabet'
 
 // Settings — App Screens board screen 07. No tab bar; reached from the gear on Profile.
 // Several rows link to real existing flows (Address, Membership, Privacy, Notifications).
@@ -36,7 +37,9 @@ export default function SettingsPage() {
   useEffect(() => {
     api.get('/address/me').then((r) => setHasAddress(!!r.data.data)).catch(() => setHasAddress(null))
     api.get('/notes/sent').then((r) => setScheduledCount(r.data.data.filter((n: any) => n.status === 'PENDING').length)).catch(() => {})
-    fetchHandwritingProgress().then((r) => setHasHandwriting(r.hasFont)).catch(() => {})
+    fetchHandwritingProgress()
+      .then((r) => setHasHandwriting(ALL_CHARS.every((c) => r.glyphs[c]?.length)))
+      .catch(() => {})
   }, [])
 
   async function toggleNotifications() {
@@ -47,7 +50,7 @@ export default function SettingsPage() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--settings-bg, #F5F2EC)' }}>
+    <div style={{ minHeight: '100vh' }}>
       <nav style={{
         background: 'var(--cream)', borderBottom: '1px solid var(--stone)', padding: '14px 18px',
         display: 'flex', alignItems: 'center', gap: '14px',
@@ -113,7 +116,7 @@ export default function SettingsPage() {
           )}
           <button style={rowStyle} onClick={() => navigate('/handwriting')}>
             <span style={rowLabel}>Handwriting</span>
-            <span style={rowValue}>{hasHandwriting ? 'Set up' : 'Not set up'}{chevron}</span>
+            <span style={rowValue}>{hasHandwriting ? 'Done' : 'Not set up'}{chevron}</span>
           </button>
           <button style={rowStyle} onClick={() => setShowHelp(true)}>
             <span style={rowLabel}>Get help</span>

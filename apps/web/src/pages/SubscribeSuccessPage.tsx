@@ -13,7 +13,7 @@ export default function SubscribeSuccessPage() {
   }, [])
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--cream)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <div style={{ maxWidth: '400px', padding: '40px 20px', textAlign: 'center' }}>
 
         <div style={{ marginBottom: '20px' }}><QEmoji name="envelope" size={60} /></div>

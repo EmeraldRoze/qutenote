@@ -100,7 +100,7 @@ export default function CollectAddressPage() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--cream)' }}>
+    <div style={{ minHeight: '100vh' }}>
       {/* Header */}
       <div style={{
         background: 'var(--white)', borderBottom: '1px solid var(--lavender-pale)',

@@ -230,7 +230,7 @@ export default function ConnectionsPage() {
                     background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left',
                     textTransform: 'none', letterSpacing: 0, fontWeight: 400,
                   }}>
-                    <span style={{ width: '48px', height: '48px', minWidth: '48px', borderRadius: '24px', background: 'var(--lavender-light)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--font-display)', fontSize: '14px', color: 'var(--ink)' }}>{initials(c.displayName)}</span>
+                    <span style={{ width: '48px', height: '48px', minWidth: '48px', borderRadius: '24px', background: 'var(--lime)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--font-display)', fontSize: '14px', color: 'var(--ink)' }}>{initials(c.displayName)}</span>
                     <span style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column' }}>
                       <span style={{ fontFamily: 'var(--font-body)', fontSize: '16px', fontWeight: 700, color: 'var(--ink)' }}>{c.displayName}</span>
                       <span style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--ink-mid)' }}>

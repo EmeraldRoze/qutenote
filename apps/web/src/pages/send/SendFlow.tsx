@@ -87,7 +87,7 @@ export default function SendFlow() {
         {/* ── STEP 1: CHOOSE A CARD ─────────────────────────────── */}
         {step === 'card' && (
           <>
-            <h2 style={sectionTitle}>Choose a card</h2>
+            <h2 style={sectionTitle}>Send a card</h2>
 
             <CardPicker
               note={note} update={update}
@@ -227,25 +227,27 @@ function CardPicker({ note, update, uploading, setUploading, uploadError, setUpl
       </div>
 
       {/* Featured panel */}
-      <div
-        key={artistIdx}
-        ref={panelRef}
-        onScroll={onPanelScroll}
-        style={{ display: 'flex', overflowX: 'auto', scrollSnapType: 'x mandatory', borderRadius: '28px', marginBottom: '10px', scrollbarWidth: 'none' }}
-      >
-        {artist.cards.map((c) => (
-          <div key={c.id} style={{
-            flex: '0 0 100%', scrollSnapAlign: 'start', aspectRatio: '4/5', background: c.bg,
-            display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden',
-          }}>
-            {c.art && <img src={c.art} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />}
-          </div>
-        ))}
-      </div>
-      <div style={{ display: 'flex', justifyContent: 'center', gap: '6px', marginBottom: '16px' }}>
-        {artist.cards.map((_, i) => (
-          <span key={i} style={{ width: i === cardIdx ? '18px' : '6px', height: '6px', borderRadius: '3px', background: i === cardIdx ? uv : 'var(--stone)', transition: 'width 0.2s' }} />
-        ))}
+      <div style={{ background: 'var(--lavender-pale)', borderRadius: '28px', padding: '14px', marginBottom: '16px' }}>
+        <div
+          key={artistIdx}
+          ref={panelRef}
+          onScroll={onPanelScroll}
+          style={{ display: 'flex', overflowX: 'auto', scrollSnapType: 'x mandatory', borderRadius: '20px', overflow: 'hidden', scrollbarWidth: 'none' }}
+        >
+          {artist.cards.map((c) => (
+            <div key={c.id} style={{
+              flex: '0 0 100%', scrollSnapAlign: 'start', aspectRatio: '4/5', background: c.bg,
+              display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden',
+            }}>
+              {c.art && <img src={c.art} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />}
+            </div>
+          ))}
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'center', gap: '6px', marginTop: '12px' }}>
+          {artist.cards.map((_, i) => (
+            <span key={i} style={{ width: i === cardIdx ? '18px' : '6px', height: '6px', borderRadius: '3px', background: i === cardIdx ? uv : 'var(--lavender-soft)', transition: 'width 0.2s' }} />
+          ))}
+        </div>
       </div>
 
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>

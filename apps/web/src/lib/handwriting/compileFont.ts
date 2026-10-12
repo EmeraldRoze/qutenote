@@ -91,6 +91,14 @@ export function compileFont(fontName: string, glyphs: GlyphStrokes): ArrayBuffer
     builtGlyphs.push(new opentype.Glyph({ name: `uni${unicode.toString(16)}`, unicode, advanceWidth, path }))
   }
 
+  // The comma's strokes double as the apostrophe — people only draw one.
+  const commaStrokes = glyphs[',']
+  if (commaStrokes?.length && !glyphs["'"]?.length) {
+    const unicode = "'".codePointAt(0)!
+    const { path, advanceWidth } = glyphPath(commaStrokes)
+    builtGlyphs.push(new opentype.Glyph({ name: `uni${unicode.toString(16)}`, unicode, advanceWidth, path }))
+  }
+
   const font = new opentype.Font({
     familyName: fontName,
     styleName: 'Regular',

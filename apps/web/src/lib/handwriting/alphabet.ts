@@ -12,8 +12,8 @@ export const SESSIONS: HandwritingSession[] = [
   { key: 'lowercase', label: 'Lowercase letters', chars: 'abcdefghijklmnopqrstuvwxyz'.split('') },
   { key: 'uppercase', label: 'Capital letters', chars: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('') },
   { key: 'numbers', label: 'Numbers', chars: '0123456789'.split('') },
-  { key: 'punctuation', label: 'Punctuation', chars: ['.', ',', "'", '!', '?', '-'] },
+  { key: 'punctuation', label: 'Punctuation', chars: ['.', ',', '!', '?', '-'] },
 ]
 
 export const ALL_CHARS = SESSIONS.flatMap((s) => s.chars)
-export const TOTAL_CHARS = ALL_CHARS.length // 68
+export const TOTAL_CHARS = ALL_CHARS.length
