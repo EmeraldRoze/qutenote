@@ -25,6 +25,21 @@ interface ImportantDate { id: string; connectionName: string; label: string; mon
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
+function daysUntil(month: number, day: number): number {
+  const now = new Date()
+  const year = now.getFullYear()
+  let next = new Date(year, month - 1, day)
+  const today = new Date(year, now.getMonth(), now.getDate())
+  if (next < today) next = new Date(year + 1, month - 1, day)
+  return Math.round((+next - +today) / 86400000)
+}
+function countdownLabel(days: number): string {
+  if (days === 0) return 'Today'
+  if (days === 1) return 'Tomorrow'
+  if (days <= 7) return `In ${days} days`
+  return `${days} days`
+}
+
 export default function ConnectionsPage() {
   const navigate = useNavigate()
   const { user, refreshUser } = useAuth()
@@ -86,9 +101,17 @@ export default function ConnectionsPage() {
     return (name: string) => map.get(name.toLowerCase())
   }, [dates])
 
-  const shownConnections = query.length >= 2
-    ? connections.filter((c) => c.displayName.toLowerCase().includes(query.toLowerCase()) || c.username.toLowerCase().includes(query.toLowerCase()))
-    : connections
+  const shownConnections = useMemo(() => {
+    const list = query.length >= 2
+      ? connections.filter((c) => c.displayName.toLowerCase().includes(query.toLowerCase()) || c.username.toLowerCase().includes(query.toLowerCase()))
+      : connections
+    return [...list].sort((a, b) => {
+      const da = dateFor(a.displayName), db = dateFor(b.displayName)
+      const ra = da ? daysUntil(da.month, da.day) : Infinity
+      const rb = db ? daysUntil(db.month, db.day) : Infinity
+      return ra - rb
+    })
+  }, [connections, query, dateFor])
 
   const rowCard: React.CSSProperties = {
     display: 'flex', alignItems: 'center', gap: '4px', padding: '6px 10px 6px 14px',
@@ -99,44 +122,45 @@ export default function ConnectionsPage() {
     <div style={{ minHeight: '100vh', paddingBottom: '110px' }}>
       <div style={{ maxWidth: '480px', margin: '0 auto', padding: '28px 24px 0' }}>
 
-        <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '28px', fontWeight: 400, letterSpacing: '-0.01em', color: 'var(--ink)', display: 'flex', alignItems: 'center', gap: '10px' }}>Your QTs <QEmoji name="bff" size={34} /></h1>
-        <p style={{ fontFamily: 'var(--font-body)', fontSize: '15px', color: 'var(--ink-mid)', margin: '6px 0 14px' }}>The people worth showing up for.</p>
+        <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '30px', fontWeight: 400, letterSpacing: '-0.01em', color: 'var(--ink)', margin: '0 0 16px' }}>QTs</h1>
 
-        {/* Invite teaser */}
-        <button onClick={() => navigate('/invite')} style={{
-          display: 'flex', alignItems: 'center', gap: '12px', width: '100%', padding: '12px 14px',
-          borderRadius: '14px', background: 'var(--lavender-pale)', border: `1.5px dashed var(--lavender-soft)`,
-          cursor: 'pointer', textAlign: 'left', marginBottom: '12px',
+        {/* Invite box */}
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: '16px', width: '100%', padding: '18px',
+          borderRadius: '22px', background: 'var(--lavender-light)', marginBottom: '16px',
         }}>
-          <QEmoji name="gift" size={40} />
-          <span style={{ flex: 1, display: 'flex', flexDirection: 'column', textTransform: 'none', letterSpacing: 0 }}>
-            <span style={{ fontFamily: 'var(--font-body)', fontSize: '15px', fontWeight: 700, color: 'var(--ink)' }}>Every friend = a free card.</span>
-            <span style={{ fontFamily: 'var(--font-body)', fontSize: '13px', fontWeight: 400, color: 'var(--ink-mid)' }}>You get one, they get one.</span>
+          <QEmoji name="bff" size={56} />
+          <span style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            <span style={{ fontFamily: 'var(--font-body)', fontSize: '15px', fontWeight: 400, color: 'var(--ink)', lineHeight: 1.35 }}>
+              Invite a friend. You both get a free card.
+            </span>
+            <button onClick={() => inviteByText(user?.displayName?.split(' ')[0]).catch(() => navigate('/invite'))} style={{
+              alignSelf: 'flex-start', height: '38px', padding: '0 18px', borderRadius: '999px', cursor: 'pointer',
+              background: 'var(--ink)', color: '#fff', border: 'none',
+              fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '12px', letterSpacing: '0.1em',
+            }}>Invite</button>
           </span>
-          <span style={{ color: uv, fontSize: '16px' }}>→</span>
-        </button>
+        </div>
 
-        {/* Search + text-a-friend */}
-        <div style={{ display: 'flex', gap: '8px', marginBottom: '14px' }}>
+        {/* Search */}
         <input
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search QTs, or find someone new"
+          placeholder="Search your QTs"
           style={{
-            width: '100%', height: '46px', padding: '0 14px', borderRadius: '10px',
+            width: '100%', height: '46px', padding: '0 14px', borderRadius: '999px', marginBottom: '10px',
             border: '1px solid var(--stone)', background: '#fff', outline: 'none',
-            fontFamily: 'var(--font-body)', fontSize: '15px', color: 'var(--ink)', flex: 1,
+            fontFamily: 'var(--font-body)', fontSize: '15px', color: 'var(--ink)',
           }}
           onFocus={(e) => { e.target.style.border = `1.5px solid ${uv}` }}
           onBlur={(e) => { e.target.style.border = '1px solid var(--stone)' }}
         />
-        <button onClick={() => inviteByText(user?.displayName?.split(' ')[0]).catch(() => navigate('/invite'))} style={{
-          height: '46px', padding: '0 12px', borderRadius: '10px', background: '#fff', border: '1px solid var(--stone)',
-          color: uv, cursor: 'pointer', fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '11px',
-          letterSpacing: '0.1em', whiteSpace: 'nowrap',
-        }}>Text a friend</button>
-        </div>
+        {query.length < 2 && shownConnections.length > 0 && (
+          <p style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--ink-mid)', marginBottom: '14px' }}>
+            Sorted by whose birthday is next.
+          </p>
+        )}
 
         {/* People on QuteNote matching search (not yet QTs) */}
         {results.filter((r) => !connections.some((c) => c.id === r.id) && r.id !== user?.id).length > 0 && (
@@ -198,6 +222,7 @@ export default function ConnectionsPage() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
             {shownConnections.map((c) => {
               const d = dateFor(c.displayName)
+              const days = d ? daysUntil(d.month, d.day) : null
               return (
                 <div key={c.id} style={rowCard}>
                   <button onClick={() => navigate(`/profile/${c.username}`)} style={{
@@ -208,15 +233,19 @@ export default function ConnectionsPage() {
                     <span style={{ width: '48px', height: '48px', minWidth: '48px', borderRadius: '24px', background: 'var(--lavender-light)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--font-display)', fontSize: '14px', color: 'var(--ink)' }}>{initials(c.displayName)}</span>
                     <span style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column' }}>
                       <span style={{ fontFamily: 'var(--font-body)', fontSize: '16px', fontWeight: 700, color: 'var(--ink)' }}>{c.displayName}</span>
-                      <span style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--ink-mid)' }}>@{c.username}</span>
-                      {d && (
-                        <span style={{ display: 'flex', alignItems: 'center', gap: '4px', fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--ink-mid)', marginTop: '2px' }}>
-                          <QEmoji name={/birth/i.test(d.label) ? 'cake' : 'star'} size={16} />
-                          {d.label} {MONTHS[d.month - 1]} {d.day}
-                        </span>
-                      )}
+                      <span style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--ink-mid)' }}>
+                        {d ? `${MONTHS[d.month - 1]} ${d.day}` : `@${c.username}`}
+                      </span>
                     </span>
                   </button>
+                  {days !== null && (
+                    <span style={{
+                      padding: '5px 11px', borderRadius: '999px', fontSize: '11px', fontWeight: 700,
+                      fontFamily: 'var(--font-body)', letterSpacing: '0.04em', whiteSpace: 'nowrap',
+                      background: days <= 7 ? 'var(--lime)' : 'var(--lavender-pale)',
+                      color: days <= 7 ? 'var(--ink)' : 'var(--ink-mid)',
+                    }}>{countdownLabel(days)}</span>
+                  )}
                   <button onClick={() => navigate(`/send?toName=${encodeURIComponent(c.displayName.split(' ')[0])}`)} aria-label={`Write to ${c.displayName}`} style={{
                     height: '34px', padding: '0 12px', borderRadius: '6px', cursor: 'pointer',
                     background: 'var(--lavender-pale)', border: `1.5px dashed var(--lavender-soft)`, color: uv,
