@@ -75,7 +75,7 @@ authRouter.post('/register', authLimiter, async (req: Request, res: Response) =>
 // ─── Login ────────────────────────────────────────────────────────────────────
 
 const loginSchema = z.object({
-  email: z.string().email(),
+  identifier: z.string().min(1),
   password: z.string().min(1),
 })
 
@@ -85,10 +85,10 @@ authRouter.post('/login', authLimiter, async (req: Request, res: Response) => {
     return res.status(400).json({ error: 'Invalid email or password.' })
   }
 
-  const { email, password } = result.data
+  const { identifier, password } = result.data
 
-  const user = await prisma.user.findUnique({
-    where: { email },
+  const user = await prisma.user.findFirst({
+    where: { OR: [{ email: identifier }, { username: identifier }] },
     select: {
       id: true, email: true, username: true, displayName: true,
       avatarUrl: true, subscriptionStatus: true, points: true,
