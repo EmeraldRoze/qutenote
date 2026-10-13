@@ -1,7 +1,7 @@
 # QuteNote — Working Memory
-Last updated: 2026-10-06 (evening)
-Current phase: iOS App — first TestFlight build uploaded, waiting on Apple processing/beta review
-Current task: Build 1.0(1) uploaded to App Store Connect. Watcher script submitting beta review + creating public TestFlight link.
+Last updated: 2026-10-13
+Current phase: iOS App — TestFlight feedback rounds. Build 24 live with testers; build 25 (Welcome screen fix) uploaded Oct 13, in review pipeline.
+Current task: Ship build 25, then collect Round feedback (round protocol: collect ALL feedback before fixing).
 
 ## Stack
 Frontend:      React + Vite + Tailwind CSS (web app, mobile-friendly)
@@ -103,6 +103,8 @@ GOTCHA: don't leave `QN_PROXY_PROD=1` web dev server running across sessions -- 
 2026-10-09 — ROUND B BUILT (not yet shipped): Onboarding (WelcomePage front door for native, /onboarding/qts+birthdays+reminders with board copy, signup -> onboarding), 21 TestFlight feedback items from Emerald+Flo fetched via ASC betaFeedbackScreenshotSubmissions API (screenshots downloadable — great round-trip pattern). Fixes: no pinch-zoom/no sideways scroll in app, ink logo everywhere, new stamp app icon (ink heart-Q), Profile (title word gone, boxes gone, stats jump to postcards, Happenings row, emoji avatar picker w/ PUT /users/me avatarUrl whitelist), send flow (prompt ellipsis stripped, EDIT NOTE on review, subscription wall with Subscribe-and-send), Subscribe copy (prompts not AI, personal handwriting), invites via sms: composer (POST /invites phone now optional -> returns link; Text-a-friend on QTs; typed flow fallback), Dates (emoji per type, Other custom label, friend autocomplete), og-image = new stamp, Google interstitial 50ms. HappeningsRow/StatusComposer extracted to components/Happenings.tsx.
 
 2026-10-09 — C1 BUILT (not shipped): Push reminders — apns.ts (HTTP/2 + ES256 JWT, Dreambound team key CXSX9P9S8Z, topic club.cutenote.app, key via APNS_KEY_BASE64 env or local .p8), scheduler.ts (every-minute loop in API process: submits due notes; daily 15:00 UTC birthday pushes 7 days ahead, dead tokens pruned), DeviceToken model + POST /devices, @capacitor/push-notifications + aps-environment entitlement, enableReminders() wired to onboarding Turn-on-reminders + Dates page card. 2-hour edit window — Lob submit moved out of POST /notes into lib/submitNote.ts (scheduler submits PENDING notes older than 2h), PATCH /notes/:id (owner, PENDING, within window; text+pen only), sent screen explains window + EDIT THIS NOTE -> write step -> Save changes (PATCH). SHIP NEEDS FIREFLY: DeviceToken table, ASC PUSH capability + profile REGENERATION (old profile lacks push entitlement — must delete/recreate/reinstall before archiving build 11), DO env APNS_KEY_BASE64 on api, deploy, build 11. End-to-end push test plan: after Emerald enables reminders on build 11, query DeviceToken on prod and fire a test push locally.
+
+2026-10-13 — Build 25 (FIREFLY): shipped the stranded Welcome-screen-buttons fix (commit 04a258d, written 00:58 but never uploaded). Archived + uploaded ~1:08am. GOTCHA: scripts/ios/qutenote_testflight.js used to poll "latest build" and CREATE a new Public Beta group every run — run right after an upload it grabbed build 24 and made duplicate group 5f2d68a5 (public link now disabled; group deletion still needs FIREFLY). Script fixed: version argument required, reuses original group afef6516 (BRW6MMEJ), what-to-test notes as 2nd arg.
 
 ## What I am working on right now
 iOS app conversion (Emerald's priority as of Oct 6). Capacitor wrapper works in simulator. Remaining Phase 5 web items (CN Score, badges, connection birthdays) are parked until the iOS app ships.

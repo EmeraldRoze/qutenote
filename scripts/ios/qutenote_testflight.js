@@ -1,8 +1,14 @@
-// Watch QuteNote build processing, then submit for beta review + create public TestFlight link
+// Watch QuteNote build processing, then submit for beta review + attach to the Public Beta group
+// Usage: node qutenote_testflight.js <buildVersion> ["what to test notes"]   (version is REQUIRED — polling "latest"
+// right after an upload can grab the PREVIOUS build before ASC registers the new one)
 const { asc } = require('./asc')
 
 const APP_ID = '6819877820'
 const DREAMBOUND_APP_ID = '6817987157'
+const PUBLIC_BETA_GROUP_ID = 'afef6516-eef8-413d-b7c3-8103aba2b473' // original group, link BRW6MMEJ
+
+const VERSION = process.argv[2]
+if (!VERSION) { console.error('Usage: node qutenote_testflight.js <buildVersion>'); process.exit(1) }
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms))
 
@@ -10,7 +16,7 @@ async function main() {
   // 1. Wait for the uploaded build to finish processing
   let build = null
   for (let i = 0; i < 60; i++) {
-    const r = await asc('GET', `/v1/builds?filter[app]=${APP_ID}&sort=-uploadedDate&limit=1`)
+    const r = await asc('GET', `/v1/builds?filter[app]=${APP_ID}&filter[version]=${VERSION}&limit=1`)
     build = r.json?.data?.[0]
     const state = build?.attributes?.processingState
     console.log(new Date().toISOString(), 'processingState:', state ?? 'no build yet')
@@ -49,21 +55,13 @@ async function main() {
   const locId = locs.json?.data?.[0]?.id
   if (locId) {
     await asc('PATCH', `/v1/betaBuildLocalizations/${locId}`, {
-      data: { type: 'betaBuildLocalizations', id: locId, attributes: { whatsNew: 'First QuteNote build! Try signing up, connecting with a friend, and sending a note.' } },
+      data: { type: 'betaBuildLocalizations', id: locId, attributes: { whatsNew: process.argv[3] || 'Bug fixes and improvements.' } },
     })
     console.log('Test notes set')
   }
 
-  // 4. Create public beta group with public link
-  const group = await asc('POST', '/v1/betaGroups', {
-    data: {
-      type: 'betaGroups',
-      attributes: { name: 'Public Beta', publicLinkEnabled: true, publicLinkLimitEnabled: true, publicLinkLimit: 100 },
-      relationships: { app: { data: { type: 'apps', id: APP_ID } } },
-    },
-  })
-  const groupId = group.json?.data?.id
-  console.log('Beta group:', group.status, groupId, 'link:', group.json?.data?.attributes?.publicLink)
+  // 4. Use the existing Public Beta group — NEVER create a new one (did that by accident Oct 13)
+  const groupId = PUBLIC_BETA_GROUP_ID
 
   // 5. Add build to the group
   const add = await asc('POST', `/v1/betaGroups/${groupId}/relationships/builds`, {

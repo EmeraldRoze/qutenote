@@ -1,5 +1,5 @@
 # QuteNote — Handoff / Status Board
-Written: 2026-10-06 (replaces stale April 10 handoff)
+Written: 2026-10-06 (replaces stale April 10 handoff). Last updated: 2026-10-13.
 
 ## Where things stand
 **QuteNote is now an iOS app.** First TestFlight build (1.0 build 1) uploaded to App Store Connect on Oct 6. Watcher script is waiting for Apple processing, then submits beta review and creates the public TestFlight link.
@@ -26,7 +26,14 @@ Written: 2026-10-06 (replaces stale April 10 handoff)
 3. xcodebuild -project ios/App/App.xcodeproj -scheme App -sdk iphoneos -destination 'generic/platform=iOS' -archivePath <path>.xcarchive CODE_SIGNING_ALLOWED=NO archive
 4. xcodebuild -exportArchive -archivePath <path>.xcarchive -exportOptionsPlist scripts/ios/exportOptions.plist -exportPath <dir> -authenticationKeyPath ~/.appstoreconnect/private_keys/AuthKey_Y5NXGFNCFV.p8 -authenticationKeyID Y5NXGFNCFV -authenticationKeyIssuerID a8f9ba85-917d-49e9-888e-e128d4ef6822
 
-## TestFlight status (Oct 12): BUILD 18 APPROVED — current
+## TestFlight status (Oct 13): BUILD 25 UPLOADED — in review pipeline
+Build 1.0(25): the last fix from the overnight Oct 12-13 session (Welcome screen buttons cut off on shorter phones, commit 04a258d) — it was committed at 00:58 but never built/uploaded. Uploaded Oct 13 ~1:08am, watcher attaching it to the ORIGINAL Public Beta group + submitting beta review.
+GOTCHA (Oct 13): scripts/ios/qutenote_testflight.js was written for the FIRST build — it CREATES A NEW "Public Beta" group every run and polls "latest build" (can grab the previous build if run right after upload, before ASC registers the new one). It did both today: grabbed build 24 and created duplicate group 5f2d68a5 (link XQMvBXsD, now DISABLED — group itself still exists, deleting needs FIREFLY). Original group: afef6516, link BRW6MMEJ. Use a version-filtered watcher that adds to the ORIGINAL group instead.
+
+## Earlier (Oct 12-13 overnight): BUILDS 19-24 APPROVED
+Fast feedback-response session (commits ba7e5d6..04a258d): Send/Account/Address screens matched to mockups, lined background everywhere, emoji nav icons, real back buttons; new Welcome/Sign up screens + notification preferences + auth error hardening; three auth bugs fixed from TestFlight feedback; Log in screen rebuilt to approved design with email-or-username login; hotfix for login lockout on older builds; birthday dropdowns restored, scroll-to-top, tighter Google redirect. Build 24 = last one approved and live (IN_BETA_TESTING). Tester feedback burst ~11pm-midnight Oct 12 (login, username login, birthday entry, scroll position) drove builds 23-24 and the unshipped Welcome fix.
+
+## Earlier (Oct 12): BUILD 18 APPROVED
 Build 1.0(18): Handwriting Phase 1 — write your alphabet on-screen (4 sessions: lowercase/uppercase/numbers/punctuation, 68 chars), compiles into a real font client-side (perfect-freehand + opentype.js, free/no paid API), shows up as "You" pen option on Write Note once any letters captured. New HandwritingFont table live.
 Phase 2 (printed card uses the custom font) is deferred — Emerald is printing at home for now, so no Lob-custom-font problem to solve yet. Revisit together once she's tested Phase 1.
 
