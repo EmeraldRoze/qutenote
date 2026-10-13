@@ -2,18 +2,16 @@ import { Router, Request, Response } from 'express'
 import bcrypt from 'bcryptjs'
 import crypto from 'crypto'
 import { z } from 'zod'
-import sgMail from '@sendgrid/mail'
+import { Resend } from 'resend'
 import { prisma } from '../lib/prisma'
 import { signToken } from '../lib/jwt'
 import { requireAuth, AuthRequest } from '../middleware/auth'
 import rateLimit from 'express-rate-limit'
 
 const WEB_URL = process.env.WEB_URL ?? 'http://localhost:3000'
-const SENDGRID_FROM = process.env.SENDGRID_FROM_EMAIL ?? 'hello@qutenote.com'
+const EMAIL_FROM = process.env.RESEND_FROM_EMAIL ?? 'hello@qutenote.com'
 
-if (process.env.SENDGRID_API_KEY) {
-  sgMail.setApiKey(process.env.SENDGRID_API_KEY)
-}
+const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null
 
 export const authRouter = Router()
 
@@ -163,11 +161,11 @@ authRouter.post('/forgot-password', authLimiter, async (req: Request, res: Respo
 
   const resetUrl = `${WEB_URL}/reset-password?token=${token}`
 
-  if (process.env.SENDGRID_API_KEY) {
+  if (resend) {
     try {
-      await sgMail.send({
+      const { error: sendErr } = await resend.emails.send({
         to: user.email,
-        from: { email: SENDGRID_FROM, name: 'QuteNote' },
+        from: `QuteNote <${EMAIL_FROM}>`,
         subject: 'Reset your QuteNote password',
         html: `
           <div style="font-family:Georgia,serif;max-width:480px;margin:0 auto;padding:40px 20px;">
@@ -185,8 +183,9 @@ authRouter.post('/forgot-password', authLimiter, async (req: Request, res: Respo
           </div>
         `,
       })
+      if (sendErr) console.error('Resend error:', sendErr.message)
     } catch (emailErr: any) {
-      console.error('SendGrid error:', emailErr?.message ?? emailErr)
+      console.error('Resend error:', emailErr?.message ?? emailErr)
     }
   } else {
     console.log(`[Password Reset] ${user.email} → ${resetUrl}`)

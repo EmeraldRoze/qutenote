@@ -24,7 +24,10 @@ const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', '
 export function WelcomePage() {
   const navigate = useNavigate()
   return (
-    <div style={{ height: '100vh', boxSizing: 'border-box', overflow: 'hidden', display: 'flex', flexDirection: 'column', padding: '24px' }}>
+    <div style={{
+      height: 'calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom))',
+      boxSizing: 'border-box', overflow: 'hidden', display: 'flex', flexDirection: 'column', padding: '24px',
+    }}>
       <div style={{ flex: '0 0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <img src="/site/qutenote_logo.png" alt="QuteNote" style={{ height: '32px', width: 'auto' }} />
       </div>
