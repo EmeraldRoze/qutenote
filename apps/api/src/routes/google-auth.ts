@@ -117,8 +117,13 @@ googleAuthRouter.get('/google/callback', async (req: Request, res: Response) => 
 <body>
   <h1>You're signed in! 💌</h1>
   <p>Tap below to hop back into QuteNote.</p>
-  <a class="btn" href="${appLink}">Open QuteNote</a>
-  <script>setTimeout(function(){ window.location.href = ${JSON.stringify(appLink)} }, 50)</script>
+  <a class="btn" id="open" href="${appLink}">Open QuteNote</a>
+  <script>
+    // iOS only reliably honors a custom-scheme redirect when it looks like
+    // a real tap, not a plain script-set location change, so we simulate a
+    // click on the link itself (and still leave it there as a manual fallback).
+    document.getElementById('open').click()
+  </script>
 </body></html>`)
     }
     res.redirect(`${WEB_URL}/auth/google/success?token=${jwt}`)

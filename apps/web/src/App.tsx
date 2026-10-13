@@ -1,4 +1,5 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { useEffect } from 'react'
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import { AuthProvider, useAuth } from './context/AuthContext'
 import { isNativeApp } from './lib/native'
 import SignUpPage from './pages/SignUpPage'
@@ -23,6 +24,14 @@ import AccountSettingsPage from './pages/AccountSettingsPage'
 import NotificationPreferencesPage from './pages/NotificationPreferencesPage'
 import HandwritingPage from './pages/HandwritingPage'
 import { WelcomePage, OnboardingQTs, OnboardingBirthdays, OnboardingReminders } from './pages/Onboarding'
+
+// A new screen should always open at the top — without this, React Router
+// keeps whatever scroll position the previous screen was left at.
+function ScrollToTop() {
+  const { pathname } = useLocation()
+  useEffect(() => { window.scrollTo(0, 0) }, [pathname])
+  return null
+}
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth()
@@ -78,6 +87,7 @@ export default function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
+        <ScrollToTop />
         <AppRoutes />
       </AuthProvider>
     </BrowserRouter>

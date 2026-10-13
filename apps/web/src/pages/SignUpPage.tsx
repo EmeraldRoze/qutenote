@@ -15,14 +15,25 @@ const fieldLabel: React.CSSProperties = { fontSize: '13px', color: 'var(--ink-mi
 const fieldRow: React.CSSProperties = {
   display: 'flex', flexDirection: 'column', gap: '4px', padding: '12px 16px', borderBottom: '1.5px solid #EEEAF5',
 }
+const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+const THIS_YEAR = new Date().getFullYear()
 
 export default function SignUpPage() {
   const { login } = useAuth()
   const navigate = useNavigate()
   const [form, setForm] = useState({ email: '', password: '', displayName: '', username: '', birthday: '' })
+  const [bMonth, setBMonth] = useState('')
+  const [bDay, setBDay] = useState('')
+  const [bYear, setBYear] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+
+  function updateBirthday(month: string, day: string, year: string) {
+    if (month && day && year) {
+      setForm((f) => ({ ...f, birthday: `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}` }))
+    }
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -124,7 +135,7 @@ export default function SignUpPage() {
           <label style={fieldRow}>
             <span style={fieldLabel}>Your name</span>
             <input
-              placeholder="Emma Rose" autoComplete="name" required style={fieldStyle}
+              autoComplete="name" required style={fieldStyle}
               value={form.displayName}
               onChange={(e) => setForm({ ...form, displayName: e.target.value })}
             />
@@ -134,7 +145,7 @@ export default function SignUpPage() {
             <span style={{ display: 'flex', alignItems: 'center', fontSize: '17px' }}>
               <span style={{ color: uv, fontWeight: 700 }}>@</span>
               <input
-                placeholder="emmarose" autoComplete="username" required style={fieldStyle}
+                autoComplete="username" required style={fieldStyle}
                 value={form.username}
                 onChange={(e) => setForm({ ...form, username: e.target.value.toLowerCase() })}
               />
@@ -165,14 +176,35 @@ export default function SignUpPage() {
               {showPassword ? 'HIDE' : 'SHOW'}
             </button>
           </div>
-          <label style={{ ...fieldRow, borderBottom: 'none' }}>
+          <div style={{ ...fieldRow, borderBottom: 'none' }}>
             <span style={fieldLabel}>Birthday</span>
-            <input
-              type="date" autoComplete="bday" required style={fieldStyle}
-              value={form.birthday}
-              onChange={(e) => setForm({ ...form, birthday: e.target.value })}
-            />
-          </label>
+            <div style={{ display: 'flex', gap: '8px' }}>
+              <select
+                required value={bMonth}
+                onChange={(e) => { setBMonth(e.target.value); updateBirthday(e.target.value, bDay, bYear) }}
+                style={{ ...fieldStyle, flex: 1.6 }}
+              >
+                <option value="" disabled>Month</option>
+                {MONTHS.map((m, i) => <option key={m} value={String(i + 1)}>{m}</option>)}
+              </select>
+              <select
+                required value={bDay}
+                onChange={(e) => { setBDay(e.target.value); updateBirthday(bMonth, e.target.value, bYear) }}
+                style={{ ...fieldStyle, flex: 1 }}
+              >
+                <option value="" disabled>Day</option>
+                {Array.from({ length: 31 }, (_, i) => i + 1).map((d) => <option key={d} value={String(d)}>{d}</option>)}
+              </select>
+              <select
+                required value={bYear}
+                onChange={(e) => { setBYear(e.target.value); updateBirthday(bMonth, bDay, e.target.value) }}
+                style={{ ...fieldStyle, flex: 1.2 }}
+              >
+                <option value="" disabled>Year</option>
+                {Array.from({ length: 100 }, (_, i) => THIS_YEAR - i).map((y) => <option key={y} value={String(y)}>{y}</option>)}
+              </select>
+            </div>
+          </div>
         </div>
 
         <p style={{ margin: '10px 4px 0', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px', color: 'var(--ink-mid)', fontFamily: 'var(--font-body)' }}>
