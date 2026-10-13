@@ -23,6 +23,13 @@ model User {
   isPrivate        Boolean            @default(true)
   isAdmin          Boolean            @default(false)
 
+  // Notification preferences — each kind can be turned off independently
+  notifyBirthdays             Boolean @default(true)
+  notifyFriendSentCard        Boolean @default(true)
+  notifyFriendRequestAccepted Boolean @default(true)
+  notifyInviteUsed            Boolean @default(true)
+  notifyFriendStatusUpdate    Boolean @default(true)
+
   // Subscription
   stripeCustomerId   String?
   subscriptionStatus SubscriptionStatus @default(FREE)

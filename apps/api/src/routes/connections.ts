@@ -1,6 +1,7 @@
 import { Router, Response } from 'express'
 import { prisma } from '../lib/prisma'
 import { requireAuth, AuthRequest } from '../middleware/auth'
+import { notifyUser } from '../lib/notify'
 
 export const connectionsRouter = Router()
 connectionsRouter.use(requireAuth)
@@ -105,6 +106,17 @@ connectionsRouter.post('/accept/:requestId', async (req: AuthRequest, res: Respo
     where: { id: requestId },
     data: { status: 'ACCEPTED' },
   })
+
+  const accepter = await prisma.user.findUnique({ where: { id: req.userId! } })
+  if (accepter) {
+    await notifyUser(
+      request.followerId,
+      'friendRequestAccepted',
+      `${accepter.displayName} accepted your QT request`,
+      "You're connected! Send them something cute.",
+    )
+  }
+
   return res.json({ data: updated })
 })
 

@@ -103,3 +103,33 @@ usersRouter.put('/me', requireAuth, async (req: AuthRequest, res: Response) => {
   })
   return res.json({ data: user })
 })
+
+// ─── Notification preferences ─────────────────────────────────────────────────
+
+const notifSelect = {
+  notifyBirthdays: true,
+  notifyFriendSentCard: true,
+  notifyFriendRequestAccepted: true,
+  notifyInviteUsed: true,
+  notifyFriendStatusUpdate: true,
+} as const
+
+usersRouter.get('/me/notification-preferences', requireAuth, async (req: AuthRequest, res: Response) => {
+  const prefs = await prisma.user.findUnique({ where: { id: req.userId }, select: notifSelect })
+  return res.json({ data: prefs })
+})
+
+const notifSchema = z.object({
+  notifyBirthdays: z.boolean().optional(),
+  notifyFriendSentCard: z.boolean().optional(),
+  notifyFriendRequestAccepted: z.boolean().optional(),
+  notifyInviteUsed: z.boolean().optional(),
+  notifyFriendStatusUpdate: z.boolean().optional(),
+})
+
+usersRouter.put('/me/notification-preferences', requireAuth, async (req: AuthRequest, res: Response) => {
+  const result = notifSchema.safeParse(req.body)
+  if (!result.success) return res.status(400).json({ error: result.error.errors[0].message })
+  const prefs = await prisma.user.update({ where: { id: req.userId }, data: result.data, select: notifSelect })
+  return res.json({ data: prefs })
+})

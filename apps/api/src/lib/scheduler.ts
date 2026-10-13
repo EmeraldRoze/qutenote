@@ -1,5 +1,5 @@
 import { prisma } from './prisma'
-import { sendPush } from './apns'
+import { notifyUser } from './notify'
 import { submitDueNotes } from './submitNote'
 
 // A tiny in-process scheduler: checks every minute.
@@ -22,18 +22,10 @@ async function birthdayReminders(): Promise<void> {
   if (dates.length === 0) return
 
   for (const d of dates) {
-    const tokens = await prisma.deviceToken.findMany({ where: { userId: d.userId } })
-    if (tokens.length === 0) continue
     const firstName = d.connectionName.split(' ')[0]
     const title = `${firstName}'s ${d.label.toLowerCase()} · in 7 days`
     const body = `${firstName}'s ${d.label.toLowerCase()} is next ${weekday}. Write it now and we'll mail it so it lands on the day.`
-    for (const t of tokens) {
-      const ok = await sendPush(t.token, title, body)
-      if (!ok) {
-        // dead token — stop pushing to it
-        await prisma.deviceToken.delete({ where: { id: t.id } }).catch(() => {})
-      }
-    }
+    await notifyUser(d.userId, 'birthdayReminders', title, body)
   }
   console.log(`[scheduler] birthday reminders sent for ${dates.length} date(s)`)
 }

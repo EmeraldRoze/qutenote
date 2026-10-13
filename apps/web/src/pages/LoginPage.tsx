@@ -60,8 +60,11 @@ export default function LoginPage() {
                   login(token, user)
                   navigate('/home')
                 } catch (err: any) {
-                  // User closing Apple's sheet is not an error worth showing
-                  if (err?.response) setError(err.response?.data?.error ?? 'Apple sign-in failed. Please try again.')
+                  const code = String(err?.code ?? '')
+                  const message = String(err?.message ?? '')
+                  const canceled = code === '1001' || /cancel/i.test(message)
+                  if (canceled) return
+                  setError(err?.response?.data?.error ?? `Apple sign-in didn't go through (${message || 'unknown error'}). Try again.`)
                 }
               }}
               style={{
@@ -79,7 +82,13 @@ export default function LoginPage() {
 
           <a
             href="/api/auth/google"
-            onClick={isNativeApp ? (e) => { e.preventDefault(); openGoogleSignIn() } : undefined}
+            onClick={isNativeApp ? (e) => {
+              e.preventDefault()
+              setError('')
+              openGoogleSignIn().catch((err: any) => {
+                setError(`Google sign-in didn't open (${err?.message ?? 'unknown error'}). Try again.`)
+              })
+            } : undefined}
             style={{
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px',
               width: '100%', padding: '11px 24px', fontSize: '14px', fontWeight: 500,

@@ -95,7 +95,7 @@ export default function SettingsPage() {
           </button>
           <button
             style={rowStyle}
-            onClick={isNativeApp ? toggleNotifications : undefined}
+            onClick={isNativeApp ? (remindersEnabled() ? () => navigate('/settings/notifications') : toggleNotifications) : undefined}
             disabled={!isNativeApp || reminderStatus === 'working'}
           >
             <span style={rowLabel}>Notifications</span>

@@ -3,6 +3,7 @@ import { z } from 'zod'
 import crypto from 'crypto'
 import { prisma } from '../lib/prisma'
 import { requireAuth, AuthRequest } from '../middleware/auth'
+import { notifyUser } from '../lib/notify'
 
 const WEB_URL = process.env.WEB_URL ?? 'http://localhost:3000'
 
@@ -183,6 +184,13 @@ invitesRouter.post('/collect/:token', async (req: Request, res: Response) => {
     where: { id: invite.senderId },
     data: { giftedCredits: { increment: 1 } },
   })
+
+  await notifyUser(
+    invite.senderId,
+    'inviteUsed',
+    `${invite.recipientName.split(' ')[0]} shared their address`,
+    "You earned a free card! Go write them something.",
+  )
 
   return res.json({ data: { message: 'Address saved! Your surprise is on its way.' } })
 })

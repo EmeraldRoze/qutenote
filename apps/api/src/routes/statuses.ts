@@ -2,6 +2,7 @@ import { Router, Response } from 'express'
 import { z } from 'zod'
 import { prisma } from '../lib/prisma'
 import { requireAuth, AuthRequest } from '../middleware/auth'
+import { notifyUser } from '../lib/notify'
 
 export const statusesRouter = Router()
 statusesRouter.use(requireAuth)
@@ -21,6 +22,18 @@ statusesRouter.post('/', async (req: AuthRequest, res: Response) => {
     data: { userId: req.userId!, emoji: result.data.emoji ?? null, text: result.data.text },
     select: { id: true, emoji: true, text: true, createdAt: true },
   })
+
+  const poster = await prisma.user.findUnique({ where: { id: req.userId! }, select: { displayName: true } })
+  const followers = await prisma.connection.findMany({
+    where: { followingId: req.userId!, status: 'ACCEPTED' },
+    select: { followerId: true },
+  })
+  await Promise.all(
+    followers.map((f) =>
+      notifyUser(f.followerId, 'friendStatusUpdate', `${poster?.displayName}`, result.data.text),
+    ),
+  )
+
   return res.status(201).json({ data: status })
 })
 

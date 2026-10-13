@@ -25,23 +25,29 @@ export function WelcomePage() {
   const navigate = useNavigate()
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', padding: '24px' }}>
-      <img src="/site/logo-ink.png" alt="QuteNote" style={{ width: '150px' }} />
-
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', maxWidth: '340px' }}>
-        <h1 style={{ ...title, fontSize: '42px', lineHeight: 1.08, display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
-          <span>Send</span>
-          <img src="/site/postmark-stamp-lime.png" alt="" style={{ width: '108px', height: 'auto', objectFit: 'contain' }} />
-          <span style={{ width: '100%' }}>something</span>
-          <span>real.</span>
-        </h1>
-        <p style={{ ...sub, fontSize: '16px', marginTop: '18px' }}>
-          Real postcards for birthdays, hard days and everything between. Connect with friends, no addresses needed.
-        </p>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <img src="/site/qutenote_logo.png" alt="QuteNote" style={{ height: '32px', width: 'auto' }} />
       </div>
 
-      <div style={{ display: 'flex', gap: '12px' }}>
-        <button style={{ ...primaryBtn, flex: 1, background: '#fff', color: 'var(--ink)', border: '1.5px solid var(--ink)' }} onClick={() => navigate('/login')}>Log in</button>
-        <button style={{ ...primaryBtn, flex: 1.3 }} onClick={() => navigate('/signup')}>Sign up</button>
+      <h1 style={{
+        margin: '150px 0 0', fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: '50px',
+        lineHeight: 1.04, letterSpacing: '-0.03em', color: 'var(--ink)', display: 'flex', flexDirection: 'column', gap: '6px',
+      }}>
+        <span style={{ position: 'relative' }}>
+          <span>Send</span>
+          <img src="/site/postmark_stamp.png" alt="" style={{ position: 'absolute', left: '160px', top: '-52px', width: '196px', height: 'auto', transform: 'rotate(-6deg)' }} />
+        </span>
+        <span>something</span>
+        <span>real.</span>
+      </h1>
+
+      <p style={{ ...sub, fontSize: '17px', lineHeight: 1.5, marginTop: '22px', maxWidth: '300px' }}>
+        Real postcards for birthdays, hard days and everything between. Connect with friends, no addresses needed.
+      </p>
+
+      <div style={{ marginTop: 'auto', display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: '12px' }}>
+        <button style={{ ...primaryBtn, height: '56px', fontSize: '16px', letterSpacing: '0.08em', borderRadius: '28px', background: '#fff', color: 'var(--ink)', border: '2px solid var(--ink)' }} onClick={() => navigate('/login')}>Log in</button>
+        <button style={{ ...primaryBtn, height: '56px', fontSize: '16px', letterSpacing: '0.08em', borderRadius: '28px' }} onClick={() => navigate('/signup')}>Sign up</button>
       </div>
     </div>
   )

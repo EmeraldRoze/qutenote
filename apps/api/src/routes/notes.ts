@@ -5,6 +5,7 @@ import { prisma } from '../lib/prisma'
 import { requireAuth } from '../middleware/auth'
 import type { AuthRequest } from '../middleware/auth'
 import { EDIT_WINDOW_MS } from '../lib/submitNote'
+import { notifyUser } from '../lib/notify'
 // @ts-ignore — lob package has no types
 import Lob from 'lob'
 
@@ -128,6 +129,13 @@ notesRouter.post('/', requireAuth, async (req: AuthRequest, res) => {
 
   // The note waits in PENDING for 2 hours — the sender can still edit it.
   // The scheduler submits it to Lob when the window closes.
+
+  await notifyUser(
+    recipientId,
+    'friendSentCard',
+    `${sender.displayName} sent you a card`,
+    "It's on its way! Check QuteNote to see who it's from.",
+  )
 
   return res.status(201).json({ data: note })
 })
