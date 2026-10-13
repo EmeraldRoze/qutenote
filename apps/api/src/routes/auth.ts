@@ -75,7 +75,11 @@ authRouter.post('/register', authLimiter, async (req: Request, res: Response) =>
 // ─── Login ────────────────────────────────────────────────────────────────────
 
 const loginSchema = z.object({
-  identifier: z.string().min(1),
+  // `email` is the legacy field name — older installed app builds still send
+  // it, and the server deploys instantly while those builds wait on a
+  // TestFlight update, so both have to keep working side by side.
+  identifier: z.string().min(1).optional(),
+  email: z.string().min(1).optional(),
   password: z.string().min(1),
 })
 
@@ -85,7 +89,11 @@ authRouter.post('/login', authLimiter, async (req: Request, res: Response) => {
     return res.status(400).json({ error: 'Invalid email or password.' })
   }
 
-  const { identifier, password } = result.data
+  const identifier = result.data.identifier ?? result.data.email
+  const { password } = result.data
+  if (!identifier) {
+    return res.status(400).json({ error: 'Invalid email or password.' })
+  }
 
   const user = await prisma.user.findFirst({
     where: { OR: [{ email: identifier }, { username: identifier }] },
