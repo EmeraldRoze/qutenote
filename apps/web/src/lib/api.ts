@@ -13,7 +13,12 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (res) => res,
   (err) => {
-    if (err.response?.status === 401) {
+    // Only treat a 401 as "your session expired" if this request was actually
+    // authenticated — a wrong-password attempt on /auth/login is also a 401,
+    // but it's not a session expiring, and redirecting mid-attempt wiped the
+    // real "Invalid email or password" message before the user could see it.
+    const wasAuthenticated = !!err.config?.headers?.Authorization
+    if (err.response?.status === 401 && wasAuthenticated) {
       localStorage.removeItem('cn_token')
       window.location.href = '/login'
     }
