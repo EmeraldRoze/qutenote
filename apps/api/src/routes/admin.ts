@@ -6,6 +6,12 @@ import type { AuthRequest } from '../middleware/auth'
 export const adminRouter = Router()
 adminRouter.use(requireAdmin)
 
+// GET /admin/early-access — the launch list (pre-launch email collection)
+adminRouter.get('/early-access', async (_req: AuthRequest, res) => {
+  const rows = await prisma.earlySignup.findMany({ orderBy: { createdAt: 'desc' } })
+  return res.json({ data: rows })
+})
+
 // GET /admin/notes — all notes with sender/recipient info, newest first
 adminRouter.get('/notes', async (_req: AuthRequest, res) => {
   const notes = await prisma.note.findMany({

@@ -9,6 +9,7 @@ const limiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 20 })
 
 const schema = z.object({
   email: z.string().email('That email looks off. One more try.'),
+  name: z.string().max(80).optional(),
   source: z.string().max(40).optional(),
 })
 
@@ -19,10 +20,12 @@ earlyAccessRouter.post('/', limiter, async (req: Request, res: Response) => {
     return res.status(400).json({ error: result.error.issues[0].message })
   }
   const email = result.data.email.toLowerCase().trim()
+  const name = result.data.name?.trim() || null
   await prisma.earlySignup.upsert({
     where: { email },
-    update: {},
-    create: { email, source: result.data.source ?? null },
+    // A repeat signup that now includes a name fills the blank in
+    update: name ? { name } : {},
+    create: { email, name, source: result.data.source ?? null },
   })
   return res.status(201).json({ data: { ok: true } })
 })

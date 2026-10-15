@@ -104,6 +104,17 @@ export default function ProfilePage() {
     setRequested(true)
   }
 
+  // Removing a QT: two taps so a stray touch can't end a friendship.
+  const [removeArmed, setRemoveArmed] = useState(false)
+  async function removeQT() {
+    if (!profile) return
+    if (!removeArmed) { setRemoveArmed(true); setTimeout(() => setRemoveArmed(false), 4000); return }
+    await api.delete(`/connections/${profile.id}`)
+    setRemoveArmed(false)
+    setRequested(false)
+    setProfile({ ...profile, connectionStatus: null })
+  }
+
   if (loading) {
     return (
       <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -376,18 +387,34 @@ export default function ProfilePage() {
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
           {profile.bio && <p style={{ fontFamily: 'var(--font-body)', fontSize: '14px', color: 'var(--ink-mid)', marginTop: '14px', textAlign: 'center' }}>{profile.bio}</p>}
 
-          <button
-            onClick={addQT}
-            disabled={requested || profile.connectionStatus === 'ACCEPTED' || profile.connectionStatus === 'PENDING'}
-            style={{
-              marginTop: '16px', height: '44px', padding: '0 20px', borderRadius: '999px', cursor: 'pointer',
-              border: `1.5px solid ${uv}`,
-              background: profile.connectionStatus === 'ACCEPTED' ? 'var(--lavender-pale)' : '#fff',
-              color: uv, fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '13px', letterSpacing: '0.08em',
-            }}
-          >
-            {profile.connectionStatus === 'ACCEPTED' ? 'Your QT' : requested || profile.connectionStatus === 'PENDING' ? 'Requested' : 'Add QT'}
-          </button>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '16px' }}>
+            <button
+              onClick={addQT}
+              disabled={requested || profile.connectionStatus === 'ACCEPTED' || profile.connectionStatus === 'PENDING'}
+              style={{
+                height: '44px', padding: '0 20px', borderRadius: '999px', cursor: 'pointer',
+                border: `1.5px solid ${uv}`,
+                background: profile.connectionStatus === 'ACCEPTED' ? 'var(--lavender-pale)' : '#fff',
+                color: uv, fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '13px', letterSpacing: '0.08em',
+              }}
+            >
+              {profile.connectionStatus === 'ACCEPTED' ? 'Your QT ✓' : requested || profile.connectionStatus === 'PENDING' ? 'Requested' : 'Add QT'}
+            </button>
+            {profile.connectionStatus === 'ACCEPTED' && (
+              <button
+                onClick={removeQT}
+                style={{
+                  height: '44px', padding: '0 16px', borderRadius: '999px', cursor: 'pointer',
+                  border: `1.5px solid ${removeArmed ? '#E04E6B' : 'var(--stone)'}`,
+                  background: removeArmed ? '#FDEDF1' : '#fff',
+                  color: removeArmed ? '#E04E6B' : 'var(--ink-mid)',
+                  fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '13px', letterSpacing: '0.08em',
+                }}
+              >
+                {removeArmed ? 'Tap again to remove' : 'Remove QT'}
+              </button>
+            )}
+          </div>
 
           {/* Stats */}
           <div style={{

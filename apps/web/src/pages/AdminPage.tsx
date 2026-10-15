@@ -3,6 +3,23 @@ import { useAuth } from '../context/AuthContext'
 import { useNavigate } from 'react-router-dom'
 import { api } from '../lib/api'
 
+interface LaunchSignup { id: string; email: string; name: string | null; source: string | null; createdAt: string }
+
+// The launch list as a spreadsheet file, built right in the browser —
+// opens in Numbers, Excel, or Google Sheets.
+function downloadLaunchSheet(rows: LaunchSignup[]) {
+  const esc = (v: string | null) => '"' + String(v ?? '').replace(/"/g, '""') + '"'
+  const csv = ['Name,Email,Signed up,Where from', ...rows.map((r) =>
+    [esc(r.name), esc(r.email), esc(r.createdAt.slice(0, 10)), esc(r.source)].join(','),
+  )].join('\n')
+  const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }))
+  const a = document.createElement('a')
+  a.href = url
+  a.download = 'qutenote-launch-list.csv'
+  a.click()
+  URL.revokeObjectURL(url)
+}
+
 interface NoteItem {
   id: string
   noteText: string
@@ -27,6 +44,7 @@ export default function AdminPage() {
   const { user } = useAuth()
   const navigate = useNavigate()
   const [notes, setNotes] = useState<NoteItem[]>([])
+  const [signups, setSignups] = useState<LaunchSignup[]>([])
   const [loading, setLoading] = useState(true)
   const [updating, setUpdating] = useState<string | null>(null)
   const [filter, setFilter] = useState<string>('ALL')
@@ -40,6 +58,9 @@ export default function AdminPage() {
       .then((res) => setNotes(res.data.data))
       .catch(() => {})
       .finally(() => setLoading(false))
+    api.get('/admin/early-access')
+      .then((res) => setSignups(res.data.data))
+      .catch(() => {})
   }, [])
 
   async function updateStatus(noteId: string, status: string) {
@@ -218,6 +239,46 @@ export default function AdminPage() {
             </div>
           </div>
         ))}
+
+        {/* Launch list */}
+        <div style={{ marginTop: '48px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
+            <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '20px', fontWeight: 400, color: 'var(--ink)' }}>
+              Launch list ({signups.length})
+            </h2>
+            <button
+              onClick={() => downloadLaunchSheet(signups)}
+              disabled={!signups.length}
+              style={{
+                padding: '10px 18px', borderRadius: '20px', fontSize: '13px', fontWeight: 700,
+                border: 'none', background: 'var(--ultraviolet)', color: '#fff',
+                cursor: signups.length ? 'pointer' : 'default', fontFamily: 'var(--font-body)',
+                opacity: signups.length ? 1 : 0.5,
+              }}
+            >
+              Download spreadsheet
+            </button>
+          </div>
+          {signups.length === 0 ? (
+            <p style={{ color: 'var(--ink-muted)', fontFamily: 'var(--font-body)', fontSize: '14px' }}>
+              Nobody on the list yet. Share qutenote.com and watch this fill up.
+            </p>
+          ) : (
+            <div style={{ background: '#fff', border: '1px solid var(--stone)', borderRadius: '12px', overflow: 'hidden' }}>
+              {signups.map((s, i) => (
+                <div key={s.id} style={{
+                  display: 'flex', gap: '12px', alignItems: 'baseline', padding: '12px 16px',
+                  borderTop: i ? '1px solid var(--divider)' : 'none',
+                  fontFamily: 'var(--font-body)', fontSize: '14px',
+                }}>
+                  <span style={{ fontWeight: 700, minWidth: '120px', color: 'var(--ink)' }}>{s.name ?? '—'}</span>
+                  <span style={{ flex: 1, color: 'var(--ink-mid)', overflowWrap: 'anywhere' }}>{s.email}</span>
+                  <span style={{ fontSize: '12px', color: 'var(--ink-muted)', whiteSpace: 'nowrap' }}>{s.createdAt.slice(0, 10)}</span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   )

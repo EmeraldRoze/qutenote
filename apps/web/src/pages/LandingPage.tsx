@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { api } from '../lib/api'
 
 // QuteNote marketing homepage — faithful port of the Oct 2026 website redesign
@@ -40,8 +39,10 @@ const btnText: React.CSSProperties = {
   letterSpacing: '0.12em', textTransform: 'uppercase',
 }
 
+// Pre-launch: the website only collects names + emails for the launch list.
+// No login or account creation here until launch day.
 function SignupForm({ source, buttonLabel }: { source: string; buttonLabel: string }) {
-  const navigate = useNavigate()
+  const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [phase, setPhase] = useState<'idle' | 'busy' | 'done' | 'error'>('idle')
   const [error, setError] = useState('')
@@ -52,7 +53,7 @@ function SignupForm({ source, buttonLabel }: { source: string; buttonLabel: stri
     setPhase('busy')
     setError('')
     try {
-      await api.post('/early-access', { email: email.trim(), source })
+      await api.post('/early-access', { email: email.trim(), name: name.trim() || undefined, source })
       setPhase('done')
     } catch (err: any) {
       setError(err.response?.data?.error ?? 'That did not go through. One more try.')
@@ -64,19 +65,24 @@ function SignupForm({ source, buttonLabel }: { source: string; buttonLabel: stri
     return (
       <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '14px', width: '100%', maxWidth: '520px', minHeight: '56px' }}>
         <span style={{ fontFamily: mono, fontWeight: 700, fontSize: '16px', color: INK, display: 'flex', alignItems: 'center', gap: '10px' }}>
-          You're on the list.<PostmarkHeart size={26} />
+          You're on the list{name.trim() ? `, ${name.trim().split(' ')[0]}` : ''}. We'll write soon.<PostmarkHeart size={26} />
         </span>
-        <button onClick={() => navigate('/signup', { state: { email } })} style={{ ...btnText, height: '46px', padding: '0 18px', border: `1.5px solid ${UV}`, borderRadius: '12px', background: '#fff', color: UV, cursor: 'pointer' }}>
-          Create your profile →
-        </button>
       </div>
     )
   }
 
+  const fieldStyle = (err: boolean): React.CSSProperties => ({
+    flex: '1 1 200px', minWidth: 0, height: '56px', boxSizing: 'border-box', padding: '0 18px',
+    borderRadius: '12px', border: `1.5px solid ${err ? '#E04E6B' : LILAC}`, background: '#fff',
+    fontFamily: mono, fontSize: '16px', color: INK, outline: 'none',
+  })
+
   return (
     <form onSubmit={submit} style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', width: '100%', maxWidth: '520px' }}>
+      <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Your name" aria-label="Your name"
+        autoComplete="name" style={fieldStyle(false)} />
       <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Your email address" aria-label="Your email address"
-        style={{ flex: '1 1 240px', minWidth: 0, height: '56px', boxSizing: 'border-box', padding: '0 18px', borderRadius: '12px', border: `1.5px solid ${phase === 'error' ? '#E04E6B' : LILAC}`, background: '#fff', fontFamily: mono, fontSize: '16px', color: INK, outline: 'none' }} />
+        autoComplete="email" style={fieldStyle(phase === 'error')} />
       <button type="submit" disabled={phase === 'busy'} style={{ ...btnText, flex: '0 0 auto', height: '56px', padding: '0 22px', border: 'none', borderRadius: '12px', background: UV, color: '#fff', display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer', opacity: phase === 'busy' ? 0.7 : 1 }}>
         {phase === 'busy' ? 'One sec…' : buttonLabel}<PostmarkHeart />
       </button>
@@ -100,7 +106,6 @@ function Art({ name, size, style }: { name: string; size: number; style?: React.
 }
 
 export default function LandingPage() {
-  const navigate = useNavigate()
   const [menuOpen, setMenuOpen] = useState(false)
 
   const navLink: React.CSSProperties = { fontFamily: mono, fontSize: '15px', color: INK, textDecoration: 'none' }
@@ -127,9 +132,8 @@ export default function LandingPage() {
           <nav className="qn-links-row" aria-label="Main" style={{ alignItems: 'center', gap: 'clamp(14px, 2.4vw, 32px)', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
             <a href="#how" style={navLink}>How it works</a>
             <a href="#why" style={navLink}>Why Be Qute?</a>
-            <a href="#pricing" style={navLink}>Pricing</a>
-            <a href="/login" onClick={(e) => { e.preventDefault(); navigate('/login') }} style={{ ...navLink, cursor: 'pointer' }}>Log in</a>
-            <a href="/signup" onClick={(e) => { e.preventDefault(); navigate('/signup') }} style={{ ...btnText, fontSize: '12px', height: '44px', padding: '0 18px', borderRadius: '10px', background: UV, color: '#fff', textDecoration: 'none', display: 'flex', alignItems: 'center', cursor: 'pointer' }}>Join QuteNote</a>
+            <a href="#pricing" style={navLink}>The deal</a>
+            <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} style={{ ...btnText, fontSize: '12px', height: '44px', padding: '0 18px', borderRadius: '10px', background: UV, color: '#fff', border: 'none', display: 'flex', alignItems: 'center', cursor: 'pointer' }}>Get on the list</button>
           </nav>
           <button className="qn-burger-btn" type="button" onClick={() => setMenuOpen(!menuOpen)} aria-label="Menu" aria-expanded={menuOpen} style={{ width: '46px', height: '46px', border: `1.5px solid ${LILAC}`, borderRadius: '12px', background: PALE, color: UV, alignItems: 'center', justifyContent: 'center', cursor: 'pointer', padding: 0 }}>
             {menuOpen
@@ -141,9 +145,8 @@ export default function LandingPage() {
           <div style={{ background: PALE, borderTop: `1px solid ${LILAC}`, padding: '8px 20px 22px', display: 'flex', flexDirection: 'column' }}>
             <a href="#how" onClick={() => setMenuOpen(false)} style={mobileLink}>How it works</a>
             <a href="#why" onClick={() => setMenuOpen(false)} style={mobileLink}>Why Be Qute?</a>
-            <a href="#pricing" onClick={() => setMenuOpen(false)} style={mobileLink}>Pricing</a>
-            <a href="/login" onClick={(e) => { e.preventDefault(); navigate('/login') }} style={mobileLink}>Log in</a>
-            <a href="/signup" onClick={(e) => { e.preventDefault(); navigate('/signup') }} style={{ ...btnText, marginTop: '18px', height: '52px', borderRadius: '12px', background: UV, color: '#fff', textDecoration: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Join QuteNote</a>
+            <a href="#pricing" onClick={() => setMenuOpen(false)} style={mobileLink}>The deal</a>
+            <button onClick={() => { setMenuOpen(false); window.scrollTo({ top: 0, behavior: 'smooth' }) }} style={{ ...btnText, marginTop: '18px', height: '52px', borderRadius: '12px', background: UV, color: '#fff', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>Get on the list</button>
           </div>
         )}
       </header>
@@ -299,9 +302,9 @@ export default function LandingPage() {
                   <span style={{ width: '8px', height: '8px', minWidth: '8px', marginTop: '8px', borderRadius: '4px', background: UV }} />Your people, your dates, your handwriting.
                 </li>
               </ul>
-              <a href="/signup" onClick={(e) => { e.preventDefault(); navigate('/signup') }} style={{ ...btnText, marginTop: 'auto', height: '54px', borderRadius: '12px', background: UV, color: '#fff', textDecoration: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', cursor: 'pointer' }}>
-                Join QuteNote<PostmarkHeart />
-              </a>
+              <div style={{ marginTop: 'auto' }}>
+                <SignupForm source="homepage-pricing" buttonLabel="Get on the list" />
+              </div>
             </div>
             <span style={{ fontFamily: mono, fontSize: '15px', color: INK_MID }}>Printing and postage included. No surprise charges.</span>
           </div>

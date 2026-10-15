@@ -350,6 +350,7 @@ model Heart {
 model EarlySignup {
   id        String   @id @default(uuid())
   email     String   @unique
+  name      String?
   source    String?
   createdAt DateTime @default(now())
 }
