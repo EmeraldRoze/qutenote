@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { SESSIONS, ALL_CHARS, TOTAL_CHARS, charName, type HandwritingSession } from '../lib/handwriting/alphabet'
-import { HANDWRITING_CANVAS_SIZE, HANDWRITING_BASELINE_Y, type GlyphStrokes, type Stroke, type Point } from '../lib/handwriting/compileFont'
+import { HANDWRITING_CANVAS_SIZE, HANDWRITING_BASELINE_Y, FONT_COMPILER_VERSION, type GlyphStrokes, type Stroke, type Point } from '../lib/handwriting/compileFont'
 import { fetchHandwritingProgress, saveHandwritingProgress } from '../lib/handwriting/api'
 
 const uv = '#5A32D6'
@@ -251,11 +251,23 @@ function AllDoneScreen({ onClose }: { onClose: () => void }) {
 export default function HandwritingPage() {
   const navigate = useNavigate()
   const { sessionKey } = useParams()
+  const { user } = useAuth()
   const [glyphs, setGlyphs] = useState<GlyphStrokes | null>(null)
   const [celebrating, setCelebrating] = useState(false)
 
   useEffect(() => {
-    fetchHandwritingProgress().then((r) => setGlyphs(r.glyphs)).catch(() => setGlyphs({}))
+    fetchHandwritingProgress().then((r) => {
+      setGlyphs(r.glyphs)
+      // Glyph processing improved since this font was saved? Recompile it once
+      // from the stored strokes so old letters get the new polish automatically.
+      const verKey = 'qn_hw_compiler_version'
+      if (Object.keys(r.glyphs).length && Number(localStorage.getItem(verKey) ?? 0) < FONT_COMPILER_VERSION) {
+        saveHandwritingProgress(r.glyphs, {}, `QuteNote-${user?.username ?? 'you'}-Handwriting`)
+          .then(() => localStorage.setItem(verKey, String(FONT_COMPILER_VERSION)))
+          .catch(() => {})
+      }
+    }).catch(() => setGlyphs({}))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const activeSession = SESSIONS.find((s) => s.key === sessionKey)

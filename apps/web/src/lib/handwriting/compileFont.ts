@@ -9,6 +9,13 @@ import { getStroke } from 'perfect-freehand'
 // recorded pen stroke into the actual inked outline a real pen would leave
 // (with natural taper at the ends), which is exactly what a glyph needs to
 // be. We then hand that outline to opentype.js to pack into a real TTF file.
+//
+// People don't draw on a type designer's grid: letters land at different
+// heights and sizes inside the box, and a j drawn fully above the guide line
+// would never descend. So before outlining, every glyph is normalized to the
+// typographic band its character belongs to — bottom snapped to the baseline
+// (or pushed below it for descenders), height scaled to its class — which is
+// what makes a whole note read as one steady hand.
 
 export type Point = { x: number; y: number }
 export type Stroke = Point[]
@@ -18,12 +25,109 @@ const CANVAS_SIZE = 300 // the writing box is CANVAS_SIZE x CANVAS_SIZE px
 const BASELINE_Y = 220 // where the letter "sits"; room above for ascenders, below for descenders
 const UNITS_PER_EM = 1000
 const SCALE = UNITS_PER_EM / CANVAS_SIZE
-const SIDE_BEARING = 36 // breathing room on either side of a letter — tight, so words read as words
+const SIDE_BEARING = 30 // breathing room on either side of a letter — tight, so words read as words
 const SPACE_ADVANCE = 340 // a space must look clearly wider than any letter gap, or words run together
+
+// Bump this when glyph processing changes — saved fonts recompile from their
+// stored strokes the next time the handwriting page loads.
+export const FONT_COMPILER_VERSION = 2
+
+// Typographic band heights, in canvas px relative to the baseline.
+const X_HEIGHT = 114 // a c e m n o …
+const ASC_HEIGHT = 198 // b d f h k l t
+const CAP_HEIGHT = 195 // A-Z, 0-9, ! ?
+const DOT_HEIGHT = 186 // i and j measured through the dot on top
+const DESC_DEPTH = 72 // how far g j p q y hang below the line
+
+interface BandSpec {
+  top?: number // canvas y the glyph's top should land on
+  bottom?: number // canvas y the glyph's bottom should land on
+  center?: number // vertical midpoint, for marks like the hyphen
+  stretch: boolean // scale the drawing to fill the band (false = position only)
+}
+
+function bandFor(char: string): BandSpec {
+  const BL = BASELINE_Y
+  if (char === 'i') return { top: BL - DOT_HEIGHT, bottom: BL, stretch: true }
+  if (char === 'j') return { top: BL - DOT_HEIGHT, bottom: BL + DESC_DEPTH, stretch: true }
+  if ('gpqy'.includes(char)) return { top: BL - X_HEIGHT, bottom: BL + DESC_DEPTH, stretch: true }
+  if ('bdfhklt'.includes(char)) return { top: BL - ASC_HEIGHT, bottom: BL, stretch: true }
+  if (/[a-z]/.test(char)) return { top: BL - X_HEIGHT, bottom: BL, stretch: true }
+  if (/[A-Z0-9!?]/.test(char)) return { top: BL - CAP_HEIGHT, bottom: BL, stretch: true }
+  if (char === '.') return { bottom: BL, stretch: false }
+  if (char === ',') return { top: BL - 10, stretch: false }
+  if (char === "'") return { top: BL - CAP_HEIGHT, stretch: false }
+  if (char === '-') return { center: BL - X_HEIGHT * 0.5, stretch: false }
+  return { bottom: BL, stretch: false }
+}
+
+const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v))
+
+// Scale + shift a glyph's raw strokes into its character's band, and start
+// its ink at x=0 (the drawn position inside the box carries no meaning).
+function normalizeStrokes(char: string, strokes: Stroke[]): Stroke[] {
+  let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity
+  for (const stroke of strokes) for (const p of stroke) {
+    minX = Math.min(minX, p.x); maxX = Math.max(maxX, p.x)
+    minY = Math.min(minY, p.y); maxY = Math.max(maxY, p.y)
+  }
+  if (!Number.isFinite(minX)) return strokes
+
+  const band = bandFor(char)
+  const drawnHeight = maxY - minY
+  let s = 1
+  if (band.stretch && band.top !== undefined && band.bottom !== undefined && drawnHeight >= 8) {
+    s = clamp((band.bottom - band.top) / drawnHeight, 0.35, 6)
+  }
+  let dy: number
+  if (band.bottom !== undefined) dy = band.bottom - maxY * s
+  else if (band.top !== undefined) dy = band.top - minY * s
+  else dy = (band.center ?? BASELINE_Y) - ((minY + maxY) / 2) * s
+  const dx = -minX * s
+
+  return strokes.map((stroke) => stroke.map((p) => ({ x: p.x * s + dx, y: p.y * s + dy })))
+}
+
+// Even out the raw pointer samples before inking: resample to a steady
+// spacing, then relax the wobble out. Shaky input is what made letters
+// look jagged no matter how the outline was drawn.
+function resample(stroke: Stroke, spacing = 3): Stroke {
+  if (stroke.length < 3) return stroke
+  const out: Stroke = [stroke[0]]
+  let last = stroke[0]
+  for (const p of stroke.slice(1)) {
+    let d = Math.hypot(p.x - last.x, p.y - last.y)
+    while (d >= spacing) {
+      const t = spacing / d
+      last = { x: last.x + (p.x - last.x) * t, y: last.y + (p.y - last.y) * t }
+      out.push(last)
+      d = Math.hypot(p.x - last.x, p.y - last.y)
+    }
+  }
+  out.push(stroke[stroke.length - 1])
+  return out
+}
+
+function relax(stroke: Stroke, passes = 2): Stroke {
+  let pts = stroke
+  for (let n = 0; n < passes; n++) {
+    if (pts.length < 5) break
+    const next: Stroke = [pts[0]]
+    for (let i = 1; i < pts.length - 1; i++) {
+      next.push({
+        x: (pts[i - 1].x + 2 * pts[i].x + pts[i + 1].x) / 4,
+        y: (pts[i - 1].y + 2 * pts[i].y + pts[i + 1].y) / 4,
+      })
+    }
+    next.push(pts[pts.length - 1])
+    pts = next
+  }
+  return pts
+}
 
 function toFontSpace(p: Point): Point {
   // Canvas Y grows downward; font space Y grows upward from the baseline.
-  return { x: p.x * SCALE, y: (BASELINE_Y - p.y) * SCALE }
+  return { x: p.x * SCALE + SIDE_BEARING, y: (BASELINE_Y - p.y) * SCALE }
 }
 
 function strokeToPath(path: opentype.Path, stroke: Stroke) {
@@ -41,35 +145,36 @@ function strokeToPath(path: opentype.Path, stroke: Stroke) {
     path.close()
     return
   }
-  const outline = getStroke(stroke.map((p) => [p.x, p.y]), {
+  const cleaned = relax(resample(stroke))
+  const outline = getStroke(cleaned.map((p) => [p.x, p.y]), {
     size: 14, // pen thickness in canvas px — a confident, visible stroke
-    thinning: 0.5, // tapers at stroke ends, like a real pen lifting off
-    smoothing: 0.5,
-    streamline: 0.5,
+    thinning: 0.45, // tapers at stroke ends, like a real pen lifting off
+    smoothing: 0.8,
+    streamline: 0.6,
   })
   if (outline.length < 3) return
-  const first = toFontSpace({ x: outline[0][0], y: outline[0][1] })
-  path.moveTo(first.x, first.y)
-  for (const [x, y] of outline.slice(1)) {
-    const fp = toFontSpace({ x, y })
-    path.lineTo(fp.x, fp.y)
+  // Midpoint quadratic curves instead of straight segments between outline
+  // points — this is what turns "connect the dots" edges into pen-smooth ones.
+  const fp = outline.map(([x, y]) => toFontSpace({ x, y }))
+  const mid = (a: Point, b: Point): Point => ({ x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 })
+  const start = mid(fp[fp.length - 1], fp[0])
+  path.moveTo(start.x, start.y)
+  for (let i = 0; i < fp.length; i++) {
+    const m = mid(fp[i], fp[(i + 1) % fp.length])
+    path.quadTo(fp[i].x, fp[i].y, m.x, m.y)
   }
   path.close()
 }
 
-function glyphPath(strokes: Stroke[]): { path: opentype.Path; advanceWidth: number } {
+function glyphPath(char: string, rawStrokes: Stroke[]): { path: opentype.Path; advanceWidth: number } {
+  const strokes = normalizeStrokes(char, rawStrokes)
   const path = new opentype.Path()
-  let minX = Infinity
-  let maxX = -Infinity
+  let maxX = 0
   for (const stroke of strokes) {
     strokeToPath(path, stroke)
-    for (const p of stroke) {
-      minX = Math.min(minX, p.x)
-      maxX = Math.max(maxX, p.x)
-    }
+    for (const p of stroke) maxX = Math.max(maxX, p.x)
   }
-  const inkWidth = Number.isFinite(minX) ? (maxX - minX) * SCALE : 0
-  const advanceWidth = Math.max(inkWidth + SIDE_BEARING * 2, 190)
+  const advanceWidth = Math.max(maxX * SCALE + SIDE_BEARING * 2, 170)
   return { path, advanceWidth }
 }
 
@@ -87,15 +192,16 @@ export function compileFont(fontName: string, glyphs: GlyphStrokes): ArrayBuffer
     if (!strokes?.length) continue
     const unicode = char.codePointAt(0)
     if (unicode === undefined) continue
-    const { path, advanceWidth } = glyphPath(strokes)
+    const { path, advanceWidth } = glyphPath(char, strokes)
     builtGlyphs.push(new opentype.Glyph({ name: `uni${unicode.toString(16)}`, unicode, advanceWidth, path }))
   }
 
   // The comma's strokes double as the apostrophe — people only draw one.
+  // Same ink, repositioned up by the apostrophe's own band.
   const commaStrokes = glyphs[',']
   if (commaStrokes?.length && !glyphs["'"]?.length) {
     const unicode = "'".codePointAt(0)!
-    const { path, advanceWidth } = glyphPath(commaStrokes)
+    const { path, advanceWidth } = glyphPath("'", commaStrokes)
     builtGlyphs.push(new opentype.Glyph({ name: `uni${unicode.toString(16)}`, unicode, advanceWidth, path }))
   }
 
@@ -103,8 +209,8 @@ export function compileFont(fontName: string, glyphs: GlyphStrokes): ArrayBuffer
     familyName: fontName,
     styleName: 'Regular',
     unitsPerEm: UNITS_PER_EM,
-    ascender: UNITS_PER_EM - BASELINE_Y * SCALE,
-    descender: -(BASELINE_Y * SCALE),
+    ascender: Math.round(ASC_HEIGHT * SCALE) + 20,
+    descender: -(Math.round(DESC_DEPTH * SCALE) + 20),
     glyphs: builtGlyphs,
   })
 
