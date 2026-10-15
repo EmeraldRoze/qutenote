@@ -1,5 +1,18 @@
 # QuteNote — Handoff / Status Board
-Written: 2026-10-06 (replaces stale April 10 handoff). Last updated: 2026-10-14.
+Written: 2026-10-06 (replaces stale April 10 handoff). Last updated: 2026-10-15.
+
+## REMINDER FOR NEXT ROUND (Emerald asked to be reminded)
+- **Scheduling**: "Send now / Schedule it" on the preview step + "Scheduled cards" in Settings were held out of the Oct 15 redesign round on her call. Bring it up when the next round opens.
+- Also still open: full-size artist card files from @ellis_tolsma and @bobbybealspresents before anything prints (current JPGs are Instagram-screenshot resolution); full-size stamp exports.
+
+## FULL REDESIGN SHIPPED Oct 15 as BUILD 27 (FIREFLY; design/redesign-oct15-2026, 18 screens)
+- All 18 screens rebuilt to the design package (notebook paper w/ 36px ruling + title bands, new tab bar w/ sunglasses Profile + spec SEND stamp). Built by a 5-agent swarm (auth / home+QTs / send / dates / profile+settings), integrated, typecheck clean, visually QA'd via headless-Chrome phone emulation against prod data.
+- FREE MODE: all pricing removed everywhere (app + website). No subscription needed to send; 2-cards/month allowance kept (gifted invite credits extend); allowance now resets on the 1st via scheduler (used to reset via Stripe invoices); Subscribe pages deleted; Stripe routes left dormant.
+- PENS REPLACED: Caveat/Dancing/Reenie/Patrick retired -> Your handwriting/Fraunces(italic)/Sora/DM Mono/Rock Salt (lib/pens.ts, per-pen sizes 19/23/19/17/16). FontChoice enum migrated on prod. Old-pen notes deleted per Emerald (1 note total existed, backed up to backups/notes-backup-2026-10-15.json). notesUsed reset to 0 for all (2 members) for the free relaunch.
+- New onboarding: email -> Create account -> Address -> Birthday(optional, skippable) -> Home; Apple/Google new users get Pick-your-handle (isNew flag plumbed through both auth flows; GET /users/handle-check). Old /onboarding/* pages deleted.
+- New features: Home status box (always visible, POST), contacts sync (@capacitor-community/contacts; QTs matches contact emails via POST /users/match-contacts, Dates imports contact birthdays; native-only, NSContactsUsageDescription added), stamp collection (1 stamp per sent card, 4 designs cycling), delete account (DELETE /account, Apple-required), Add-a-date page with scroll wheels, 450-char note fix (API max was 300 while UI allowed 450).
+- Artist catalog: @ellis_tolsma (real, featured) + @bobbybealspresents (real) + 3 placeholders ("Five artists" copy holds). Server copy in submitNote.ts synced.
+- Watch out: send step 3 uses a contentEditable div (not textarea) for stamp text-wrap; QT remove is currently unreachable from QTs screen (rows open profiles now); reminders switch can't turn OFF server-side (no DELETE /devices); carousel colors follow the NEW design HTML (differs from Emerald's build-26 color-swap ask — flag if she comments).
 
 ## ROUND SHIPPED Oct 14 as BUILD 26 (FIREFLY, round closed by Emerald). All 9 Oct-13 feedback items addressed:
 Home card colors swapped (invite=lime, alerts=neon-pink); status renamed "How's your heart?" everywhere; Happenings row removed from Home; handwriting prompts now name the letter in words (root cause of "did i twice": Unbounded's j looks exactly like i — HER SAVED j IS AN i, she should redraw j in the app); send flow Step 2 has a "Not on QuteNote yet?" invite-by-text box with her requested recipient copy; handwriting font compiler v2 (baseline snapping, size normalization per letter class, real descenders, smoothing, spacing fix) with auto-recompile of saved fonts on next handwriting-page visit. TestFlight question answered in chat (invite link + TestFlight = two links for now, one account).
