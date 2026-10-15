@@ -42,6 +42,9 @@ appleAuthRouter.post('/apple', async (req: Request, res: Response) => {
       select: { ...userSelect, appleId: true },
     })
 
+    // Brand-new accounts take the "pick your handle" step; returning ones go home
+    let isNew = false
+
     if (user) {
       if (!user.appleId) {
         await prisma.user.update({ where: { id: user.id }, data: { appleId } })
@@ -67,11 +70,12 @@ appleAuthRouter.post('/apple', async (req: Request, res: Response) => {
         data: { email, displayName, username, appleId },
         select: { ...userSelect, appleId: true },
       })
+      isNew = true
     }
 
     const { appleId: _, ...safeUser } = user
     const token = signToken(user.id)
-    return res.json({ data: { token, user: safeUser } })
+    return res.json({ data: { token, user: safeUser, isNew } })
   } catch (err: any) {
     console.error('Apple sign-in error:', err?.message ?? err)
     return res.status(401).json({ error: 'Apple sign-in failed. Please try again.' })

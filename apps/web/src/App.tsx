@@ -9,8 +9,6 @@ import LandingPage from './pages/LandingPage'
 import SendFlow from './pages/send/SendFlow'
 import ConnectionsPage from './pages/ConnectionsPage'
 import AddressPage from './pages/AddressPage'
-import SubscribePage from './pages/SubscribePage'
-import SubscribeSuccessPage from './pages/SubscribeSuccessPage'
 import AdminPage from './pages/AdminPage'
 import ForgotPasswordPage from './pages/ForgotPasswordPage'
 import ResetPasswordPage from './pages/ResetPasswordPage'
@@ -23,7 +21,11 @@ import SettingsPage from './pages/SettingsPage'
 import AccountSettingsPage from './pages/AccountSettingsPage'
 import NotificationPreferencesPage from './pages/NotificationPreferencesPage'
 import HandwritingPage from './pages/HandwritingPage'
-import { WelcomePage, OnboardingQTs, OnboardingBirthdays, OnboardingReminders } from './pages/Onboarding'
+import WelcomePage from './pages/WelcomePage'
+import PickHandlePage from './pages/signup/PickHandlePage'
+import SignupAddressPage from './pages/signup/SignupAddressPage'
+import SignupBirthdayPage from './pages/signup/SignupBirthdayPage'
+import AddDatePage from './pages/AddDatePage'
 
 // A new screen should always open at the top — without this, React Router
 // keeps whatever scroll position the previous screen was left at.
@@ -64,12 +66,12 @@ function AppRoutes() {
       <Route path="/send" element={<ProtectedRoute><SendFlow /></ProtectedRoute>} />
       <Route path="/connections" element={<ProtectedRoute><ConnectionsPage /></ProtectedRoute>} />
       <Route path="/dates" element={<ProtectedRoute><ImportantDatesPage /></ProtectedRoute>} />
-      <Route path="/onboarding/qts" element={<ProtectedRoute><OnboardingQTs /></ProtectedRoute>} />
-      <Route path="/onboarding/birthdays" element={<ProtectedRoute><OnboardingBirthdays /></ProtectedRoute>} />
-      <Route path="/onboarding/reminders" element={<ProtectedRoute><OnboardingReminders /></ProtectedRoute>} />
+      <Route path="/signup/handle" element={<ProtectedRoute><PickHandlePage /></ProtectedRoute>} />
+      <Route path="/signup/address" element={<ProtectedRoute><SignupAddressPage /></ProtectedRoute>} />
+      <Route path="/signup/birthday" element={<ProtectedRoute><SignupBirthdayPage /></ProtectedRoute>} />
+      <Route path="/dates/add" element={<ProtectedRoute><AddDatePage /></ProtectedRoute>} />
       <Route path="/address" element={<ProtectedRoute><AddressPage /></ProtectedRoute>} />
-      <Route path="/subscribe" element={<ProtectedRoute><SubscribePage /></ProtectedRoute>} />
-      <Route path="/subscribe/success" element={<ProtectedRoute><SubscribeSuccessPage /></ProtectedRoute>} />
+      <Route path="/settings/address" element={<ProtectedRoute><AddressPage /></ProtectedRoute>} />
       <Route path="/admin" element={<ProtectedRoute><AdminPage /></ProtectedRoute>} />
       <Route path="/invite" element={<ProtectedRoute><InvitePage /></ProtectedRoute>} />
       <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />

@@ -15,11 +15,16 @@ export default function GoogleAuthSuccessPage() {
       return
     }
 
+    // new=1 means this sign-in just created the account: Google doesn't give
+    // us a username, so brand-new people pick their handle first.
+    const isNew = searchParams.get('new') === '1'
+
     localStorage.setItem('cn_token', token)
     api.get('/auth/me', { headers: { Authorization: `Bearer ${token}` } })
       .then((res) => {
         login(token, res.data.data)
-        navigate('/home')
+        if (isNew) navigate('/signup/handle', { replace: true, state: { provider: 'Google' } })
+        else navigate('/home')
       })
       .catch(() => {
         navigate('/login?error=google_failed')

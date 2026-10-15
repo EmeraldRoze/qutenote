@@ -5,41 +5,60 @@ import { api } from '../lib/api'
 import QEmoji from '../components/QEmoji'
 import { STATUS_EMOJI } from '../components/Happenings'
 
+// Account — Oct 15 2026 redesign, screen 17-account.html. No tab bar.
+// Every field is editable; username/email clashes come back as a 409 with a
+// friendly message. Delete account is required by Apple — it asks the person
+// to type DELETE before anything happens.
+
 const uv = '#5A32D6'
+
 const fieldStyle: React.CSSProperties = {
-  width: '100%', border: 'none', outline: 'none', background: 'transparent',
-  fontFamily: 'var(--font-body)', fontSize: '15px', color: 'var(--ink)', padding: 0,
+  border: 0, outline: 'none', background: 'transparent', padding: 0,
+  fontFamily: 'var(--font-body)', fontSize: '17px', color: 'var(--ink)', width: '100%',
 }
 const labelStyle: React.CSSProperties = {
-  display: 'block', fontSize: '11px', fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase',
-  color: 'var(--ink-mid)', marginBottom: '4px',
+  fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--ink-mid)',
 }
-const rowDivider: React.CSSProperties = { padding: '12px 18px', borderBottom: '1px solid var(--stone)' }
-const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
-const THIS_YEAR = new Date().getFullYear()
+const rowStyle: React.CSSProperties = {
+  display: 'flex', flexDirection: 'column', gap: '4px', padding: '12px 16px',
+  borderBottom: '1.5px solid var(--divider)',
+}
+
+function initialsOf(name: string): string {
+  const parts = name.trim().split(/\s+/).filter(Boolean)
+  if (parts.length === 0) return '?'
+  if (parts.length === 1) return parts[0][0].toUpperCase()
+  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase()
+}
 
 export default function AccountSettingsPage() {
   const navigate = useNavigate()
-  const { user, refreshUser } = useAuth()
+  const { user, refreshUser, logout } = useAuth()
   const [displayName, setDisplayName] = useState(user?.displayName ?? '')
-  const existing = user?.birthday ? user.birthday.slice(0, 10).split('-') : null // [year, month, day]
-  const [bYear, setBYear] = useState(existing?.[0] ?? '')
-  const [bMonth, setBMonth] = useState(existing ? String(Number(existing[1])) : '')
-  const [bDay, setBDay] = useState(existing ? String(Number(existing[2])) : '')
+  const [username, setUsername] = useState(user?.username ?? '')
+  const [email, setEmail] = useState(user?.email ?? '')
+  const [birthday, setBirthday] = useState(user?.birthday ? user.birthday.slice(0, 10) : '')
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
   const [error, setError] = useState('')
   const [pickingAvatar, setPickingAvatar] = useState(false)
   const [confirmingDelete, setConfirmingDelete] = useState(false)
-  const initials = (displayName || user?.username || '?').slice(0, 2).toUpperCase()
+  const [deleteText, setDeleteText] = useState('')
+  const [deleting, setDeleting] = useState(false)
+  const [deleteError, setDeleteError] = useState('')
 
   async function save() {
     setSaving(true)
     setError('')
     setSaved(false)
-    const birthday = bYear && bMonth && bDay ? `${bYear}-${bMonth.padStart(2, '0')}-${bDay.padStart(2, '0')}` : ''
     try {
-      await api.put('/users/me', { displayName: displayName.trim(), ...(birthday ? { birthday } : {}) })
+      const payload: Record<string, string> = { displayName: displayName.trim() }
+      const cleanUsername = username.trim().toLowerCase().replace(/^@/, '')
+      if (cleanUsername && cleanUsername !== user?.username) payload.username = cleanUsername
+      const cleanEmail = email.trim()
+      if (cleanEmail && cleanEmail !== user?.email) payload.email = cleanEmail
+      if (birthday) payload.birthday = birthday
+      await api.put('/users/me', payload)
       refreshUser?.()
       setSaved(true)
     } catch (err: any) {
@@ -49,101 +68,124 @@ export default function AccountSettingsPage() {
     }
   }
 
+  async function deleteAccount() {
+    if (deleteText.trim().toUpperCase() !== 'DELETE') return
+    setDeleting(true)
+    setDeleteError('')
+    try {
+      await api.delete('/account')
+      logout()
+      navigate('/welcome')
+    } catch {
+      setDeleteError("That didn't go through. Nothing was deleted — try again.")
+      setDeleting(false)
+    }
+  }
+
   return (
-    <div style={{ minHeight: '100vh' }}>
-      <nav style={{
-        background: 'var(--cream)', borderBottom: '1px solid var(--stone)', padding: '14px 18px',
-        display: 'flex', alignItems: 'center', gap: '14px',
-      }}>
-        <button onClick={() => navigate(-1)} aria-label="Back" style={{
-          width: '36px', height: '36px', borderRadius: '50%', background: 'var(--lavender-pale)',
-          border: 'none', cursor: 'pointer', color: uv, display: 'flex', alignItems: 'center', justifyContent: 'center',
-        }}>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M15 6l-6 6 6 6" /></svg>
-        </button>
-        <span style={{ fontFamily: 'var(--font-display)', fontSize: '18px', fontWeight: 400, color: 'var(--ink)' }}>Account</span>
-      </nav>
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
 
-      <div style={{ maxWidth: '480px', margin: '0 auto', padding: '24px 20px', display: 'flex', flexDirection: 'column', gap: '18px' }}>
+      {/* Title band */}
+      <div className="title-band" style={{ height: '144px', boxSizing: 'border-box', flex: 'none' }}>
+        <div style={{ maxWidth: '480px', width: '100%', margin: '0 auto', boxSizing: 'border-box', padding: '0 20px', display: 'flex', alignItems: 'center', gap: '14px' }}>
+          <button onClick={() => navigate(-1)} aria-label="Back to Settings" style={{
+            width: '44px', height: '44px', flex: 'none', borderRadius: '50%', background: 'var(--lavender-light)',
+            border: 'none', cursor: 'pointer', color: 'var(--ink)', padding: 0,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+          }}>
+            <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 5l-7 7 7 7" /></svg>
+          </button>
+          <h1 style={{ margin: 0, fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: '28px', letterSpacing: '-0.02em', color: 'var(--ink)' }}>Account</h1>
+        </div>
+      </div>
 
-        <div style={{ display: 'flex', justifyContent: 'center' }}>
-          <div style={{ position: 'relative', width: '84px', height: '84px' }}>
-            <div style={{
-              width: '84px', height: '84px', borderRadius: '42px', background: 'var(--lavender-pale)',
-              border: '1px solid var(--lavender-light)', display: 'flex', alignItems: 'center', justifyContent: 'center',
-              overflow: 'hidden',
+      <div style={{ maxWidth: '480px', width: '100%', margin: '0 auto', boxSizing: 'border-box', padding: '0 20px 34px', display: 'flex', flexDirection: 'column', flex: 1 }}>
+
+        {/* Avatar */}
+        <div style={{ marginTop: '26px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <div style={{ position: 'relative', width: '96px', height: '96px' }}>
+            <span style={{
+              width: '96px', height: '96px', boxSizing: 'border-box', borderRadius: '50%',
+              background: 'var(--lavender-pale)', border: '4px solid var(--cream)', boxShadow: '0 0 0 2px var(--ink)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden',
+              fontFamily: 'var(--font-display)', fontSize: '28px', color: 'var(--ink)',
             }}>
               {user?.avatarUrl?.startsWith('/emoji/')
-                ? <QEmoji name={user.avatarUrl.replace('/emoji/', '').replace('.png', '')} size={46} />
+                ? <QEmoji name={user.avatarUrl.replace('/emoji/', '').replace('.png', '')} size={54} />
                 : user?.avatarUrl
                   ? <img src={user.avatarUrl} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                  : <span style={{ fontFamily: 'var(--font-display)', fontSize: '24px', color: 'var(--ink)' }}>{initials}</span>}
-            </div>
-            <button onClick={() => setPickingAvatar(true)} aria-label="Change avatar" style={{
-              position: 'absolute', right: '-2px', bottom: '-2px', width: '28px', height: '28px', borderRadius: '14px',
-              background: uv, border: '2px solid var(--cream)', color: '#fff', cursor: 'pointer',
-              display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '16px', lineHeight: 1,
-            }}>+</button>
+                  : initialsOf(displayName || user?.username || '?')}
+            </span>
+            <button onClick={() => setPickingAvatar(true)} aria-label="Pick an emoji or add a photo" style={{
+              position: 'absolute', right: '-4px', bottom: '-2px', width: '38px', height: '38px', borderRadius: '50%',
+              border: '3px solid var(--cream)', background: uv, color: '#fff', padding: 0,
+              display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
+            }}>
+              <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
+            </button>
           </div>
         </div>
 
-        <div style={{ background: '#fff', borderRadius: '18px', boxShadow: 'var(--shadow-card)', overflow: 'hidden' }}>
-          <div style={rowDivider}>
-            <label style={labelStyle}>Name</label>
-            <input style={fieldStyle} value={displayName} onChange={(e) => setDisplayName(e.target.value)} maxLength={50} />
-          </div>
-          <div style={rowDivider}>
-            <label style={labelStyle}>Username</label>
-            <p style={{ ...fieldStyle, color: 'var(--ink-mid)' }}>@{user?.username}</p>
-          </div>
-          <div style={rowDivider}>
-            <label style={labelStyle}>Email</label>
-            <p style={{ ...fieldStyle, color: 'var(--ink-mid)' }}>{user?.email}</p>
-          </div>
-          <div style={{ ...rowDivider, borderBottom: 'none' }}>
-            <label style={labelStyle}>Birthday</label>
-            <div style={{ display: 'flex', gap: '8px' }}>
-              <select value={bMonth} onChange={(e) => setBMonth(e.target.value)} style={{ ...fieldStyle, flex: 1.6 }}>
-                <option value="" disabled>Month</option>
-                {MONTHS.map((m, i) => <option key={m} value={String(i + 1)}>{m}</option>)}
-              </select>
-              <select value={bDay} onChange={(e) => setBDay(e.target.value)} style={{ ...fieldStyle, flex: 1 }}>
-                <option value="" disabled>Day</option>
-                {Array.from({ length: 31 }, (_, i) => i + 1).map((d) => <option key={d} value={String(d)}>{d}</option>)}
-              </select>
-              <select value={bYear} onChange={(e) => setBYear(e.target.value)} style={{ ...fieldStyle, flex: 1.2 }}>
-                <option value="" disabled>Year</option>
-                {Array.from({ length: 100 }, (_, i) => THIS_YEAR - i).map((y) => <option key={y} value={String(y)}>{y}</option>)}
-              </select>
-            </div>
-          </div>
+        {/* Fields */}
+        <div style={{ marginTop: '26px', background: '#fff', border: '1.5px solid var(--stone)', borderRadius: '18px', overflow: 'hidden' }}>
+          <label style={rowStyle}>
+            <span style={labelStyle}>Name</span>
+            <input value={displayName} onChange={(e) => { setDisplayName(e.target.value); setSaved(false) }} maxLength={50} style={fieldStyle} />
+          </label>
+          <label style={rowStyle}>
+            <span style={labelStyle}>Username</span>
+            <span style={{ display: 'flex', alignItems: 'center', fontSize: '17px' }}>
+              <span style={{ fontFamily: 'var(--font-body)', color: 'var(--ink-mid)' }}>@</span>
+              <input value={username} onChange={(e) => { setUsername(e.target.value); setSaved(false) }} maxLength={20} autoCapitalize="none" autoCorrect="off" style={fieldStyle} />
+            </span>
+          </label>
+          <label style={rowStyle}>
+            <span style={labelStyle}>Email</span>
+            <input type="email" value={email} onChange={(e) => { setEmail(e.target.value); setSaved(false) }} autoCapitalize="none" autoCorrect="off" style={fieldStyle} />
+          </label>
+          <label style={{ ...rowStyle, borderBottom: 'none' }}>
+            <span style={labelStyle}>Your birthday</span>
+            <input type="date" value={birthday} onChange={(e) => { setBirthday(e.target.value); setSaved(false) }} style={fieldStyle} />
+          </label>
         </div>
+        <p style={{ margin: '10px 4px 0', fontFamily: 'var(--font-body)', fontSize: '14px', lineHeight: 1.45, color: 'var(--ink-mid)' }}>
+          We'll send you a Qute Note when it rolls around.
+        </p>
 
-        {error && <p style={{ fontSize: '13px', fontFamily: 'var(--font-body)', color: '#B3261E' }}>{error}</p>}
-        {saved && <p style={{ fontSize: '13px', fontFamily: 'var(--font-body)', color: uv }}>Saved.</p>}
-
-        <button
-          onClick={save}
-          disabled={saving || !displayName.trim()}
-          style={{
-            height: '50px', borderRadius: '10px', border: 'none', cursor: saving ? 'default' : 'pointer',
-            background: uv, color: '#fff', opacity: saving || !displayName.trim() ? 0.6 : 1,
-            fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '13px', textTransform: 'uppercase', letterSpacing: '0.12em',
-          }}
-        >
-          {saving ? 'Saving…' : 'Save'}
-        </button>
-
-        <button onClick={() => setConfirmingDelete(true)} style={{
-          background: 'none', border: 'none', cursor: 'pointer', textAlign: 'center',
-          fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--error)', padding: '4px 0 20px',
-        }}>
-          Delete account
-        </button>
+        {/* Bottom: status + save + delete */}
+        <div style={{ marginTop: 'auto', paddingTop: '26px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+          {error && (
+            <p style={{ margin: 0, textAlign: 'center', fontFamily: 'var(--font-body)', fontSize: '14px', fontWeight: 700, color: 'var(--error)' }}>{error}</p>
+          )}
+          {saved && !error && (
+            <p role="status" style={{ margin: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontFamily: 'var(--font-body)', fontSize: '14px', fontWeight: 700, color: uv }}>
+              <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="9.5" /><path d="M8 12.5l2.7 2.7L16 9.5" /></svg>
+              Saved
+            </p>
+          )}
+          <button
+            onClick={save}
+            disabled={saving || !displayName.trim()}
+            style={{
+              height: '56px', border: 0, borderRadius: '28px', background: uv, color: '#fff',
+              fontFamily: 'var(--font-body)', fontSize: '16px', fontWeight: 700, letterSpacing: '0.08em',
+              cursor: saving ? 'default' : 'pointer', opacity: saving || !displayName.trim() ? 0.6 : 1,
+            }}
+          >
+            {saving ? 'SAVING…' : 'SAVE CHANGES'}
+          </button>
+          <button onClick={() => { setConfirmingDelete(true); setDeleteText(''); setDeleteError('') }} style={{
+            minHeight: '44px', border: 0, background: 'transparent', cursor: 'pointer',
+            fontFamily: 'var(--font-body)', fontSize: '14px', color: 'var(--ink-mid)', textDecoration: 'underline',
+            textTransform: 'none', letterSpacing: 0, fontWeight: 400,
+          }}>
+            Delete account
+          </button>
+        </div>
       </div>
 
       {pickingAvatar && (
-        <div style={{ position: 'fixed', inset: 0, zIndex: 100, background: 'rgba(43,34,56,0.45)', display: 'flex', alignItems: 'flex-end' }} onClick={() => setPickingAvatar(false)}>
+        <div style={{ position: 'fixed', inset: 0, zIndex: 100, background: 'rgba(43,34,58,0.45)', display: 'flex', alignItems: 'flex-end' }} onClick={() => setPickingAvatar(false)}>
           <div style={{ width: '100%', background: 'var(--cream)', borderRadius: '16px 16px 0 0', padding: '24px 24px calc(24px + env(safe-area-inset-bottom))' }} onClick={(e) => e.stopPropagation()}>
             <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '22px', fontWeight: 400, marginBottom: '14px' }}>Pick your emoji</h2>
             <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
@@ -154,7 +196,7 @@ export default function AccountSettingsPage() {
                   setPickingAvatar(false)
                 }} style={{
                   width: '52px', height: '52px', borderRadius: '26px', cursor: 'pointer',
-                  background: '#fff', border: '1px solid var(--stone)',
+                  background: '#fff', border: '1.5px solid var(--stone)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                 }}>
                   <QEmoji name={e} size={32} />
@@ -166,19 +208,43 @@ export default function AccountSettingsPage() {
       )}
 
       {confirmingDelete && (
-        <div style={{ position: 'fixed', inset: 0, zIndex: 100, background: 'rgba(43,34,56,0.45)', display: 'flex', alignItems: 'flex-end' }} onClick={() => setConfirmingDelete(false)}>
-          <div style={{ width: '100%', background: 'var(--cream)', borderRadius: '16px 16px 0 0', padding: '24px 24px calc(24px + env(safe-area-inset-bottom))', textAlign: 'center' }} onClick={(e) => e.stopPropagation()}>
+        <div style={{ position: 'fixed', inset: 0, zIndex: 100, background: 'rgba(43,34,58,0.45)', display: 'flex', alignItems: 'flex-end' }} onClick={() => !deleting && setConfirmingDelete(false)}>
+          <div style={{ width: '100%', background: 'var(--cream)', borderRadius: '16px 16px 0 0', padding: '24px 24px calc(24px + env(safe-area-inset-bottom))', textAlign: 'center', boxSizing: 'border-box' }} onClick={(e) => e.stopPropagation()}>
             <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '20px', fontWeight: 400, marginBottom: '10px' }}>Delete your account?</h2>
-            <p style={{ fontFamily: 'var(--font-body)', fontSize: '14px', color: 'var(--ink-mid)', marginBottom: '20px' }}>
-              This isn't wired up to actually delete anything yet. Email us and we'll take care of it by hand for now.
+            <p style={{ fontFamily: 'var(--font-body)', fontSize: '14px', lineHeight: 1.5, color: 'var(--ink-mid)', marginBottom: '16px' }}>
+              This erases your account, your cards and your address for good. There's no undo. Type DELETE below if you're sure.
             </p>
-            <a href="mailto:emma@final.co" style={{
-              display: 'block', height: '48px', lineHeight: '48px', borderRadius: '10px', textDecoration: 'none',
-              background: uv, color: '#fff', fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '13px',
-              textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: '10px',
-            }}>Email us</a>
-            <button onClick={() => setConfirmingDelete(false)} style={{
-              background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--ink-mid)', padding: '6px',
+            <input
+              value={deleteText}
+              onChange={(e) => setDeleteText(e.target.value)}
+              placeholder="Type DELETE"
+              autoCapitalize="characters"
+              autoCorrect="off"
+              style={{
+                width: '100%', boxSizing: 'border-box', height: '52px', padding: '0 16px', marginBottom: '12px',
+                borderRadius: '14px', border: '1.5px solid var(--stone)', background: '#fff', outline: 'none',
+                fontFamily: 'var(--font-body)', fontSize: '16px', color: 'var(--ink)', textAlign: 'center',
+              }}
+            />
+            {deleteError && (
+              <p style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--error)', marginBottom: '12px' }}>{deleteError}</p>
+            )}
+            <button
+              onClick={deleteAccount}
+              disabled={deleting || deleteText.trim().toUpperCase() !== 'DELETE'}
+              style={{
+                width: '100%', height: '56px', borderRadius: '28px', border: 'none',
+                background: 'var(--error)', color: '#fff',
+                fontFamily: 'var(--font-body)', fontSize: '16px', fontWeight: 700, letterSpacing: '0.08em',
+                cursor: 'pointer', opacity: deleting || deleteText.trim().toUpperCase() !== 'DELETE' ? 0.5 : 1,
+                marginBottom: '10px',
+              }}
+            >
+              {deleting ? 'DELETING…' : 'DELETE MY ACCOUNT'}
+            </button>
+            <button onClick={() => setConfirmingDelete(false)} disabled={deleting} style={{
+              background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-body)',
+              fontSize: '14px', color: 'var(--ink-mid)', padding: '8px', textTransform: 'none', letterSpacing: 0,
             }}>Never mind</button>
           </div>
         </div>

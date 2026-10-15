@@ -2,6 +2,12 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { api } from '../lib/api'
 
+// Your address — Oct 15 2026 redesign, screen 18-your-address.html. No tab bar.
+// Serves both /address and /settings/address. Save goes through the existing
+// Lob AVS verification on POST /address.
+
+const uv = '#5A32D6'
+
 interface AddressData {
   line1: string
   line2: string
@@ -9,6 +15,18 @@ interface AddressData {
   state: string
   zip: string
   country: string
+}
+
+const fieldStyle: React.CSSProperties = {
+  border: 0, outline: 'none', background: 'transparent', padding: 0,
+  fontFamily: 'var(--font-body)', fontSize: '17px', color: 'var(--ink)', width: '100%',
+}
+const labelStyle: React.CSSProperties = {
+  fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--ink-mid)',
+}
+const rowStyle: React.CSSProperties = {
+  display: 'flex', flexDirection: 'column', gap: '4px', padding: '12px 16px',
+  borderBottom: '1.5px solid var(--divider)',
 }
 
 export default function AddressPage() {
@@ -39,7 +57,6 @@ export default function AddressPage() {
       const res = await api.post('/address', form)
       setIsVerified(!!res.data.data?.isVerified)
       setSaved(true)
-      setTimeout(() => navigate('/home'), 1200)
     } catch (err: any) {
       setError(err.response?.data?.error ?? 'Something went wrong. Try again.')
     } finally {
@@ -47,134 +64,103 @@ export default function AddressPage() {
     }
   }
 
-  const fieldStyle = {
-    width: '100%', border: 'none', outline: 'none', background: 'transparent',
-    fontFamily: 'var(--font-body)', fontSize: '15px', color: 'var(--ink)', padding: 0,
-  }
-
-  const labelStyle = {
-    display: 'block', fontSize: '11px', fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase' as const,
-    color: 'var(--ink-mid)', marginBottom: '4px',
-  }
-
-  const rowDivider = { padding: '12px 18px', borderBottom: '1px solid var(--stone)' }
-
   return (
-    <div style={{ minHeight: '100vh' }}>
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
 
-      {/* Nav */}
-      <nav style={{
-        background: 'var(--white)', borderBottom: '1px solid var(--lavender-pale)',
-        padding: '14px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-      }}>
-        <button onClick={() => navigate(-1)} aria-label="Back" style={{
-          width: '36px', height: '36px', borderRadius: '50%', background: 'var(--lavender-pale)',
-          border: 'none', cursor: 'pointer', color: 'var(--lavender-dark)', display: 'flex', alignItems: 'center', justifyContent: 'center',
-        }}>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M15 6l-6 6 6 6" /></svg>
-        </button>
-        <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '18px', fontWeight: 500, color: 'var(--ink)' }}>
-          My Address
-        </h1>
-        <div style={{ width: '36px' }} />
-      </nav>
+      {/* Title band */}
+      <div className="title-band" style={{ height: '144px', boxSizing: 'border-box', flex: 'none' }}>
+        <div style={{ maxWidth: '480px', width: '100%', margin: '0 auto', boxSizing: 'border-box', padding: '0 20px', display: 'flex', alignItems: 'center', gap: '14px' }}>
+          <button onClick={() => navigate(-1)} aria-label="Back" style={{
+            width: '44px', height: '44px', flex: 'none', borderRadius: '50%', background: 'var(--lavender-light)',
+            border: 'none', cursor: 'pointer', color: 'var(--ink)', padding: 0,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+          }}>
+            <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 5l-7 7 7 7" /></svg>
+          </button>
+          <h1 style={{ margin: 0, fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: '28px', letterSpacing: '-0.02em', color: 'var(--ink)' }}>Your address</h1>
+        </div>
+      </div>
 
-      <div style={{ maxWidth: '480px', margin: '0 auto', padding: '24px 20px 32px' }}>
+      <div style={{ maxWidth: '480px', width: '100%', margin: '0 auto', boxSizing: 'border-box', padding: '0 20px 34px', display: 'flex', flexDirection: 'column', flex: 1 }}>
 
-        {/* Explanation */}
-        <div style={{
-          background: 'var(--lavender-pale)', borderRadius: '16px',
-          border: '1px solid var(--lavender-light)', padding: '16px 20px', marginBottom: '20px',
-          display: 'flex', alignItems: 'flex-start', gap: '10px',
-        }}>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--lavender-deep)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, marginTop: '3px' }}>
-            <rect x="5" y="11" width="14" height="9" rx="2" /><path d="M8 11V8a4 4 0 0 1 8 0v3" />
-          </svg>
-          <p style={{ fontSize: '14px', color: 'var(--lavender-deep)', lineHeight: 1.6 }}>
-            Your QTs never see this. We only use it to print and mail the cards they send you.
+        {/* Privacy note */}
+        <div style={{ marginTop: '24px', background: 'var(--lavender-light)', borderRadius: '14px', padding: '14px 16px', display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
+          <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={uv} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flex: 'none', marginTop: '1px' }}><rect x="5" y="11" width="14" height="10" rx="2" /><path d="M8 11V8a4 4 0 0 1 8 0v3" /></svg>
+          <p style={{ margin: 0, fontFamily: 'var(--font-body)', fontSize: '15px', lineHeight: 1.45, color: 'var(--ink)' }}>
+            Your address is private. It stays between us and the post office.
           </p>
         </div>
 
         {loading ? (
-          <p style={{ textAlign: 'center', color: 'var(--ink-muted)', fontSize: '14px', padding: '40px 0' }}>Loading...</p>
+          <p style={{ textAlign: 'center', fontFamily: 'var(--font-body)', color: 'var(--ink-muted)', fontSize: '14px', padding: '40px 0' }}>Loading...</p>
         ) : (
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
+
             {error && (
-              <div style={{ background: 'var(--error-pale)', border: '1px solid rgba(224,78,107,0.3)', color: 'var(--error)', borderRadius: '10px', padding: '12px 16px', fontSize: '14px', marginBottom: '16px' }}>
+              <div style={{ marginTop: '16px', background: 'var(--error-pale)', border: '1.5px solid rgba(224,78,107,0.3)', color: 'var(--error)', borderRadius: '14px', padding: '12px 16px', fontFamily: 'var(--font-body)', fontSize: '14px' }}>
                 {error}
               </div>
             )}
-
             {saved && (
-              <div style={{ background: '#EBF2E9', border: '1px solid #B5C9B0', color: '#6B9265', borderRadius: '10px', padding: '12px 16px', fontSize: '14px', marginBottom: '16px' }}>
+              <div style={{ marginTop: '16px', background: 'var(--lime-tint)', border: '1.5px solid var(--lime-border)', color: 'var(--ink)', borderRadius: '14px', padding: '12px 16px', fontFamily: 'var(--font-body)', fontSize: '14px' }}>
                 Address saved!
               </div>
             )}
 
-            <div style={{
-              background: '#fff', borderRadius: '18px', boxShadow: 'var(--shadow-card)', overflow: 'hidden',
-            }}>
-              <div style={rowDivider}>
-                <label style={labelStyle}>Street address</label>
-                <input type="text" placeholder="123 Main St" value={form.line1}
-                  onChange={(e) => setForm({ ...form, line1: e.target.value })} required style={fieldStyle} />
-              </div>
-
-              <div style={rowDivider}>
-                <label style={labelStyle}>Apt, suite, etc. <span style={{ textTransform: 'none', fontWeight: 400 }}>(optional)</span></label>
-                <input type="text" placeholder="Apt 4B" value={form.line2}
-                  onChange={(e) => setForm({ ...form, line2: e.target.value })} style={fieldStyle} />
-              </div>
-
-              <div style={rowDivider}>
-                <label style={labelStyle}>City</label>
-                <input type="text" placeholder="Santa Fe" value={form.city}
-                  onChange={(e) => setForm({ ...form, city: e.target.value })} required style={fieldStyle} />
-              </div>
-
-              <div style={{ ...rowDivider, borderBottom: 'none', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-                <div>
-                  <label style={labelStyle}>State</label>
-                  <input type="text" placeholder="NM" value={form.state}
-                    onChange={(e) => setForm({ ...form, state: e.target.value })} required style={fieldStyle} />
-                </div>
-                <div>
-                  <label style={labelStyle}>ZIP code</label>
-                  <input type="text" placeholder="87501" value={form.zip}
-                    onChange={(e) => setForm({ ...form, zip: e.target.value })} required style={fieldStyle} />
-                </div>
+            {/* Fields */}
+            <div style={{ marginTop: '20px', background: '#fff', border: '1.5px solid var(--stone)', borderRadius: '18px', overflow: 'hidden' }}>
+              <label style={rowStyle}>
+                <span style={labelStyle}>Street address</span>
+                <input value={form.line1} onChange={(e) => setForm({ ...form, line1: e.target.value })} required autoComplete="address-line1" style={fieldStyle} />
+              </label>
+              <label style={rowStyle}>
+                <span style={labelStyle}>Apt, suite, etc. (optional)</span>
+                <input value={form.line2} placeholder="Apt 4B" onChange={(e) => setForm({ ...form, line2: e.target.value })} autoComplete="address-line2" style={fieldStyle} />
+              </label>
+              <label style={rowStyle}>
+                <span style={labelStyle}>City</span>
+                <input value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })} required autoComplete="address-level2" style={fieldStyle} />
+              </label>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))' }}>
+                <label style={{ ...rowStyle, borderBottom: 'none', borderRight: '1.5px solid var(--divider)' }}>
+                  <span style={labelStyle}>State</span>
+                  <input value={form.state} onChange={(e) => setForm({ ...form, state: e.target.value })} required autoComplete="address-level1" style={fieldStyle} />
+                </label>
+                <label style={{ ...rowStyle, borderBottom: 'none' }}>
+                  <span style={labelStyle}>ZIP code</span>
+                  <input value={form.zip} onChange={(e) => setForm({ ...form, zip: e.target.value })} required inputMode="numeric" autoComplete="postal-code" style={fieldStyle} />
+                </label>
               </div>
             </div>
 
+            {/* Verified tag */}
             {isVerified && (
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '14px 4px 0' }}>
-                <span style={{
-                  display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '11px', fontWeight: 700,
-                  letterSpacing: '0.04em', textTransform: 'uppercase', color: 'var(--ink)',
-                  background: 'var(--lime)', padding: '4px 10px', borderRadius: '10px',
-                }}>✓ Verified</span>
-                <span style={{ fontSize: '13px', color: 'var(--ink-mid)' }}>Ready for mail</span>
-              </div>
+              <p style={{ margin: '12px 4px 0', display: 'flex', alignItems: 'center', gap: '8px', fontFamily: 'var(--font-body)', fontSize: '14px', fontWeight: 700, color: 'var(--ink)' }}>
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: 'var(--lime)', borderRadius: '10px', padding: '3px 10px' }}>
+                  <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg>
+                  Verified
+                </span>
+                <span style={{ fontWeight: 400, color: 'var(--ink-mid)' }}>Ready for mail</span>
+              </p>
             )}
 
-            <button
-              type="submit"
-              disabled={saving}
-              style={{
-                width: '100%', marginTop: '20px', padding: '14px 24px', fontSize: '13px', fontWeight: 700,
-                textTransform: 'uppercase', letterSpacing: '0.1em',
-                borderRadius: '50px', border: 'none', cursor: saving ? 'not-allowed' : 'pointer',
-                background: saving ? 'var(--lavender-light)' : 'var(--lavender)',
-                color: '#fff', boxShadow: saving ? 'none' : 'var(--shadow-button)',
-                fontFamily: 'var(--font-body)', transition: 'background 0.15s',
-              }}
-            >
-              {saving ? 'Saving...' : 'Save address'}
-            </button>
-
-            <p style={{ fontSize: '12px', color: 'var(--ink-muted)', textAlign: 'center', marginTop: '12px' }}>
-              US addresses only for now. More countries coming soon.
-            </p>
+            {/* Save */}
+            <div style={{ marginTop: 'auto', paddingTop: '26px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <button
+                type="submit"
+                disabled={saving}
+                style={{
+                  height: '56px', border: 0, borderRadius: '28px', background: uv, color: '#fff',
+                  fontFamily: 'var(--font-body)', fontSize: '16px', fontWeight: 700, letterSpacing: '0.08em',
+                  cursor: saving ? 'default' : 'pointer', opacity: saving ? 0.6 : 1,
+                }}
+              >
+                {saving ? 'SAVING…' : 'SAVE ADDRESS'}
+              </button>
+              <p style={{ margin: 0, textAlign: 'center', fontFamily: 'var(--font-body)', fontSize: '14px', color: 'var(--ink-mid)' }}>
+                US addresses only for now. More countries coming soon.
+              </p>
+            </div>
           </form>
         )}
       </div>

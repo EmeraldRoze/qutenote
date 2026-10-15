@@ -282,40 +282,26 @@ export default function LandingPage() {
         <section id="pricing" style={{ background: PALE }}>
           <div style={{ ...container, paddingTop: 'clamp(72px, 9vw, 120px)', paddingBottom: 'clamp(72px, 9vw, 120px)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '48px' }}>
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: '16px' }}>
-              <span style={eyebrow}>Pricing</span>
+              <span style={eyebrow}>The deal</span>
               <h2 style={h2Style}>Make Mail Qute Again.</h2>
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px', width: '100%', maxWidth: '920px' }}>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', padding: '36px 32px', borderRadius: '24px', background: CREAM, border: `1px solid ${LILAC}` }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <Art name="heart-torn" size={64} />
-                  <span style={{ ...eyebrow, color: INK_MID }}>Free</span>
-                </div>
-                <h3 style={{ ...h2Style, fontSize: '26px' }}>Free Profile</h3>
-                <div style={{ fontFamily: display, fontWeight: 400, letterSpacing: '-0.02em', color: INK, fontSize: '48px', lineHeight: 1 }}>$0</div>
-                <p style={bodyText}>Your home base on QuteNote. Connect with your people, receive notes, and get ready to spread a little love.</p>
-                <a href="/signup" onClick={(e) => { e.preventDefault(); navigate('/signup') }} style={{ ...btnText, marginTop: 'auto', height: '54px', borderRadius: '12px', border: `1.5px solid ${UV}`, color: UV, textDecoration: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>Get started free</a>
+            <div style={{ position: 'relative', display: 'flex', flexDirection: 'column', gap: '20px', padding: '36px 32px', borderRadius: '24px', background: CREAM, border: `2px solid ${UV}`, boxShadow: '0 20px 44px rgba(90,50,214,0.16)', width: '100%', maxWidth: '560px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <Art name="envelope-heart" size={64} />
+                <span style={eyebrow}>Free right now</span>
               </div>
-              <div style={{ position: 'relative', display: 'flex', flexDirection: 'column', gap: '20px', padding: '36px 32px', borderRadius: '24px', background: CREAM, border: `2px solid ${UV}`, boxShadow: '0 20px 44px rgba(90,50,214,0.16)' }}>
-                <span style={{ ...btnText, position: 'absolute', top: '-15px', left: '32px', height: '30px', padding: '0 14px', borderRadius: '15px', background: UV, color: '#fff', fontSize: '11px', display: 'flex', alignItems: 'center' }}>Most popular</span>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <Art name="envelope-heart" size={64} />
-                  <span style={eyebrow}>Subscriber</span>
-                </div>
-                <h3 style={{ ...h2Style, fontSize: '26px' }}>QuteNote Subscriber</h3>
-                <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
-                  <span style={{ fontFamily: display, fontWeight: 400, letterSpacing: '-0.02em', color: INK, fontSize: '48px', lineHeight: 1 }}>$7.95</span>
-                  <span style={{ fontFamily: mono, fontSize: '16px', color: INK_MID }}>/month · Cancel anytime</span>
-                </div>
-                <ul style={{ margin: 0, padding: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                  <li style={{ display: 'flex', gap: '10px', alignItems: 'flex-start', fontFamily: mono, fontSize: '16px', lineHeight: 1.5, color: INK }}>
-                    <span style={{ width: '8px', height: '8px', minWidth: '8px', marginTop: '8px', borderRadius: '4px', background: UV }} />Two physical postcards a month.
-                  </li>
-                </ul>
-                <a href="/signup" onClick={(e) => { e.preventDefault(); navigate('/signup') }} style={{ ...btnText, marginTop: 'auto', height: '54px', borderRadius: '12px', background: UV, color: '#fff', textDecoration: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', cursor: 'pointer' }}>
-                  Join QuteNote<PostmarkHeart />
-                </a>
-              </div>
+              <h3 style={{ ...h2Style, fontSize: '26px' }}>QuteNote is free while we get started.</h3>
+              <ul style={{ margin: 0, padding: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                <li style={{ display: 'flex', gap: '10px', alignItems: 'flex-start', fontFamily: mono, fontSize: '16px', lineHeight: 1.5, color: INK }}>
+                  <span style={{ width: '8px', height: '8px', minWidth: '8px', marginTop: '8px', borderRadius: '4px', background: UV }} />Two physical postcards a month.
+                </li>
+                <li style={{ display: 'flex', gap: '10px', alignItems: 'flex-start', fontFamily: mono, fontSize: '16px', lineHeight: 1.5, color: INK }}>
+                  <span style={{ width: '8px', height: '8px', minWidth: '8px', marginTop: '8px', borderRadius: '4px', background: UV }} />Your people, your dates, your handwriting.
+                </li>
+              </ul>
+              <a href="/signup" onClick={(e) => { e.preventDefault(); navigate('/signup') }} style={{ ...btnText, marginTop: 'auto', height: '54px', borderRadius: '12px', background: UV, color: '#fff', textDecoration: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', cursor: 'pointer' }}>
+                Join QuteNote<PostmarkHeart />
+              </a>
             </div>
             <span style={{ fontFamily: mono, fontSize: '15px', color: INK_MID }}>Printing and postage included. No surprise charges.</span>
           </div>

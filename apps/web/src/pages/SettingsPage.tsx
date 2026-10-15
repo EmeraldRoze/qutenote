@@ -4,41 +4,36 @@ import { useAuth } from '../context/AuthContext'
 import { api } from '../lib/api'
 import { enableReminders, remindersEnabled, lastReminderFailure, type ReminderResult } from '../lib/push'
 import { isNativeApp } from '../lib/native'
-import QEmoji from '../components/QEmoji'
 import { fetchHandwritingProgress } from '../lib/handwriting/api'
-import { ALL_CHARS } from '../lib/handwriting/alphabet'
 
-// Settings — App Screens board screen 07. No tab bar; reached from the gear on Profile.
-// Several rows link to real existing flows (Address, Membership, Privacy, Notifications).
-// A few sub-pages the design doesn't cover yet (Payment methods, Scheduled cards detail,
-// Get help) fall back to the closest working screen rather than invent new ones.
+// Settings — Oct 15 2026 redesign, screen 16-settings.html. No tab bar.
+// Free mode: no Membership, Payment methods or Scheduled cards rows.
 
-const uv = '#5A32D6'
 const rowStyle: React.CSSProperties = {
-  display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%',
-  padding: '16px 18px', background: '#fff', border: 'none', borderBottom: '1px solid var(--stone)',
+  display: 'flex', alignItems: 'center', width: '100%', minHeight: '50px', boxSizing: 'border-box',
+  padding: '0 20px', background: '#fff', border: 'none', borderBottom: '1px solid var(--divider)',
   cursor: 'pointer', textAlign: 'left', textTransform: 'none', letterSpacing: 0, fontWeight: 400,
+  textDecoration: 'none', color: 'var(--ink)',
 }
-const rowLabel: React.CSSProperties = { fontFamily: 'var(--font-body)', fontSize: '15px', color: 'var(--ink)' }
-const rowValue: React.CSSProperties = { fontFamily: 'var(--font-body)', fontSize: '14px', color: 'var(--ink-mid)', display: 'flex', alignItems: 'center', gap: '6px' }
+const rowLabel: React.CSSProperties = { flex: 1, fontFamily: 'var(--font-body)', fontSize: '16px', color: 'var(--ink)' }
+const rowValue: React.CSSProperties = { fontFamily: 'var(--font-body)', fontSize: '14px', color: 'var(--ink-mid)', marginRight: '8px' }
 const chevron = (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--ink-muted)" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M9 6l6 6-6 6" /></svg>
+  <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--ink-mid)" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 5l7 7-7 7" /></svg>
 )
 
 export default function SettingsPage() {
   const navigate = useNavigate()
-  const { user, logout } = useAuth()
-  const [hasAddress, setHasAddress] = useState<boolean | null>(null)
-  const [scheduledCount, setScheduledCount] = useState<number | null>(null)
+  const { user, logout, refreshUser } = useAuth()
+  const [addressVerified, setAddressVerified] = useState<boolean | null>(null)
   const [reminderStatus, setReminderStatus] = useState<ReminderResult | 'idle' | 'working'>('idle')
-  const [showHelp, setShowHelp] = useState(false)
   const [hasHandwriting, setHasHandwriting] = useState(false)
 
   useEffect(() => {
-    api.get('/address/me').then((r) => setHasAddress(!!r.data.data)).catch(() => setHasAddress(null))
-    api.get('/notes/sent').then((r) => setScheduledCount(r.data.data.filter((n: any) => n.status === 'PENDING').length)).catch(() => {})
+    api.get('/address/me')
+      .then((r) => setAddressVerified(r.data.data ? !!r.data.data.isVerified : null))
+      .catch(() => setAddressVerified(null))
     fetchHandwritingProgress()
-      .then((r) => setHasHandwriting(ALL_CHARS.every((c) => r.glyphs[c]?.length)))
+      .then((r) => setHasHandwriting(r.hasFont))
       .catch(() => {})
   }, [])
 
@@ -49,110 +44,102 @@ export default function SettingsPage() {
     setReminderStatus(r)
   }
 
-  return (
-    <div style={{ minHeight: '100vh' }}>
-      <nav style={{
-        background: 'var(--cream)', borderBottom: '1px solid var(--stone)', padding: '14px 18px',
-        display: 'flex', alignItems: 'center', gap: '14px',
-      }}>
-        <button onClick={() => navigate(-1)} aria-label="Back" style={{
-          width: '36px', height: '36px', borderRadius: '50%', background: 'var(--lavender-pale)',
-          border: 'none', cursor: 'pointer', color: uv, display: 'flex', alignItems: 'center', justifyContent: 'center',
-        }}>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M15 6l-6 6 6 6" /></svg>
-        </button>
-        <span style={{ fontFamily: 'var(--font-display)', fontSize: '18px', fontWeight: 400, color: 'var(--ink)' }}>Settings</span>
-      </nav>
+  async function togglePrivacy() {
+    await api.post('/connections/privacy', { isPrivate: !user?.isPrivate })
+    refreshUser?.()
+  }
 
-      <div style={{ maxWidth: '480px', margin: '0 auto', padding: '20px 0 60px' }}>
-        <p style={{ fontFamily: 'var(--font-body)', fontSize: '11px', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--ink-mid)', padding: '0 18px', marginBottom: '8px' }}>
-          Your account
-        </p>
-        <div style={{ borderTop: '1px solid var(--stone)' }}>
+  return (
+    <div style={{ minHeight: '100vh', paddingBottom: '60px' }}>
+
+      {/* Title band */}
+      <div className="title-band" style={{ height: '144px', boxSizing: 'border-box' }}>
+        <div style={{ maxWidth: '480px', width: '100%', margin: '0 auto', boxSizing: 'border-box', padding: '0 20px', display: 'flex', alignItems: 'center', gap: '14px' }}>
+          <button onClick={() => navigate(-1)} aria-label="Back" style={{
+            width: '44px', height: '44px', flex: 'none', borderRadius: '50%', background: 'var(--lavender-light)',
+            border: 'none', cursor: 'pointer', color: 'var(--ink)', padding: 0,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+          }}>
+            <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 5l-7 7 7 7" /></svg>
+          </button>
+          <h1 style={{ margin: 0, fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: '26px', letterSpacing: '-0.02em', color: 'var(--ink)' }}>Settings</h1>
+        </div>
+      </div>
+
+      <div style={{ maxWidth: '480px', margin: '0 auto' }}>
+        <h2 style={{ margin: '24px 20px 8px', fontFamily: 'var(--font-body)', fontSize: '14px', fontWeight: 700, color: 'var(--ink-mid)' }}>Your account</h2>
+
+        <div style={{ background: '#fff', borderTop: '1px solid var(--stone)', borderBottom: '1px solid var(--stone)' }}>
           <button style={rowStyle} onClick={() => navigate('/settings/account')}>
             <span style={rowLabel}>Account</span>
-            <span style={rowValue}>{chevron}</span>
+            <span style={rowValue} />
+            {chevron}
           </button>
-          <button style={rowStyle} onClick={() => navigate('/subscribe')}>
-            <span style={rowLabel}>Membership</span>
-            <span style={rowValue}>{user?.subscriptionStatus === 'ACTIVE' ? '$7.95/mo' : 'Not a member'}{chevron}</span>
-          </button>
-          <button style={rowStyle} onClick={() => navigate('/subscribe')}>
-            <span style={rowLabel}>Payment methods</span>
-            <span style={rowValue}>{chevron}</span>
-          </button>
-          <button style={rowStyle} onClick={() => navigate(`/profile/${user?.username ?? ''}`)}>
-            <span style={rowLabel}>Scheduled cards</span>
-            <span style={rowValue}>{scheduledCount ?? '—'}{chevron}</span>
-          </button>
-          <button style={rowStyle} onClick={() => navigate('/address')}>
+
+          <button style={rowStyle} onClick={() => navigate('/settings/address')}>
             <span style={rowLabel}>Your address</span>
-            <span style={rowValue}>{hasAddress === null ? '—' : hasAddress ? 'Verified' : 'Not set'}{chevron}</span>
+            <span style={rowValue}>{addressVerified === null ? '' : addressVerified ? 'Verified' : 'Not verified'}</span>
+            {chevron}
           </button>
-          <button style={rowStyle} onClick={() => navigate(`/profile/${user?.username ?? ''}`)}>
+
+          <button style={rowStyle} onClick={togglePrivacy}>
             <span style={rowLabel}>Privacy</span>
-            <span style={rowValue}>{user?.isPrivate ? 'Private' : 'Public'}{chevron}</span>
+            <span style={rowValue}>{user?.isPrivate ? 'Private' : 'Public'}</span>
+            {chevron}
           </button>
+          <p style={{ margin: 0, fontFamily: 'var(--font-body)', fontSize: '12px', color: 'var(--ink-muted)', padding: '0 20px 10px', background: '#fff', borderBottom: '1px solid var(--divider)' }}>
+            {user?.isPrivate
+              ? 'Private: your sends stay off feeds. Tap to go public.'
+              : "Public: your sends show on your QTs' feeds. Tap to go private."}
+          </p>
+
           <button
-            style={rowStyle}
+            style={{ ...rowStyle, cursor: isNativeApp ? 'pointer' : 'default' }}
             onClick={isNativeApp ? (remindersEnabled() ? () => navigate('/settings/notifications') : toggleNotifications) : undefined}
             disabled={!isNativeApp || reminderStatus === 'working'}
           >
             <span style={rowLabel}>Notifications</span>
             <span style={rowValue}>
               {!isNativeApp ? 'App only' : remindersEnabled() ? 'On' : reminderStatus === 'working' ? 'Turning on…' : 'Off'}
-              {isNativeApp && chevron}
             </span>
+            {isNativeApp && chevron}
           </button>
           {reminderStatus === 'denied' && (
-            <p style={{ fontFamily: 'var(--font-body)', fontSize: '12px', color: 'var(--ink-mid)', padding: '0 18px 10px' }}>
+            <p style={{ margin: 0, fontFamily: 'var(--font-body)', fontSize: '12px', color: 'var(--ink-mid)', padding: '0 20px 10px', background: '#fff', borderBottom: '1px solid var(--divider)' }}>
               Notifications are off in your iPhone Settings. Open Settings → QuteNote → Notifications to allow them.
             </p>
           )}
           {reminderStatus === 'failed' && (
-            <p style={{ fontFamily: 'var(--font-body)', fontSize: '12px', color: 'var(--ink-mid)', padding: '0 18px 10px' }}>
+            <p style={{ margin: 0, fontFamily: 'var(--font-body)', fontSize: '12px', color: 'var(--ink-mid)', padding: '0 20px 10px', background: '#fff', borderBottom: '1px solid var(--divider)' }}>
               That didn't go through{lastReminderFailure() ? ` (${lastReminderFailure()})` : ''}. Try again in a moment.
             </p>
           )}
+
           <button style={rowStyle} onClick={() => navigate('/handwriting')}>
             <span style={rowLabel}>Handwriting</span>
-            <span style={rowValue}>{hasHandwriting ? 'Done' : 'Not set up'}{chevron}</span>
+            <span style={rowValue}>{hasHandwriting ? 'Set up' : 'Not set up'}</span>
+            {chevron}
           </button>
-          <button style={rowStyle} onClick={() => setShowHelp(true)}>
+
+          <a href="mailto:hello@qutenote.com" style={{ ...rowStyle, borderBottom: 'none' }}>
             <span style={rowLabel}>Get help</span>
-            <span style={rowValue}>{chevron}</span>
-          </button>
+            <span style={rowValue} />
+            {chevron}
+          </a>
         </div>
 
         <button
           onClick={() => { logout(); navigate('/') }}
           style={{
-            display: 'block', width: '100%', textAlign: 'left', padding: '16px 18px', marginTop: '14px',
-            background: 'none', border: 'none', cursor: 'pointer',
-            fontFamily: 'var(--font-body)', fontSize: '15px', color: 'var(--ink-mid)',
+            display: 'block', margin: '22px 20px 0', padding: 0,
+            background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left',
+            fontFamily: 'var(--font-body)', fontSize: '14px', color: 'var(--ink-mid)',
             textTransform: 'none', letterSpacing: 0, fontWeight: 400,
           }}
         >
           Log out
         </button>
       </div>
-
-      {showHelp && (
-        <div style={{ position: 'fixed', inset: 0, zIndex: 100, background: 'rgba(43,34,56,0.45)', display: 'flex', alignItems: 'flex-end' }} onClick={() => setShowHelp(false)}>
-          <div style={{ width: '100%', background: 'var(--cream)', borderRadius: '16px 16px 0 0', padding: '24px 24px calc(24px + env(safe-area-inset-bottom))', textAlign: 'center' }} onClick={(e) => e.stopPropagation()}>
-            <QEmoji name="envelope" size={44} />
-            <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '20px', fontWeight: 400, margin: '12px 0 8px' }}>Need a hand?</h2>
-            <p style={{ fontFamily: 'var(--font-body)', fontSize: '14px', color: 'var(--ink-mid)', marginBottom: '16px' }}>
-              Email us and we'll get back to you.
-            </p>
-            <a href="mailto:emma@final.co" style={{
-              display: 'block', width: '100%', boxSizing: 'border-box', height: '48px', lineHeight: '48px',
-              borderRadius: '10px', background: uv, color: '#fff', textDecoration: 'none',
-              fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '13px', textTransform: 'uppercase', letterSpacing: '0.12em',
-            }}>emma@final.co</a>
-          </div>
-        </div>
-      )}
     </div>
   )
 }

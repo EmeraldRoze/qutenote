@@ -43,6 +43,14 @@ export function startScheduler(): void {
       if (now.getUTCHours() === 15 && lastReminderDate !== today) {
         lastReminderDate = today
         await birthdayReminders()
+        // Free mode: the monthly card allowance used to reset when Stripe
+        // billed. With nothing billed, reset everyone on the 1st instead.
+        // (Idempotent — resetting an already-zero counter is harmless.)
+        if (now.getUTCDate() === 1) {
+          const { prisma } = await import('./prisma')
+          const r = await prisma.user.updateMany({ where: { notesUsed: { gt: 0 } }, data: { notesUsed: 0 } })
+          console.log(`[scheduler] monthly allowance reset for ${r.count} member(s)`)
+        }
       }
     } catch (e: any) {
       console.error('[scheduler] reminders error:', e?.message)

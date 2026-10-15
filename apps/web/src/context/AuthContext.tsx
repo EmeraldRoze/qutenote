@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect } from 'react'
 import type { ReactNode } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { App as CapApp } from '@capacitor/app'
 import { Browser } from '@capacitor/browser'
 import { api } from '../lib/api'
@@ -35,6 +36,7 @@ const AuthContext = createContext<AuthContextType | null>(null)
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
+  const navigate = useNavigate()
 
   useEffect(() => {
     const token = localStorage.getItem('cn_token')
@@ -52,11 +54,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (!isNativeApp) return
     const sub = CapApp.addListener('appUrlOpen', ({ url }) => {
       if (!url.startsWith('qutenote://auth/success')) return
-      const token = new URL(url).searchParams.get('token')
+      const params = new URL(url).searchParams
+      const token = params.get('token')
       if (!token) return
+      // new=1 means this sign-in just created the account: Google doesn't give
+      // us a username, so brand-new people pick their handle first.
+      const isNew = params.get('new') === '1'
       Browser.close().catch(() => {})
       localStorage.setItem('cn_token', token)
-      api.get('/auth/me').then((res) => setUser(res.data.data)).catch(() => {})
+      api.get('/auth/me').then((res) => {
+        setUser(res.data.data)
+        if (isNew) navigate('/signup/handle', { replace: true, state: { provider: 'Google' } })
+      }).catch(() => {})
     })
     return () => { sub.then((s) => s.remove()) }
   }, [])

@@ -1,6 +1,5 @@
 import { Router } from 'express'
 import { z } from 'zod'
-import Stripe from 'stripe'
 import { prisma } from '../lib/prisma'
 import { requireAuth } from '../middleware/auth'
 import type { AuthRequest } from '../middleware/auth'
@@ -10,14 +9,13 @@ import { notifyUser } from '../lib/notify'
 import Lob from 'lob'
 
 const lob = new Lob(process.env.LOB_API_KEY)
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
 
 export const notesRouter = Router()
 
 const createNoteSchema = z.object({
   recipientId: z.string().uuid(),
   occasionType: z.string(),
-  noteText: z.string().min(5).max(300),
+  noteText: z.string().min(5).max(450),
   toneUsed: z.string(),
   fontChoice: z.string(),
   cardDesignType: z.enum(['ARTIST', 'USER_UPLOAD']),
@@ -53,50 +51,20 @@ notesRouter.post('/', requireAuth, async (req: AuthRequest, res) => {
   const sender = await prisma.user.findUnique({ where: { id: req.userId! } })
   if (!sender) return res.status(404).json({ error: 'Sender not found.' })
 
-  // Subscription gate: must be subscribed (or have gifted credits)
-  const hasGiftedCredits = sender.giftedCredits > 0
-  const isSubscribed = sender.subscriptionStatus === 'ACTIVE'
-  if (!isSubscribed && !hasGiftedCredits) {
-    return res.status(403).json({ error: 'You need an active subscription to send notes. Head to the Subscribe page to get started!' })
-  }
-
-  // Determine if this is an overage note (past monthly allowance, no gifted credits)
+  // Free mode (Oct 2026): QuteNote is free right now — no subscription, no
+  // charges anywhere. The monthly allowance still applies so sending stays
+  // bounded; gifted invite credits extend it.
   const withinAllowance = sender.notesUsed < sender.notesAllowance
-  const useGiftedCredit = !withinAllowance && hasGiftedCredits
-  const isOverage = isSubscribed && !withinAllowance && !hasGiftedCredits
-
-  // Charge $3.49 overage fee via Stripe
-  let overageChargeId: string | null = null
-  if (isOverage) {
-    if (!sender.stripeCustomerId) {
-      return res.status(400).json({ error: 'No payment method on file. Please update your billing info.' })
-    }
-    try {
-      const invoiceItem = await stripe.invoiceItems.create({
-        customer: sender.stripeCustomerId,
-        amount: 349,
-        currency: 'usd',
-        description: 'QuteNote — extra postcard ($3.49)',
-      })
-      const invoice = await stripe.invoices.create({
-        customer: sender.stripeCustomerId,
-        auto_advance: true,
-      })
-      const paid = await stripe.invoices.pay(invoice.id)
-      overageChargeId = (paid as any).charge as string ?? paid.id
-    } catch (stripeErr: any) {
-      console.error('Overage charge failed:', stripeErr?.message)
-      return res.status(402).json({ error: "We couldn't charge for the extra note. Please check your payment method." })
-    }
+  const hasGiftedCredits = sender.giftedCredits > 0
+  if (!withinAllowance && !hasGiftedCredits) {
+    return res.status(403).json({ error: "You've sent all your cards for this month. More unlock on the 1st!" })
   }
 
-  // Deduct from allowance or gifted credits
-  if (useGiftedCredit) {
-    await prisma.user.update({ where: { id: sender.id }, data: { giftedCredits: { decrement: 1 } } })
-  } else if (withinAllowance) {
+  // Deduct from allowance first, then gifted credits
+  if (withinAllowance) {
     await prisma.user.update({ where: { id: sender.id }, data: { notesUsed: { increment: 1 } } })
   } else {
-    await prisma.user.update({ where: { id: sender.id }, data: { notesUsed: { increment: 1 } } })
+    await prisma.user.update({ where: { id: sender.id }, data: { giftedCredits: { decrement: 1 } } })
   }
 
   // Get recipient address and check verification
@@ -122,7 +90,7 @@ notesRouter.post('/', requireAuth, async (req: AuthRequest, res) => {
       cardDesignType: cardDesignType as any,
       cardDesignId: cardDesignId ?? null,
       cardImageUrl: cardImageUrl ?? null,
-      stripeChargeId: overageChargeId,
+      stripeChargeId: null,
       status: 'PENDING',
     },
   })
@@ -142,7 +110,7 @@ notesRouter.post('/', requireAuth, async (req: AuthRequest, res) => {
 
 // PATCH /notes/:id — edit a note during its 2-hour window
 const editSchema = z.object({
-  noteText: z.string().min(5).max(300).optional(),
+  noteText: z.string().min(5).max(450).optional(),
   fontChoice: z.string().optional(),
 })
 notesRouter.patch('/:id', requireAuth, async (req: AuthRequest, res) => {

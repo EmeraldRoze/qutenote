@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>QuteNote add a date</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600&amp;family=Anonymous+Pro:wght@400;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#5A32D6}a:hover{color:#231A3A}
+input::placeholder{color:#9A92AD}
+</style>
+<style>html{background:#E9E4F2}body{display:flex;justify-content:center;padding:24px 0}body>div{border-radius:44px;box-shadow:0 20px 60px rgba(35,26,58,.18)}</style>
+</head>
+<body>
+<div style="width: 390px; height: 844px; box-sizing: border-box; position: relative; overflow: hidden; background: #FBF8F2; background-image: linear-gradient(to bottom, #FBF8F2 0, #FBF8F2 214px, #D9CFEC 214px, #D9CFEC 216px, transparent 216px), repeating-linear-gradient(transparent, transparent 35px, #E7E1EF 35px, #E7E1EF 36px); font-family: 'Anonymous Pro', ui-monospace, Menlo, monospace; color: #231A3A; padding: 0 20px 34px; display: flex; flex-direction: column">
+  <header data-qn-band="216" style="height: 216px; box-sizing: border-box; padding-top: 54px; flex: none; display: flex; flex-direction: column; justify-content: center">
+  <div style="display: flex; align-items: center; justify-content: space-between">
+    <a href="13-dates.html" aria-label="Back to Important dates" style="width: 44px; height: 44px; border-radius: 50%; background: #E9E2FB; display: flex; align-items: center; justify-content: center; color: #231A3A">
+      <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"></path></svg>
+    </a>
+  </div>
+  <div style="margin-top: 14px; display: flex; align-items: center; gap: 12px">
+    <h1 style="margin: 0; flex: 1; min-width: 0; font-family: 'Unbounded', system-ui, sans-serif; font-weight: 400; font-size: 26px; line-height: 1.12; letter-spacing: -0.02em">Add a date worth mailing.</h1>
+    <img src="../assets/emoji/calendar_emoji.png" alt="" style="width: 58px; height: auto; flex: none; transform: rotate(5deg)">
+  </div>
+  </header>
+
+  <label style="margin-top: 18px; background: #FFFFFF; border: 1.5px solid #E3DCF2; border-radius: 18px; padding: 12px 16px; display: flex; align-items: center; gap: 10px">
+    <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4A4163" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"></circle><path d="M16 16l4.5 4.5"></path></svg>
+    <span style="flex: 1; display: flex; flex-direction: column; gap: 4px; min-width: 0">
+      <span style="font-size: 13px; color: #4A4163">Who's it for?</span>
+      <input placeholder="A QT, or type a name like Mom" style="border: 0; outline: none; background: transparent; padding: 0; font-family: inherit; font-size: 16px; color: #231A3A; width: 100%">
+    </span>
+  </label>
+
+  <h2 style="margin: 20px 0 10px; font-size: 13px; font-weight: 700; color: #4A4163">What are we celebrating?</h2>
+  <div role="radiogroup" aria-label="Kind of date" style="display: flex; flex-wrap: wrap; gap: 8px">
+      <button role="radio" aria-checked="true" style="flex: none; min-height: 44px; padding: 0 14px; border-radius: 22px; border: 2px dashed #BE8EF5; background: #F3EEFF; display: flex; align-items: center; gap: 8px; font-family: inherit; font-size: 14px; font-weight: 700; color: #231A3A; cursor: pointer"><img src="../assets/emoji/cake_emoji.png" alt="" style="width: 24px; height: auto"><span>B-Day</span></button>
+      <button role="radio" aria-checked="false" style="flex: none; min-height: 44px; padding: 0 14px; border-radius: 22px; border: 1.5px solid #E3DCF2; background: #FFFFFF; display: flex; align-items: center; gap: 8px; font-family: inherit; font-size: 14px; font-weight: 700; color: #231A3A; cursor: pointer"><img src="../assets/emoji/party_emoji.png" alt="" style="width: 24px; height: auto"><span>Anniversary</span></button>
+      
+      <button role="radio" aria-checked="false" style="flex: none; min-height: 44px; padding: 0 14px; border-radius: 22px; border: 1.5px solid #E3DCF2; background: #FFFFFF; display: flex; align-items: center; gap: 8px; font-family: inherit; font-size: 14px; font-weight: 700; color: #231A3A; cursor: pointer"><img src="../assets/emoji/crying_emoji.png" alt="" style="width: 24px; height: auto">Hard day</button>
+      <button role="radio" aria-checked="false" style="flex: none; min-height: 44px; padding: 0 14px; border-radius: 22px; border: 1.5px solid #E3DCF2; background: #FFFFFF; display: flex; align-items: center; gap: 8px; font-family: inherit; font-size: 14px; font-weight: 700; color: #231A3A; cursor: pointer"><img src="../assets/emoji/thought_bubble_emoji.png" alt="" style="width: 24px; height: auto">Other</button>
+  </div>
+
+  
+
+  <h2 style="margin: 20px 0 10px; font-size: 13px; font-weight: 700; color: #4A4163">When?</h2>
+  <div role="group" aria-label="Date" style="position: relative; background: #FFFFFF; border: 1.5px solid #E3DCF2; border-radius: 18px; padding: 6px 10px; display: flex; gap: 4px">
+    <span aria-hidden="true" style="position: absolute; left: 8px; right: 8px; top: 74px; height: 34px; border-radius: 12px; background: #F3EEFF; border: 1.5px solid #BE8EF5; box-sizing: border-box"></span>
+    <div style="flex: 1.6; display: flex; flex-direction: column; position: relative; z-index: 1"><span style="height: 34px; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 400; opacity: 0.2">March</span><span style="height: 34px; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 400; opacity: 0.45">April</span><span style="height: 34px; display: flex; align-items: center; justify-content: center; font-size: 19px; font-weight: 700; opacity: 1">May</span><span style="height: 34px; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 400; opacity: 0.45">June</span><span style="height: 34px; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 400; opacity: 0.2">July</span></div><div style="flex: 1; display: flex; flex-direction: column; position: relative; z-index: 1"><span style="height: 34px; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 400; opacity: 0.2">12</span><span style="height: 34px; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 400; opacity: 0.45">13</span><span style="height: 34px; display: flex; align-items: center; justify-content: center; font-size: 19px; font-weight: 700; opacity: 1">14</span><span style="height: 34px; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 400; opacity: 0.45">15</span><span style="height: 34px; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 400; opacity: 0.2">16</span></div>
+  </div>
+
+  <div style="margin-top: 14px; background: #FFFFFF; border: 1.5px solid #E3DCF2; border-radius: 18px; padding: 12px 16px; display: flex; align-items: center; gap: 12px">
+    <span style="flex: 1; display: flex; flex-direction: column; gap: 2px">
+      <span style="font-size: 15px; font-weight: 700">Every year</span>
+      <span style="font-size: 13px; color: #4A4163">We'll buzz you 7 days before.</span>
+    </span>
+    <button role="switch" aria-checked="true" aria-label="Every year" style="width: 52px; height: 32px; flex: none; border-radius: 16px; border: 1.5px solid #231A3A; background: #C6FF3D; position: relative; padding: 0; cursor: pointer">
+      <span style="position: absolute; top: 2px; left: 22px; width: 25px; height: 25px; border-radius: 50%; background: #FFFFFF; border: 1.5px solid #231A3A; box-sizing: border-box"></span>
+    </button>
+  </div>
+
+  <a href="13-dates.html" style="margin-top: auto; height: 56px; border-radius: 28px; background: #5A32D6; display: flex; align-items: center; justify-content: center; text-decoration: none; color: #FFFFFF; font-size: 15px; font-weight: 700; letter-spacing: 0.08em">SAVE DATE</a>
+</div>
+</body>
+</html>

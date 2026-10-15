@@ -32,6 +32,7 @@ import { adminPdfRouter } from './routes/admin-pdf'
 import { feedRouter } from './routes/feed'
 import { importantDatesRouter } from './routes/important-dates'
 import { invitesRouter } from './routes/invites'
+import { accountRouter } from './routes/account'
 
 const app = express()
 const PORT = process.env.PORT ?? 4000
@@ -63,6 +64,7 @@ app.use((req, res, next) => (
 ))
 
 // ─── Routes ───────────────────────────────────────────────────────────────────
+app.use('/account', accountRouter)
 app.use('/auth', authRouter)
 app.use('/auth', googleAuthRouter)
 app.use('/auth', appleAuthRouter)

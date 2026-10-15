@@ -5,6 +5,64 @@ import { requireAuth, AuthRequest } from '../middleware/auth'
 
 export const usersRouter = Router()
 
+// ─── Match phone contacts to QuteNote members (contacts sync) ────────────────
+// The app sends the email addresses from the person's own address book; we
+// return which of them are already QTs-to-be. Emails echo back only for the
+// addresses the client already had.
+
+const matchContactsSchema = z.object({ emails: z.array(z.string().email()).max(1000) })
+
+usersRouter.post('/match-contacts', requireAuth, async (req: AuthRequest, res: Response) => {
+  const parsed = matchContactsSchema.safeParse(req.body)
+  if (!parsed.success) return res.status(400).json({ error: 'Invalid contact list.' })
+  const emails = parsed.data.emails.map((e) => e.toLowerCase())
+  if (!emails.length) return res.json({ data: [] })
+
+  const users = await prisma.user.findMany({
+    where: {
+      email: { in: emails, mode: 'insensitive' },
+      NOT: { id: req.userId },
+    },
+    select: { id: true, username: true, displayName: true, avatarUrl: true, email: true },
+    take: 100,
+  })
+  return res.json({ data: users })
+})
+
+// ─── Handle availability check (sign-up: pick your handle) ───────────────────
+// Must be registered BEFORE '/:username' so "handle-check" isn't read as a
+// username parameter.
+
+const HANDLE_RE = /^[a-z0-9_]{3,20}$/
+
+usersRouter.get('/handle-check', requireAuth, async (req: AuthRequest, res: Response) => {
+  const u = String(req.query.u ?? '').trim().toLowerCase()
+  const valid = HANDLE_RE.test(u)
+
+  let available = false
+  if (valid) {
+    const taken = await prisma.user.findFirst({
+      where: { username: u, NOT: { id: req.userId } },
+      select: { id: true },
+    })
+    available = !taken
+  }
+
+  // Suggest free variants: the handle plus a random two-digit tail
+  const base = (valid ? u : u.replace(/[^a-z0-9_]/g, '')).slice(0, 18) || 'qt'
+  const suggestions: string[] = []
+  const tried = new Set<string>([u])
+  while (suggestions.length < 3 && tried.size < 40) {
+    const candidate = `${base}${Math.floor(Math.random() * 90 + 10)}`
+    if (tried.has(candidate)) continue
+    tried.add(candidate)
+    const exists = await prisma.user.findUnique({ where: { username: candidate }, select: { id: true } })
+    if (!exists) suggestions.push(candidate)
+  }
+
+  return res.json({ data: { available, suggestions } })
+})
+
 // ─── Get user profile by username ────────────────────────────────────────────
 
 usersRouter.get('/:username', requireAuth, async (req: AuthRequest, res: Response) => {
@@ -74,6 +132,13 @@ usersRouter.get('/', requireAuth, async (req: AuthRequest, res: Response) => {
 
 const updateSchema = z.object({
   displayName: z.string().min(1).max(50).optional(),
+  username: z
+    .string()
+    .min(3, 'Handles need at least 3 characters.')
+    .max(20, 'Handles max out at 20 characters.')
+    .regex(/^[a-z0-9_]+$/, 'Handles can only use lowercase letters, numbers, and underscores.')
+    .optional(),
+  email: z.string().email('Please enter a valid email address.').optional(),
   bio: z.string().max(160).optional(),
   isPrivate: z.boolean().optional(),
   // Profile emoji: only our own torn-paper art paths are allowed
@@ -88,6 +153,28 @@ usersRouter.put('/me', requireAuth, async (req: AuthRequest, res: Response) => {
   }
   const { birthday, ...rest } = result.data
 
+  // Changing the handle: make sure nobody else already has it
+  if (rest.username) {
+    const taken = await prisma.user.findFirst({
+      where: { username: rest.username, NOT: { id: req.userId } },
+      select: { id: true },
+    })
+    if (taken) {
+      return res.status(409).json({ error: 'That handle is already taken. Try another one.' })
+    }
+  }
+
+  // Changing the email: same story
+  if (rest.email) {
+    const taken = await prisma.user.findFirst({
+      where: { email: rest.email, NOT: { id: req.userId } },
+      select: { id: true },
+    })
+    if (taken) {
+      return res.status(409).json({ error: 'That email already has an account.' })
+    }
+  }
+
   const user = await prisma.user.update({
     where: { id: req.userId },
     data: { ...rest, ...(birthday ? { birthday: new Date(birthday) } : {}) },
@@ -95,6 +182,7 @@ usersRouter.put('/me', requireAuth, async (req: AuthRequest, res: Response) => {
       id: true,
       username: true,
       displayName: true,
+      email: true,
       avatarUrl: true,
       bio: true,
       isPrivate: true,

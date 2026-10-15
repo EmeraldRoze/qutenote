@@ -21,11 +21,20 @@
 
   --cream:          #FBF8F2;  /* matches the design file's "paper" token */
   --cream-warm:     #F3EEFF;  /* panels that matter sit on lavender-pale */
-  --cream-ruled:    #E7E1EF;  /* matches the design file's "paperRuleLine" token */
-  --stone:          #E6E1DC;
-  --lime:           #C6FF3D;  /* countdown pills and new dots ONLY */
+  --cream-ruled:    #E7E1EF;  /* matches the design file's "rulingLine" token */
+  --stone:          #E3DCF2;  /* card/field border per Oct 15 redesign ("border" token) */
+  --divider:        #EEEAF5;  /* thin dividers inside grouped cards */
+  --title-band-rule:#D9CFEC;  /* 2px rule under every screen's title band */
+  --lime:           #C6FF3D;  /* small accents only: pills, badges, switch-on, stamp heart */
+  --lime-tint:      #F3FFD1;
+  --lime-border:    #9ECF1B;
   --neon-pink:      #FF6EB4;  /* carousel card accent only */
-  --lilac:          #BE8EF5;  /* carousel/decorative only — never on Write/Send buttons */
+  --pink-pale:      #F3D6E5;
+  --lilac:          #BE8EF5;  /* dashed selected-state borders — never on Write/Send buttons */
+  --stamp-frame:    #EEE8FB;  /* SEND stamp frame fill */
+  --placeholder:    #9A92AD;
+  --note-ink:       #2A1F4A;
+  --logo-heart:     #A78BC7;
   --white:          #FFFFFF;
 
   --error:          #E04E6B;
@@ -46,10 +55,22 @@
 body {
   font-family: var(--font-body);
   background: var(--cream);
-  background-image: repeating-linear-gradient(transparent, transparent 31px, var(--cream-ruled) 31px, var(--cream-ruled) 32px);
+  /* Notebook ruling: one continuous 36px rhythm behind the whole screen */
+  background-image: repeating-linear-gradient(transparent, transparent 35px, var(--cream-ruled) 35px, var(--cream-ruled) 36px);
   color: var(--ink);
   -webkit-font-smoothing: antialiased;
   line-height: 1.55;
+}
+
+/* The clear header space at the top of every screen, like school notebook
+   paper. Height must be a multiple of 36 (144/216/252/288/324) so the ruled
+   lines below keep their rhythm. Solid cream hides the ruling behind it. */
+.title-band {
+  background: var(--cream);
+  border-bottom: 2px solid var(--title-band-rule);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 /* Headlines: Unbounded, never bold — hierarchy comes from size */

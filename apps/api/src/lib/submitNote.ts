@@ -56,14 +56,19 @@ export async function submitNoteToLob(noteId: string): Promise<void> {
   // real artwork, or — most cards right now — a solid tint placeholder
   // while we're still onboarding artists. Art files live on the public site.
   const SITE = process.env.WEB_URL ?? 'https://qutenote.com'
-  // Full-bleed real artwork (currently just @ellis_tolsma's first card)
+  // Full-bleed real artwork — mirrors apps/web/src/lib/cards.ts
+  // (@ellis_tolsma and @bobbybealspresents, Oct 2026 lineup)
   const CARD_ART: Record<string, string> = {
-    'et-1': '/cards/ellis-tolsma/insects.jpg',
+    'et-1': '/cards/ellis_tolsma/ellis_tolsma_1_insects.jpg',
+    'et-2': '/cards/ellis_tolsma/ellis_tolsma_2_furby.jpg',
+    'et-3': '/cards/ellis_tolsma/ellis_tolsma_3_mermaid.jpg',
+    'bb-1': '/cards/bobbybealspresents/bobbybealspresents_1_horse.jpg',
+    'bb-2': '/cards/bobbybealspresents/bobbybealspresents_2_flower.jpg',
+    'bb-3': '/cards/bobbybealspresents/bobbybealspresents_3_roses.jpg',
   }
   // Solid-color placeholders for cards without real art yet, plus legacy ids
   // from before this catalog (torn-paper emoji centered on a tint)
   const CARD_TINTS: Record<string, { art?: string; bg: string }> = {
-    'et-2': { bg: '#FF6EB4' }, 'et-3': { bg: '#C6FF3D' },
     'a2-1': { bg: '#F3EEFF' }, 'a2-2': { bg: '#D9C9F1' }, 'a2-3': { bg: '#5A32D6' },
     'a3-1': { bg: '#F2FBDA' }, 'a3-2': { bg: '#C6FF3D' }, 'a3-3': { bg: '#9FE870' },
     'a4-1': { bg: '#FDE8F2' }, 'a4-2': { bg: '#FF6EB4' }, 'a4-3': { bg: '#D6407F' },

@@ -287,10 +287,11 @@ enum OccasionType {
 }
 
 enum FontChoice {
-  CAVEAT
-  DANCING_SCRIPT
-  REENIE_BEANIE
-  PATRICK_HAND
+  YOUR_HANDWRITING
+  FRAUNCES
+  SORA
+  DM_MONO
+  ROCK_SALT
 }
 
 enum BadgeType {

@@ -33,11 +33,15 @@ adminPdfRouter.use(requireAdminOrQuery)
 const WIDTH = 6 * 72   // 432
 const HEIGHT = 4 * 72   // 288 (standard 6x4 postcard)
 
+// Closest built-in PDF stand-ins for the Oct 2026 pens. Real pen fonts on
+// the printed card (including the person's own handwriting font) are a
+// known follow-up — Emerald prints at home for now.
 const FONT_MAP: Record<string, string> = {
-  CAVEAT: 'Helvetica-Oblique',
-  DANCING_SCRIPT: 'Helvetica-Oblique',
-  REENIE_BEANIE: 'Helvetica-Oblique',
-  PATRICK_HAND: 'Helvetica',
+  YOUR_HANDWRITING: 'Helvetica-Oblique',
+  FRAUNCES: 'Times-Italic',
+  SORA: 'Helvetica',
+  DM_MONO: 'Courier',
+  ROCK_SALT: 'Helvetica-Oblique',
 }
 
 // GET /admin/notes/:id/pdf — generate a printable postcard PDF

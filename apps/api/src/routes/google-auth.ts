@@ -67,6 +67,9 @@ googleAuthRouter.get('/google/callback', async (req: Request, res: Response) => 
       where: { OR: [{ googleId: googleUser.id }, { email: googleUser.email }] },
     })
 
+    // Brand-new accounts take the "pick your handle" step; returning ones go home
+    let isNew = false
+
     if (user) {
       // Link Google account if not already linked
       if (!user.googleId) {
@@ -95,13 +98,15 @@ googleAuthRouter.get('/google/callback', async (req: Request, res: Response) => 
           avatarUrl: googleUser.picture ?? null,
         },
       })
+      isNew = true
     }
 
     const jwt = signToken(user.id)
     if (req.query.state === 'native') {
       // iOS often blocks automatic redirects into an app, so show a page
-      // that tries automatically AND gives the user a button to tap
-      const appLink = `qutenote://auth/success?token=${jwt}`
+      // that tries automatically AND gives the user a button to tap.
+      // new=1 tells the app to route this person to the pick-your-handle step.
+      const appLink = `qutenote://auth/success?token=${jwt}${isNew ? '&new=1' : ''}`
       return res.send(`<!doctype html>
 <html><head><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>QuteNote</title>
@@ -126,7 +131,7 @@ googleAuthRouter.get('/google/callback', async (req: Request, res: Response) => 
   </script>
 </body></html>`)
     }
-    res.redirect(`${WEB_URL}/auth/google/success?token=${jwt}`)
+    res.redirect(`${WEB_URL}/auth/google/success?token=${jwt}${isNew ? '&new=1' : ''}`)
   } catch (err: any) {
     console.error('Google OAuth error:', err?.message ?? err)
     res.redirect(`${WEB_URL}/login?error=google_failed`)
