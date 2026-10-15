@@ -1,11 +1,12 @@
 # QuteNote — Handoff / Status Board
 Written: 2026-10-06 (replaces stale April 10 handoff). Last updated: 2026-10-15.
 
-## FEEDBACK QUEUE — next round (collecting since build 27 shipped Oct 15). Round NOT closed yet.
-1. (Oct 15, chat) Removing a friend must be possible again (QTs rows now open profiles, so the old X is gone). Likely home: the friend's profile view.
-2. (Oct 15, chat) WEBSITE goes info + email-collection only for now: no login/signup on the site, homepage collects emails into the launch list (EarlySignup already exists). Keep invite/claim links (/i/, /collect-address) working so the text-invite flow survives. App unaffected. REMINDER AT LAUNCH: add website login back in.
-3. (Oct 15, chat) Email capture should also collect their NAME with the email.
-4. (Oct 15, chat) Build the launch-list "sheet": all collected emails viewable (admin) + downloadable as a spreadsheet (name, email, signup date); optionally export to her Google Drive on request.
+## ROUND SHIPPED Oct 15 (evening) as BUILD 28 (FIREFLY). The 4-item round:
+1. Remove QT: on a friend's profile, "Your QT ✓" now has a Remove QT button (two-tap confirm) via existing DELETE /connections/:userId.
+2. WEBSITE is info + launch-list only: Log in / Join buttons gone from landing nav + pricing card (replaced with "Get on the list" / inline capture forms); /login + /signup routes still EXIST unlinked (Google OAuth redirect + testers' direct links + invite claim flow all still work). REMINDER AT LAUNCH: add website login links back.
+3. Email capture collects NAME + email (EarlySignup.name column added on prod; repeat signups backfill the name).
+4. Launch list on /admin: table of signups + "Download spreadsheet" (CSV built client-side). Google Drive export on request via session tools.
+Also: nav "Pricing" renamed "The deal" (last pricing mention). Allowance check for Emerald: all 18 members notesUsed=0; emerald + maya_k have allowance 5 (legacy), rest 2.
 
 ## REMINDER FOR NEXT ROUND (Emerald asked to be reminded)
 - **Scheduling**: "Send now / Schedule it" on the preview step + "Scheduled cards" in Settings were held out of the Oct 15 redesign round on her call. Bring it up when the next round opens.
