@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-import { SESSIONS, ALL_CHARS, TOTAL_CHARS, type HandwritingSession } from '../lib/handwriting/alphabet'
+import { SESSIONS, ALL_CHARS, TOTAL_CHARS, charName, type HandwritingSession } from '../lib/handwriting/alphabet'
 import { HANDWRITING_CANVAS_SIZE, HANDWRITING_BASELINE_Y, type GlyphStrokes, type Stroke, type Point } from '../lib/handwriting/compileFont'
 import { fetchHandwritingProgress, saveHandwritingProgress } from '../lib/handwriting/api'
 
@@ -176,9 +176,12 @@ function SessionFlow({ session, existingGlyphs, onDone, onAllComplete }: {
           {session.label} · {index + 1} of {session.chars.length}
         </p>
       </div>
-      <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '64px', fontWeight: 400, color: 'var(--ink)', margin: '0 0 18px' }}>
+      <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '64px', fontWeight: 400, color: 'var(--ink)', margin: '0 0 2px' }}>
         {displayChar}
       </h1>
+      <p style={{ fontFamily: 'var(--font-body)', fontSize: '14px', color: 'var(--ink-mid)', margin: '0 0 14px' }}>
+        {charName(session.key, char)}
+      </p>
       <LetterCanvas strokes={currentStrokes} onDraw={setCurrentStrokes} />
       <p style={{ fontSize: '12px', fontFamily: 'var(--font-body)', color: 'var(--ink-muted)', marginTop: '10px' }}>
         Just tap for a dot — i, j, and periods don't need a drag.
