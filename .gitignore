@@ -7,3 +7,4 @@ apps/api/dist
 *.tsbuildinfo
 
 .DS_Store
+backups/
