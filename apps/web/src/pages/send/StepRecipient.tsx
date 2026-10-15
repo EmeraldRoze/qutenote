@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react'
 import { api } from '../../lib/api'
+import { inviteRecipientByText } from '../../lib/inviteText'
+import QEmoji from '../../components/QEmoji'
 import type { NoteData } from './SendFlow'
 
 interface User {
@@ -14,6 +16,18 @@ export default function StepRecipient({ onNext, initialQuery }: { onNext: (data:
   const [results, setResults] = useState<User[]>([])
   const [selected, setSelected] = useState<User | null>(null)
   const [searching, setSearching] = useState(false)
+  const [inviteState, setInviteState] = useState<'idle' | 'working' | 'copied' | 'sent'>('idle')
+
+  async function inviteThem() {
+    setInviteState('working')
+    try {
+      const link = await inviteRecipientByText()
+      try { await navigator.clipboard.writeText(link) } catch { /* sms composer already has it */ }
+      setInviteState('sent')
+    } catch {
+      setInviteState('idle')
+    }
+  }
 
   useEffect(() => {
     if (initialQuery) search(initialQuery)
@@ -125,6 +139,35 @@ export default function StepRecipient({ onNext, initialQuery }: { onNext: (data:
             <p style={{ fontSize: '12px', color: 'var(--ink-muted)' }}>@{selected.username}</p>
           </div>
           <span style={{ marginLeft: 'auto', color: 'var(--lavender)', fontSize: '18px' }}>✓</span>
+        </div>
+      )}
+
+      {!selected && (
+        <div style={{
+          marginTop: '24px', padding: '16px', borderRadius: '14px',
+          background: 'var(--lavender-pale)', border: '1.5px dashed var(--lavender-soft)',
+          display: 'flex', flexDirection: 'column', gap: '10px', textAlign: 'center', alignItems: 'center',
+        }}>
+          <QEmoji name="envelope" size={32} />
+          <p style={{ fontFamily: 'var(--font-display)', fontSize: '16px', fontWeight: 400, color: 'var(--ink)' }}>
+            Not on QuteNote yet?
+          </p>
+          <p style={{ fontSize: '13px', fontFamily: 'var(--font-body)', color: 'var(--ink-mid)', lineHeight: 1.45 }}>
+            Text them your link. They set up a free profile, drop in their address, and your card is the first thing in their mailbox.
+          </p>
+          <button onClick={inviteThem} disabled={inviteState === 'working'} style={{
+            height: '42px', padding: '0 20px', borderRadius: '999px', border: 'none', cursor: 'pointer',
+            background: 'var(--lavender)', color: '#fff', fontFamily: 'var(--font-body)', fontWeight: 700,
+            fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.1em',
+            opacity: inviteState === 'working' ? 0.7 : 1,
+          }}>
+            {inviteState === 'working' ? 'Getting your link…' : inviteState === 'sent' ? 'Link ready — sent!' : 'Invite them by text'}
+          </button>
+          {inviteState === 'sent' && (
+            <p style={{ fontSize: '12px', fontFamily: 'var(--font-body)', color: 'var(--ink-mid)' }}>
+              Once they join, come back and their name will be here.
+            </p>
+          )}
         </div>
       )}
 
