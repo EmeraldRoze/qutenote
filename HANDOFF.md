@@ -4,6 +4,8 @@ Written: 2026-10-06 (replaces stale April 10 handoff). Last updated: 2026-10-15.
 ## FEEDBACK QUEUE — next round (collecting since build 27 shipped Oct 15). Round NOT closed yet.
 1. (Oct 15, chat) Removing a friend must be possible again (QTs rows now open profiles, so the old X is gone). Likely home: the friend's profile view.
 2. (Oct 15, chat) WEBSITE goes info + email-collection only for now: no login/signup on the site, homepage collects emails into the launch list (EarlySignup already exists). Keep invite/claim links (/i/, /collect-address) working so the text-invite flow survives. App unaffected. REMINDER AT LAUNCH: add website login back in.
+3. (Oct 15, chat) Email capture should also collect their NAME with the email.
+4. (Oct 15, chat) Build the launch-list "sheet": all collected emails viewable (admin) + downloadable as a spreadsheet (name, email, signup date); optionally export to her Google Drive on request.
 
 ## REMINDER FOR NEXT ROUND (Emerald asked to be reminded)
 - **Scheduling**: "Send now / Schedule it" on the preview step + "Scheduled cards" in Settings were held out of the Oct 15 redesign round on her call. Bring it up when the next round opens.
