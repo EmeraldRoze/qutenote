@@ -17,8 +17,8 @@ interface OfferCard {
 }
 const OFFER_CARDS: OfferCard[] = [
   { bg: 'var(--lilac)', art: 'heart-sparkle', title: 'Your first card is on us', cta: 'Send a card', onClick: (nav) => nav('/send') },
-  { bg: 'var(--neon-pink)', art: 'bff', title: 'Invite a friend. You both get a free card.', cta: 'Invite', onClick: (nav) => nav('/invite') },
-  { bg: 'var(--lime)', art: 'mailbox', title: 'Know when something is in the mail', cta: 'Turn on alerts', onClick: (nav) => nav('/dates') },
+  { bg: 'var(--lime)', art: 'bff', title: 'Invite a friend. You both get a free card.', cta: 'Invite', onClick: (nav) => nav('/invite') },
+  { bg: 'var(--neon-pink)', art: 'mailbox', title: 'Know when something is in the mail', cta: 'Turn on alerts', onClick: (nav) => nav('/dates') },
   { bg: 'var(--lavender-light)', art: 'camera', title: 'Got a good photo? Mail it.', cta: 'Upload a photo', onClick: (nav) => nav('/send') },
 ]
 
@@ -114,7 +114,6 @@ function SetupChecklist({ tasks, hasSentCard }: { tasks: SetupTask[]; hasSentCar
 }
 
 const uv = '#5A32D6'
-const label: React.CSSProperties = { fontSize: '11px', fontWeight: 700, letterSpacing: '1.4px', textTransform: 'uppercase', color: 'var(--ink-mid)' }
 
 interface FeedUser { id: string; username: string; displayName: string; avatarUrl: string | null }
 interface FeedItem {
@@ -240,31 +239,11 @@ export default function HomePage() {
           Hi, {firstName}.
         </h1>
         <p style={{ fontFamily: 'var(--font-body)', fontSize: '15px', color: 'var(--ink-mid)', marginTop: '4px' }}>
-          {setupDone ? "What's new with you?" : "Let's get your first card in the mail."}
+          {setupDone ? "How's your heart?" : "Let's get your first card in the mail."}
         </p>
 
         {!setupDone && <OfferCarousel />}
         <SetupChecklist tasks={setupTasks} hasSentCard={hasSentCard} />
-
-        {/* Happenings status row */}
-        <button onClick={() => setComposing(true)} style={{
-          display: 'flex', alignItems: 'center', gap: '10px', width: '100%', marginTop: '18px',
-          padding: '8px 12px 8px 8px', borderRadius: '30px', border: '1px solid var(--stone)',
-          background: '#fff', boxShadow: '0 4px 14px rgba(43,34,56,0.05)', cursor: 'pointer', textAlign: 'left',
-        }}>
-          <span style={{ width: '40px', height: '40px', minWidth: '40px', borderRadius: '20px', background: 'var(--lavender-pale)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <QEmoji name={myStatus?.emoji ?? 'sun'} size={28} />
-          </span>
-          <span style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column' }}>
-            <span style={label}>Happenings</span>
-            <span style={{ fontSize: '16px', fontFamily: 'var(--font-body)', fontWeight: 400, textTransform: 'none', letterSpacing: 0, color: myStatus ? 'var(--ink)' : 'var(--ink-muted)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-              {myStatus?.text ?? "What's new with you?"}
-            </span>
-          </span>
-          <span style={{ color: uv, display: 'flex' }}>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M4 20l4-1 11-11-3-3L5 16z" /></svg>
-          </span>
-        </button>
 
         {/* Date nudge */}
         {nudge && (

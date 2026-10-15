@@ -31,7 +31,7 @@ export function HappeningsRow() {
         <span style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column' }}>
           <span style={label}>Happenings</span>
           <span style={{ fontSize: '16px', fontFamily: 'var(--font-body)', fontWeight: 400, textTransform: 'none', letterSpacing: 0, color: myStatus ? 'var(--ink)' : 'var(--ink-muted)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-            {myStatus?.text ?? "What's new with you?"}
+            {myStatus?.text ?? "How's your heart?"}
           </span>
         </span>
         <span style={{ color: uv, display: 'flex' }}>
@@ -64,7 +64,7 @@ export function StatusComposer({ onDone }: { onDone: (s: MyStatus | null) => voi
   return (
     <div style={{ position: 'fixed', inset: 0, zIndex: 100, background: 'rgba(43,34,56,0.45)', display: 'flex', alignItems: 'flex-end' }} onClick={() => onDone(null)}>
       <div style={{ width: '100%', background: 'var(--cream)', borderRadius: '16px 16px 0 0', padding: '24px 24px calc(24px + env(safe-area-inset-bottom))' }} onClick={(e) => e.stopPropagation()}>
-        <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '22px', fontWeight: 400, marginBottom: '14px' }}>What's new with you?</h2>
+        <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '22px', fontWeight: 400, marginBottom: '14px' }}>How's your heart?</h2>
         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '14px' }}>
           {STATUS_EMOJI.map((e) => (
             <button key={e} onClick={() => setEmoji(e)} style={{
