@@ -5,7 +5,7 @@ Written: 2026-10-06 (replaces stale April 10 handoff). Last updated: 2026-10-15.
 - **Scheduling**: "Send now / Schedule it" on the preview step + "Scheduled cards" in Settings were held out of the Oct 15 redesign round on her call. Bring it up when the next round opens.
 - Also still open: full-size artist card files from @ellis_tolsma and @bobbybealspresents before anything prints (current JPGs are Instagram-screenshot resolution); full-size stamp exports.
 
-## FULL REDESIGN SHIPPED Oct 15 as BUILD 27 (FIREFLY; design/redesign-oct15-2026, 18 screens)
+## FULL REDESIGN SHIPPED Oct 15 as BUILD 27 — APPROVED, LIVE WITH TESTERS (FIREFLY; design/redesign-oct15-2026, 18 screens)
 - All 18 screens rebuilt to the design package (notebook paper w/ 36px ruling + title bands, new tab bar w/ sunglasses Profile + spec SEND stamp). Built by a 5-agent swarm (auth / home+QTs / send / dates / profile+settings), integrated, typecheck clean, visually QA'd via headless-Chrome phone emulation against prod data.
 - FREE MODE: all pricing removed everywhere (app + website). No subscription needed to send; 2-cards/month allowance kept (gifted invite credits extend); allowance now resets on the 1st via scheduler (used to reset via Stripe invoices); Subscribe pages deleted; Stripe routes left dormant.
 - PENS REPLACED: Caveat/Dancing/Reenie/Patrick retired -> Your handwriting/Fraunces(italic)/Sora/DM Mono/Rock Salt (lib/pens.ts, per-pen sizes 19/23/19/17/16). FontChoice enum migrated on prod. Old-pen notes deleted per Emerald (1 note total existed, backed up to backups/notes-backup-2026-10-15.json). notesUsed reset to 0 for all (2 members) for the free relaunch.
