@@ -1,16 +1,8 @@
 # QuteNote — Handoff / Status Board
 Written: 2026-10-06 (replaces stale April 10 handoff). Last updated: 2026-10-14.
 
-## FEEDBACK QUEUE — next round (collected Oct 13 ~2:30-2:45pm via TestFlight, build 25). Round NOT closed yet.
-1. Home carousel: pink "Invite a friend" card -> neon green
-2. Home carousel: lime "Know when something is in the mail" card -> pink (swap the two colors)
-3. Status sheet title "What's new with you?" -> "How's your heart?"
-4. Remove the HAPPENINGS "What's new with you?" row on Home (repetitive with the status card)
-5. QUESTION (answered in chat): how personalized invite code + free postcard works with TestFlight
-6. Handwriting capture: she was asked to draw lowercase "i" twice, investigate (screenshot: lowercase letters 10 of 26 = i)
-7. Send flow Step 2 (Who's getting the love?): add invite-a-non-member path here. Invite copy: "someone wants to send you a card. Fill out your address and set up your profile for free," in the Cute Note tone, make it cute
-8. Handwriting FONT quality (big one): smooth letters more; crop glyphs transparent so overlap works; descenders (j/y) should go below the line
-9. Handwriting FONT quality: baseline-align letters (her K floated high), normalize letter sizes/spacing automatically when someone draws unevenly, "more smoothing," she suggested AI resize
+## ROUND SHIPPED Oct 14 as BUILD 26 (FIREFLY, round closed by Emerald). All 9 Oct-13 feedback items addressed:
+Home card colors swapped (invite=lime, alerts=neon-pink); status renamed "How's your heart?" everywhere; Happenings row removed from Home; handwriting prompts now name the letter in words (root cause of "did i twice": Unbounded's j looks exactly like i — HER SAVED j IS AN i, she should redraw j in the app); send flow Step 2 has a "Not on QuteNote yet?" invite-by-text box with her requested recipient copy; handwriting font compiler v2 (baseline snapping, size normalization per letter class, real descenders, smoothing, spacing fix) with auto-recompile of saved fonts on next handwriting-page visit. TestFlight question answered in chat (invite link + TestFlight = two links for now, one account).
 
 ## Where things stand
 **QuteNote is now an iOS app.** First TestFlight build (1.0 build 1) uploaded to App Store Connect on Oct 6. Watcher script is waiting for Apple processing, then submits beta review and creates the public TestFlight link.
