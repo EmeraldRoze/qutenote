@@ -29,7 +29,7 @@ Home card colors swapped (invite=lime, alerts=neon-pink); status renamed "How's 
 3. xcodebuild -project ios/App/App.xcodeproj -scheme App -sdk iphoneos -destination 'generic/platform=iOS' -archivePath <path>.xcarchive CODE_SIGNING_ALLOWED=NO archive
 4. xcodebuild -exportArchive -archivePath <path>.xcarchive -exportOptionsPlist scripts/ios/exportOptions.plist -exportPath <dir> -authenticationKeyPath ~/.appstoreconnect/private_keys/AuthKey_Y5NXGFNCFV.p8 -authenticationKeyID Y5NXGFNCFV -authenticationKeyIssuerID a8f9ba85-917d-49e9-888e-e128d4ef6822
 
-## TestFlight status (Oct 13): BUILD 25 APPROVED — current
+## TestFlight status (Oct 15): BUILD 26 APPROVED — current (the Oct 14 round). Previous: build 25
 Build 1.0(25): the last fix from the overnight Oct 12-13 session (Welcome screen buttons cut off on shorter phones, commit 04a258d) — it was committed at 00:58 but never built/uploaded. Uploaded Oct 13 ~1:08am, approved same hour (IN_BETA_TESTING on original group BRW6MMEJ). Now in round-protocol mode: collect ALL tester feedback before the next fix round.
 GOTCHA (Oct 13, fixed): scripts/ios/qutenote_testflight.js was written for the FIRST build — it created a NEW "Public Beta" group every run and polled "latest build" (grabbed build 24 when run right after the 25 upload, and created a duplicate group). Duplicate group deleted (FIREFLY). Script now requires the build version as arg 1, takes what-to-test notes as arg 2, and always reuses original group afef6516 (BRW6MMEJ).
 
