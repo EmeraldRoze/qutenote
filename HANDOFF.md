@@ -1,7 +1,7 @@
 # QuteNote — Handoff / Status Board
 Written: 2026-10-06 (replaces stale April 10 handoff). Last updated: 2026-10-15.
 
-## ROUND SHIPPED Oct 15 (evening) as BUILD 28 (FIREFLY). The 4-item round:
+## ROUND SHIPPED Oct 15 (evening) as BUILD 28 — APPROVED, LIVE WITH TESTERS (FIREFLY). The 4-item round:
 1. Remove QT: on a friend's profile, "Your QT ✓" now has a Remove QT button (two-tap confirm) via existing DELETE /connections/:userId.
 2. WEBSITE is info + launch-list only: Log in / Join buttons gone from landing nav + pricing card (replaced with "Get on the list" / inline capture forms); /login + /signup routes still EXIST unlinked (Google OAuth redirect + testers' direct links + invite claim flow all still work). REMINDER AT LAUNCH: add website login links back.
 3. Email capture collects NAME + email (EarlySignup.name column added on prod; repeat signups backfill the name).
