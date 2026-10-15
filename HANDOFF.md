@@ -1,6 +1,9 @@
 # QuteNote — Handoff / Status Board
 Written: 2026-10-06 (replaces stale April 10 handoff). Last updated: 2026-10-15.
 
+## FEEDBACK QUEUE — next round (collecting since build 27 shipped Oct 15). Round NOT closed yet.
+1. (Oct 15, chat) Removing a friend must be possible again (QTs rows now open profiles, so the old X is gone). Likely home: the friend's profile view.
+
 ## REMINDER FOR NEXT ROUND (Emerald asked to be reminded)
 - **Scheduling**: "Send now / Schedule it" on the preview step + "Scheduled cards" in Settings were held out of the Oct 15 redesign round on her call. Bring it up when the next round opens.
 - Also still open: full-size artist card files from @ellis_tolsma and @bobbybealspresents before anything prints (current JPGs are Instagram-screenshot resolution); full-size stamp exports.
