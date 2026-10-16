@@ -8,7 +8,7 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "build:deploy": "vite build && vite build --ssr src/entry-prerender.tsx --outDir dist-ssr && node prerender.mjs"
+    "build:deploy": "vite build && node waitlist-deploy.mjs"
   },
   "dependencies": {
     "@capacitor-community/apple-sign-in": "^7.1.0",
