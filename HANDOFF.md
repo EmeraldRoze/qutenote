@@ -1,5 +1,13 @@
 # QuteNote — Handoff / Status Board
-Written: 2026-10-06 (replaces stale April 10 handoff). Last updated: 2026-10-15.
+Written: 2026-10-06 (replaces stale April 10 handoff). Last updated: 2026-10-16.
+
+## ROUND SHIPPED Oct 16 as BUILD 29 + WAITLIST WEBSITE (FIREFLY)
+- NEW LOGO (lavender-heart wordmark, from her iPhone photo, background knocked out via PIL): /brand/qutenote_logo.png + /site/logo-ink.png + /site/qutenote_logo.png + waitlist assets. In app build 29 (Welcome/Login/SignUp/PickHandle) and website.
+- WAITLIST WEBSITE (design/website-waitlist-oct16): static scroll-animated page now IS qutenote.com. Architecture: build:deploy = vite build, then waitlist-deploy.mjs renames React dist/index.html -> app.html and copies apps/web/waitlist/* into dist; DO static-site catchall_document switched to app.html (spec PUT via API). So / = waitlist, everything else (/login, /home, /admin, /i/..., OAuth returns) = React app. iOS uses plain `npm run build`, unaffected. Prerender machinery (prerender.mjs, entry-prerender.tsx) deleted.
+- Forms: name+email (her call), POST JSON to /api/early-access with source waitlist-hero / waitlist-postcard. VERIFIED LIVE end-to-end (test row created + deleted).
+- Design adaptations per its own README: crisp transparent logos swapped in (incl. generated inverse for footer), artist slot 2 = @bobbybealspresents real Horse art, og-image.png (1200x630) generated, Contact -> mailto. 3 artist cards still placeholders.
+- FLAG FOR EMERALD: the waitlist page's Pricing section advertises launch pricing ($8.95/mo, $2.95 extra, free profile $0) per the design file — shipped as designed since a waitlist sells the future product, but she said "no pricing" for the CURRENT app; if she wants it off the waitlist too it's a 5-minute change.
+- GOOGLE SHEET: "QuteNote Launch List" created in her Drive (sheet id 1_M_sCoGl2UoUewwRbisJKJgzx_NTe26PJDFuFKbhDOs); DB is source of truth; refresh on request.
 
 ## ROUND SHIPPED Oct 15 (evening) as BUILD 28 — APPROVED, LIVE WITH TESTERS (FIREFLY). The 4-item round:
 1. Remove QT: on a friend's profile, "Your QT ✓" now has a Remove QT button (two-tap confirm) via existing DELETE /connections/:userId.
