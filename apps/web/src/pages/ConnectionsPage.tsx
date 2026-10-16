@@ -60,17 +60,24 @@ export default function ConnectionsPage() {
   // Contacts sync (native app only)
   const [syncState, setSyncState] = useState<'idle' | 'syncing' | 'done' | 'failed'>('idle')
   const [matches, setMatches] = useState<MatchedMember[]>([])
+  const [syncChecked, setSyncChecked] = useState(0)
+  const [syncError, setSyncError] = useState('')
 
   async function syncContacts() {
     if (!contactsAvailable || syncState === 'syncing') return
     setSyncState('syncing')
+    setSyncError('')
     try {
       const contacts = await readContacts()
-      if (!contacts) { setSyncState('failed'); return }
+      if (!contacts) { setSyncError('Contacts permission was not granted.'); setSyncState('failed'); return }
+      setSyncChecked(contacts.length)
       const matched = await matchContactsToMembers(contacts)
       setMatches(matched)
       setSyncState('done')
-    } catch {
+    } catch (err: any) {
+      // Surface the real reason — a tester saying "it didn't work" should be
+      // able to screenshot exactly what went wrong.
+      setSyncError(String(err?.message ?? err ?? 'unknown error'))
       setSyncState('failed')
     }
   }
@@ -225,7 +232,7 @@ export default function ConnectionsPage() {
         )}
         {syncState === 'failed' && (
           <p style={{ margin: '10px 0 0', fontFamily: 'var(--font-body)', fontSize: '14px', color: 'var(--ink-mid)' }}>
-            We couldn't read your contacts. You can allow access in your phone's Settings, or invite friends by text instead.
+            We couldn't read your contacts{syncError ? ` (${syncError})` : ''}. Check Settings → QuteNote → Contacts, or invite friends by text instead.
           </p>
         )}
 
@@ -233,6 +240,9 @@ export default function ConnectionsPage() {
         {syncState === 'done' && (
           <div style={{ marginTop: '20px' }}>
             <p style={{ ...label, margin: 0 }}>Already on QuteNote</p>
+            <p style={{ margin: '6px 0 0', fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--ink-muted)' }}>
+              Checked {syncChecked} contact{syncChecked === 1 ? '' : 's'} · {suggestedMatches.length} on QuteNote
+            </p>
             {suggestedMatches.length === 0 ? (
               <p style={{ margin: '8px 0 0', fontFamily: 'var(--font-body)', fontSize: '14px', color: 'var(--ink-mid)' }}>
                 None of your contacts are on QuteNote yet. Invite them and you both get a free card.

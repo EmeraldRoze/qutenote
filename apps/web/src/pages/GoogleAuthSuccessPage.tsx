@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { api } from '../lib/api'
+import { postSocialAuthRoute } from '../lib/postAuthRoute'
 
 export default function GoogleAuthSuccessPage() {
   const navigate = useNavigate()
@@ -21,10 +22,10 @@ export default function GoogleAuthSuccessPage() {
 
     localStorage.setItem('cn_token', token)
     api.get('/auth/me', { headers: { Authorization: `Bearer ${token}` } })
-      .then((res) => {
+      .then(async (res) => {
         login(token, res.data.data)
-        if (isNew) navigate('/signup/handle', { replace: true, state: { provider: 'Google' } })
-        else navigate('/home')
+        const dest = await postSocialAuthRoute(isNew, res.data.data)
+        navigate(dest, dest === '/home' ? undefined : { replace: true, state: { provider: 'Google' } })
       })
       .catch(() => {
         navigate('/login?error=google_failed')

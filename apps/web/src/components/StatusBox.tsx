@@ -1,33 +1,43 @@
 import { useEffect, useState } from 'react'
 import { api } from '../lib/api'
 import QEmoji from './QEmoji'
+import { STATUS_EMOJI } from './Happenings'
 
-// The always-visible status composer box from the Oct 15 redesign (10-home).
-// Self-contained: prefills the person's current status on mount, posts a new
-// one on POST. Used on Home (and importable anywhere else, e.g. Profile).
+// Your status box (Home + Profile). Per Emerald's Oct 16 feedback: a status
+// is a standing thing, not a post — once set, it shows with a little pencil,
+// and editing opens the emoji picker (the torn-paper set) plus the text.
 
 const uv = '#5A32D6'
 
+interface Status { id?: string; emoji: string | null; text: string }
+
 export default function StatusBox({ onPosted }: { onPosted?: (s: any) => void }) {
+  const [status, setStatus] = useState<Status | null>(null)
+  const [editing, setEditing] = useState(false)
   const [text, setText] = useState('')
+  const [emoji, setEmoji] = useState('thought-bubble')
   const [saving, setSaving] = useState(false)
-  const [posted, setPosted] = useState(false)
   const [error, setError] = useState('')
+  const [loaded, setLoaded] = useState(false)
 
   useEffect(() => {
     api.get('/statuses/mine')
-      .then((r) => { const s = r.data.data; if (s?.text) setText(s.text) })
+      .then((r) => {
+        const s = r.data.data
+        if (s?.text) { setStatus(s); setText(s.text); setEmoji(s.emoji ?? 'thought-bubble') }
+      })
       .catch(() => {})
+      .finally(() => setLoaded(true))
   }, [])
 
-  async function post() {
+  async function save() {
     if (!text.trim() || saving) return
     setSaving(true)
     setError('')
-    setPosted(false)
     try {
-      const r = await api.post('/statuses', { emoji: 'thought-bubble', text: text.trim() })
-      setPosted(true)
+      const r = await api.post('/statuses', { emoji, text: text.trim() })
+      setStatus(r.data.data)
+      setEditing(false)
       onPosted?.(r.data.data)
     } catch (err: any) {
       setError(err.response?.data?.error ?? "That didn't go through. Try again.")
@@ -36,44 +46,85 @@ export default function StatusBox({ onPosted }: { onPosted?: (s: any) => void })
     }
   }
 
-  return (
-    <div style={{
-      background: '#fff', border: `2px solid ${uv}`, borderRadius: '18px',
-      padding: '10px 10px 10px 12px', display: 'flex', alignItems: 'center', gap: '10px',
-    }}>
-      <QEmoji name="thought-bubble" size={34} style={{ flexShrink: 0 }} />
-      <label style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '2px' }}>
-        <span style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', fontFamily: 'var(--font-body)', color: 'var(--ink-mid)' }}>
-          <span>Your status</span>
-          <span>{text.length}/60</span>
+  const shell: React.CSSProperties = {
+    background: '#fff', border: `2px solid ${uv}`, borderRadius: '18px',
+    padding: '10px 10px 10px 12px',
+  }
+
+  // A status is set and we're not editing: show it with the pencil.
+  if (loaded && status && !editing) {
+    return (
+      <div style={{ ...shell, display: 'flex', alignItems: 'center', gap: '10px' }}>
+        <QEmoji name={status.emoji ?? 'thought-bubble'} size={34} style={{ flexShrink: 0 }} />
+        <span style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '2px' }}>
+          <span style={{ fontSize: '13px', fontFamily: 'var(--font-body)', color: 'var(--ink-mid)' }}>Your status</span>
+          <span style={{ fontFamily: 'var(--font-body)', fontSize: '16px', color: 'var(--ink)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            {status.text}
+          </span>
         </span>
-        <input
-          value={text}
-          maxLength={60}
-          onChange={(e) => { setText(e.target.value.slice(0, 60)); setPosted(false) }}
-          onKeyDown={(e) => { if (e.key === 'Enter') post() }}
-          placeholder="What's going on this week?"
+        <button onClick={() => setEditing(true)} aria-label="Edit your status" style={{
+          flexShrink: 0, width: '44px', height: '44px', border: 0, borderRadius: '22px',
+          background: 'var(--lavender-pale)', color: uv, cursor: 'pointer',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+        }}>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M4 20l4-1 11-11-3-3L5 16z" /></svg>
+        </button>
+      </div>
+    )
+  }
+
+  // No status yet, or editing: emoji picker + text + save.
+  return (
+    <div style={{ ...shell, display: 'flex', flexDirection: 'column', gap: '10px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+        <QEmoji name={emoji} size={34} style={{ flexShrink: 0 }} />
+        <label style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '2px' }}>
+          <span style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', fontFamily: 'var(--font-body)', color: 'var(--ink-mid)' }}>
+            <span>Your status</span>
+            <span>{text.length}/60</span>
+          </span>
+          <input
+            value={text}
+            maxLength={60}
+            autoFocus={editing}
+            onChange={(e) => setText(e.target.value.slice(0, 60))}
+            onKeyDown={(e) => { if (e.key === 'Enter') save() }}
+            placeholder="What's going on this week?"
+            style={{
+              border: 0, outline: 'none', background: 'transparent', padding: 0,
+              fontFamily: 'var(--font-body)', fontSize: '16px', color: 'var(--ink)', width: '100%',
+            }}
+          />
+        </label>
+        <button
+          onClick={save}
+          disabled={!text.trim() || saving}
           style={{
-            border: 0, outline: 'none', background: 'transparent', padding: 0,
-            fontFamily: 'var(--font-body)', fontSize: '16px', color: 'var(--ink)', width: '100%',
+            flexShrink: 0, height: '44px', padding: '0 16px', border: 0, borderRadius: '22px',
+            background: uv, color: '#fff', cursor: 'pointer',
+            fontFamily: 'var(--font-body)', fontSize: '14px', fontWeight: 700, letterSpacing: '0.08em',
+            opacity: !text.trim() || saving ? 0.55 : 1,
           }}
-        />
-        {error && (
-          <span style={{ fontSize: '12px', fontFamily: 'var(--font-body)', color: 'var(--error)' }}>{error}</span>
-        )}
-      </label>
-      <button
-        onClick={post}
-        disabled={!text.trim() || saving}
-        style={{
-          flexShrink: 0, height: '44px', padding: '0 16px', border: 0, borderRadius: '22px',
-          background: uv, color: '#fff', cursor: 'pointer',
-          fontFamily: 'var(--font-body)', fontSize: '14px', fontWeight: 700, letterSpacing: '0.08em',
-          opacity: !text.trim() || saving ? 0.55 : 1,
-        }}
-      >
-        {saving ? '…' : posted ? 'POSTED' : 'POST'}
-      </button>
+        >
+          {saving ? '…' : 'SAVE'}
+        </button>
+      </div>
+      {/* Pick your emoji — the torn-paper set */}
+      <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+        {STATUS_EMOJI.map((e) => (
+          <button key={e} onClick={() => setEmoji(e)} aria-label={`Status emoji ${e}`} style={{
+            width: '40px', height: '40px', borderRadius: '20px', cursor: 'pointer',
+            background: emoji === e ? 'var(--lavender-pale)' : 'transparent',
+            border: emoji === e ? `1.5px solid ${uv}` : '1.5px solid transparent',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0,
+          }}>
+            <QEmoji name={e} size={26} />
+          </button>
+        ))}
+      </div>
+      {error && (
+        <span style={{ fontSize: '12px', fontFamily: 'var(--font-body)', color: 'var(--error)' }}>{error}</span>
+      )}
     </div>
   )
 }

@@ -99,7 +99,7 @@ export default function SignupAddressPage() {
         <div style={{ marginTop: '20px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
           <label htmlFor="street" style={labelStyle}>Street address</label>
           <input
-            id="street" autoComplete="address-line1" required style={inputStyle}
+            id="street" name="address-line1" autoComplete="address-line1" required style={inputStyle}
             value={form.line1}
             onChange={(e) => setForm({ ...form, line1: e.target.value })}
           />
@@ -108,7 +108,7 @@ export default function SignupAddressPage() {
         <div style={{ marginTop: '14px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
           <label htmlFor="apt" style={labelStyle}>Apt or unit (optional)</label>
           <input
-            id="apt" placeholder="Apt 204" autoComplete="address-line2" style={inputStyle}
+            id="apt" placeholder="Apt 204" name="address-line2" autoComplete="address-line2" style={inputStyle}
             value={form.line2}
             onChange={(e) => setForm({ ...form, line2: e.target.value })}
           />
@@ -117,7 +117,7 @@ export default function SignupAddressPage() {
         <div style={{ marginTop: '14px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
           <label htmlFor="city" style={labelStyle}>City</label>
           <input
-            id="city" autoComplete="address-level2" required style={inputStyle}
+            id="city" name="city" autoComplete="address-level2" required style={inputStyle}
             value={form.city}
             onChange={(e) => setForm({ ...form, city: e.target.value })}
           />
@@ -127,7 +127,7 @@ export default function SignupAddressPage() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
             <label htmlFor="state" style={labelStyle}>State</label>
             <input
-              id="state" autoComplete="address-level1" required style={inputStyle}
+              id="state" name="state" autoComplete="address-level1" required style={inputStyle}
               value={form.state}
               onChange={(e) => setForm({ ...form, state: e.target.value })}
             />
@@ -135,7 +135,7 @@ export default function SignupAddressPage() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
             <label htmlFor="zip" style={labelStyle}>ZIP code</label>
             <input
-              id="zip" autoComplete="postal-code" required style={inputStyle}
+              id="zip" name="zip" autoComplete="postal-code" required style={inputStyle}
               value={form.zip}
               onChange={(e) => setForm({ ...form, zip: e.target.value })}
             />

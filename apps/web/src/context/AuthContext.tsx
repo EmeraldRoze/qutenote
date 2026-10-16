@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { App as CapApp } from '@capacitor/app'
 import { Browser } from '@capacitor/browser'
 import { api } from '../lib/api'
+import { postSocialAuthRoute } from '../lib/postAuthRoute'
 import { isNativeApp } from '../lib/native'
 
 interface User {
@@ -62,9 +63,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const isNew = params.get('new') === '1'
       Browser.close().catch(() => {})
       localStorage.setItem('cn_token', token)
-      api.get('/auth/me').then((res) => {
+      api.get('/auth/me').then(async (res) => {
         setUser(res.data.data)
-        if (isNew) navigate('/signup/handle', { replace: true, state: { provider: 'Google' } })
+        const dest = await postSocialAuthRoute(isNew, res.data.data)
+        if (dest !== '/home') navigate(dest, { replace: true, state: { provider: 'Google' } })
       }).catch(() => {})
     })
     return () => { sub.then((s) => s.remove()) }

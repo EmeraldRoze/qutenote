@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { api } from '../lib/api'
+import { postSocialAuthRoute } from '../lib/postAuthRoute'
 import { useAuth } from '../context/AuthContext'
 import { isNativeApp } from '../lib/native'
 import { appleSignIn, openGoogleSignIn } from '../lib/nativeAuth'
@@ -155,7 +156,8 @@ export default function LoginPage() {
                     const data = await appleSignIn()
                     login(data.token, data.user)
                     const isNew = (data as any).isNew === true
-                    navigate(isNew ? '/signup/handle' : '/home', isNew ? { state: { provider: 'Apple' } } : undefined)
+                    const dest = await postSocialAuthRoute(isNew, data.user)
+                    navigate(dest, isNew ? { state: { provider: 'Apple' } } : undefined)
                   } catch (err: any) {
                     const code = String(err?.code ?? '')
                     const message = String(err?.message ?? '')

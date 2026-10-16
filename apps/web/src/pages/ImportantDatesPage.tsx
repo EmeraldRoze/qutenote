@@ -64,6 +64,8 @@ export default function ImportantDatesPage() {
   // "Pull birthdays from contacts" (native app only)
   const [contactsState, setContactsState] = useState<'idle' | 'loading' | 'denied' | 'ready'>('idle')
   const [contactBdays, setContactBdays] = useState<DeviceContact[]>([])
+  const [contactsChecked, setContactsChecked] = useState(0)
+  const [contactsError, setContactsError] = useState('')
   const [addingContact, setAddingContact] = useState<string | null>(null)
 
   useEffect(() => {
@@ -99,9 +101,11 @@ export default function ImportantDatesPage() {
     try {
       const contacts = await readContacts()
       if (!contacts) { setContactsState('denied'); return }
+      setContactsChecked(contacts.length)
       setContactBdays(contactsWithBirthdays(contacts).sort((a, b) => a.name.localeCompare(b.name)))
       setContactsState('ready')
-    } catch {
+    } catch (err: any) {
+      setContactsError(String(err?.message ?? err ?? ''))
       setContactsState('denied')
     }
   }
@@ -315,14 +319,14 @@ export default function ImportantDatesPage() {
           </button>
         )}
         {contactsState === 'denied' && (
-          <p style={hint}>QuteNote can't see your contacts. Open Settings → QuteNote → Contacts and allow access, then try again.</p>
+          <p style={hint}>QuteNote can't see your contacts{contactsError ? ` (${contactsError})` : ''}. Open Settings → QuteNote → Contacts and allow access, then try again.</p>
         )}
         {contactsState === 'ready' && (
           <div style={{ marginTop: '20px' }}>
             <h2 style={{ margin: '0 0 10px', fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: '18px', color: 'var(--ink)' }}>Birthdays in your contacts</h2>
             {contactBdays.length === 0 ? (
               <p style={{ fontFamily: 'var(--font-body)', fontSize: '14px', color: 'var(--ink-muted)' }}>
-                None of your contacts have a birthday saved.
+                Checked {contactsChecked} contact{contactsChecked === 1 ? '' : 's'} — none have a birthday saved. Add birthdays in your Contacts app, or add dates here by hand.
               </p>
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>

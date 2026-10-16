@@ -111,24 +111,24 @@ export default function AddressPage() {
             <div style={{ marginTop: '20px', background: '#fff', border: '1.5px solid var(--stone)', borderRadius: '18px', overflow: 'hidden' }}>
               <label style={rowStyle}>
                 <span style={labelStyle}>Street address</span>
-                <input value={form.line1} onChange={(e) => setForm({ ...form, line1: e.target.value })} required autoComplete="address-line1" style={fieldStyle} />
+                <input value={form.line1} onChange={(e) => setForm({ ...form, line1: e.target.value })} required name="address-line1" autoComplete="address-line1" style={fieldStyle} />
               </label>
               <label style={rowStyle}>
                 <span style={labelStyle}>Apt, suite, etc. (optional)</span>
-                <input value={form.line2} placeholder="Apt 4B" onChange={(e) => setForm({ ...form, line2: e.target.value })} autoComplete="address-line2" style={fieldStyle} />
+                <input value={form.line2} placeholder="Apt 4B" onChange={(e) => setForm({ ...form, line2: e.target.value })} name="address-line2" autoComplete="address-line2" style={fieldStyle} />
               </label>
               <label style={rowStyle}>
                 <span style={labelStyle}>City</span>
-                <input value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })} required autoComplete="address-level2" style={fieldStyle} />
+                <input value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })} required name="city" autoComplete="address-level2" style={fieldStyle} />
               </label>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))' }}>
                 <label style={{ ...rowStyle, borderBottom: 'none', borderRight: '1.5px solid var(--divider)' }}>
                   <span style={labelStyle}>State</span>
-                  <input value={form.state} onChange={(e) => setForm({ ...form, state: e.target.value })} required autoComplete="address-level1" style={fieldStyle} />
+                  <input value={form.state} onChange={(e) => setForm({ ...form, state: e.target.value })} required name="state" autoComplete="address-level1" style={fieldStyle} />
                 </label>
                 <label style={{ ...rowStyle, borderBottom: 'none' }}>
                   <span style={labelStyle}>ZIP code</span>
-                  <input value={form.zip} onChange={(e) => setForm({ ...form, zip: e.target.value })} required inputMode="numeric" autoComplete="postal-code" style={fieldStyle} />
+                  <input value={form.zip} onChange={(e) => setForm({ ...form, zip: e.target.value })} required inputMode="numeric" name="zip" autoComplete="postal-code" style={fieldStyle} />
                 </label>
               </div>
             </div>
