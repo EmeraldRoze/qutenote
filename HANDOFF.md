@@ -1,6 +1,14 @@
 # QuteNote — Handoff / Status Board
 Written: 2026-10-06 (replaces stale April 10 handoff). Last updated: 2026-10-16.
 
+## BUILD 32 APPROVED Oct 16 (FIREFLY) — the Oct 16 feedback round (5 items)
+- Social sign-in (Apple/Google) now routes through missing setup: lib/postAuthRoute.ts — isNew -> /signup/handle, else no address -> /signup/address, else no birthday -> /signup/birthday, else /home. Wired in LoginPage, SignUpPage, AuthContext (Google native deep link), GoogleAuthSuccessPage.
+- Address forms: name= attrs added next to autoComplete so iOS offers contact-based address autofill in the webview (both AddressPage + SignupAddressPage; attrs existed, name/form context strengthened).
+- StatusBox rework (Home + Profile): status is persistent — display mode (emoji + text + pencil), edit mode (torn-paper emoji picker incl. new thought-bubble entry in STATUS_EMOJI + text + SAVE). POST button gone.
+- Contacts sync: real outcome surfacing — "Checked N contacts · M on QuteNote" on QTs, checked-count + no-birthdays guidance on Dates, and actual error text in failure states (next "didn't work" screenshot will say WHY). Root cause of her report still unconfirmed (likely zero matches or permission); plugin API usage verified against @capacitor-community/contacts v8 types. She never answered whether the permission popup appeared.
+- Build 32 entitlements verified in pipeline (ENTITLEMENTS_OK gate in the build chain).
+- Her 10:05 feedback confirmed Apple sign-in WORKS on build 31 (the 9:30 "still not working" was pre-update).
+
 ## BUILD 31 APPROVED Oct 16 (FIREFLY) — THE ENTITLEMENTS FIX + round items
 - ROOT CAUSE FOUND: every build 1-30 shipped WITHOUT entitlements (applesignin + aps-environment) because the archive step used CODE_SIGNING_ALLOWED=NO and exportArchive never re-added them. This broke Apple sign-in (tester error 1000) and push-token registration (why Emerald's phone never registered). Pipeline now archives with local manual signing (cert "Apple Distribution", profile "QuteNote AppStore") — verified PRESENT in the shipped archive. Pipeline doc updated; never use CODE_SIGNING_ALLOWED=NO again.
 - Round items in 31: Log out at the bottom of own Profile; "New here? Create an account" anchored under the social buttons on Log in (was below the fold — the "no way to create account after logout" report); Log in subtitle now "From your heart to their mailbox." (her copy).
