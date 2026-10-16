@@ -1,6 +1,8 @@
 # QuteNote — Handoff / Status Board
 Written: 2026-10-06 (replaces stale April 10 handoff). Last updated: 2026-10-16.
 
+## BUILD 30 APPROVED Oct 16 (FIREFLY): camera-permission crash fix (NSCameraUsageDescription was missing — Take Photo during card upload crashed since day one; photo-library path was fine). TestFlight feedback queue is EMPTY as of Oct 16.
+
 ## ROUND SHIPPED Oct 16 as BUILD 29 + WAITLIST WEBSITE (FIREFLY)
 - NEW LOGO (lavender-heart wordmark, from her iPhone photo, background knocked out via PIL): /brand/qutenote_logo.png + /site/logo-ink.png + /site/qutenote_logo.png + waitlist assets. In app build 29 (Welcome/Login/SignUp/PickHandle) and website.
 - WAITLIST WEBSITE (design/website-waitlist-oct16): static scroll-animated page now IS qutenote.com. Architecture: build:deploy = vite build, then waitlist-deploy.mjs renames React dist/index.html -> app.html and copies apps/web/waitlist/* into dist; DO static-site catchall_document switched to app.html (spec PUT via API). So / = waitlist, everything else (/login, /home, /admin, /i/..., OAuth returns) = React app. iOS uses plain `npm run build`, unaffected. Prerender machinery (prerender.mjs, entry-prerender.tsx) deleted.
