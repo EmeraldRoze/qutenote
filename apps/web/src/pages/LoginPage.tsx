@@ -185,7 +185,9 @@ export default function LoginPage() {
             </a>
           </div>
 
-          <p style={{ margin: 'auto 0 0', minHeight: '44px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', fontSize: '15px', color: 'var(--ink-mid)', paddingTop: '18px' }}>
+          {/* Right below the sign-in options — never below the fold (a tester
+              logged out and thought there was no way to make a new account) */}
+          <p style={{ margin: '18px 0 0', minHeight: '44px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', fontSize: '15px', color: 'var(--ink-mid)' }}>
             New here?{' '}
             <Link to="/signup" style={{ fontWeight: 700, color: uv, textDecoration: 'none' }}>
               Create an account

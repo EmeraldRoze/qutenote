@@ -71,7 +71,7 @@ const actionTile: React.CSSProperties = {
 export default function ProfilePage() {
   const { username } = useParams()
   const navigate = useNavigate()
-  const { user, refreshUser } = useAuth()
+  const { user, refreshUser, logout } = useAuth()
   const [profile, setProfile] = useState<Profile | null>(null)
   const [loading, setLoading] = useState(true)
   const [tab, setTab] = useState<'sent' | 'received'>('sent')
@@ -328,6 +328,19 @@ export default function ProfilePage() {
               <span style={{ fontFamily: 'var(--font-body)', fontSize: '14px', color: 'var(--ink-mid)', fontWeight: 400 }}>Hidden from senders</span>
             </button>
           </div>
+
+          {/* Log out — at the end of your own profile, per Emerald */}
+          <button
+            onClick={() => { logout(); navigate('/') }}
+            style={{
+              width: '100%', marginTop: '22px', minHeight: '48px', border: 'none', background: 'none',
+              cursor: 'pointer', fontFamily: 'var(--font-body)', fontSize: '15px', fontWeight: 700,
+              color: 'var(--ink-mid)', textDecoration: 'underline', textUnderlineOffset: '3px',
+              textTransform: 'none', letterSpacing: 0,
+            }}
+          >
+            Log out
+          </button>
         </div>
 
         {showQR && <QRCodeSheet username={profile.username} onClose={() => setShowQR(false)} />}
