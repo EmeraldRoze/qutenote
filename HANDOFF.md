@@ -1,6 +1,11 @@
 # QuteNote — Handoff / Status Board
 Written: 2026-10-06 (replaces stale April 10 handoff). Last updated: 2026-10-16.
 
+## BUILD 31 APPROVED Oct 16 (FIREFLY) — THE ENTITLEMENTS FIX + round items
+- ROOT CAUSE FOUND: every build 1-30 shipped WITHOUT entitlements (applesignin + aps-environment) because the archive step used CODE_SIGNING_ALLOWED=NO and exportArchive never re-added them. This broke Apple sign-in (tester error 1000) and push-token registration (why Emerald's phone never registered). Pipeline now archives with local manual signing (cert "Apple Distribution", profile "QuteNote AppStore") — verified PRESENT in the shipped archive. Pipeline doc updated; never use CODE_SIGNING_ALLOWED=NO again.
+- Round items in 31: Log out at the bottom of own Profile; "New here? Create an account" anchored under the social buttons on Log in (was below the fold — the "no way to create account after logout" report); Log in subtitle now "From your heart to their mailbox." (her copy).
+- AFTER EMERALD UPDATES: have her retest Apple sign-in AND "Turn on alerts" (push). If a DeviceToken row finally appears, fire the live test push (scripts + ~/.appstoreconnect key).
+
 ## BUILD 30 APPROVED Oct 16 (FIREFLY): camera-permission crash fix (NSCameraUsageDescription was missing — Take Photo during card upload crashed since day one; photo-library path was fine). TestFlight feedback queue is EMPTY as of Oct 16.
 
 ## ROUND SHIPPED Oct 16 as BUILD 29 + WAITLIST WEBSITE (FIREFLY)
