@@ -4,6 +4,14 @@ Written: 2026-10-06 (replaces stale April 10 handoff). Last updated: 2026-10-16.
 ## PROTOCOL CHANGE (Emerald, Oct 17 — MANDATORY for every TestFlight round)
 Before any plan or FIREFLY ask: clarifying questions about the TestFlight feedback go to Emerald ONE AT A TIME (she answers, the next appears). Every vague item gets a question — zero assumptions. Questions are mandatory pre-FIREFLY. Never bury questions in a long briefing.
 
+## BUILD 38 APPROVED Oct 18 (FIREFLY) — the hands-free handwriting round (7 items, question-loop protocol used)
+- Word capture is HANDS-FREE: 1.5s pen-idle → auto-slice → save → next word (never interrupts, her call); slice preview UI removed (LetterPreview deleted — tsc -b in `npm run build` catches unused decls that plain `npx tsc --noEmit` passed!). Fix-one-letter remains the correction path.
+- NEW WORD LIST (hers, poem-pair order): hug qt · zap fox · kid nap · cry jam · slow vibe (10 words, mostly 3-letter, full a-z verified; same uppercased for capitals).
+- Slicer: cuts land at the INK VALLEY (thinnest column within ±18% of predicted boundary); crumb rescue v2 (pieces <22px glue to the letter whose substantial ink contains them — fixed her mangled d / "LooKs" k glyph).
+- compileFont v3: resample 4px, relax x4, smoothing .9, streamline .72, thinning .35 — "doesn't look like it was written on a phone". FONT_COMPILER_VERSION=3 → saved fonts auto-recompile on next handwriting-page visit; best results = rewrite the words.
+- "Got a good photo?\nMail it." two lines (whiteSpace pre-line on carousel titles).
+- No-address dead-end now has TEXT THEM FOR THEIR ADDRESS (askForAddressByText in inviteText.ts → sms composer with qutenote.com/address link); shows whenever the send error mentions "address".
+
 ## BUILDS 36-37 APPROVED Oct 18 (FIREFLY rounds) + THE STALE-BUNDLE SAGA
 - SAGA: Emerald's phone showed OLD screens on "build 34" (TestFlight lag/stale delivery; Apple attributed feedback to 34, screens matched 33). Resolution toolkit now shipped: visible "build N" stamp on Welcome + handwriting pages (VITE_BUILD env), self-healing guard in main.tsx (lib/buildGuard.ts compares App.getInfo().build to baked WEB_BUILD → cache-busting reload, one attempt per build). Verification greps must use BACKTICKS (oxc minifier emits template strings). MYSTERY BUILD 35 still unexplained (uploaded Oct 17 22:44 PDT by someone/something else, left unsubmitted — do NOT submit it; Emerald never answered the second-session question).
 - BUILD 37 round (all her Oct 18 feedback, questions asked ONE AT A TIME per protocol):
