@@ -147,7 +147,8 @@ model Note {
   cardDesignId    String?
   cardImageUrl    String?        // for user-uploaded photos
   status          NoteStatus     @default(PENDING)
-  scheduledFor    DateTime?
+  scheduledFor    DateTime? // the event day the sender picked (land-near date)
+  mailAt          DateTime? // when the scheduler actually submits to print/mail
   sentAt          DateTime?
   isPassItForward Boolean        @default(false)
   giftedByUserId  String?

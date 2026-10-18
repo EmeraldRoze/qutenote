@@ -23,20 +23,27 @@ interface OfferCard {
   cta: string
   onClick: (navigate: ReturnType<typeof useNavigate>) => void
 }
-// Colors and copy come straight from 10-home.html.
-const ALL_OFFER_CARDS: OfferCard[] = [
-  { bg: 'var(--lilac)', art: 'heart-sparkle', artWidth: 170, title: 'Your first card is on us', cta: 'SEND A CARD', onClick: (nav) => nav('/send') },
-  { bg: 'var(--neon-pink)', art: 'bff', artWidth: 140, title: 'Invite a friend. You both get a free card.', cta: 'INVITE', onClick: (nav) => nav('/invite') },
-  { bg: 'var(--lavender-light)', art: 'mailbox', artWidth: 165, title: 'Know when something is in the mail', cta: 'TURN ON ALERTS', onClick: (nav) => nav('/settings/notifications') },
-  { bg: '#FFFFFF', border: '1.5px solid var(--stone)', art: 'camera', artWidth: 170, title: 'Got a good photo? Mail it.', cta: 'UPLOAD A PHOTO', onClick: (nav) => nav('/send') },
+// Colors and copy come straight from 10-home.html, plus the handwriting card
+// (Emerald, Oct 18). Invite + photo live forever; the others retire once done.
+const ALL_OFFER_CARDS: (OfferCard & { key: string })[] = [
+  { key: 'first-card', bg: 'var(--lilac)', art: 'heart-sparkle', artWidth: 170, title: 'Your first card is on us', cta: 'SEND A CARD', onClick: (nav) => nav('/send') },
+  { key: 'invite', bg: 'var(--neon-pink)', art: 'bff', artWidth: 140, title: 'Invite a friend. You both get a free card.', cta: 'INVITE', onClick: (nav) => nav('/invite') },
+  { key: 'alerts', bg: 'var(--lavender-light)', art: 'mailbox', artWidth: 165, title: 'Know when something is in the mail', cta: 'TURN ON ALERTS', onClick: (nav) => nav('/settings/notifications') },
+  { key: 'handwriting', bg: 'var(--lime)', art: 'pen', artWidth: 150, title: 'Make it look like YOU wrote it', cta: 'TEACH YOUR HANDWRITING', onClick: (nav) => nav('/handwriting') },
+  { key: 'photo', bg: '#FFFFFF', border: '1.5px solid var(--stone)', art: 'camera', artWidth: 170, title: 'Got a good photo? Mail it.', cta: 'UPLOAD A PHOTO', onClick: (nav) => nav('/send') },
 ]
 
-function OfferCarousel() {
+function OfferCarousel({ hasSentCard, hasHandwriting }: { hasSentCard: boolean; hasHandwriting: boolean }) {
   const navigate = useNavigate()
   const trackRef = useRef<HTMLDivElement>(null)
   const [active, setActive] = useState(0)
-  // A done nudge stops nudging: once alerts are on, that card drops out.
-  const OFFER_CARDS = ALL_OFFER_CARDS.filter((c) => c.cta !== 'TURN ON ALERTS' || !remindersEnabled())
+  // A done nudge stops nudging; invite + photo never retire.
+  const OFFER_CARDS = ALL_OFFER_CARDS.filter((c) => {
+    if (c.key === 'first-card') return !hasSentCard
+    if (c.key === 'alerts') return !remindersEnabled()
+    if (c.key === 'handwriting') return !hasHandwriting
+    return true
+  })
 
   function onScroll() {
     const el = trackRef.current
@@ -270,7 +277,9 @@ export default function HomePage() {
           <StatusBox onPosted={(s) => setMyStatus(s)} />
         </div>
 
-        {!setupDone && <OfferCarousel />}
+        {/* The offer carousel lives on Home forever (Emerald, Oct 18) —
+            individual cards retire themselves once their thing is done. */}
+        <OfferCarousel hasSentCard={!!user?.notesUsed} hasHandwriting={hasHandwriting} />
         <SetupChecklist tasks={setupTasks} />
 
         {/* Date nudge */}

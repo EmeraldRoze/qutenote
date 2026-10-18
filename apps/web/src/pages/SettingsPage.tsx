@@ -27,11 +27,15 @@ export default function SettingsPage() {
   const [addressVerified, setAddressVerified] = useState<boolean | null>(null)
   const [reminderStatus, setReminderStatus] = useState<ReminderResult | 'idle' | 'working'>('idle')
   const [hasHandwriting, setHasHandwriting] = useState(false)
+  const [scheduledCount, setScheduledCount] = useState(0)
 
   useEffect(() => {
     api.get('/address/me')
       .then((r) => setAddressVerified(r.data.data ? !!r.data.data.isVerified : null))
       .catch(() => setAddressVerified(null))
+    api.get('/notes/scheduled')
+      .then((r) => setScheduledCount((r.data.data ?? []).length))
+      .catch(() => {})
     fetchHandwritingProgress()
       .then((r) => setHasHandwriting(r.hasFont))
       .catch(() => {})
@@ -73,6 +77,12 @@ export default function SettingsPage() {
           <button style={rowStyle} onClick={() => navigate('/settings/account')}>
             <span style={rowLabel}>Account</span>
             <span style={rowValue} />
+            {chevron}
+          </button>
+
+          <button style={rowStyle} onClick={() => navigate('/settings/scheduled')}>
+            <span style={rowLabel}>Scheduled cards</span>
+            <span style={rowValue}>{scheduledCount || ''}</span>
             {chevron}
           </button>
 

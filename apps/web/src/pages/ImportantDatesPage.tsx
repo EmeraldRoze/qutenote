@@ -323,10 +323,13 @@ export default function ImportantDatesPage() {
         )}
         {contactsState === 'ready' && (
           <div style={{ marginTop: '20px' }}>
-            <h2 style={{ margin: '0 0 10px', fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: '18px', color: 'var(--ink)' }}>Birthdays in your contacts</h2>
+            <h2 style={{ margin: '0 0 2px', fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: '18px', color: 'var(--ink)' }}>Birthdays in your contacts</h2>
+            <p style={{ margin: '0 0 10px', fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--ink-muted)' }}>
+              Checked {contactsChecked} contact{contactsChecked === 1 ? '' : 's'} · {contactBdays.length} with a birthday saved
+            </p>
             {contactBdays.length === 0 ? (
               <p style={{ fontFamily: 'var(--font-body)', fontSize: '14px', color: 'var(--ink-muted)' }}>
-                Checked {contactsChecked} contact{contactsChecked === 1 ? '' : 's'} — none have a birthday saved. Add birthdays in your Contacts app, or add dates here by hand.
+                None of them have a birthday saved on their contact card. Add birthdays in your Contacts app, or add dates here by hand.
               </p>
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>

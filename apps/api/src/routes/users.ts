@@ -10,12 +10,18 @@ export const usersRouter = Router()
 // return which of them are already QTs-to-be. Emails echo back only for the
 // addresses the client already had.
 
-const matchContactsSchema = z.object({ emails: z.array(z.string().email()).max(1000) })
+// Real address books are huge and messy (Emerald has thousands of contacts,
+// and one malformed email used to 400 the whole request). Accept plain
+// strings generously and silently skip whatever isn't email-shaped.
+const matchContactsSchema = z.object({ emails: z.array(z.string().max(320)).max(10000) })
+const EMAIL_SHAPE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 usersRouter.post('/match-contacts', requireAuth, async (req: AuthRequest, res: Response) => {
   const parsed = matchContactsSchema.safeParse(req.body)
   if (!parsed.success) return res.status(400).json({ error: 'Invalid contact list.' })
-  const emails = parsed.data.emails.map((e) => e.toLowerCase())
+  const emails = [...new Set(parsed.data.emails
+    .map((e) => e.trim().toLowerCase())
+    .filter((e) => EMAIL_SHAPE.test(e)))].slice(0, 5000)
   if (!emails.length) return res.json({ data: [] })
 
   const users = await prisma.user.findMany({

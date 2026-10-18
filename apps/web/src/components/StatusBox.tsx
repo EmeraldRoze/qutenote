@@ -16,6 +16,7 @@ export default function StatusBox({ onPosted }: { onPosted?: (s: any) => void })
   const [editing, setEditing] = useState(false)
   const [text, setText] = useState('')
   const [emoji, setEmoji] = useState('thought-bubble')
+  const [pickerOpen, setPickerOpen] = useState(false)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
   const [loaded, setLoaded] = useState(false)
@@ -73,11 +74,22 @@ export default function StatusBox({ onPosted }: { onPosted?: (s: any) => void })
     )
   }
 
-  // No status yet, or editing: emoji picker + text + save.
+  // No status yet, or editing: tap the emoji to pop up the picker
+  // (Emerald's call: emojis hidden until you ask for them).
   return (
-    <div style={{ ...shell, display: 'flex', flexDirection: 'column', gap: '10px' }}>
+    <div style={{ ...shell, position: 'relative', display: 'flex', flexDirection: 'column', gap: '10px' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-        <QEmoji name={emoji} size={34} style={{ flexShrink: 0 }} />
+        <button
+          onClick={() => setPickerOpen((o) => !o)}
+          aria-label="Pick your status emoji"
+          style={{
+            flexShrink: 0, width: '44px', height: '44px', border: pickerOpen ? `1.5px solid ${uv}` : '1.5px dashed var(--lilac)',
+            borderRadius: '22px', background: 'var(--lavender-pale)', cursor: 'pointer', padding: 0,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+          }}
+        >
+          <QEmoji name={emoji} size={30} />
+        </button>
         <label style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '2px' }}>
           <span style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', fontFamily: 'var(--font-body)', color: 'var(--ink-mid)' }}>
             <span>Your status</span>
@@ -109,19 +121,26 @@ export default function StatusBox({ onPosted }: { onPosted?: (s: any) => void })
           {saving ? '…' : 'SAVE'}
         </button>
       </div>
-      {/* Pick your emoji — the torn-paper set */}
-      <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-        {STATUS_EMOJI.map((e) => (
-          <button key={e} onClick={() => setEmoji(e)} aria-label={`Status emoji ${e}`} style={{
-            width: '40px', height: '40px', borderRadius: '20px', cursor: 'pointer',
-            background: emoji === e ? 'var(--lavender-pale)' : 'transparent',
-            border: emoji === e ? `1.5px solid ${uv}` : '1.5px solid transparent',
-            display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0,
-          }}>
-            <QEmoji name={e} size={26} />
-          </button>
-        ))}
-      </div>
+      {/* The popup picker — only when the emoji is tapped */}
+      {pickerOpen && (
+        <div style={{
+          position: 'absolute', left: '8px', right: '8px', top: 'calc(100% + 6px)', zIndex: 30,
+          background: '#fff', border: `1.5px solid var(--stone)`, borderRadius: '16px',
+          boxShadow: '0 10px 28px rgba(43,34,56,0.16)', padding: '10px',
+          display: 'flex', gap: '6px', flexWrap: 'wrap', justifyContent: 'center',
+        }}>
+          {STATUS_EMOJI.map((e) => (
+            <button key={e} onClick={() => { setEmoji(e); setPickerOpen(false) }} aria-label={`Status emoji ${e}`} style={{
+              width: '44px', height: '44px', borderRadius: '22px', cursor: 'pointer',
+              background: emoji === e ? 'var(--lavender-pale)' : 'transparent',
+              border: emoji === e ? `1.5px solid ${uv}` : '1.5px solid transparent',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0,
+            }}>
+              <QEmoji name={e} size={28} />
+            </button>
+          ))}
+        </div>
+      )}
       {error && (
         <span style={{ fontSize: '12px', fontFamily: 'var(--font-body)', color: 'var(--error)' }}>{error}</span>
       )}

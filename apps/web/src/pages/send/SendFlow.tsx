@@ -110,10 +110,35 @@ export default function SendFlow() {
   const [skipRecipient, setSkipRecipient] = useState(false)
 
   const toName = params.get('toName') ?? undefined
+  const editId = params.get('edit') ?? undefined
 
   function update(data: Partial<NoteData>) {
     setNote((prev) => ({ ...prev, ...data }))
   }
+
+  // Editing a scheduled card (from Settings → Scheduled cards): load it,
+  // jump straight to the write step; SAVE CHANGES patches text + pen.
+  useEffect(() => {
+    if (!editId) return
+    api.get(`/notes/one/${editId}`).then((res) => {
+      const n = res.data.data
+      setNote({
+        recipientId: n.recipientId,
+        recipientName: n.recipient?.displayName ?? '',
+        occasionType: n.occasionType,
+        noteText: n.noteText,
+        toneUsed: n.toneUsed ?? 'HEARTFELT',
+        fontChoice: n.fontChoice,
+        cardDesignType: n.cardDesignType,
+        cardDesignId: n.cardDesignId ?? undefined,
+        cardImageUrl: n.cardImageUrl ?? undefined,
+      })
+      setSentNoteId(n.id)
+      setSkipRecipient(true)
+      setStep('write')
+    }).catch(() => {})
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   // Deep link from a birthday or a profile: the recipient is already known,
   // so resolve them from the QT list, skip step 2, and count 3 steps.
@@ -703,7 +728,17 @@ function ReviewStep({ note, onSent, onEditNote, onEditRecipient, editingNoteId, 
     ? `${Math.min((user.notesUsed ?? 0) + 1, user.notesAllowance)} of your ${user.notesAllowance} this month`
     : 'Included this month'
 
+  // Send now, or schedule it to land near a chosen day (Emerald, Oct 18)
+  const [mailWhen, setMailWhen] = useState<'now' | 'schedule'>('now')
+  const [scheduleDate, setScheduleDate] = useState('')
+  const minScheduleDate = (() => { const d = new Date(); d.setDate(d.getDate() + 1); return d.toISOString().slice(0, 10) })()
+  const maxScheduleDate = (() => { const d = new Date(); d.setDate(d.getDate() + 365); return d.toISOString().slice(0, 10) })()
+
   async function handleSend() {
+    if (mailWhen === 'schedule' && !scheduleDate) {
+      setError('Pick the day of the occasion, or switch to Send now.')
+      return
+    }
     setSending(true)
     setError('')
     try {
@@ -720,6 +755,9 @@ function ReviewStep({ note, onSent, onEditNote, onEditRecipient, editingNoteId, 
           cardDesignType: note.cardDesignType,
           cardDesignId: note.cardDesignId,
           cardImageUrl: note.cardImageUrl,
+          ...(mailWhen === 'schedule' && scheduleDate
+            ? { scheduledFor: new Date(scheduleDate + 'T12:00:00').toISOString() }
+            : {}),
         })
         onSent(r.data.data.id ?? null)
       }
@@ -812,14 +850,42 @@ function ReviewStep({ note, onSent, onEditNote, onEditRecipient, editingNoteId, 
         </div>
         <div style={{ padding: '12px 16px', borderBottom: '1.5px solid var(--divider)' }}>
           <span style={{ fontSize: '13px', fontFamily: 'var(--font-body)', color: 'var(--ink-mid)' }}>When should it mail?</span>
-          <div role="radiogroup" aria-label="When to mail" style={{ marginTop: '8px', display: 'flex', gap: '8px' }}>
-            <button role="radio" aria-checked style={{
-              flex: 'none', minHeight: '40px', padding: '0 14px', borderRadius: '20px',
-              border: '2px dashed var(--lilac)', background: 'var(--lavender-pale)',
-              fontFamily: 'var(--font-body)', fontSize: '14px', fontWeight: 700, color: 'var(--ink)',
-              textTransform: 'none', letterSpacing: 0, cursor: 'default',
-            }}>Send now</button>
+          <div role="radiogroup" aria-label="When to mail" style={{ marginTop: '8px', display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+            {(['now', 'schedule'] as const).map((opt) => {
+              const selected = mailWhen === opt
+              return (
+                <button key={opt} role="radio" aria-checked={selected} onClick={() => setMailWhen(opt)} style={{
+                  flex: 'none', minHeight: '40px', padding: '0 14px', borderRadius: '20px',
+                  border: selected ? '2px dashed var(--lilac)' : '1.5px solid var(--stone)',
+                  background: selected ? 'var(--lavender-pale)' : '#fff',
+                  fontFamily: 'var(--font-body)', fontSize: '14px', fontWeight: 700, color: 'var(--ink)',
+                  textTransform: 'none', letterSpacing: 0, cursor: 'pointer',
+                }}>{opt === 'now' ? 'Send now' : 'Schedule it'}</button>
+              )
+            })}
           </div>
+          {mailWhen === 'schedule' && (
+            <div style={{ marginTop: '10px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+              <label style={{ fontSize: '13px', fontFamily: 'var(--font-body)', color: 'var(--ink-mid)' }}>
+                What day is the occasion?
+                <input
+                  type="date"
+                  value={scheduleDate}
+                  min={minScheduleDate}
+                  max={maxScheduleDate}
+                  onChange={(e) => setScheduleDate(e.target.value)}
+                  style={{
+                    display: 'block', marginTop: '4px', width: '100%', height: '44px', padding: '0 12px',
+                    borderRadius: '10px', border: '1.5px solid var(--stone)', background: '#fff',
+                    fontFamily: 'var(--font-body)', fontSize: '16px', color: 'var(--ink)',
+                  }}
+                />
+              </label>
+              <span style={{ fontSize: '12px', fontFamily: 'var(--font-body)', color: 'var(--ink-muted)' }}>
+                We'll mail it a few days ahead. Mail is tricky — we do our best to land it close to the date. 💌
+              </span>
+            </div>
+          )}
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px' }}>
           <span style={{ flex: 1, fontSize: '13px', fontFamily: 'var(--font-body)', color: 'var(--ink-mid)' }}>This card</span>
@@ -827,7 +893,9 @@ function ReviewStep({ note, onSent, onEditNote, onEditRecipient, editingNoteId, 
         </div>
       </div>
       <p style={{ margin: '10px 4px 0', fontSize: '13px', fontFamily: 'var(--font-body)', color: 'var(--ink-mid)' }}>
-        Changed your mind? You can edit it for 2 hours after you send.
+        {mailWhen === 'schedule'
+          ? 'Scheduled cards wait in Settings → Scheduled cards, editable until the day they mail.'
+          : 'Changed your mind? You can edit it for 2 hours after you send.'}
       </p>
 
       {error && (

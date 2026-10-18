@@ -21,7 +21,14 @@ const createNoteSchema = z.object({
   cardDesignType: z.enum(['ARTIST', 'USER_UPLOAD']),
   cardDesignId: z.string().optional(),
   cardImageUrl: z.string().optional(),
+  // Scheduling: the EVENT day the card should land near (we mail ~6 days out)
+  scheduledFor: z.string().datetime().optional(),
 })
+
+// How far ahead of the event day we hand the card to the mail (Emerald's
+// 3-to-7-day window — we aim for the middle). "Mail is tricky; we do our
+// best to get close to the date."
+const MAIL_LEAD_MS = 6 * 24 * 60 * 60 * 1000
 
 // POST /notes — save a new note
 notesRouter.post('/', requireAuth, async (req: AuthRequest, res) => {
@@ -39,7 +46,24 @@ notesRouter.post('/', requireAuth, async (req: AuthRequest, res) => {
     cardDesignType,
     cardDesignId,
     cardImageUrl,
+    scheduledFor,
   } = parsed.data
+
+  // Scheduling sanity: the event day must be ahead of us and within a year
+  let eventDate: Date | null = null
+  if (scheduledFor) {
+    eventDate = new Date(scheduledFor)
+    const tomorrow = new Date(); tomorrow.setHours(0, 0, 0, 0); tomorrow.setDate(tomorrow.getDate() + 1)
+    const yearOut = new Date(Date.now() + 366 * 24 * 60 * 60 * 1000)
+    if (isNaN(+eventDate) || eventDate < tomorrow || eventDate > yearOut) {
+      return res.status(400).json({ error: 'Pick a date between tomorrow and a year from now.' })
+    }
+  }
+  // When it actually mails: ~6 days before the event (never in the past);
+  // send-now keeps the classic 2-hour edit window.
+  const mailAt = eventDate
+    ? new Date(Math.max(Date.now(), +eventDate - MAIL_LEAD_MS))
+    : new Date(Date.now() + EDIT_WINDOW_MS)
 
   // Make sure recipient exists
   const recipient = await prisma.user.findUnique({ where: { id: recipientId } })
@@ -92,6 +116,8 @@ notesRouter.post('/', requireAuth, async (req: AuthRequest, res) => {
       cardImageUrl: cardImageUrl ?? null,
       stripeChargeId: null,
       status: 'PENDING',
+      scheduledFor: eventDate,
+      mailAt,
     },
   })
 
@@ -118,7 +144,8 @@ notesRouter.patch('/:id', requireAuth, async (req: AuthRequest, res) => {
   if (!parsed.success) return res.status(400).json({ error: 'Invalid edit.' })
   const note = await prisma.note.findUnique({ where: { id: req.params.id } })
   if (!note || note.senderId !== req.userId) return res.status(404).json({ error: 'Note not found.' })
-  if (note.status !== 'PENDING' || Date.now() - +note.createdAt > EDIT_WINDOW_MS) {
+  const editDeadline = note.mailAt ? +note.mailAt : +note.createdAt + EDIT_WINDOW_MS
+  if (note.status !== 'PENDING' || Date.now() > editDeadline) {
     return res.status(400).json({ error: 'This note already went to print.' })
   }
   const updated = await prisma.note.update({
@@ -129,6 +156,43 @@ notesRouter.patch('/:id', requireAuth, async (req: AuthRequest, res) => {
     },
   })
   return res.json({ data: updated })
+})
+
+// GET /notes/scheduled — upcoming scheduled cards (editable until they mail)
+notesRouter.get('/scheduled', requireAuth, async (req: AuthRequest, res) => {
+  const notes = await prisma.note.findMany({
+    where: { senderId: req.userId!, status: 'PENDING', scheduledFor: { not: null }, mailAt: { gt: new Date() } },
+    include: { recipient: { select: { id: true, displayName: true, username: true } } },
+    orderBy: { scheduledFor: 'asc' },
+    take: 50,
+  })
+  return res.json({ data: notes })
+})
+
+// GET /notes/:id — one of the current user's own notes (for the edit flow)
+notesRouter.get('/one/:id', requireAuth, async (req: AuthRequest, res) => {
+  const note = await prisma.note.findUnique({
+    where: { id: req.params.id },
+    include: { recipient: { select: { id: true, displayName: true, username: true } } },
+  })
+  if (!note || note.senderId !== req.userId) return res.status(404).json({ error: 'Note not found.' })
+  return res.json({ data: note })
+})
+
+// DELETE /notes/:id — cancel a scheduled card before it mails (refunds the card)
+notesRouter.delete('/:id', requireAuth, async (req: AuthRequest, res) => {
+  const note = await prisma.note.findUnique({ where: { id: req.params.id } })
+  if (!note || note.senderId !== req.userId) return res.status(404).json({ error: 'Note not found.' })
+  const deadline = note.mailAt ? +note.mailAt : +note.createdAt + EDIT_WINDOW_MS
+  if (note.status !== 'PENDING' || Date.now() > deadline) {
+    return res.status(400).json({ error: 'This card already went to print — too late to cancel.' })
+  }
+  await prisma.$transaction([
+    prisma.note.delete({ where: { id: note.id } }),
+    // The card goes back to this month's allowance
+    prisma.user.updateMany({ where: { id: req.userId!, notesUsed: { gt: 0 } }, data: { notesUsed: { decrement: 1 } } }),
+  ])
+  return res.json({ data: { canceled: true } })
 })
 
 // GET /notes/sent — notes the current user sent

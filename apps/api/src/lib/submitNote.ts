@@ -107,10 +107,19 @@ export async function submitNoteToLob(noteId: string): Promise<void> {
   }
 }
 
-// Submit every note whose edit window has closed
+// Submit every note whose time has come: scheduled notes go by their mailAt
+// (set ~6 days before the chosen event day); send-now notes keep the classic
+// 2-hour edit window off createdAt.
 export async function submitDueNotes(): Promise<void> {
+  const now = new Date()
   const due = await prisma.note.findMany({
-    where: { status: 'PENDING', createdAt: { lte: new Date(Date.now() - EDIT_WINDOW_MS) } },
+    where: {
+      status: 'PENDING',
+      OR: [
+        { mailAt: { not: null, lte: now } },
+        { mailAt: null, createdAt: { lte: new Date(now.getTime() - EDIT_WINDOW_MS) } },
+      ],
+    },
     select: { id: true },
     take: 25,
   })

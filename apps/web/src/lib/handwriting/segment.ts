@@ -1,14 +1,12 @@
 import type { Stroke, Point } from './compileFont'
 
-// Slices a handwritten WORD into its letters.
+// Slices a handwritten WORD into its letters — respecting the pen.
 //
-// Strategy: pen strokes that overlap horizontally belong to the same letter
-// (an i's dot sits over its stem), so first cluster strokes by x-overlap.
-// If that gives exactly one cluster per letter, done. Too many clusters →
-// merge the two with the smallest gap until the count fits. Too few (the
-// writer connected letters in one stroke) → cut the widest clusters at
-// boundaries predicted from typical letter widths, splitting strokes at the
-// cut line. The preview step in the UI is the safety net for wild cursive.
+// Emerald's rule (Oct 18): never slice ink into squares. A pen stroke stays
+// WHOLE and belongs to the letter where most of it lives; overlaps are normal
+// (a k's arm reaching over the y, an x leaning over the o). The knife only
+// comes out for a single continuous stroke that genuinely spans multiple
+// letters (true cursive), and it cuts only THAT stroke.
 
 export interface SegmentedLetter {
   char: string
@@ -17,11 +15,10 @@ export interface SegmentedLetter {
 
 export interface SegmentResult {
   letters: SegmentedLetter[]
-  confidence: 'high' | 'low' // low = we had to cut connected strokes
+  confidence: 'high' | 'low' // low = we had to cut a connected stroke
 }
 
-// Rough visual width of each character relative to an average letter —
-// used to predict where to cut a connected run.
+// Rough visual width of each character relative to an average letter.
 function widthWeight(ch: string): number {
   if ('iljt1.,!'.includes(ch)) return 0.55
   if ('mwMW'.includes(ch)) return 1.6
@@ -29,16 +26,64 @@ function widthWeight(ch: string): number {
   return 1
 }
 
-interface Cluster { strokes: Stroke[]; minX: number; maxX: number }
-
-function strokeBounds(s: Stroke): { minX: number; maxX: number } {
+function bounds(s: Stroke): { minX: number; maxX: number } {
   let minX = Infinity, maxX = -Infinity
   for (const p of s) { minX = Math.min(minX, p.x); maxX = Math.max(maxX, p.x) }
   return { minX, maxX }
 }
 
+function centroidX(s: Stroke): number {
+  let sum = 0
+  for (const p of s) sum += p.x
+  return sum / s.length
+}
+
+function pathLength(s: Stroke): number {
+  let d = 0
+  for (let i = 1; i < s.length; i++) d += Math.hypot(s[i].x - s[i - 1].x, s[i].y - s[i - 1].y)
+  return d
+}
+
+// Cut ONE stroke at a vertical line; pieces keep their own side.
+function cutStrokeAtX(stroke: Stroke, x: number): { left: Stroke[]; right: Stroke[] } {
+  const left: Stroke[] = []
+  const right: Stroke[] = []
+  let current: Stroke = []
+  let side: 'left' | 'right' | null = null
+  const push = () => { if (current.length > 1) (side === 'left' ? left : right).push(current); current = [] }
+  for (const p of stroke) {
+    const s = p.x <= x ? 'left' : 'right'
+    if (side !== null && s !== side) push()
+    side = s
+    current.push(p)
+  }
+  push()
+  return { left, right }
+}
+
+// Group whole strokes into `k` letter groups by the gaps between their
+// x-centroids: sort by centroid, split at the k-1 widest centroid gaps.
+function groupByCentroid(strokes: Stroke[], k: number): Stroke[][] {
+  const items = strokes.map((s) => ({ s, c: centroidX(s) })).sort((a, b) => a.c - b.c)
+  if (k <= 1 || items.length <= k) {
+    if (items.length === k) return items.map((i) => [i.s])
+  }
+  const gaps: { idx: number; gap: number }[] = []
+  for (let i = 0; i < items.length - 1; i++) gaps.push({ idx: i, gap: items[i + 1].c - items[i].c })
+  const cutAfter = new Set(gaps.sort((a, b) => b.gap - a.gap).slice(0, k - 1).map((g) => g.idx))
+  const groups: Stroke[][] = [[]]
+  for (let i = 0; i < items.length; i++) {
+    groups[groups.length - 1].push(items[i].s)
+    if (cutAfter.has(i) && groups.length < k) groups.push([])
+  }
+  while (groups.length < k) groups.push([])
+  return groups
+}
+
+interface Cluster { strokes: Stroke[]; minX: number; maxX: number }
+
 function clusterStrokes(strokes: Stroke[], tolerance = 8): Cluster[] {
-  const items = strokes.map((s) => ({ s, ...strokeBounds(s) })).sort((a, b) => a.minX - b.minX)
+  const items = strokes.map((s) => ({ s, ...bounds(s) })).sort((a, b) => a.minX - b.minX)
   const clusters: Cluster[] = []
   for (const it of items) {
     const last = clusters[clusters.length - 1]
@@ -52,55 +97,6 @@ function clusterStrokes(strokes: Stroke[], tolerance = 8): Cluster[] {
   return clusters
 }
 
-// Cut one stroke at a vertical line: every crossing starts a new sub-stroke.
-function cutStrokeAtX(stroke: Stroke, x: number): { left: Stroke[]; right: Stroke[] } {
-  const left: Stroke[] = []
-  const right: Stroke[] = []
-  let current: Stroke = []
-  let side: 'left' | 'right' | null = null
-  const push = () => {
-    if (current.length) (side === 'left' ? left : right).push(current)
-    current = []
-  }
-  for (const p of stroke) {
-    const s = p.x <= x ? 'left' : 'right'
-    if (side !== null && s !== side) push()
-    side = s
-    current.push(p)
-  }
-  push()
-  return { left, right }
-}
-
-// Split a cluster holding `chars` (2+ letters written connected) into one
-// cluster per letter, cutting at width-weighted boundaries.
-function splitCluster(cluster: Cluster, chars: string[]): Cluster[] {
-  const total = chars.reduce((a, c) => a + widthWeight(c), 0)
-  const width = cluster.maxX - cluster.minX
-  const result: Cluster[] = []
-  let remaining = cluster.strokes
-  let cursor = cluster.minX
-  for (let i = 0; i < chars.length - 1; i++) {
-    cursor += (widthWeight(chars[i]) / total) * width
-    const leftStrokes: Stroke[] = []
-    const rightStrokes: Stroke[] = []
-    for (const s of remaining) {
-      const b = strokeBounds(s)
-      if (b.maxX <= cursor) leftStrokes.push(s)
-      else if (b.minX > cursor) rightStrokes.push(s)
-      else {
-        const cut = cutStrokeAtX(s, cursor)
-        leftStrokes.push(...cut.left)
-        rightStrokes.push(...cut.right)
-      }
-    }
-    result.push({ strokes: leftStrokes, minX: cursor - 1, maxX: cursor })
-    remaining = rightStrokes
-  }
-  result.push({ strokes: remaining, minX: cursor, maxX: cluster.maxX })
-  return result
-}
-
 export function segmentWord(strokes: Stroke[], word: string): SegmentResult {
   const chars = word.split('')
   const drawn = strokes.filter((s) => s.length > 0)
@@ -111,7 +107,7 @@ export function segmentWord(strokes: Stroke[], word: string): SegmentResult {
   let clusters = clusterStrokes(drawn)
   let confidence: 'high' | 'low' = 'high'
 
-  // Too many clusters: merge the pair with the smallest gap between them.
+  // Too many clusters: merge the pair with the smallest gap.
   while (clusters.length > chars.length) {
     let best = 0
     let bestGap = Infinity
@@ -127,31 +123,99 @@ export function segmentWord(strokes: Stroke[], word: string): SegmentResult {
     clusters.splice(best + 1, 1)
   }
 
-  // Too few clusters: letters were written connected — cut the widest ones.
-  while (clusters.length < chars.length) {
-    confidence = 'low'
-    // How many letters each cluster should hold, by proportional width
-    const deficit = chars.length - clusters.length
-    let widest = 0
-    for (let i = 1; i < clusters.length; i++) {
-      if (clusters[i].maxX - clusters[i].minX > clusters[widest].maxX - clusters[widest].minX) widest = i
-    }
-    // Letters assigned to each cluster by order: give the widest one extra
-    const counts = clusters.map(() => 1)
-    counts[widest] += deficit
+  // Decide how many letters each cluster holds (proportional to width).
+  const perCluster: string[][] = []
+  {
     let idx = 0
-    const next: Cluster[] = []
-    for (let i = 0; i < clusters.length; i++) {
-      const take = chars.slice(idx, idx + counts[i])
-      idx += counts[i]
-      if (counts[i] === 1) next.push(clusters[i])
-      else next.push(...splitCluster(clusters[i], take))
+    const totalWidth = clusters.reduce((a, c) => a + (c.maxX - c.minX || 1), 0)
+    const remainingFor = (ci: number) => clusters.length - 1 - ci
+    for (let ci = 0; ci < clusters.length; ci++) {
+      const lettersLeft = chars.length - idx
+      const clustersLeft = remainingFor(ci)
+      let take = Math.max(1, Math.round(((clusters[ci].maxX - clusters[ci].minX || 1) / totalWidth) * chars.length))
+      take = Math.min(take, lettersLeft - clustersLeft) // leave at least 1 per remaining cluster
+      take = Math.max(take, 1)
+      perCluster.push(chars.slice(idx, idx + take))
+      idx += take
     }
-    clusters = next
+    // Any letters left over go to the last cluster
+    if (idx < chars.length) perCluster[perCluster.length - 1].push(...chars.slice(idx))
+  }
+
+  // Resolve each cluster into letter groups of WHOLE strokes.
+  const letterGroups: Stroke[][] = []
+  for (let ci = 0; ci < clusters.length; ci++) {
+    const letters = perCluster[ci]
+    let pool = clusters[ci].strokes
+    if (letters.length === 1) {
+      letterGroups.push(pool)
+      continue
+    }
+    // A stroke that covers most of a multi-letter cluster is connected
+    // writing even when the stroke COUNT looks sufficient (one long stroke
+    // plus an i-dot, say) — it needs the knife too.
+    const clusterSpan = clusters[ci].maxX - clusters[ci].minX || 1
+    const hasSpanningStroke = () => pool.some((s) => {
+      const b = bounds(s)
+      return (b.maxX - b.minX) > 0.7 * clusterSpan
+    })
+
+    // Not enough separate strokes for these letters? The writer connected
+    // them — cut the widest-spanning stroke at predicted boundaries until
+    // there are enough pieces. Only that stroke is cut; neighbors stay whole.
+    let safety = 8
+    while ((pool.length < letters.length || hasSpanningStroke()) && safety-- > 0) {
+      confidence = 'low'
+      let widest = 0
+      for (let i = 1; i < pool.length; i++) {
+        const a = bounds(pool[i]); const b = bounds(pool[widest])
+        if (a.maxX - a.minX > b.maxX - b.minX) widest = i
+      }
+      const target = pool[widest]
+      const tb = bounds(target)
+      // Predicted internal boundary: width-weighted midpoint of the letters
+      const total = letters.reduce((a, c) => a + widthWeight(c), 0)
+      let acc = 0
+      let cutX = (tb.minX + tb.maxX) / 2
+      for (const ch of letters) {
+        acc += widthWeight(ch)
+        const x = tb.minX + (acc / total) * (tb.maxX - tb.minX)
+        if (x > tb.minX + 4 && x < tb.maxX - 4) { cutX = x; break }
+      }
+      const cut = cutStrokeAtX(target, cutX)
+      const pieces = [...cut.left, ...cut.right].filter((p) => p.length > 1)
+      if (pieces.length <= 1) break // unsplittable — bail rather than loop
+      pool = [...pool.slice(0, widest), ...pieces, ...pool.slice(widest + 1)]
+    }
+    const groups = groupByCentroid(pool, letters.length)
+    letterGroups.push(...groups)
+  }
+
+  // Tiny orphan pieces (born from cutting) hop to the neighboring letter
+  // whose ink is closest — this is what kills "a little dot in the y".
+  for (let i = 0; i < letterGroups.length; i++) {
+    const keep: Stroke[] = []
+    for (const s of letterGroups[i]) {
+      const isTinyFragment = s.length > 1 && pathLength(s) < 14
+      if (!isTinyFragment || letterGroups[i].length === 1) { keep.push(s); continue }
+      const c = centroidX(s)
+      let bestG = i
+      let bestD = Infinity
+      for (let g = 0; g < letterGroups.length; g++) {
+        for (const other of letterGroups[g]) {
+          if (other === s || other.length < 2 || pathLength(other) < 14) continue
+          const d = Math.abs(centroidX(other) - c)
+          if (d < bestD) { bestD = d; bestG = g }
+        }
+      }
+      if (bestG === i) keep.push(s)
+      else letterGroups[bestG].push(s)
+    }
+    letterGroups[i] = keep
   }
 
   return {
-    letters: chars.map((char, i) => ({ char, strokes: clusters[i]?.strokes ?? [] })),
+    letters: chars.map((char, i) => ({ char, strokes: letterGroups[i] ?? [] })),
     confidence,
   }
 }

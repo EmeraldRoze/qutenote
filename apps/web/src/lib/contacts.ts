@@ -52,7 +52,7 @@ export async function readContacts(): Promise<DeviceContact[] | null> {
 }
 
 export async function matchContactsToMembers(contacts: DeviceContact[]): Promise<MatchedMember[]> {
-  const emails = [...new Set(contacts.flatMap((c) => c.emails))].slice(0, 1000)
+  const emails = [...new Set(contacts.flatMap((c) => c.emails))].slice(0, 10000)
   if (!emails.length) return []
   const r = await api.post('/users/match-contacts', { emails })
   return r.data.data
