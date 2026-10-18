@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext'
 import { SESSIONS, WORD_SESSIONS, ALL_CHARS, TOTAL_CHARS, charName, type WordSession } from '../lib/handwriting/alphabet'
 import { HANDWRITING_CANVAS_SIZE, HANDWRITING_BASELINE_Y, FONT_COMPILER_VERSION, type GlyphStrokes, type Stroke, type Point } from '../lib/handwriting/compileFont'
 import { segmentWord, toGlyphSpace, type SegmentResult } from '../lib/handwriting/segment'
+import { WEB_BUILD } from '../lib/buildGuard'
 import { fetchHandwritingProgress, saveHandwritingProgress } from '../lib/handwriting/api'
 
 // Teach-your-handwriting, word edition (Emerald's Oct 17 idea): people write
@@ -412,7 +413,7 @@ export default function HandwritingPage() {
           Write a few little words and QuteNote learns your real handwriting — flow and all — then turns it into your own font.
         </p>
         <p style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--ink-muted)', marginBottom: '22px' }}>
-          {doneCount} of {TOTAL_CHARS} letters learned. Do it all now, or come back anytime.
+          {doneCount} of {TOTAL_CHARS} letters learned. Do it all now, or come back anytime. <span style={{ fontSize: '10px' }}>· build {WEB_BUILD || 'dev'}</span>
         </p>
 
         {WORD_SESSIONS.map((s) => {

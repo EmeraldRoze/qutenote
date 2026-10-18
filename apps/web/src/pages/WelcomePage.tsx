@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom'
+import { WEB_BUILD } from '../lib/buildGuard'
 
 // Welcome — screen 01 of the Oct 15 2026 redesign. The app's front door:
 // logo in the title band, headline + floating postmark stamp mid-screen on
@@ -67,6 +68,9 @@ export default function WelcomePage() {
           SIGN UP
         </button>
       </div>
+      <p style={{ textAlign: 'center', fontFamily: 'var(--font-body)', fontSize: '10px', color: 'var(--ink-muted)', margin: '10px 0 4px' }}>
+        build {WEB_BUILD || 'dev'}
+      </p>
     </div>
   )
 }
