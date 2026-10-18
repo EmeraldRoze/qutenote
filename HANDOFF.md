@@ -84,7 +84,8 @@ Home card colors swapped (invite=lime, alerts=neon-pink); status renamed "How's 
 
 ## Build/upload pipeline (per new build)
 1. Bump CURRENT_PROJECT_VERSION in apps/web/ios/App/App.xcodeproj (both Debug + Release) — EVERY upload
-2. cd apps/web && VITE_API_BASE=https://qutenote.com/api npm run build && npx cap sync ios
+2. cd apps/web && rm -rf node_modules/.vite node_modules/.vite-temp dist && VITE_API_BASE=https://qutenote.com/api VITE_BUILD=<N> npm run build && npx cap sync ios
+   GOTCHA (Oct 18): rolldown-vite's persistent cache IGNORES env-var changes — a cached build can ship with stale VITE_* values (build 36 shipped with no VITE_BUILD). ALWAYS clear the cache for iOS builds and verify the bundle: grep -q '"<N>"' dist/assets/index-*.js && grep -q qutenote.com/api dist/assets/index-*.js
 3. xcodebuild -project ios/App/App.xcodeproj -scheme App -sdk iphoneos -destination 'generic/platform=iOS' -archivePath <path>.xcarchive CODE_SIGN_STYLE=Manual CODE_SIGN_IDENTITY="Apple Distribution" PROVISIONING_PROFILE_SPECIFIER="QuteNote AppStore" DEVELOPMENT_TEAM=97276PB95S archive
    (NEVER CODE_SIGNING_ALLOWED=NO — that strips the entitlements: builds 1-30 shipped WITHOUT applesignin + aps-environment, breaking Apple sign-in (error 1000) and push registration. Found+fixed Oct 16.)
 4. xcodebuild -exportArchive -archivePath <path>.xcarchive -exportOptionsPlist scripts/ios/exportOptions.plist -exportPath <dir> -authenticationKeyPath ~/.appstoreconnect/private_keys/AuthKey_Y5NXGFNCFV.p8 -authenticationKeyID Y5NXGFNCFV -authenticationKeyIssuerID a8f9ba85-917d-49e9-888e-e128d4ef6822
