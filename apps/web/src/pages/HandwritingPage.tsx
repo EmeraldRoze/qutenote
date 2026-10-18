@@ -1,18 +1,49 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-import { SESSIONS, ALL_CHARS, TOTAL_CHARS, charName, type HandwritingSession } from '../lib/handwriting/alphabet'
+import { SESSIONS, WORD_SESSIONS, ALL_CHARS, TOTAL_CHARS, charName, type WordSession } from '../lib/handwriting/alphabet'
 import { HANDWRITING_CANVAS_SIZE, HANDWRITING_BASELINE_Y, FONT_COMPILER_VERSION, type GlyphStrokes, type Stroke, type Point } from '../lib/handwriting/compileFont'
+import { segmentWord, toGlyphSpace, type SegmentResult } from '../lib/handwriting/segment'
 import { fetchHandwritingProgress, saveHandwritingProgress } from '../lib/handwriting/api'
 
-const uv = '#5A32D6'
-const CSS_SIZE = 280
+// Teach-your-handwriting, word edition (Emerald's Oct 17 idea): people write
+// whole little words so their letters come out of real flow instead of stiff
+// one-at-a-time drawing. The app slices each word into letters, shows the
+// slice for approval, and a touch-up mode lets you redo any single letter.
 
-/* ── The writing canvas: captures pen strokes for one letter at a time ── */
-function LetterCanvas({ strokes, onDraw }: {
-  strokes: Stroke[]
-  onDraw: (strokes: Stroke[]) => void
-}) {
+const uv = '#5A32D6'
+
+/* ── Shared ink-drawing helpers ── */
+
+function drawStrokes(ctx: CanvasRenderingContext2D, strokes: Stroke[], liveStroke?: Stroke) {
+  ctx.strokeStyle = '#231A3A'
+  ctx.fillStyle = '#231A3A'
+  ctx.lineWidth = 7
+  ctx.lineCap = 'round'
+  ctx.lineJoin = 'round'
+  const all = liveStroke ? [...strokes, liveStroke] : strokes
+  for (const stroke of all) {
+    if (stroke.length === 1) {
+      ctx.beginPath()
+      ctx.arc(stroke[0].x, stroke[0].y, 4, 0, Math.PI * 2)
+      ctx.fill()
+      continue
+    }
+    if (stroke.length < 2) continue
+    ctx.beginPath()
+    ctx.moveTo(stroke[0].x, stroke[0].y)
+    for (const p of stroke.slice(1)) ctx.lineTo(p.x, p.y)
+    ctx.stroke()
+  }
+}
+
+/* ── The WORD canvas: wide, ruled, captures a whole word of ink ── */
+
+const WORD_W = 640
+const WORD_H = 280
+const WORD_BASELINE = 200
+
+function WordCanvas({ strokes, onDraw }: { strokes: Stroke[]; onDraw: (s: Stroke[]) => void }) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const drawingRef = useRef(false)
   const currentRef = useRef<Stroke>([])
@@ -21,47 +52,25 @@ function LetterCanvas({ strokes, onDraw }: {
     const canvas = canvasRef.current
     const ctx = canvas?.getContext('2d')
     if (!canvas || !ctx) return
-    ctx.clearRect(0, 0, HANDWRITING_CANVAS_SIZE, HANDWRITING_CANVAS_SIZE)
+    ctx.clearRect(0, 0, WORD_W, WORD_H)
+    // baseline + a faint x-height guide
     ctx.strokeStyle = '#E6E1DC'
     ctx.setLineDash([5, 5])
     ctx.lineWidth = 1.5
-    ctx.beginPath()
-    ctx.moveTo(0, HANDWRITING_BASELINE_Y)
-    ctx.lineTo(HANDWRITING_CANVAS_SIZE, HANDWRITING_BASELINE_Y)
-    ctx.stroke()
+    ctx.beginPath(); ctx.moveTo(0, WORD_BASELINE); ctx.lineTo(WORD_W, WORD_BASELINE); ctx.stroke()
+    ctx.strokeStyle = '#F0EBE4'
+    ctx.beginPath(); ctx.moveTo(0, WORD_BASELINE - 70); ctx.lineTo(WORD_W, WORD_BASELINE - 70); ctx.stroke()
     ctx.setLineDash([])
-
-    ctx.strokeStyle = '#231A3A'
-    ctx.fillStyle = '#231A3A'
-    ctx.lineWidth = 7
-    ctx.lineCap = 'round'
-    ctx.lineJoin = 'round'
-    const all = liveStroke ? [...strokes, liveStroke] : strokes
-    for (const stroke of all) {
-      if (stroke.length === 1) {
-        // A tap with no drag — draw it as a dot (i/j tittle, a period) rather
-        // than silently dropping it.
-        ctx.beginPath()
-        ctx.arc(stroke[0].x, stroke[0].y, 4, 0, Math.PI * 2)
-        ctx.fill()
-        continue
-      }
-      if (stroke.length < 2) continue
-      ctx.beginPath()
-      ctx.moveTo(stroke[0].x, stroke[0].y)
-      for (const p of stroke.slice(1)) ctx.lineTo(p.x, p.y)
-      ctx.stroke()
-    }
+    drawStrokes(ctx, strokes, liveStroke)
   }
 
   useEffect(() => {
     const canvas = canvasRef.current
     if (!canvas) return
     const dpr = window.devicePixelRatio || 1
-    canvas.width = HANDWRITING_CANVAS_SIZE * dpr
-    canvas.height = HANDWRITING_CANVAS_SIZE * dpr
-    const ctx = canvas.getContext('2d')
-    ctx?.scale(dpr, dpr)
+    canvas.width = WORD_W * dpr
+    canvas.height = WORD_H * dpr
+    canvas.getContext('2d')?.scale(dpr, dpr)
     redraw()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
@@ -71,16 +80,15 @@ function LetterCanvas({ strokes, onDraw }: {
   function posFromEvent(e: React.PointerEvent): Point {
     const canvas = canvasRef.current!
     const rect = canvas.getBoundingClientRect()
-    const scale = HANDWRITING_CANVAS_SIZE / rect.width
-    return { x: (e.clientX - rect.left) * scale, y: (e.clientY - rect.top) * scale }
+    return { x: (e.clientX - rect.left) * (WORD_W / rect.width), y: (e.clientY - rect.top) * (WORD_H / rect.height) }
   }
 
   return (
     <canvas
       ref={canvasRef}
       style={{
-        width: `${CSS_SIZE}px`, height: `${CSS_SIZE}px`, borderRadius: '20px',
-        background: '#fff', border: `1.5px solid var(--stone)`, touchAction: 'none', display: 'block', margin: '0 auto',
+        width: '100%', aspectRatio: `${WORD_W} / ${WORD_H}`, borderRadius: '20px',
+        background: '#fff', border: '1.5px solid var(--stone)', touchAction: 'none', display: 'block',
       }}
       onPointerDown={(e) => {
         e.preventDefault()
@@ -96,8 +104,6 @@ function LetterCanvas({ strokes, onDraw }: {
       onPointerUp={() => {
         if (!drawingRef.current) return
         drawingRef.current = false
-        // A plain tap (no drag) is exactly one point — that's a dot (the tittle
-        // on an i/j, a period). Keep it instead of discarding it as "too short."
         if (currentRef.current.length >= 1) onDraw([...strokes, currentRef.current])
         currentRef.current = []
       }}
@@ -111,50 +117,77 @@ function LetterCanvas({ strokes, onDraw }: {
   )
 }
 
-/* ── One writing session: steps through a session's characters ──
-   Saves after every letter (not just at the end) — safe to back out or lose
-   signal at any point, and lets you step backward to redraw a letter you
-   already wrote since whatever's saved is what reloads when you return. ── */
-function SessionFlow({ session, existingGlyphs, onDone, onAllComplete }: {
-  session: HandwritingSession
-  existingGlyphs: GlyphStrokes
-  onDone: (merged: GlyphStrokes) => void
-  onAllComplete: () => void
+/* ── Small SVG preview of one sliced letter ── */
+
+function LetterPreview({ strokes, label }: { strokes: Stroke[]; label: string }) {
+  let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity
+  for (const s of strokes) for (const p of s) {
+    minX = Math.min(minX, p.x); maxX = Math.max(maxX, p.x)
+    minY = Math.min(minY, p.y); maxY = Math.max(maxY, p.y)
+  }
+  const empty = !Number.isFinite(minX)
+  const w = empty ? 1 : Math.max(maxX - minX, 8)
+  const h = empty ? 1 : Math.max(maxY - minY, 8)
+  const pad = 8
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
+      <div style={{
+        width: '56px', height: '64px', background: '#fff', borderRadius: '10px',
+        border: empty ? '1.5px dashed var(--error)' : '1.5px solid var(--stone)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+      }}>
+        {!empty && (
+          <svg viewBox={`${minX - pad} ${minY - pad} ${w + pad * 2} ${h + pad * 2}`} width="46" height="54" style={{ overflow: 'visible' }}>
+            {strokes.map((s, i) => s.length === 1
+              ? <circle key={i} cx={s[0].x} cy={s[0].y} r={Math.max(4, w / 20)} fill="#231A3A" />
+              : <polyline key={i} points={s.map((p) => `${p.x},${p.y}`).join(' ')} fill="none" stroke="#231A3A" strokeWidth={Math.max(4, w / 14)} strokeLinecap="round" strokeLinejoin="round" />,
+            )}
+          </svg>
+        )}
+      </div>
+      <span style={{ fontFamily: 'var(--font-body)', fontSize: '13px', fontWeight: 700, color: 'var(--ink-mid)' }}>{label}</span>
+    </div>
+  )
+}
+
+/* ── Word flow: write a word → see the slice → approve or rewrite ── */
+
+function WordFlow({ session, onSaved, glyphs }: {
+  session: WordSession
+  glyphs: GlyphStrokes
+  onSaved: (merged: GlyphStrokes) => void
 }) {
   const navigate = useNavigate()
   const { user } = useAuth()
   const [index, setIndex] = useState(0)
-  const [glyphs, setGlyphs] = useState<GlyphStrokes>(existingGlyphs)
-  const [currentStrokes, setCurrentStrokes] = useState<Stroke[]>(existingGlyphs[session.chars[0]] ?? [])
+  const [strokes, setStrokes] = useState<Stroke[]>([])
+  const [preview, setPreview] = useState<SegmentResult | null>(null)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
 
-  const char = session.chars[index]
-  const displayChar = char === ' ' ? '␣' : char
+  const word = session.words[index]
+  const isSingleMark = word.length === 1
 
-  function goTo(newIndex: number, fromGlyphs: GlyphStrokes) {
-    setIndex(newIndex)
-    setCurrentStrokes(fromGlyphs[session.chars[newIndex]] ?? [])
+  function slice() {
+    if (!strokes.length) return
+    setPreview(segmentWord(strokes, word))
   }
 
-  async function commitAndAdvance(direction: 1 | -1) {
-    const updated = currentStrokes.length ? { ...glyphs, [char]: currentStrokes } : glyphs
-    setGlyphs(updated)
+  async function accept() {
+    if (!preview || saving) return
     setSaving(true)
     setError('')
     try {
-      const merged = await saveHandwritingProgress(existingGlyphs, updated, `QuteNote-${user?.username ?? 'you'}-Handwriting`)
-      onDone(merged)
-      const nextIndex = index + direction
-      if (direction === -1) {
-        goTo(nextIndex, updated)
-      } else if (nextIndex < session.chars.length) {
-        goTo(nextIndex, updated)
-      } else if (ALL_CHARS.every((c) => merged[c]?.length)) {
-        onAllComplete()
-      } else {
-        navigate('/handwriting', { replace: true })
+      const captured: GlyphStrokes = {}
+      for (const letter of preview.letters) {
+        if (letter.strokes.length) captured[letter.char] = toGlyphSpace(letter.strokes, WORD_BASELINE)
       }
+      const merged = await saveHandwritingProgress(glyphs, captured, `QuteNote-${user?.username ?? 'you'}-Handwriting`)
+      onSaved(merged)
+      setStrokes([])
+      setPreview(null)
+      if (index + 1 < session.words.length) setIndex(index + 1)
+      else navigate('/handwriting', { replace: true })
     } catch {
       setError("That didn't save. Check your connection and try again.")
     } finally {
@@ -162,98 +195,171 @@ function SessionFlow({ session, existingGlyphs, onDone, onAllComplete }: {
     }
   }
 
+  const btn: React.CSSProperties = {
+    height: '52px', borderRadius: '26px', border: 'none', cursor: 'pointer', padding: '0 22px',
+    fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '14px', letterSpacing: '0.08em',
+  }
+
   return (
-    <div style={{ maxWidth: '480px', margin: '0 auto', padding: '24px 24px 60px', textAlign: 'center' }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', marginBottom: '6px' }}>
-        {index > 0 && (
-          <button onClick={() => commitAndAdvance(-1)} disabled={saving} aria-label="Previous letter" style={{
-            background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ink-mid)', padding: '4px',
-          }}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 6l-6 6 6 6" /></svg>
-          </button>
-        )}
-        <p style={{ fontFamily: 'var(--font-body)', fontSize: '12px', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--ink-mid)' }}>
-          {session.label} · {index + 1} of {session.chars.length}
-        </p>
-      </div>
-      <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '64px', fontWeight: 400, color: 'var(--ink)', margin: '0 0 2px' }}>
-        {displayChar}
+    <div style={{ maxWidth: '480px', margin: '0 auto', padding: '20px 20px 60px', textAlign: 'center' }}>
+      <p style={{ fontFamily: 'var(--font-body)', fontSize: '12px', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--ink-mid)', margin: 0 }}>
+        {session.label} · {index + 1} of {session.words.length}
+      </p>
+      <h1 style={{ fontFamily: 'var(--font-display)', fontSize: isSingleMark ? '56px' : '44px', fontWeight: 400, color: 'var(--ink)', margin: '6px 0 2px' }}>
+        {word}
       </h1>
       <p style={{ fontFamily: 'var(--font-body)', fontSize: '14px', color: 'var(--ink-mid)', margin: '0 0 14px' }}>
-        {charName(session.key, char)}
-      </p>
-      <LetterCanvas strokes={currentStrokes} onDraw={setCurrentStrokes} />
-      <p style={{ fontSize: '12px', fontFamily: 'var(--font-body)', color: 'var(--ink-muted)', marginTop: '10px' }}>
-        Just tap for a dot — i, j, and periods don't need a drag.
+        {isSingleMark ? charName(session.key, word) : 'Write the whole word in one go, like you normally would.'}
       </p>
 
-      {error && <p style={{ fontSize: '13px', fontFamily: 'var(--font-body)', color: '#B3261E', marginTop: '14px' }}>{error}</p>}
+      <WordCanvas strokes={strokes} onDraw={(s) => { setStrokes(s); setPreview(null) }} />
+      <p style={{ fontSize: '12px', fontFamily: 'var(--font-body)', color: 'var(--ink-muted)', marginTop: '8px' }}>
+        {isSingleMark ? 'Just tap for a dot.' : 'Sit the word on the dashed line. Flow is good — that is the whole point.'}
+      </p>
 
-      <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
-        <button
-          onClick={() => setCurrentStrokes([])}
-          disabled={!currentStrokes.length}
-          style={{
-            flex: 1, height: '50px', borderRadius: '10px', border: '1.5px solid var(--stone)', cursor: 'pointer',
-            background: '#fff', color: 'var(--ink-mid)', opacity: currentStrokes.length ? 1 : 0.5,
-            fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.1em',
-          }}
-        >
+      {/* The slice preview */}
+      {preview && (
+        <div style={{ marginTop: '16px', padding: '14px', background: 'var(--lavender-pale)', borderRadius: '16px', border: '2px dashed var(--lilac)' }}>
+          <p style={{ margin: '0 0 10px', fontFamily: 'var(--font-body)', fontSize: '14px', color: 'var(--ink)' }}>
+            Here's how we sliced it — look right?
+          </p>
+          <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', flexWrap: 'wrap' }}>
+            {preview.letters.map((l, i) => <LetterPreview key={i} strokes={l.strokes} label={l.char} />)}
+          </div>
+          {preview.confidence === 'low' && (
+            <p style={{ margin: '10px 0 0', fontFamily: 'var(--font-body)', fontSize: '12px', color: 'var(--ink-mid)' }}>
+              Your letters ran together, so we cut them where they likely split. If a letter looks off, rewrite with a touch more space.
+            </p>
+          )}
+        </div>
+      )}
+
+      {error && <p style={{ fontSize: '13px', fontFamily: 'var(--font-body)', color: 'var(--error)', marginTop: '12px' }}>{error}</p>}
+
+      <div style={{ display: 'flex', gap: '10px', marginTop: '18px' }}>
+        <button onClick={() => { setStrokes([]); setPreview(null) }} disabled={!strokes.length}
+          style={{ ...btn, flex: 1, background: '#fff', border: '1.5px solid var(--stone)', color: 'var(--ink-mid)', opacity: strokes.length ? 1 : 0.5 }}>
           Clear
         </button>
-        <button
-          onClick={() => commitAndAdvance(1)}
-          disabled={!currentStrokes.length || saving}
-          style={{
-            flex: 2, height: '50px', borderRadius: '10px', border: 'none', cursor: 'pointer',
-            background: uv, color: '#fff', opacity: currentStrokes.length && !saving ? 1 : 0.45,
-            fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '13px', textTransform: 'uppercase', letterSpacing: '0.12em',
-          }}
-        >
-          {saving ? 'Saving…' : index + 1 < session.chars.length ? 'Next letter' : 'Finish'}
-        </button>
+        {!preview ? (
+          <button onClick={slice} disabled={!strokes.length}
+            style={{ ...btn, flex: 2, background: uv, color: '#fff', opacity: strokes.length ? 1 : 0.45 }}>
+            {isSingleMark ? 'Check it' : 'Slice it'}
+          </button>
+        ) : (
+          <button onClick={accept} disabled={saving}
+            style={{ ...btn, flex: 2, background: uv, color: '#fff', opacity: saving ? 0.6 : 1 }}>
+            {saving ? 'Saving…' : 'Looks right →'}
+          </button>
+        )}
       </div>
     </div>
   )
 }
 
-/* ── Shown once every character across every session has been written ── */
-function AllDoneScreen({ onClose }: { onClose: () => void }) {
-  const navigate = useNavigate()
+/* ── Touch-up: redo one single letter the old way ── */
+
+function FixLetter({ char, glyphs, onSaved, onClose }: {
+  char: string
+  glyphs: GlyphStrokes
+  onSaved: (merged: GlyphStrokes) => void
+  onClose: () => void
+}) {
+  const { user } = useAuth()
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const drawingRef = useRef(false)
+  const currentRef = useRef<Stroke>([])
+  const [strokes, setStrokes] = useState<Stroke[]>([])
+  const [saving, setSaving] = useState(false)
+  const S = HANDWRITING_CANVAS_SIZE
+
+  function redraw(liveStroke?: Stroke) {
+    const canvas = canvasRef.current
+    const ctx = canvas?.getContext('2d')
+    if (!canvas || !ctx) return
+    ctx.clearRect(0, 0, S, S)
+    ctx.strokeStyle = '#E6E1DC'
+    ctx.setLineDash([5, 5])
+    ctx.lineWidth = 1.5
+    ctx.beginPath(); ctx.moveTo(0, HANDWRITING_BASELINE_Y); ctx.lineTo(S, HANDWRITING_BASELINE_Y); ctx.stroke()
+    ctx.setLineDash([])
+    drawStrokes(ctx, strokes, liveStroke)
+  }
+
+  useEffect(() => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+    const dpr = window.devicePixelRatio || 1
+    canvas.width = S * dpr
+    canvas.height = S * dpr
+    canvas.getContext('2d')?.scale(dpr, dpr)
+    redraw()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+  useEffect(() => { redraw() }, [strokes]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  function posFromEvent(e: React.PointerEvent): Point {
+    const rect = canvasRef.current!.getBoundingClientRect()
+    return { x: (e.clientX - rect.left) * (S / rect.width), y: (e.clientY - rect.top) * (S / rect.height) }
+  }
+
+  const sessionKey = SESSIONS.find((s) => s.chars.includes(char))?.key ?? 'punctuation'
+
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '24px', textAlign: 'center' }}>
-      <span style={{ fontSize: '56px', marginBottom: '14px' }}>🎉</span>
-      <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '26px', fontWeight: 400, color: 'var(--ink)', marginBottom: '10px' }}>
-        You did it!
-      </h1>
-      <p style={{ fontFamily: 'var(--font-body)', fontSize: '15px', color: 'var(--ink-mid)', maxWidth: '320px', marginBottom: '32px' }}>
-        Your handwriting is ready. Every note you write from here can look like it came straight from your own pen.
-      </p>
-      <button onClick={() => navigate('/send')} style={{
-        width: '100%', maxWidth: '320px', height: '52px', borderRadius: '10px', border: 'none', cursor: 'pointer',
-        background: uv, color: '#fff', fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '13px',
-        textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: '12px',
-      }}>
-        Write a note
-      </button>
-      <button onClick={onClose} style={{
-        width: '100%', maxWidth: '320px', height: '52px', borderRadius: '10px', border: '1.5px solid var(--stone)', cursor: 'pointer',
-        background: 'none', color: 'var(--ink-mid)', fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '13px',
-        textTransform: 'uppercase', letterSpacing: '0.12em',
-      }}>
-        Back to your handwriting
-      </button>
+    <div style={{ position: 'fixed', inset: 0, zIndex: 100, background: 'rgba(43,34,56,0.45)', display: 'flex', alignItems: 'flex-end' }} onClick={onClose}>
+      <div style={{ width: '100%', background: 'var(--cream)', borderRadius: '16px 16px 0 0', padding: '22px 22px calc(26px + env(safe-area-inset-bottom))', textAlign: 'center' }} onClick={(e) => e.stopPropagation()}>
+        <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '40px', fontWeight: 400, margin: 0 }}>{char}</h2>
+        <p style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--ink-mid)', margin: '0 0 12px' }}>{charName(sessionKey, char)} — redo just this one</p>
+        <canvas
+          ref={canvasRef}
+          style={{ width: 'min(280px, 100%)', aspectRatio: '1', borderRadius: '20px', background: '#fff', border: '1.5px solid var(--stone)', touchAction: 'none', display: 'block', margin: '0 auto' }}
+          onPointerDown={(e) => { e.preventDefault(); drawingRef.current = true; currentRef.current = [posFromEvent(e)]; canvasRef.current?.setPointerCapture(e.pointerId) }}
+          onPointerMove={(e) => { if (!drawingRef.current) return; currentRef.current.push(posFromEvent(e)); redraw(currentRef.current) }}
+          onPointerUp={() => { if (!drawingRef.current) return; drawingRef.current = false; if (currentRef.current.length >= 1) setStrokes([...strokes, currentRef.current]); currentRef.current = [] }}
+          onPointerLeave={() => { if (!drawingRef.current) return; drawingRef.current = false; if (currentRef.current.length >= 1) setStrokes([...strokes, currentRef.current]); currentRef.current = [] }}
+        />
+        <div style={{ display: 'flex', gap: '10px', marginTop: '14px' }}>
+          <button onClick={() => setStrokes([])} disabled={!strokes.length} style={{
+            flex: 1, height: '48px', borderRadius: '24px', border: '1.5px solid var(--stone)', background: '#fff',
+            color: 'var(--ink-mid)', cursor: 'pointer', fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '13px', opacity: strokes.length ? 1 : 0.5,
+          }}>
+            Clear
+          </button>
+          <button
+            onClick={async () => {
+              if (!strokes.length || saving) return
+              setSaving(true)
+              try {
+                const merged = await saveHandwritingProgress(glyphs, { [char]: strokes }, `QuteNote-${user?.username ?? 'you'}-Handwriting`)
+                onSaved(merged)
+                onClose()
+              } finally {
+                setSaving(false)
+              }
+            }}
+            disabled={!strokes.length || saving}
+            style={{
+              flex: 2, height: '48px', borderRadius: '24px', border: 'none', background: uv, color: '#fff',
+              cursor: 'pointer', fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '13px',
+              opacity: !strokes.length || saving ? 0.5 : 1,
+            }}
+          >
+            {saving ? 'Saving…' : 'Save letter'}
+          </button>
+        </div>
+      </div>
     </div>
   )
 }
 
-/* ── Overview: pick a session, see progress ── */
+/* ── Overview: pick a word session, see progress, touch up letters ── */
+
 export default function HandwritingPage() {
   const navigate = useNavigate()
   const { sessionKey } = useParams()
   const { user } = useAuth()
   const [glyphs, setGlyphs] = useState<GlyphStrokes | null>(null)
-  const [celebrating, setCelebrating] = useState(false)
+  const [fixing, setFixing] = useState<string | null>(null)
 
   useEffect(() => {
     fetchHandwritingProgress().then((r) => {
@@ -270,61 +376,49 @@ export default function HandwritingPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  const activeSession = SESSIONS.find((s) => s.key === sessionKey)
+  const activeSession = WORD_SESSIONS.find((s) => s.key === sessionKey)
 
-  if (celebrating) {
-    return <AllDoneScreen onClose={() => { setCelebrating(false); navigate('/handwriting', { replace: true }) }} />
-  }
+  const nav = (
+    <nav style={{ background: 'var(--cream)', borderBottom: '1px solid var(--stone)', padding: '14px 18px', display: 'flex', alignItems: 'center', gap: '14px' }}>
+      <button onClick={() => { if (activeSession) navigate('/handwriting', { replace: true }); else navigate(-1) }} aria-label="Back" style={{
+        width: '36px', height: '36px', borderRadius: '50%', background: 'var(--lavender-pale)',
+        border: 'none', cursor: 'pointer', color: uv, display: 'flex', alignItems: 'center', justifyContent: 'center',
+      }}>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M15 6l-6 6 6 6" /></svg>
+      </button>
+      <span style={{ fontFamily: 'var(--font-display)', fontSize: '18px', fontWeight: 400, color: 'var(--ink)' }}>Your handwriting</span>
+    </nav>
+  )
 
   if (activeSession) {
     if (glyphs === null) return null
     return (
       <div style={{ minHeight: '100vh' }}>
-        <nav style={{ background: 'var(--cream)', borderBottom: '1px solid var(--stone)', padding: '14px 18px', display: 'flex', alignItems: 'center', gap: '14px' }}>
-          <button onClick={() => navigate('/handwriting', { replace: true })} aria-label="Back" style={{
-            width: '36px', height: '36px', borderRadius: '50%', background: 'var(--lavender-pale)',
-            border: 'none', cursor: 'pointer', color: uv, display: 'flex', alignItems: 'center', justifyContent: 'center',
-          }}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M15 6l-6 6 6 6" /></svg>
-          </button>
-          <span style={{ fontFamily: 'var(--font-display)', fontSize: '18px', fontWeight: 400, color: 'var(--ink)' }}>Your handwriting</span>
-        </nav>
-        <SessionFlow
-          key={activeSession.key}
-          session={activeSession}
-          existingGlyphs={glyphs}
-          onDone={setGlyphs}
-          onAllComplete={() => setCelebrating(true)}
-        />
+        {nav}
+        <WordFlow key={activeSession.key} session={activeSession} glyphs={glyphs} onSaved={setGlyphs} />
       </div>
     )
   }
 
   const doneCount = glyphs ? ALL_CHARS.filter((c) => glyphs[c]?.length).length : 0
+  const writtenChars = glyphs ? ALL_CHARS.filter((c) => glyphs[c]?.length) : []
 
   return (
     <div style={{ minHeight: '100vh', paddingBottom: '60px' }}>
-      <nav style={{ background: 'var(--cream)', borderBottom: '1px solid var(--stone)', padding: '14px 18px', display: 'flex', alignItems: 'center', gap: '14px' }}>
-        <button onClick={() => navigate(-1)} aria-label="Back" style={{
-          width: '36px', height: '36px', borderRadius: '50%', background: 'var(--lavender-pale)',
-          border: 'none', cursor: 'pointer', color: uv, display: 'flex', alignItems: 'center', justifyContent: 'center',
-        }}>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M15 6l-6 6 6 6" /></svg>
-        </button>
-        <span style={{ fontFamily: 'var(--font-display)', fontSize: '18px', fontWeight: 400, color: 'var(--ink)' }}>Your handwriting</span>
-      </nav>
+      {nav}
 
       <div style={{ maxWidth: '480px', margin: '0 auto', padding: '24px 20px' }}>
         <p style={{ fontFamily: 'var(--font-body)', fontSize: '15px', color: 'var(--ink-mid)', lineHeight: 1.5, marginBottom: '8px' }}>
-          Write a few letters and QuteNote turns them into a font, so what you type shows up in your own handwriting.
+          Write a few little words and QuteNote learns your real handwriting — flow and all — then turns it into your own font.
         </p>
         <p style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--ink-muted)', marginBottom: '22px' }}>
-          {doneCount} of {TOTAL_CHARS} letters written. Do it all now, or come back anytime.
+          {doneCount} of {TOTAL_CHARS} letters learned. Do it all now, or come back anytime.
         </p>
 
-        {SESSIONS.map((s) => {
-          const sessionDone = s.chars.filter((c) => glyphs?.[c]?.length).length
-          const complete = sessionDone === s.chars.length
+        {WORD_SESSIONS.map((s) => {
+          const sessionChars = SESSIONS.find((x) => x.key === s.key)?.chars ?? []
+          const sessionDone = sessionChars.filter((c) => glyphs?.[c]?.length).length
+          const complete = sessionDone === sessionChars.length
           return (
             <button
               key={s.key}
@@ -337,7 +431,7 @@ export default function HandwritingPage() {
             >
               <div>
                 <div style={{ fontFamily: 'var(--font-body)', fontSize: '15px', fontWeight: 700, color: 'var(--ink)' }}>{s.label}</div>
-                <div style={{ fontFamily: 'var(--font-body)', fontSize: '12px', color: 'var(--ink-mid)' }}>{sessionDone} of {s.chars.length} done</div>
+                <div style={{ fontFamily: 'var(--font-body)', fontSize: '12px', color: 'var(--ink-mid)' }}>{s.detail} · {sessionDone} of {sessionChars.length} letters</div>
               </div>
               <span style={{
                 fontFamily: 'var(--font-body)', fontSize: '11px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase',
@@ -348,7 +442,32 @@ export default function HandwritingPage() {
             </button>
           )
         })}
+
+        {/* Touch-up: redo any single letter */}
+        {writtenChars.length > 0 && (
+          <div style={{ marginTop: '26px' }}>
+            <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '18px', fontWeight: 400, color: 'var(--ink)', margin: '0 0 4px' }}>Fix one letter</h2>
+            <p style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--ink-mid)', margin: '0 0 12px' }}>
+              One came out funky? Tap it and redo just that one.
+            </p>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+              {writtenChars.map((c) => (
+                <button key={c} onClick={() => setFixing(c)} style={{
+                  width: '44px', height: '44px', borderRadius: '12px', background: '#fff',
+                  border: '1px solid var(--stone)', cursor: 'pointer', fontFamily: 'var(--font-body)',
+                  fontSize: '18px', color: 'var(--ink)', textTransform: 'none', letterSpacing: 0, fontWeight: 400,
+                }}>
+                  {c}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
+
+      {fixing && glyphs && (
+        <FixLetter char={fixing} glyphs={glyphs} onSaved={setGlyphs} onClose={() => setFixing(null)} />
+      )}
     </div>
   )
 }
