@@ -4,6 +4,13 @@ Written: 2026-10-06 (replaces stale April 10 handoff). Last updated: 2026-10-16.
 ## PROTOCOL CHANGE (Emerald, Oct 17 — MANDATORY for every TestFlight round)
 Before any plan or FIREFLY ask: clarifying questions about the TestFlight feedback go to Emerald ONE AT A TIME (she answers, the next appears). Every vague item gets a question — zero assumptions. Questions are mandatory pre-FIREFLY. Never bury questions in a long briefing.
 
+## BUILD 39 APPROVED Oct 18 (FIREFLY) — tweaks round
+- compileFont v4: t ascender 0.8x (shorter than b/d/h/k/l), w/m band 1.1x x-height (wide letters read small). Auto-recompile via version gate.
+- Handwriting overview celebrates at 67/67: "Yay — your handwriting is all learned! Go write a bunch of Qute Notes in it." BRAND RULE (memory'd): ALWAYS Qute, never Cute, in all copy.
+- Dates: contact-birthday list is collapsible (caret) and already-added contacts drop off it (remainingBdays filter).
+- NEW DATE TYPES (hers): Pet-iversary (heart), Tiny Triumphs (star), Sweet Traditions (gift), Seasonal Feels (sun) — optional "What's the occasion?" detail saved as "Type: detail" in the label. Pet gotcha day chip RETIRED; sober milestones explicitly declined.
+- HALFPPY BIRTHDAY pushes: daily 15:00 UTC, same-day push 6 months from every annual Birthday date (day clamped for short months), via notifyBirthdays pref.
+
 ## BUILD 38 APPROVED Oct 18 (FIREFLY) — the hands-free handwriting round (7 items, question-loop protocol used)
 - Word capture is HANDS-FREE: 1.5s pen-idle → auto-slice → save → next word (never interrupts, her call); slice preview UI removed (LetterPreview deleted — tsc -b in `npm run build` catches unused decls that plain `npx tsc --noEmit` passed!). Fix-one-letter remains the correction path.
 - NEW WORD LIST (hers, poem-pair order): hug qt · zap fox · kid nap · cry jam · slow vibe (10 words, mostly 3-letter, full a-z verified; same uppercased for capitals).
