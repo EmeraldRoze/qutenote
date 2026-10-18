@@ -118,39 +118,6 @@ function WordCanvas({ strokes, onDraw }: { strokes: Stroke[]; onDraw: (s: Stroke
   )
 }
 
-/* ── Small SVG preview of one sliced letter ── */
-
-function LetterPreview({ strokes, label }: { strokes: Stroke[]; label: string }) {
-  let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity
-  for (const s of strokes) for (const p of s) {
-    minX = Math.min(minX, p.x); maxX = Math.max(maxX, p.x)
-    minY = Math.min(minY, p.y); maxY = Math.max(maxY, p.y)
-  }
-  const empty = !Number.isFinite(minX)
-  const w = empty ? 1 : Math.max(maxX - minX, 8)
-  const h = empty ? 1 : Math.max(maxY - minY, 8)
-  const pad = 8
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
-      <div style={{
-        width: '56px', height: '64px', background: '#fff', borderRadius: '10px',
-        border: empty ? '1.5px dashed var(--error)' : '1.5px solid var(--stone)',
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-      }}>
-        {!empty && (
-          <svg viewBox={`${minX - pad} ${minY - pad} ${w + pad * 2} ${h + pad * 2}`} width="46" height="54" style={{ overflow: 'visible' }}>
-            {strokes.map((s, i) => s.length === 1
-              ? <circle key={i} cx={s[0].x} cy={s[0].y} r={Math.max(4, w / 20)} fill="#231A3A" />
-              : <polyline key={i} points={s.map((p) => `${p.x},${p.y}`).join(' ')} fill="none" stroke="#231A3A" strokeWidth={Math.max(4, w / 14)} strokeLinecap="round" strokeLinejoin="round" />,
-            )}
-          </svg>
-        )}
-      </div>
-      <span style={{ fontFamily: 'var(--font-body)', fontSize: '13px', fontWeight: 700, color: 'var(--ink-mid)' }}>{label}</span>
-    </div>
-  )
-}
-
 /* ── Word flow: write a word, pause, it slices and glides on — hands-free ── */
 
 function WordFlow({ session, onSaved, glyphs }: {
