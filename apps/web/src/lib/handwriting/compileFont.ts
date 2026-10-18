@@ -32,7 +32,10 @@ const SPACE_ADVANCE = 340 // a space must look clearly wider than any letter gap
 // stored strokes the next time the handwriting page loads.
 // v3 (Oct 18): much stronger de-shake per Emerald — "it shouldn't look like
 // it was written on a phone."
-export const FONT_COMPILER_VERSION = 3
+// v4 (Oct 18): size-consistency tuning — t rides lower than b/d/h/k/l (real
+// typography agrees), and wide letters (w, m) get a nudge up so they don't
+// read small.
+export const FONT_COMPILER_VERSION = 4
 
 // Typographic band heights, in canvas px relative to the baseline.
 const X_HEIGHT = 114 // a c e m n o …
@@ -52,8 +55,13 @@ function bandFor(char: string): BandSpec {
   const BL = BASELINE_Y
   if (char === 'i') return { top: BL - DOT_HEIGHT, bottom: BL, stretch: true }
   if (char === 'j') return { top: BL - DOT_HEIGHT, bottom: BL + DESC_DEPTH, stretch: true }
+  // t's ascender is traditionally shorter than b/d/h/k/l — full height made
+  // it look oversized next to its neighbors (Emerald, Oct 18)
+  if (char === 't') return { top: BL - Math.round(ASC_HEIGHT * 0.8), bottom: BL, stretch: true }
+  // wide letters read smaller than they measure — give them a nudge
+  if ('wm'.includes(char)) return { top: BL - Math.round(X_HEIGHT * 1.1), bottom: BL, stretch: true }
   if ('gpqy'.includes(char)) return { top: BL - X_HEIGHT, bottom: BL + DESC_DEPTH, stretch: true }
-  if ('bdfhklt'.includes(char)) return { top: BL - ASC_HEIGHT, bottom: BL, stretch: true }
+  if ('bdfhkl'.includes(char)) return { top: BL - ASC_HEIGHT, bottom: BL, stretch: true }
   if (/[a-z]/.test(char)) return { top: BL - X_HEIGHT, bottom: BL, stretch: true }
   if (/[A-Z0-9!?]/.test(char)) return { top: BL - CAP_HEIGHT, bottom: BL, stretch: true }
   if (char === '.') return { bottom: BL, stretch: false }

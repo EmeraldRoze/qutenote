@@ -375,10 +375,12 @@ export default function HandwritingPage() {
 
       <div style={{ maxWidth: '480px', margin: '0 auto', padding: '24px 20px' }}>
         <p style={{ fontFamily: 'var(--font-body)', fontSize: '15px', color: 'var(--ink-mid)', lineHeight: 1.5, marginBottom: '8px' }}>
-          Write a few little words and QuteNote learns your real handwriting — flow and all — then turns it into your own font.
+          {doneCount >= TOTAL_CHARS
+            ? 'Yay — your handwriting is all learned! Go write a bunch of Qute Notes in it. 🖋️'
+            : 'Write a few little words and QuteNote learns your real handwriting — flow and all — then turns it into your own font.'}
         </p>
         <p style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--ink-muted)', marginBottom: '22px' }}>
-          {doneCount} of {TOTAL_CHARS} letters learned. Do it all now, or come back anytime. <span style={{ fontSize: '10px' }}>· build {WEB_BUILD || 'dev'}</span>
+          {doneCount} of {TOTAL_CHARS} letters learned.{doneCount >= TOTAL_CHARS ? ' Rewrite any word anytime to freshen it up.' : ' Do it all now, or come back anytime.'} <span style={{ fontSize: '10px' }}>· build {WEB_BUILD || 'dev'}</span>
         </p>
 
         {WORD_SESSIONS.map((s) => {

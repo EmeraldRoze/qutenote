@@ -27,9 +27,14 @@ const LABEL_ART: Record<string, string> = {
   'Birthday': 'cake',
   'Anniversary': 'party',
   'Hard day': 'crying',
+  'Pet-iversary': 'heart',
+  'Tiny Triumphs': 'star',
+  'Sweet Traditions': 'gift',
+  'Seasonal Feels': 'sun',
   'Graduation': 'popper', // legacy label from the old form
 }
-const artForLabel = (l: string) => LABEL_ART[l] ?? 'thought-bubble'
+// Labels can carry a detail ("Tiny Triumphs: parallel parked") — match the prefix
+const artForLabel = (l: string) => LABEL_ART[l] ?? LABEL_ART[l.split(':')[0]] ?? 'thought-bubble'
 
 function daysUntil(month: number, day: number): number {
   const now = new Date()
@@ -148,10 +153,20 @@ export default function ImportantDatesPage() {
     [dates],
   )
 
+  // Contacts already added disappear from the pull-in list (Emerald, Oct 18)
+  const [contactsOpen, setContactsOpen] = useState(true)
+  const remainingBdays = useMemo(
+    () => contactBdays.filter((c) => !savedNames.has(c.name.toLowerCase())),
+    [contactBdays, savedNames],
+  )
+
   const quickAdd: { chip: string; to: string }[] = [
     { chip: '+ Birthday', to: '/dates/add?type=Birthday' },
     { chip: '+ Anniversary', to: '/dates/add?type=Anniversary' },
-    { chip: '+ Pet gotcha day', to: '/dates/add?type=Other&occasion=' + encodeURIComponent('Pet gotcha day') },
+    { chip: '+ Pet-iversary', to: '/dates/add?type=' + encodeURIComponent('Pet-iversary') },
+    { chip: '+ Tiny Triumphs', to: '/dates/add?type=' + encodeURIComponent('Tiny Triumphs') },
+    { chip: '+ Sweet Traditions', to: '/dates/add?type=' + encodeURIComponent('Sweet Traditions') },
+    { chip: '+ Seasonal Feels', to: '/dates/add?type=' + encodeURIComponent('Seasonal Feels') },
     { chip: '+ Hard day', to: '/dates/add?type=' + encodeURIComponent('Hard day') },
   ]
 
@@ -323,18 +338,34 @@ export default function ImportantDatesPage() {
         )}
         {contactsState === 'ready' && (
           <div style={{ marginTop: '20px' }}>
-            <h2 style={{ margin: '0 0 2px', fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: '18px', color: 'var(--ink)' }}>Birthdays in your contacts</h2>
-            <p style={{ margin: '0 0 10px', fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--ink-muted)' }}>
-              Checked {contactsChecked} contact{contactsChecked === 1 ? '' : 's'} · {contactBdays.length} with a birthday saved
+            {/* Collapsible header — the little caret, per Emerald (Oct 18) */}
+            <button
+              onClick={() => setContactsOpen((o) => !o)}
+              aria-expanded={contactsOpen}
+              style={{
+                width: '100%', display: 'flex', alignItems: 'center', gap: '8px', padding: 0,
+                background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left',
+                textTransform: 'none', letterSpacing: 0,
+              }}
+            >
+              <h2 style={{ margin: 0, flex: 1, fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: '18px', color: 'var(--ink)' }}>Birthdays in your contacts</h2>
+              <svg aria-hidden width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ink-mid)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+                style={{ transform: contactsOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.15s' }}>
+                <path d="M6 9l6 6 6-6" />
+              </svg>
+            </button>
+            <p style={{ margin: '2px 0 10px', fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--ink-muted)' }}>
+              Checked {contactsChecked} contact{contactsChecked === 1 ? '' : 's'} · {remainingBdays.length} left to add
             </p>
-            {contactBdays.length === 0 ? (
+            {!contactsOpen ? null : remainingBdays.length === 0 ? (
               <p style={{ fontFamily: 'var(--font-body)', fontSize: '14px', color: 'var(--ink-muted)' }}>
-                None of them have a birthday saved on their contact card. Add birthdays in your Contacts app, or add dates here by hand.
+                {contactBdays.length > 0
+                  ? 'All caught up — every contact birthday is already in your dates. 🎉'
+                  : 'None of them have a birthday saved on their contact card. Add birthdays in your Contacts app, or add dates here by hand.'}
               </p>
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                {contactBdays.map((c) => {
-                  const saved = savedNames.has(c.name.toLowerCase())
+                {remainingBdays.map((c) => {
                   return (
                     <div key={c.name} style={{ ...whiteCard, padding: '10px 10px 10px 14px', display: 'flex', alignItems: 'center', gap: '12px' }}>
                       <QEmoji name="cake" size={32} style={{ flex: 'none', height: 'auto' }} />
@@ -345,17 +376,17 @@ export default function ImportantDatesPage() {
                         </span>
                       </span>
                       <button
-                        disabled={saved || addingContact === c.name}
+                        disabled={addingContact === c.name}
                         onClick={() => handleAddContact(c)}
                         style={{
                           height: '34px', padding: '0 14px', borderRadius: '999px', flex: 'none',
-                          border: `1.5px solid ${uv}`, cursor: saved ? 'default' : 'pointer',
-                          background: saved ? 'var(--lavender-pale)' : '#fff', color: uv,
+                          border: `1.5px solid ${uv}`, cursor: 'pointer',
+                          background: '#fff', color: uv,
                           fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '11px', letterSpacing: '0.12em',
                           opacity: addingContact === c.name ? 0.6 : 1,
                         }}
                       >
-                        {saved ? 'Added' : addingContact === c.name ? 'Adding…' : '+ Add'}
+                        {addingContact === c.name ? 'Adding…' : '+ Add'}
                       </button>
                     </div>
                   )

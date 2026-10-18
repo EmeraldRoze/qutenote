@@ -12,11 +12,15 @@ const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 
 // Max days per month (Feb 29 allowed; annual dates have no year)
 const DAYS_IN_MONTH = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
 
-const TYPES: { key: string; chip: string; emoji: string }[] = [
+const TYPES: { key: string; chip: string; emoji: string; askOccasion?: boolean }[] = [
   { key: 'Birthday', chip: 'B-Day', emoji: 'cake' },
   { key: 'Anniversary', chip: 'Anniversary', emoji: 'party' },
   { key: 'Hard day', chip: 'Hard day', emoji: 'crying' },
-  { key: 'Other', chip: 'Other', emoji: 'thought-bubble' },
+  { key: 'Pet-iversary', chip: 'Pet-iversary', emoji: 'heart' },
+  { key: 'Tiny Triumphs', chip: 'Tiny Triumphs', emoji: 'star', askOccasion: true },
+  { key: 'Sweet Traditions', chip: 'Sweet Traditions', emoji: 'gift', askOccasion: true },
+  { key: 'Seasonal Feels', chip: 'Seasonal Feels', emoji: 'sun', askOccasion: true },
+  { key: 'Other', chip: 'Other', emoji: 'thought-bubble', askOccasion: true },
 ]
 
 interface SearchResult { id: string; username: string; displayName: string }
@@ -146,6 +150,7 @@ export default function AddDatePage() {
       setFormError("Add who it's for — a name or nickname up top.")
       return
     }
+    const typeDef = TYPES.find((t) => t.key === type)
     if (type === 'Other' && !occasion.trim()) {
       setFormError('Tell us what the date is for, or pick one of the types.')
       return
@@ -162,7 +167,13 @@ export default function AddDatePage() {
         : today.getFullYear()
       await api.post('/important-dates', {
         connectionName: name.trim(),
-        label: type === 'Other' ? occasion.trim() : type,
+        // "Other" saves the custom occasion as the label; the named types keep
+        // their name, with an optional detail folded in (Tiny Triumphs: parallel parking)
+        label: type === 'Other'
+          ? occasion.trim()
+          : typeDef?.askOccasion && occasion.trim()
+            ? `${type}: ${occasion.trim()}`
+            : type,
         month,
         day,
         year: everyYear ? null : nextYear,
@@ -258,9 +269,9 @@ export default function AddDatePage() {
             )
           })}
         </div>
-        {type === 'Other' && (
+        {TYPES.find((t) => t.key === type)?.askOccasion && (
           <label style={{ ...whiteCard, marginTop: '10px', padding: '12px 16px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
-            <span style={{ fontSize: '13px', color: 'var(--ink-mid)', fontFamily: 'var(--font-body)' }}>What's the occasion?</span>
+            <span style={{ fontSize: '13px', color: 'var(--ink-mid)', fontFamily: 'var(--font-body)' }}>What's the occasion?{type !== 'Other' ? ' (optional)' : ''}</span>
             <input
               value={occasion}
               onChange={(e) => setOccasion(e.target.value)}

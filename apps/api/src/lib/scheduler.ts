@@ -30,6 +30,32 @@ async function birthdayReminders(): Promise<void> {
   console.log(`[scheduler] birthday reminders sent for ${dates.length} date(s)`)
 }
 
+// Halfppy Birthday! Six months from every birthday on file, a same-day push
+// (Emerald, Oct 18). Needs no setup — derived from saved Birthday dates.
+async function halfBirthdayPushes(): Promise<void> {
+  const today = new Date()
+  // The half birthday of (m, d) is today when today == (m+6, d) — with the
+  // day clamped for short months (Aug 31 → Feb 28/29).
+  const halfSourceMonth = ((today.getUTCMonth() + 6) % 12) + 1 // birthdays whose half-day is this month
+  const dates = await prisma.importantDate.findMany({
+    where: { label: { startsWith: 'Birthday' }, month: halfSourceMonth, year: null },
+  })
+  const todayDay = today.getUTCDate()
+  const lastDayOfThisMonth = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth() + 1, 0)).getUTCDate()
+  const due = dates.filter((d) =>
+    d.day === todayDay || (d.day > lastDayOfThisMonth && todayDay === lastDayOfThisMonth))
+  for (const d of due) {
+    const firstName = d.connectionName.split(' ')[0]
+    await notifyUser(
+      d.userId,
+      'birthdayReminders',
+      `Halfppy Birthday, ${firstName}! 🎂`,
+      `${firstName} is exactly half a year from cake. A little surprise card hits different today.`,
+    )
+  }
+  if (due.length) console.log(`[scheduler] halfppy birthday pushes sent for ${due.length} date(s)`)
+}
+
 export function startScheduler(): void {
   setInterval(async () => {
     try {
@@ -43,6 +69,7 @@ export function startScheduler(): void {
       if (now.getUTCHours() === 15 && lastReminderDate !== today) {
         lastReminderDate = today
         await birthdayReminders()
+        await halfBirthdayPushes()
         // Free mode: the monthly card allowance used to reset when Stripe
         // billed. With nothing billed, reset everyone on the 1st instead.
         // (Idempotent — resetting an already-zero counter is harmless.)
