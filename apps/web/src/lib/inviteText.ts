@@ -10,6 +10,14 @@ export async function inviteByText(_firstName?: string) {
   return link
 }
 
+// The recipient is on QuteNote but never added their address — text them a
+// nudge that opens their address page (they log in, drop it in, done).
+export function askForAddressByText(firstName?: string) {
+  const hey = firstName ? `${firstName}! ` : ''
+  const body = `${hey}I made you a card on QuteNote 💌 Add your address so I can actually mail it to you: https://qutenote.com/address`
+  window.location.href = `sms:?&body=${encodeURIComponent(body)}`
+}
+
 // Same invite link, different moment: the sender is mid-card and the person
 // they're writing to isn't on QuteNote yet.
 export async function inviteRecipientByText() {

@@ -30,7 +30,9 @@ const SPACE_ADVANCE = 340 // a space must look clearly wider than any letter gap
 
 // Bump this when glyph processing changes — saved fonts recompile from their
 // stored strokes the next time the handwriting page loads.
-export const FONT_COMPILER_VERSION = 2
+// v3 (Oct 18): much stronger de-shake per Emerald — "it shouldn't look like
+// it was written on a phone."
+export const FONT_COMPILER_VERSION = 3
 
 // Typographic band heights, in canvas px relative to the baseline.
 const X_HEIGHT = 114 // a c e m n o …
@@ -145,12 +147,12 @@ function strokeToPath(path: opentype.Path, stroke: Stroke) {
     path.close()
     return
   }
-  const cleaned = relax(resample(stroke))
+  const cleaned = relax(resample(stroke, 4), 4)
   const outline = getStroke(cleaned.map((p) => [p.x, p.y]), {
     size: 14, // pen thickness in canvas px — a confident, visible stroke
-    thinning: 0.45, // tapers at stroke ends, like a real pen lifting off
-    smoothing: 0.8,
-    streamline: 0.6,
+    thinning: 0.35, // tapers at stroke ends, like a real pen lifting off
+    smoothing: 0.9,
+    streamline: 0.72,
   })
   if (outline.length < 3) return
   // Midpoint quadratic curves instead of straight segments between outline

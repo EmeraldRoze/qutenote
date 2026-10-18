@@ -30,7 +30,7 @@ const ALL_OFFER_CARDS: (OfferCard & { key: string })[] = [
   { key: 'invite', bg: 'var(--neon-pink)', art: 'bff', artWidth: 140, title: 'Invite a friend. You both get a free card.', cta: 'INVITE', onClick: (nav) => nav('/invite') },
   { key: 'alerts', bg: 'var(--lavender-light)', art: 'mailbox', artWidth: 165, title: 'Know when something is in the mail', cta: 'TURN ON ALERTS', onClick: (nav) => nav('/settings/notifications') },
   { key: 'handwriting', bg: 'var(--lime)', art: 'pen', artWidth: 150, title: 'Make it look like YOU wrote it', cta: 'TEACH YOUR HANDWRITING', onClick: (nav) => nav('/handwriting') },
-  { key: 'photo', bg: '#FFFFFF', border: '1.5px solid var(--stone)', art: 'camera', artWidth: 170, title: 'Got a good photo? Mail it.', cta: 'UPLOAD A PHOTO', onClick: (nav) => nav('/send') },
+  { key: 'photo', bg: '#FFFFFF', border: '1.5px solid var(--stone)', art: 'camera', artWidth: 170, title: 'Got a good photo?\nMail it.', cta: 'UPLOAD A PHOTO', onClick: (nav) => nav('/send') },
 ]
 
 function OfferCarousel({ hasSentCard, hasHandwriting }: { hasSentCard: boolean; hasHandwriting: boolean }) {
@@ -72,7 +72,7 @@ function OfferCarousel({ hasSentCard, hasHandwriting }: { hasSentCard: boolean; 
             <div style={{ height: '170px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <QEmoji name={c.art} size={c.artWidth} style={{ maxHeight: '170px', transform: 'rotate(-4deg)' }} />
             </div>
-            <p style={{ margin: '16px 0 0', fontFamily: 'var(--font-display)', fontSize: '22px', lineHeight: 1.2, letterSpacing: '-0.01em', color: 'var(--ink)' }}>
+            <p style={{ margin: '16px 0 0', fontFamily: 'var(--font-display)', fontSize: '22px', lineHeight: 1.2, letterSpacing: '-0.01em', color: 'var(--ink)', whiteSpace: 'pre-line' }}>
               {c.title}
             </p>
             <button onClick={() => c.onClick(navigate)} style={{

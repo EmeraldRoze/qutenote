@@ -11,6 +11,7 @@ import { useAuth } from '../../context/AuthContext'
 import QEmoji from '../../components/QEmoji'
 import TabBar from '../../components/TabBar'
 import StepRecipient from './StepRecipient'
+import { askForAddressByText } from '../../lib/inviteText'
 
 // The four-step send flow, rebuilt to the Oct 15 2026 redesign:
 // pick a card → who's it for → write your note → preview and mail.
@@ -901,6 +902,19 @@ function ReviewStep({ note, onSent, onEditNote, onEditRecipient, editingNoteId, 
       {error && (
         <div style={{ background: 'var(--error-pale)', color: 'var(--error)', borderRadius: '12px', padding: '12px 16px', marginTop: '14px', fontSize: '14px', fontFamily: 'var(--font-body)' }}>
           {error}
+          {/* No address? Don't dead-end — text them for it (Emerald, Oct 18) */}
+          {/address/i.test(error) && (
+            <button
+              onClick={() => askForAddressByText(note.recipientName?.split(' ')[0])}
+              style={{
+                display: 'block', width: '100%', marginTop: '10px', height: '46px', borderRadius: '23px',
+                border: 'none', background: uv, color: '#fff', cursor: 'pointer',
+                fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '13px', letterSpacing: '0.08em',
+              }}
+            >
+              TEXT THEM FOR THEIR ADDRESS
+            </button>
+          )}
         </div>
       )}
 

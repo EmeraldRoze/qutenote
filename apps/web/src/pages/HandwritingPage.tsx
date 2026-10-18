@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { SESSIONS, WORD_SESSIONS, ALL_CHARS, TOTAL_CHARS, charName, type WordSession } from '../lib/handwriting/alphabet'
 import { HANDWRITING_CANVAS_SIZE, HANDWRITING_BASELINE_Y, FONT_COMPILER_VERSION, type GlyphStrokes, type Stroke, type Point } from '../lib/handwriting/compileFont'
-import { segmentWord, toGlyphSpace, type SegmentResult } from '../lib/handwriting/segment'
+import { segmentWord, toGlyphSpace } from '../lib/handwriting/segment'
 import { WEB_BUILD } from '../lib/buildGuard'
 import { fetchHandwritingProgress, saveHandwritingProgress } from '../lib/handwriting/api'
 
@@ -151,7 +151,7 @@ function LetterPreview({ strokes, label }: { strokes: Stroke[]; label: string })
   )
 }
 
-/* ── Word flow: write a word → see the slice → approve or rewrite ── */
+/* ── Word flow: write a word, pause, it slices and glides on — hands-free ── */
 
 function WordFlow({ session, onSaved, glyphs }: {
   session: WordSession
@@ -162,43 +162,56 @@ function WordFlow({ session, onSaved, glyphs }: {
   const { user } = useAuth()
   const [index, setIndex] = useState(0)
   const [strokes, setStrokes] = useState<Stroke[]>([])
-  const [preview, setPreview] = useState<SegmentResult | null>(null)
   const [saving, setSaving] = useState(false)
+  const [flash, setFlash] = useState<string | null>(null)
   const [error, setError] = useState('')
+  const timerRef = useRef<number | null>(null)
+  const glyphsRef = useRef(glyphs)
+  glyphsRef.current = glyphs
 
   const word = session.words[index]
   const isSingleMark = word.length === 1
 
-  function slice() {
-    if (!strokes.length) return
-    setPreview(segmentWord(strokes, word))
+  // Never interrupt (Emerald, Oct 18): ~1.5s after the pen goes quiet the
+  // word slices itself and the next one appears. Fix any oddballs later in
+  // Fix-one-letter.
+  const IDLE_MS = 1500
+
+  function disarm() {
+    if (timerRef.current !== null) { window.clearTimeout(timerRef.current); timerRef.current = null }
+  }
+  useEffect(() => disarm, [])
+
+  function onDraw(next: Stroke[]) {
+    setStrokes(next)
+    setError('')
+    disarm()
+    timerRef.current = window.setTimeout(() => finishWord(next, word, index), IDLE_MS)
   }
 
-  async function accept() {
-    if (!preview || saving) return
+  async function finishWord(drawn: Stroke[], forWord: string, atIndex: number) {
+    if (!drawn.length || saving) return
     setSaving(true)
     setError('')
     try {
+      const result = segmentWord(drawn, forWord)
       const captured: GlyphStrokes = {}
-      for (const letter of preview.letters) {
+      for (const letter of result.letters) {
         if (letter.strokes.length) captured[letter.char] = toGlyphSpace(letter.strokes, WORD_BASELINE)
       }
-      const merged = await saveHandwritingProgress(glyphs, captured, `QuteNote-${user?.username ?? 'you'}-Handwriting`)
+      const merged = await saveHandwritingProgress(glyphsRef.current, captured, `QuteNote-${user?.username ?? 'you'}-Handwriting`)
       onSaved(merged)
       setStrokes([])
-      setPreview(null)
-      if (index + 1 < session.words.length) setIndex(index + 1)
+      setFlash(forWord)
+      window.setTimeout(() => setFlash(null), 900)
+      if (atIndex + 1 < session.words.length) setIndex(atIndex + 1)
       else navigate('/handwriting', { replace: true })
     } catch {
-      setError("That didn't save. Check your connection and try again.")
+      setError("That didn't save. Check your connection and write the word again.")
+      setStrokes([])
     } finally {
       setSaving(false)
     }
-  }
-
-  const btn: React.CSSProperties = {
-    height: '52px', borderRadius: '26px', border: 'none', cursor: 'pointer', padding: '0 22px',
-    fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '14px', letterSpacing: '0.08em',
   }
 
   return (
@@ -213,50 +226,35 @@ function WordFlow({ session, onSaved, glyphs }: {
         {isSingleMark ? charName(session.key, word) : 'Write the whole word in one go, like you normally would.'}
       </p>
 
-      <WordCanvas strokes={strokes} onDraw={(s) => { setStrokes(s); setPreview(null) }} />
-      <p style={{ fontSize: '12px', fontFamily: 'var(--font-body)', color: 'var(--ink-muted)', marginTop: '8px' }}>
-        {isSingleMark ? 'Just tap for a dot.' : 'Sit the word on the dashed line. Flow is good — that is the whole point.'}
+      <WordCanvas strokes={strokes} onDraw={onDraw} />
+      <p style={{ fontSize: '12px', fontFamily: 'var(--font-body)', color: 'var(--ink-muted)', marginTop: '8px', minHeight: '18px' }}>
+        {saving
+          ? 'Saving…'
+          : flash
+            ? `✓ ${flash} saved`
+            : strokes.length
+              ? 'Pause when you\u2019re done — it moves on by itself.'
+              : isSingleMark
+                ? 'Just tap for a dot.'
+                : 'Sit the word on the dashed line. Flow is good — that is the whole point.'}
       </p>
-
-      {/* The slice preview */}
-      {preview && (
-        <div style={{ marginTop: '16px', padding: '14px', background: 'var(--lavender-pale)', borderRadius: '16px', border: '2px dashed var(--lilac)' }}>
-          <p style={{ margin: '0 0 10px', fontFamily: 'var(--font-body)', fontSize: '14px', color: 'var(--ink)' }}>
-            Here's how we sliced it — look right?
-          </p>
-          <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', flexWrap: 'wrap' }}>
-            {preview.letters.map((l, i) => <LetterPreview key={i} strokes={l.strokes} label={l.char} />)}
-          </div>
-          {preview.confidence === 'low' && (
-            <p style={{ margin: '10px 0 0', fontFamily: 'var(--font-body)', fontSize: '12px', color: 'var(--ink-mid)' }}>
-              Your letters ran together, so we cut them where they likely split. If a letter looks off, rewrite with a touch more space.
-            </p>
-          )}
-        </div>
-      )}
 
       {error && <p style={{ fontSize: '13px', fontFamily: 'var(--font-body)', color: 'var(--error)', marginTop: '12px' }}>{error}</p>}
 
-      <div style={{ display: 'flex', gap: '10px', marginTop: '18px' }}>
-        <button onClick={() => { setStrokes([]); setPreview(null) }} disabled={!strokes.length}
-          style={{ ...btn, flex: 1, background: '#fff', border: '1.5px solid var(--stone)', color: 'var(--ink-mid)', opacity: strokes.length ? 1 : 0.5 }}>
-          Clear
+      <div style={{ display: 'flex', gap: '10px', marginTop: '18px', justifyContent: 'center' }}>
+        <button onClick={() => { disarm(); setStrokes([]) }} disabled={!strokes.length || saving}
+          style={{
+            height: '48px', borderRadius: '24px', border: '1.5px solid var(--stone)', cursor: 'pointer', padding: '0 26px',
+            background: '#fff', color: 'var(--ink-mid)', fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '13px',
+            letterSpacing: '0.08em', opacity: strokes.length && !saving ? 1 : 0.5,
+          }}>
+          Clear & rewrite
         </button>
-        {!preview ? (
-          <button onClick={slice} disabled={!strokes.length}
-            style={{ ...btn, flex: 2, background: uv, color: '#fff', opacity: strokes.length ? 1 : 0.45 }}>
-            {isSingleMark ? 'Check it' : 'Slice it'}
-          </button>
-        ) : (
-          <button onClick={accept} disabled={saving}
-            style={{ ...btn, flex: 2, background: uv, color: '#fff', opacity: saving ? 0.6 : 1 }}>
-            {saving ? 'Saving…' : 'Looks right →'}
-          </button>
-        )}
       </div>
     </div>
   )
 }
+
 
 /* ── Touch-up: redo one single letter the old way ── */
 

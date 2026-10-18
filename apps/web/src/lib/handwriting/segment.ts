@@ -176,11 +176,35 @@ export function segmentWord(strokes: Stroke[], word: string): SegmentResult {
       // Predicted internal boundary: width-weighted midpoint of the letters
       const total = letters.reduce((a, c) => a + widthWeight(c), 0)
       let acc = 0
-      let cutX = (tb.minX + tb.maxX) / 2
+      let predicted = (tb.minX + tb.maxX) / 2
       for (const ch of letters) {
         acc += widthWeight(ch)
         const x = tb.minX + (acc / total) * (tb.maxX - tb.minX)
-        if (x > tb.minX + 4 && x < tb.maxX - 4) { cutX = x; break }
+        if (x > tb.minX + 4 && x < tb.maxX - 4) { predicted = x; break }
+      }
+      // Cut where the ink is THINNEST near the prediction — the pen's quick
+      // hop between letters, not an arbitrary square edge (Emerald, Oct 18).
+      const span = tb.maxX - tb.minX
+      const windowHalf = Math.max(8, span * 0.18)
+      const lo = Math.max(tb.minX + 4, predicted - windowHalf)
+      const hi = Math.min(tb.maxX - 4, predicted + windowHalf)
+      let cutX = predicted
+      if (hi > lo) {
+        const BINS = 24
+        const density = new Array(BINS).fill(0)
+        for (const p of target) {
+          if (p.x < lo || p.x > hi) continue
+          density[Math.min(BINS - 1, Math.floor(((p.x - lo) / (hi - lo)) * BINS))]++
+        }
+        let best = -1
+        let bestScore = Infinity
+        for (let b = 0; b < BINS; b++) {
+          // prefer thin ink near the prediction
+          const x = lo + ((b + 0.5) / BINS) * (hi - lo)
+          const score = density[b] * 3 + Math.abs(x - predicted) / windowHalf
+          if (density[b] > 0 && score < bestScore) { bestScore = score; best = b }
+        }
+        if (best >= 0) cutX = lo + ((best + 0.5) / BINS) * (hi - lo)
       }
       const cut = cutStrokeAtX(target, cutX)
       const pieces = [...cut.left, ...cut.right].filter((p) => p.length > 1)
@@ -191,24 +215,42 @@ export function segmentWord(strokes: Stroke[], word: string): SegmentResult {
     letterGroups.push(...groups)
   }
 
-  // Tiny orphan pieces (born from cutting) hop to the neighboring letter
-  // whose ink is closest — this is what kills "a little dot in the y".
+  // Crumb rescue: small pieces born from cutting get glued to the letter
+  // whose real ink overlaps them — never left floating in a neighbor's box
+  // (the "little dot in the y", the mangled d).
+  const groupBounds = letterGroups.map((g) => {
+    let minX = Infinity, maxX = -Infinity
+    for (const s of g) {
+      if (s.length < 2 || pathLength(s) < 22) continue // only substantial ink defines the letter
+      const b = bounds(s)
+      minX = Math.min(minX, b.minX); maxX = Math.max(maxX, b.maxX)
+    }
+    return { minX, maxX }
+  })
   for (let i = 0; i < letterGroups.length; i++) {
     const keep: Stroke[] = []
     for (const s of letterGroups[i]) {
-      const isTinyFragment = s.length > 1 && pathLength(s) < 14
-      if (!isTinyFragment || letterGroups[i].length === 1) { keep.push(s); continue }
+      const isCrumb = s.length > 1 && pathLength(s) < 22
+      if (!isCrumb || letterGroups[i].length === 1) { keep.push(s); continue }
       const c = centroidX(s)
-      let bestG = i
-      let bestD = Infinity
+      // Prefer the letter whose substantial ink CONTAINS this crumb
+      let bestG = -1
       for (let g = 0; g < letterGroups.length; g++) {
-        for (const other of letterGroups[g]) {
-          if (other === s || other.length < 2 || pathLength(other) < 14) continue
-          const d = Math.abs(centroidX(other) - c)
-          if (d < bestD) { bestD = d; bestG = g }
+        const gb = groupBounds[g]
+        if (Number.isFinite(gb.minX) && c >= gb.minX - 4 && c <= gb.maxX + 4) { bestG = g; break }
+      }
+      // Otherwise: nearest substantial ink by centroid distance
+      if (bestG < 0) {
+        let bestD = Infinity
+        for (let g = 0; g < letterGroups.length; g++) {
+          for (const other of letterGroups[g]) {
+            if (other === s || other.length < 2 || pathLength(other) < 22) continue
+            const d = Math.abs(centroidX(other) - c)
+            if (d < bestD) { bestD = d; bestG = g }
+          }
         }
       }
-      if (bestG === i) keep.push(s)
+      if (bestG < 0 || bestG === i) keep.push(s)
       else letterGroups[bestG].push(s)
     }
     letterGroups[i] = keep

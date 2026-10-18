@@ -26,7 +26,9 @@ export interface WordSession {
 }
 
 // Every lowercase letter appears in at least one word (a-z verified).
-const LOWER_WORDS = ['love', 'jam', 'sky', 'fox', 'hug', 'zip', 'bed', 'cow', 'vet', 'sun', 'rain', 'qt']
+// Ordered as silly two-word pairs, Emerald's call (Oct 18):
+// "hug qt · zap fox · kid nap · cry jam · slow vibe"
+const LOWER_WORDS = ['hug', 'qt', 'zap', 'fox', 'kid', 'nap', 'cry', 'jam', 'slow', 'vibe']
 
 export const WORD_SESSIONS: WordSession[] = [
   { key: 'lowercase', label: 'Little words', detail: 'Write each word in your everyday handwriting', words: LOWER_WORDS },
