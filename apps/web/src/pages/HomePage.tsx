@@ -7,6 +7,7 @@ import TabBar from '../components/TabBar'
 import StatusBox from '../components/StatusBox'
 import { type MyStatus } from '../components/Happenings'
 import { fetchHandwritingProgress } from '../lib/handwriting/api'
+import { remindersEnabled } from '../lib/push'
 import QRCodeSheet from '../components/QRCodeSheet'
 
 // Home tab, rebuilt to the Oct 15 redesign (design/redesign-oct15-2026, 10-home).
@@ -23,7 +24,7 @@ interface OfferCard {
   onClick: (navigate: ReturnType<typeof useNavigate>) => void
 }
 // Colors and copy come straight from 10-home.html.
-const OFFER_CARDS: OfferCard[] = [
+const ALL_OFFER_CARDS: OfferCard[] = [
   { bg: 'var(--lilac)', art: 'heart-sparkle', artWidth: 170, title: 'Your first card is on us', cta: 'SEND A CARD', onClick: (nav) => nav('/send') },
   { bg: 'var(--neon-pink)', art: 'bff', artWidth: 140, title: 'Invite a friend. You both get a free card.', cta: 'INVITE', onClick: (nav) => nav('/invite') },
   { bg: 'var(--lavender-light)', art: 'mailbox', artWidth: 165, title: 'Know when something is in the mail', cta: 'TURN ON ALERTS', onClick: (nav) => nav('/settings/notifications') },
@@ -34,6 +35,8 @@ function OfferCarousel() {
   const navigate = useNavigate()
   const trackRef = useRef<HTMLDivElement>(null)
   const [active, setActive] = useState(0)
+  // A done nudge stops nudging: once alerts are on, that card drops out.
+  const OFFER_CARDS = ALL_OFFER_CARDS.filter((c) => c.cta !== 'TURN ON ALERTS' || !remindersEnabled())
 
   function onScroll() {
     const el = trackRef.current

@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { api } from '../lib/api'
+import { enableReminders, remindersEnabled } from '../lib/push'
+import { isNativeApp } from '../lib/native'
 
 const uv = '#5A32D6'
 
@@ -35,6 +37,25 @@ export default function NotificationPreferencesPage() {
     setPrefs(next)
     try {
       await api.put('/users/me/notification-preferences', { [key]: next[key] })
+      // Turning a preference ON should also register this phone for pushes —
+      // the preferences mean nothing if the device never signed up for alerts.
+      if (next[key] && isNativeApp && !remindersEnabled()) enableReminders().catch(() => {})
+    } catch {
+      setPrefs(prefs)
+      setError("That didn't save. Try again.")
+    }
+  }
+
+  // The "I wanna know about everything" switch: all five on, or all five off.
+  const allOn = !!prefs && ROWS.every((r) => prefs[r.key])
+  async function toggleAll() {
+    if (!prefs) return
+    const value = !allOn
+    const next = Object.fromEntries(ROWS.map((r) => [r.key, value])) as unknown as Prefs
+    setPrefs(next)
+    try {
+      await api.put('/users/me/notification-preferences', next)
+      if (value && isNativeApp && !remindersEnabled()) enableReminders().catch(() => {})
     } catch {
       setPrefs(prefs)
       setError("That didn't save. Try again.")
@@ -62,6 +83,32 @@ export default function NotificationPreferencesPage() {
         {!prefs ? (
           <p style={{ textAlign: 'center', color: 'var(--ink-muted)', fontSize: '14px', padding: '40px 0' }}>Loading…</p>
         ) : (
+          <>
+          {/* Master switch */}
+          <div style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '14px',
+            padding: '16px 18px', marginBottom: '14px', background: 'var(--lavender-pale)',
+            border: '2px dashed var(--lilac)', borderRadius: '18px',
+          }}>
+            <div style={{ minWidth: 0 }}>
+              <p style={{ fontFamily: 'var(--font-body)', fontSize: '15px', fontWeight: 700, color: 'var(--ink)', margin: 0 }}>Everything</p>
+              <p style={{ fontFamily: 'var(--font-body)', fontSize: '12px', color: 'var(--ink-mid)', margin: '2px 0 0' }}>I wanna know about all of it</p>
+            </div>
+            <button
+              onClick={toggleAll}
+              aria-label={`Turn everything ${allOn ? 'off' : 'on'}`}
+              style={{
+                width: '46px', height: '28px', minWidth: '46px', borderRadius: '14px', border: 'none', cursor: 'pointer',
+                background: allOn ? 'var(--lime)' : 'var(--stone)', position: 'relative', transition: 'background 0.15s',
+              }}
+            >
+              <span style={{
+                position: 'absolute', top: '3px', left: allOn ? '21px' : '3px',
+                width: '22px', height: '22px', borderRadius: '11px', background: '#fff',
+                boxShadow: '0 1px 3px rgba(43,34,56,0.3)', transition: 'left 0.15s',
+              }} />
+            </button>
+          </div>
           <div style={{ background: '#fff', borderRadius: '18px', boxShadow: 'var(--shadow-card)', overflow: 'hidden' }}>
             {ROWS.map((row, i) => (
               <div key={row.key} style={{
@@ -89,6 +136,7 @@ export default function NotificationPreferencesPage() {
               </div>
             ))}
           </div>
+          </>
         )}
       </div>
     </div>

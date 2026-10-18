@@ -27,8 +27,16 @@ export const contactsAvailable = isNativeApp
 
 export async function readContacts(): Promise<DeviceContact[] | null> {
   if (!isNativeApp) return null
-  const perm = await Contacts.requestPermissions()
-  if (perm.contacts !== 'granted') return null
+  // Ask properly: if the phone has never been asked, requestPermissions shows
+  // Apple's popup. If it was denied before, iOS silently refuses to re-ask —
+  // the UI then points at Settings instead of looking broken.
+  const current = await Contacts.checkPermissions()
+  let state = current.contacts
+  if (state !== 'granted') {
+    const requested = await Contacts.requestPermissions()
+    state = requested.contacts
+  }
+  if (state !== 'granted') return null
   const { contacts } = await Contacts.getContacts({
     projection: { name: true, emails: true, birthday: true },
   })
