@@ -1,6 +1,12 @@
 # QuteNote — Handoff / Status Board
 Written: 2026-10-06 (replaces stale April 10 handoff). Last updated: 2026-10-16.
 
+## BUILD 33 APPROVED Oct 17 (FIREFLY) — Oct 17 feedback round
+- Her 6 feedback items were ALL from build 31 (check the build relationship on betaFeedbackScreenshotSubmissions before re-fixing!). Status pencil + emoji picker were already in 32.
+- New in 33: "Everything" master toggle on Notifications (all 5 prefs at once; turning anything on also calls enableReminders() on native so the device actually registers); Home's TURN ON ALERTS carousel card hides when remindersEnabled(); contacts flow does checkPermissions -> requestPermissions (never-asked phones now get Apple's popup; previously-denied get the Settings guidance).
+- Status-tile-disappears was already correct (onPosted wired since build 27).
+- WAITING ON EMERALD (on build 33): Apple sign-in retest ✓ done (works per her 10:05 Oct 16 note), push registration (Everything toggle → check DeviceToken table → fire live test push), contacts sync retry (new messages will say exactly what happened).
+
 ## BUILD 32 APPROVED Oct 16 (FIREFLY) — the Oct 16 feedback round (5 items)
 - Social sign-in (Apple/Google) now routes through missing setup: lib/postAuthRoute.ts — isNew -> /signup/handle, else no address -> /signup/address, else no birthday -> /signup/birthday, else /home. Wired in LoginPage, SignUpPage, AuthContext (Google native deep link), GoogleAuthSuccessPage.
 - Address forms: name= attrs added next to autoComplete so iOS offers contact-based address autofill in the webview (both AddressPage + SignupAddressPage; attrs existed, name/form context strengthened).
