@@ -1,6 +1,13 @@
 # QuteNote — Handoff / Status Board
 Written: 2026-10-06 (replaces stale April 10 handoff). Last updated: 2026-10-16.
 
+## BUILD 34 APPROVED Oct 17 (FIREFLY) — HANDWRITING, WORD EDITION (Emerald's idea)
+- Capture is now WORD-based: 12 cute words (love/jam/sky/fox/hug/zip/bed/cow/vet/sun/rain/qt) cover a-z, same words UPPERCASED cover A-Z, number runs (2026/4813/5790), punctuation stays single-mark. WORD_SESSIONS in lib/handwriting/alphabet.ts.
+- New lib/handwriting/segment.ts: slices a written word into letters — x-overlap clustering (i/j dots merge with stems), merge-smallest-gap when over-split, width-weighted stroke cutting when letters are connected (confidence 'low' → UI warns + suggests spacing). Tested: separated/dotted/connected all behave.
+- toGlyphSpace preserves ink position relative to the WORD's baseline (real descender info from flow) → compileFont v2 unchanged.
+- UI: wide ruled WordCanvas (640x280, baseline 200), slice-preview row (SVG minis per letter) with "Looks right →" / rewrite; Fix-one-letter sheet (tap any learned letter on the overview grid to redo it solo). Old per-letter session flow removed; AllDone celebration screen removed (overview shows ✓).
+- Existing fonts/data unchanged until people re-teach with words; FONT_COMPILER_VERSION untouched.
+
 ## BUILD 33 APPROVED Oct 17 (FIREFLY) — Oct 17 feedback round
 - Her 6 feedback items were ALL from build 31 (check the build relationship on betaFeedbackScreenshotSubmissions before re-fixing!). Status pencil + emoji picker were already in 32.
 - New in 33: "Everything" master toggle on Notifications (all 5 prefs at once; turning anything on also calls enableReminders() on native so the device actually registers); Home's TURN ON ALERTS carousel card hides when remindersEnabled(); contacts flow does checkPermissions -> requestPermissions (never-asked phones now get Apple's popup; previously-denied get the Settings guidance).
