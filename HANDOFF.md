@@ -4,6 +4,12 @@ Written: 2026-10-06 (replaces stale April 10 handoff). Last updated: 2026-10-16.
 ## PROTOCOL CHANGE (Emerald, Oct 17 — MANDATORY for every TestFlight round)
 Before any plan or FIREFLY ask: clarifying questions about the TestFlight feedback go to Emerald ONE AT A TIME (she answers, the next appears). Every vague item gets a question — zero assumptions. Questions are mandatory pre-FIREFLY. Never bury questions in a long briefing.
 
+## BUILD 40 APPROVED Oct 18 (FIREFLY) — LETTER VARIATIONS + quality gate
+- VARIATIONS ENGINE (her idea: real handwriting varies): lib/handwriting/variants.ts. Storage: alternates live beside primaries as "a#1"/"a#2" keys in the same glyphs JSON (no schema change). Word-session captures of an existing letter slide in as alternates (newest→#1, old #1→#2); Fix-one-letter REPLACES primary + clears the family. compileFont v5 emits alternates at PUA codepoints (0xE000 + charIdx*2 + n-1 via ALL_CHARS order) and SYNTHESIZES wobble (jitterStrokes: ±2.25° rotation, 0.965-1.035 scale, deterministic seed) for empty slots — every captured letter has 3 looks. varyHandwrittenText() cycles occurrences (primary→alt1→alt2) — applied in the ReviewStep back preview ONLY (editing surfaces stay plain text).
+- QUALITY GATE in WordFlow.finishWord: a letter with ink pathLength < max(30, 0.3*word-median) never saves (the crumb-a bug); smudged letters trigger a quiet word repeat, MAX 3 attempts, then move on (Fix-one-letter is the catch-all). Her broken a + m need a one-time Fix-one-letter.
+- Artist-list card thumbnails: tap = select that exact card + jump straight to write (one featured card stays on top).
+- Tested: varyHandwrittenText cycling + PUA glyph emission verified via opentype.parse.
+
 ## BUILD 39 APPROVED Oct 18 (FIREFLY) — tweaks round
 - compileFont v4: t ascender 0.8x (shorter than b/d/h/k/l), w/m band 1.1x x-height (wide letters read small). Auto-recompile via version gate.
 - Handwriting overview celebrates at 67/67: "Yay — your handwriting is all learned! Go write a bunch of Qute Notes in it." BRAND RULE (memory'd): ALWAYS Qute, never Cute, in all copy.
