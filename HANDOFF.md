@@ -1,6 +1,9 @@
 # QuteNote — Handoff / Status Board
 Written: 2026-10-06 (replaces stale April 10 handoff). Last updated: 2026-10-16.
 
+## PROTOCOL CHANGE (Emerald, Oct 17 — MANDATORY for every TestFlight round)
+Before any plan or FIREFLY ask: clarifying questions about the TestFlight feedback go to Emerald ONE AT A TIME (she answers, the next appears). Every vague item gets a question — zero assumptions. Questions are mandatory pre-FIREFLY. Never bury questions in a long briefing.
+
 ## BUILD 34 APPROVED Oct 17 (FIREFLY) — HANDWRITING, WORD EDITION (Emerald's idea)
 - Capture is now WORD-based: 12 cute words (love/jam/sky/fox/hug/zip/bed/cow/vet/sun/rain/qt) cover a-z, same words UPPERCASED cover A-Z, number runs (2026/4813/5790), punctuation stays single-mark. WORD_SESSIONS in lib/handwriting/alphabet.ts.
 - New lib/handwriting/segment.ts: slices a written word into letters — x-overlap clustering (i/j dots merge with stems), merge-smallest-gap when over-split, width-weighted stroke cutting when letters are connected (confidence 'low' → UI warns + suggests spacing). Tested: separated/dotted/connected all behave.
