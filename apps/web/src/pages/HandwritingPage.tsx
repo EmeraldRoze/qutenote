@@ -131,8 +131,10 @@ function WordFlow({ session, onSaved, glyphs }: {
   const [strokes, setStrokes] = useState<Stroke[]>([])
   const [saving, setSaving] = useState(false)
   const [flash, setFlash] = useState<string | null>(null)
+  const [retryNote, setRetryNote] = useState('')
   const [error, setError] = useState('')
   const timerRef = useRef<number | null>(null)
+  const attemptsRef = useRef(0)
   const glyphsRef = useRef(glyphs)
   glyphsRef.current = glyphs
 
@@ -162,13 +164,36 @@ function WordFlow({ session, onSaved, glyphs }: {
     setError('')
     try {
       const result = segmentWord(drawn, forWord)
+      // Quality gate: a letter whose ink is a crumb next to its word-mates
+      // never overwrites anything (the broken-a bug). Suspect letters get
+      // the word repeated — three repeats max, then Fix-one-letter later.
+      const inkLen = (ss: Stroke[]) => ss.reduce((a, s) => {
+        let d = 0
+        for (let i = 1; i < s.length; i++) d += Math.hypot(s[i].x - s[i - 1].x, s[i].y - s[i - 1].y)
+        return a + d
+      }, 0)
+      const lens = result.letters.map((l) => inkLen(l.strokes))
+      const positive = lens.filter((v) => v > 0).sort((a, b) => a - b)
+      const median = positive.length ? positive[Math.floor(positive.length / 2)] : 0
       const captured: GlyphStrokes = {}
-      for (const letter of result.letters) {
-        if (letter.strokes.length) captured[letter.char] = toGlyphSpace(letter.strokes, WORD_BASELINE)
-      }
-      const merged = await saveHandwritingProgress(glyphsRef.current, captured, `QuteNote-${user?.username ?? 'you'}-Handwriting`)
+      const smudged: string[] = []
+      result.letters.forEach((letter, i) => {
+        const ok = letter.strokes.length > 0
+          && (forWord.length === 1 || lens[i] >= Math.max(30, median * 0.3))
+        if (ok) captured[letter.char] = toGlyphSpace(letter.strokes, WORD_BASELINE)
+        else smudged.push(letter.char)
+      })
+      const merged = await saveHandwritingProgress(
+        glyphsRef.current, captured, `QuteNote-${user?.username ?? 'you'}-Handwriting`, { asAlternates: true })
       onSaved(merged)
       setStrokes([])
+      if (smudged.length && attemptsRef.current < 3) {
+        attemptsRef.current += 1
+        setRetryNote(`One more “${forWord}” — the ${smudged.join(' and ')} smudged.`)
+        return
+      }
+      attemptsRef.current = 0
+      setRetryNote('')
       setFlash(forWord)
       window.setTimeout(() => setFlash(null), 900)
       if (atIndex + 1 < session.words.length) setIndex(atIndex + 1)
@@ -197,7 +222,9 @@ function WordFlow({ session, onSaved, glyphs }: {
       <p style={{ fontSize: '12px', fontFamily: 'var(--font-body)', color: 'var(--ink-muted)', marginTop: '8px', minHeight: '18px' }}>
         {saving
           ? 'Saving…'
-          : flash
+          : retryNote
+            ? retryNote
+            : flash
             ? `✓ ${flash} saved`
             : strokes.length
               ? 'Pause when you\u2019re done — it moves on by itself.'

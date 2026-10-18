@@ -1,5 +1,6 @@
 import { api } from '../api'
 import { compileFont, type GlyphStrokes } from './compileFont'
+import { altKey } from './variants'
 
 function arrayBufferToBase64(buf: ArrayBuffer): string {
   const bytes = new Uint8Array(buf)
@@ -18,12 +19,30 @@ export async function fetchHandwritingProgress(): Promise<{ glyphs: GlyphStrokes
 
 // Merge newly captured letters into the full set, compile a font, and save it.
 // Returns the full merged glyph set so the caller's local state stays in sync.
+//
+// asAlternates (word sessions): a letter that already exists keeps its primary
+// and the new take slides into the alternate slots (newest first) — real
+// handwriting variation, collected for free. Without it (Fix-one-letter), the
+// capture REPLACES the primary and clears the letter's alternates.
 export async function saveHandwritingProgress(
   existing: GlyphStrokes,
   freshlyCaptured: GlyphStrokes,
   fontName: string,
+  opts?: { asAlternates?: boolean },
 ): Promise<GlyphStrokes> {
-  const merged = { ...existing, ...freshlyCaptured }
+  const merged: GlyphStrokes = { ...existing }
+  for (const [char, strokes] of Object.entries(freshlyCaptured)) {
+    if (!strokes?.length) continue
+    if (opts?.asAlternates && merged[char]?.length) {
+      // newest take → alt 1, previous alt 1 → alt 2, oldest falls off
+      merged[altKey(char, 2)] = merged[altKey(char, 1)] ?? merged[altKey(char, 2)]
+      merged[altKey(char, 1)] = strokes
+    } else {
+      merged[char] = strokes
+      delete merged[altKey(char, 1)]
+      delete merged[altKey(char, 2)]
+    }
+  }
   const fontBuffer = compileFont(fontName, merged)
   const fontData = arrayBufferToBase64(fontBuffer)
   await api.put('/handwriting', { glyphs: merged, fontData })

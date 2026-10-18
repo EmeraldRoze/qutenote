@@ -1,5 +1,6 @@
 import opentype from 'opentype.js'
 import { getStroke } from 'perfect-freehand'
+import { parseAltKey, altCodepoint, jitterStrokes, MAX_ALTS } from './variants'
 
 // Turns captured pen strokes into a real, installable font.
 //
@@ -35,7 +36,10 @@ const SPACE_ADVANCE = 340 // a space must look clearly wider than any letter gap
 // v4 (Oct 18): size-consistency tuning — t rides lower than b/d/h/k/l (real
 // typography agrees), and wide letters (w, m) get a nudge up so they don't
 // read small.
-export const FONT_COMPILER_VERSION = 4
+// v5 (Oct 18): letter VARIATIONS — every letter carries up to two alternates
+// (real captured takes, or synthesized wobble) at PUA codepoints; rendered
+// notes cycle them so repeated letters never look identical.
+export const FONT_COMPILER_VERSION = 5
 
 // Typographic band heights, in canvas px relative to the baseline.
 const X_HEIGHT = 114 // a c e m n o …
@@ -198,12 +202,37 @@ export function compileFont(fontName: string, glyphs: GlyphStrokes): ArrayBuffer
   const space = blankGlyph(32, 'space', SPACE_ADVANCE)
   const builtGlyphs: opentype.Glyph[] = [notdef, space]
 
-  for (const [char, strokes] of Object.entries(glyphs)) {
+  const realAlts: Record<string, Set<number>> = {}
+
+  for (const [key, strokes] of Object.entries(glyphs)) {
     if (!strokes?.length) continue
-    const unicode = char.codePointAt(0)
+    const alt = parseAltKey(key)
+    if (alt) {
+      // A real alternate take of this letter → PUA glyph
+      const cp = altCodepoint(alt.char, alt.n)
+      if (cp === null) continue
+      const { path, advanceWidth } = glyphPath(alt.char, strokes)
+      builtGlyphs.push(new opentype.Glyph({ name: `uni${cp.toString(16)}`, unicode: cp, advanceWidth, path }))
+      ;(realAlts[alt.char] ??= new Set()).add(alt.n)
+      continue
+    }
+    const unicode = key.codePointAt(0)
     if (unicode === undefined) continue
-    const { path, advanceWidth } = glyphPath(char, strokes)
+    const { path, advanceWidth } = glyphPath(key, strokes)
     builtGlyphs.push(new opentype.Glyph({ name: `uni${unicode.toString(16)}`, unicode, advanceWidth, path }))
+  }
+
+  // Fill the empty alternate slots with synthesized wobble so every letter
+  // has a full family of three looks.
+  for (const [char, strokes] of Object.entries(glyphs)) {
+    if (!strokes?.length || parseAltKey(char)) continue
+    for (let n = 1; n <= MAX_ALTS; n++) {
+      if (realAlts[char]?.has(n)) continue
+      const cp = altCodepoint(char, n)
+      if (cp === null) continue
+      const { path, advanceWidth } = glyphPath(char, jitterStrokes(strokes, char.codePointAt(0)! * 10 + n))
+      builtGlyphs.push(new opentype.Glyph({ name: `uni${cp.toString(16)}`, unicode: cp, advanceWidth, path }))
+    }
   }
 
   // The comma's strokes double as the apostrophe — people only draw one.

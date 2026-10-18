@@ -7,6 +7,7 @@ import { uploadPhoto } from '../../lib/uploadPhoto'
 import { HANDWRITING_PEN, PENS, penStyle, DEFAULT_PEN } from '../../lib/pens'
 import { useHandwritingFontFace } from '../../lib/handwriting/useHandwritingFontFace'
 import { fetchHandwritingProgress } from '../../lib/handwriting/api'
+import { varyHandwrittenText, renderAltCounts } from '../../lib/handwriting/variants'
 import { useAuth } from '../../context/AuthContext'
 import QEmoji from '../../components/QEmoji'
 import TabBar from '../../components/TabBar'
@@ -465,10 +466,19 @@ function CardPicker({ note, update, onWrite }: {
               </button>
               <div style={{ marginTop: '12px', display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: '10px' }}>
                 {a.cards.map((c) => (
-                  <button key={c.id} aria-label={`${c.title} card by ${a.handle ?? a.name}`} onClick={() => selectArtist(i)} style={{
-                    height: '104px', padding: 0, borderRadius: '8px', border: '1.5px solid var(--ink)',
-                    background: c.bg, overflow: 'hidden', cursor: 'pointer',
-                  }}>
+                  <button
+                    key={c.id}
+                    aria-label={`${c.title} card by ${a.handle ?? a.name} — write on it`}
+                    onClick={() => {
+                      // Tap a card, go write on it (Emerald, Oct 18)
+                      update({ cardDesignType: 'ARTIST', cardDesignId: c.id, cardImageUrl: undefined })
+                      onWrite()
+                    }}
+                    style={{
+                      height: '104px', padding: 0, borderRadius: '8px', border: '1.5px solid var(--ink)',
+                      background: c.bg, overflow: 'hidden', cursor: 'pointer',
+                    }}
+                  >
                     {c.art && <img src={c.art} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />}
                   </button>
                 ))}
@@ -721,6 +731,17 @@ function ReviewStep({ note, onSent, onEditNote, onEditRecipient, editingNoteId, 
   const [error, setError] = useState('')
   useHandwritingFontFace()
 
+  // Letter variations: in the You pen, repeated letters cycle through the
+  // person's alternate takes so the preview reads like a real hand.
+  const [altMap, setAltMap] = useState<Record<string, number>>({})
+  useEffect(() => {
+    if (note.fontChoice !== HANDWRITING_PEN.value) return
+    fetchHandwritingProgress().then((r) => setAltMap(renderAltCounts(r.glyphs))).catch(() => {})
+  }, [note.fontChoice])
+  const displayNoteText = note.fontChoice === HANDWRITING_PEN.value
+    ? varyHandwrittenText(note.noteText ?? '', altMap)
+    : note.noteText
+
   const design = note.cardDesignId ? CARD_LOOKUP[note.cardDesignId] : undefined
   const frontArt = note.cardImageUrl ?? design?.art
 
@@ -821,7 +842,7 @@ function ReviewStep({ note, onSent, onEditNote, onEditRecipient, editingNoteId, 
                 margin: 0, ...penStyle(note.fontChoice), lineHeight: '36px', color: 'var(--note-ink)',
                 whiteSpace: 'pre-wrap', overflowWrap: 'break-word',
               }}>
-                {note.noteText}
+                {displayNoteText}
               </p>
             </div>
             <div style={{ marginTop: '10px', display: 'flex', alignItems: 'center', gap: '8px' }}>
