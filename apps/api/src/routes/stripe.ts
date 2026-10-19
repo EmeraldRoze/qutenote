@@ -49,6 +49,48 @@ stripeRouter.post('/checkout', requireAuth, async (req: AuthRequest, res: Respon
   }
 })
 
+// ─── POST /stripe/buy-card — one-time $7.95 extra card (Emerald, build 42) ───
+// Physical mailed goods, so Stripe (not Apple IAP) is the right rail.
+
+stripeRouter.post('/buy-card', requireAuth, async (req: AuthRequest, res: Response) => {
+  try {
+    const user = await prisma.user.findUnique({ where: { id: req.userId! } })
+    if (!user) return res.status(404).json({ error: 'User not found.' })
+
+    let customerId = user.stripeCustomerId ?? undefined
+    if (!customerId) {
+      const customer = await stripe.customers.create({
+        email: user.email,
+        name: user.displayName,
+        metadata: { userId: user.id },
+      })
+      customerId = customer.id
+      await prisma.user.update({ where: { id: user.id }, data: { stripeCustomerId: customerId } })
+    }
+
+    const session = await stripe.checkout.sessions.create({
+      customer: customerId,
+      mode: 'payment',
+      line_items: [{
+        quantity: 1,
+        price_data: {
+          currency: 'usd',
+          unit_amount: 795,
+          product_data: { name: 'One extra Qute card', description: 'Printed and mailed — use it any time.' },
+        },
+      }],
+      success_url: `${WEB_URL}/extra-card/success`,
+      cancel_url: `${WEB_URL}/extra-card/success?cancelled=1`,
+      metadata: { userId: user.id, kind: 'extra_card' },
+    })
+
+    return res.json({ data: { url: session.url } })
+  } catch (err: any) {
+    console.error('Stripe buy-card error:', err?.message ?? err)
+    return res.status(500).json({ error: "Couldn't start the purchase. Try again in a moment." })
+  }
+})
+
 // ─── POST /stripe/portal — open billing portal ───────────────────────────────
 
 stripeRouter.post('/portal', requireAuth, async (req: AuthRequest, res: Response) => {
@@ -83,7 +125,14 @@ export async function handleStripeWebhook(req: Request, res: Response) {
   switch (event.type) {
     case 'checkout.session.completed': {
       const userId = session.metadata?.userId
-      if (userId) {
+      if (userId && session.metadata?.kind === 'extra_card') {
+        // One-time extra card: a gifted credit the send flow spends after
+        // the monthly allowance runs out.
+        await prisma.user.update({
+          where: { id: userId },
+          data: { giftedCredits: { increment: 1 } },
+        })
+      } else if (userId) {
         await prisma.user.update({
           where: { id: userId },
           data: {

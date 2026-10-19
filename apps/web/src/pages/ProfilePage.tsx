@@ -94,7 +94,7 @@ function CardSheet({ note, onClose }: { note: NoteThumb; onClose: () => void }) 
               : design?.art ? `url(${design.art}) center/cover` : design?.bg ?? 'var(--lavender-pale)',
           }} />
           <div style={{ marginTop: '14px', background: '#fff', border: '1.5px solid var(--stone)', borderRadius: '14px', padding: '16px' }}>
-            <p style={{ margin: 0, ...penFont, lineHeight: 1.7, color: 'var(--note-ink)', whiteSpace: 'pre-wrap', overflowWrap: 'break-word' }}>
+            <p style={{ margin: 0, ...penFont, lineHeight: 1.7, color: 'var(--note-ink)', whiteSpace: 'pre-wrap', overflowWrap: 'break-word', filter: 'grayscale(1)' }}>
               {shown}
             </p>
           </div>

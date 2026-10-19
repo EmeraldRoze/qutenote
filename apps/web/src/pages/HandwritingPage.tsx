@@ -187,7 +187,11 @@ function WordFlow({ session, onSaved, glyphs }: {
         glyphsRef.current, captured, `QuteNote-${user?.username ?? 'you'}-Handwriting`, { asAlternates: true })
       onSaved(merged)
       setStrokes([])
-      if (smudged.length && attemptsRef.current < 3) {
+      // Retry smudged letters mid-list only. On the LAST word, finishing
+      // means finishing — take what passed and head back to the overview
+      // (Emerald, build 42: no lingering on “one more” after word 10).
+      const isLastWord = atIndex + 1 >= session.words.length
+      if (smudged.length && attemptsRef.current < 3 && !isLastWord) {
         attemptsRef.current += 1
         setRetryNote(`One more “${forWord}” — the ${smudged.join(' and ')} smudged.`)
         return
@@ -196,7 +200,7 @@ function WordFlow({ session, onSaved, glyphs }: {
       setRetryNote('')
       setFlash(forWord)
       window.setTimeout(() => setFlash(null), 900)
-      if (atIndex + 1 < session.words.length) setIndex(atIndex + 1)
+      if (!isLastWord) setIndex(atIndex + 1)
       else navigate('/handwriting', { replace: true })
     } catch {
       setError("That didn't save. Check your connection and write the word again.")

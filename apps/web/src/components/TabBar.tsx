@@ -43,8 +43,7 @@ export default function TabBar() {
       height: 'calc(88px + env(safe-area-inset-bottom))',
       padding: '12px 6px env(safe-area-inset-bottom)',
       backgroundColor: 'var(--cream)',
-      backgroundImage: 'repeating-linear-gradient(transparent, transparent 35px, var(--cream-ruled) 35px, var(--cream-ruled) 36px)',
-      backgroundPosition: '0 -16px',
+      borderTop: '1px solid var(--cream-ruled)',
       display: 'grid', gridTemplateColumns: 'repeat(5, minmax(0, 1fr))', alignItems: 'start',
     }}>
       {tab(tabs[0])}

@@ -13,6 +13,7 @@ import QEmoji from '../../components/QEmoji'
 import TabBar from '../../components/TabBar'
 import StepRecipient from './StepRecipient'
 import { askForAddressByText } from '../../lib/inviteText'
+import { listDrafts, saveDraft, deleteDraft, getDraft, type CardDraft } from '../../lib/drafts'
 import { encodeSecret } from '../../lib/secret'
 
 // The four-step send flow, rebuilt to the Oct 15 2026 redesign:
@@ -114,6 +115,9 @@ export default function SendFlow() {
 
   const toName = params.get('toName') ?? undefined
   const editId = params.get('edit') ?? undefined
+  const draftParam = params.get('draft') ?? undefined
+  const [draftId, setDraftId] = useState<string | undefined>(undefined)
+  const [drafts, setDrafts] = useState(() => listDrafts())
 
   function update(data: Partial<NoteData>) {
     setNote((prev) => ({ ...prev, ...data }))
@@ -140,6 +144,17 @@ export default function SendFlow() {
       setSkipRecipient(true)
       setStep('write')
     }).catch(() => {})
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  // Picking a saved draft back up: restore the whole card and jump to write.
+  useEffect(() => {
+    if (!draftParam) return
+    const d = getDraft(draftParam)
+    if (!d) return
+    setNote(d.note as Partial<NoteData>)
+    setDraftId(d.id)
+    setStep('write')
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -180,9 +195,32 @@ export default function SendFlow() {
       {step === 'card' && (
         <>
           <Band height={144}>
-            <h1 style={{ margin: 0, fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: '30px', letterSpacing: '-0.02em', color: 'var(--ink)' }}>Send a card</h1>
+            <h1 style={{ margin: 0, fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: '30px', letterSpacing: '-0.02em', color: 'var(--ink)' }}>Send a little somethin'</h1>
           </Band>
           <div style={content}>
+            {drafts.length > 0 && (
+              <div style={{ marginTop: '18px', background: '#fff', border: '1.5px solid var(--stone)', borderRadius: '16px', overflow: 'hidden' }}>
+                {drafts.map((d: CardDraft, i: number) => (
+                  <div key={d.id} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '12px 16px', borderBottom: i < drafts.length - 1 ? '1px solid var(--divider)' : 'none' }}>
+                    <span style={{ fontSize: '20px' }}>📝</span>
+                    <button onClick={() => { setNote(d.note as Partial<NoteData>); setDraftId(d.id); setStep('write') }} style={{
+                      flex: 1, minWidth: 0, textAlign: 'left', background: 'none', border: 'none', cursor: 'pointer', padding: 0,
+                      fontFamily: 'var(--font-body)', textTransform: 'none', letterSpacing: 0,
+                    }}>
+                      <span style={{ display: 'block', fontSize: '14px', fontWeight: 700, color: 'var(--ink)' }}>
+                        Draft{(d.note as Partial<NoteData>).recipientName ? ` for ${(d.note as Partial<NoteData>).recipientName}` : ''}
+                      </span>
+                      <span style={{ display: 'block', fontSize: '13px', color: 'var(--ink-mid)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                        {((d.note as Partial<NoteData>).noteText ?? 'No words yet').slice(0, 60)}
+                      </span>
+                    </button>
+                    <button aria-label="Delete draft" onClick={() => { deleteDraft(d.id); setDrafts(listDrafts()) }} style={{
+                      background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ink-muted)', fontSize: '16px', padding: '4px',
+                    }}>✕</button>
+                  </div>
+                ))}
+              </div>
+            )}
             <CardPicker
               note={note} update={update}
               onWrite={() => setStep(note.recipientId ? 'write' : 'recipient')}
@@ -249,9 +287,16 @@ export default function SendFlow() {
               note={note as NoteData}
               editingNoteId={sentNoteId}
               canEditRecipient={!skipRecipient}
-              onSent={(id) => { setSentNoteId(id); setStep('sent') }}
+              onSent={(id) => { if (draftId) deleteDraft(draftId); setSentNoteId(id); setStep('sent') }}
               onEditNote={() => setStep('write')}
               onEditRecipient={() => setStep('recipient')}
+              onSaveDraft={() => {
+                const d = saveDraft(note as Record<string, unknown>, draftId)
+                setDraftId(d.id)
+                setDrafts(listDrafts())
+                setStep('card')
+                window.scrollTo(0, 0)
+              }}
             />
           </div>
         </>
@@ -575,11 +620,13 @@ function WriteStep({ note, update, onNext }: {
     ? { fontFamily: "'Fraunces', serif", fontStyle: 'italic' as const, fontSize: '20px' }
     : penStyle(note.fontChoice)
 
+  // Selected pen fills in solid purple — one obvious pick, no dashed borders
+  // (Emerald, build-42 feedback: the dashed style read as multi-select).
   const penPill = (selected: boolean): React.CSSProperties => ({
     flex: 'none', minHeight: '52px', padding: '6px 18px', borderRadius: '26px', cursor: 'pointer',
-    border: selected ? '2px dashed var(--lilac)' : '1.5px solid var(--stone)',
-    background: selected ? 'var(--lavender-pale)' : '#fff',
-    color: 'var(--ink)', textTransform: 'none', letterSpacing: 0, fontWeight: 400, lineHeight: 1.2,
+    border: selected ? `2px solid ${uv}` : '1.5px solid var(--stone)',
+    background: selected ? uv : '#fff',
+    color: selected ? '#fff' : 'var(--ink)', textTransform: 'none', letterSpacing: 0, fontWeight: 400, lineHeight: 1.2,
   })
 
   return (
@@ -726,19 +773,47 @@ function WriteStep({ note, update, onNext }: {
 
 /* ── Step 4: front/back preview, send-now, allowance, MAIL IT ───── */
 
-function ReviewStep({ note, onSent, onEditNote, onEditRecipient, editingNoteId, canEditRecipient }: {
+function ReviewStep({ note, onSent, onEditNote, onEditRecipient, onSaveDraft, editingNoteId, canEditRecipient }: {
   note: NoteData
   onSent: (id: string | null) => void
   onEditNote: () => void
   onEditRecipient: () => void
+  onSaveDraft: () => void
   editingNoteId: string | null
   canEditRecipient: boolean
 }) {
-  const { user } = useAuth()
+  const { user, refreshUser } = useAuth()
   const [side, setSide] = useState<'front' | 'back'>('front')
   const [sending, setSending] = useState(false)
   const [error, setError] = useState('')
+  const [buying, setBuying] = useState(false)
   useHandwritingFontFace()
+
+  // Out of monthly cards and no purchased extras? Offer a one-time $7.95 card.
+  const outOfCards = !editingNoteId && !!user
+    && (user.notesUsed ?? 0) >= (user.notesAllowance ?? 0)
+    && (user.giftedCredits ?? 0) <= 0
+  async function buyExtraCard() {
+    setBuying(true)
+    setError('')
+    try {
+      const r = await api.post('/stripe/buy-card', {})
+      window.open(r.data.data.url, '_blank')
+    } catch {
+      setError("Couldn't start the purchase. Try again in a moment.")
+    } finally {
+      setBuying(false)
+    }
+  }
+  // When they come back from Stripe, pick up the new credit automatically.
+  useEffect(() => {
+    if (!outOfCards) return
+    const onFocus = () => refreshUser?.()
+    window.addEventListener('focus', onFocus)
+    document.addEventListener('visibilitychange', onFocus)
+    return () => { window.removeEventListener('focus', onFocus); document.removeEventListener('visibilitychange', onFocus) }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [outOfCards])
 
   // Letter variations: in the You pen, repeated letters cycle through the
   // person's alternate takes so the preview reads like a real hand.
@@ -757,9 +832,11 @@ function ReviewStep({ note, onSent, onEditNote, onEditRecipient, editingNoteId, 
   const frontArt = note.cardImageUrl ?? design?.art
 
   // Free mode: no prices, just the monthly allowance count.
-  const allowanceLine = user && typeof user.notesAllowance === 'number' && user.notesAllowance > 0
-    ? `${Math.min((user.notesUsed ?? 0) + 1, user.notesAllowance)} of your ${user.notesAllowance} this month`
-    : 'Included this month'
+  const allowanceLine = user && (user.giftedCredits ?? 0) > 0 && (user.notesUsed ?? 0) >= (user.notesAllowance ?? 0)
+    ? 'Your extra card — ready to mail'
+    : user && typeof user.notesAllowance === 'number' && user.notesAllowance > 0
+      ? `${Math.min((user.notesUsed ?? 0) + 1, user.notesAllowance)} of your ${user.notesAllowance} this month`
+      : 'Included this month'
 
   // Send now, or schedule it to land near a chosen day (Emerald, Oct 18)
   const [mailWhen, setMailWhen] = useState<'now' | 'schedule'>('now')
@@ -852,6 +929,7 @@ function ReviewStep({ note, onSent, onEditNote, onEditRecipient, editingNoteId, 
               <p style={{
                 margin: 0, ...penStyle(note.fontChoice), lineHeight: '36px', color: 'var(--note-ink)',
                 whiteSpace: 'pre-wrap', overflowWrap: 'break-word',
+                filter: 'grayscale(1)', // cards print black-and-white — emoji preview honestly
               }}>
                 {displayNoteText}
               </p>
@@ -950,9 +1028,31 @@ function ReviewStep({ note, onSent, onEditNote, onEditRecipient, editingNoteId, 
         </div>
       )}
 
-      <button style={{ ...primaryPill, marginTop: '18px', opacity: sending ? 0.7 : 1 }} disabled={sending} onClick={handleSend}>
+      {outOfCards && (
+        <div style={{ background: 'var(--error-pale)', borderRadius: '12px', padding: '12px 16px', marginTop: '14px', fontSize: '14px', fontFamily: 'var(--font-body)', color: 'var(--error)' }}>
+          You've sent all your cards for this month. More unlock on the 1st — or add one now.
+          <button onClick={buyExtraCard} disabled={buying} style={{
+            display: 'block', width: '100%', marginTop: '10px', height: '46px', borderRadius: '23px',
+            border: 'none', background: uv, color: '#fff', cursor: 'pointer', opacity: buying ? 0.7 : 1,
+            fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '13px', letterSpacing: '0.08em',
+          }}>
+            {buying ? 'OPENING…' : 'ADD AN INDIVIDUAL CARD · $7.95'}
+          </button>
+        </div>
+      )}
+
+      <button style={{ ...primaryPill, marginTop: '18px', opacity: sending || outOfCards ? 0.7 : 1 }} disabled={sending || outOfCards} onClick={handleSend}>
         {sending ? 'SENDING…' : editingNoteId ? 'SAVE CHANGES' : 'MAIL IT'}
       </button>
+      {!editingNoteId && (
+        <button onClick={onSaveDraft} style={{
+          display: 'block', width: '100%', marginTop: '10px', height: '48px', borderRadius: '24px',
+          background: 'none', border: '1.5px solid var(--stone)', cursor: 'pointer',
+          fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '13px', letterSpacing: '0.08em', color: 'var(--ink-mid)',
+        }}>
+          SAVE DRAFT
+        </button>
+      )}
     </>
   )
 }

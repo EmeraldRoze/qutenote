@@ -361,22 +361,21 @@ export default function HomePage() {
                       <span style={{ display: 'inline-block', width: '10px', height: '10px', marginLeft: '6px', borderRadius: '5px', background: 'var(--lime)', border: '1.5px solid var(--ink)', verticalAlign: 'middle' }} />
                     )}
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', padding: '10px 12px', borderRadius: '14px', background: '#fff', border: '1.5px solid var(--stone)' }}>
-                    {item.emoji && <QEmoji name={item.emoji} size={18} />}
-                    <span style={{ fontSize: '15px', lineHeight: 1.4, fontFamily: 'var(--font-body)' }}>{item.text}</span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <div style={{ flex: 1, display: 'flex', alignItems: 'flex-start', gap: '8px', padding: '10px 12px', borderRadius: '14px', background: '#fff', border: '1.5px solid var(--stone)' }}>
+                      {item.emoji && <QEmoji name={item.emoji} size={18} />}
+                      <span style={{ fontSize: '15px', lineHeight: 1.4, fontFamily: 'var(--font-body)' }}>{item.text}</span>
+                    </div>
+                    <button aria-label="Send a little somethin'" onClick={() => navigate(`/send?toName=${encodeURIComponent(item.user?.displayName.split(' ')[0] ?? '')}`)} style={{
+                      flexShrink: 0, width: '44px', height: '44px', borderRadius: '50%', background: 'var(--lavender-pale)',
+                      border: '1.5px solid var(--lilac)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0,
+                    }}>
+                      <span style={{ position: 'relative', width: '30px', height: '20px' }}>
+                        <img src="/brand/postmark-heart-only.png" alt="" style={{ position: 'absolute', inset: 0, width: '30px', height: '20px', objectFit: 'contain' }} />
+                        <img src="/brand/postmark-waves-only.png" alt="" style={{ position: 'absolute', inset: 0, width: '30px', height: '20px', objectFit: 'contain' }} />
+                      </span>
+                    </button>
                   </div>
-                  <button onClick={() => navigate(`/send?toName=${encodeURIComponent(item.user?.displayName.split(' ')[0] ?? '')}`)} style={{
-                    alignSelf: 'flex-start', display: 'flex', alignItems: 'center', gap: '8px', height: '40px',
-                    padding: '0 12px 0 14px', borderRadius: '12px', background: 'var(--lavender-pale)',
-                    border: '2px dashed var(--lilac)', color: uv, cursor: 'pointer',
-                    fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.1em',
-                  }}>
-                    Send a little somethin'
-                    <span style={{ position: 'relative', width: '26px', height: '17px', flexShrink: 0 }}>
-                      <img src="/brand/postmark-heart-only.png" alt="" style={{ position: 'absolute', inset: 0, width: '26px', height: '17px', objectFit: 'contain' }} />
-                      <img src="/brand/postmark-waves-only.png" alt="" style={{ position: 'absolute', inset: 0, width: '26px', height: '17px', objectFit: 'contain' }} />
-                    </span>
-                  </button>
                 </>
               ) : (
                 <>

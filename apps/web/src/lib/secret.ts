@@ -13,11 +13,11 @@
 // QuteNoteSecret font renders; the plain text itself is what's stored, so
 // "decoding" inside QuteNote is simply showing the original message.
 
-import { SECRET_MARK_CLS, SECRET_DEFAULT_CLS } from './secretMetrics'
+import { SECRET_MARK_BASE } from './secretMetrics'
 
-// mark codepoint = PUA_MARK + (vowelIdx(aeiou)*2 + level(0|1)) * 16 + widthClass
-// (letters are proportional, so each mark exists once per host width class)
-const PUA_MARK = 0xe100
+// mark codepoint = SECRET_MARK_BASE + hostIdx(a..z)*10 + vowelIdx(aeiou)*2 + level
+// — one mark glyph per host letter, positioned for that host's exact width
+// and height by the font builder.
 const PUA_STANDALONE_I = 0xe1a0
 const PUA_STANDALONE_A = 0xe1a1
 
@@ -27,8 +27,9 @@ const isVowel = (c: string) => VOWELS.includes(c.toLowerCase())
 
 function mark(vowel: string, level: number, host: string): string {
   const vi = VOWELS.indexOf(vowel.toLowerCase())
-  const cls = SECRET_MARK_CLS[host] ?? SECRET_DEFAULT_CLS
-  return String.fromCodePoint(PUA_MARK + (vi * 2 + Math.min(level, 1)) * 16 + cls)
+  const hi = host.charCodeAt(0) - 97 // a..z
+  const safeHi = hi >= 0 && hi < 26 ? hi : 13 // unknown host centers like an n
+  return String.fromCodePoint(SECRET_MARK_BASE + safeHi * 10 + vi * 2 + Math.min(level, 1))
 }
 
 function encodeWord(word: string): string {

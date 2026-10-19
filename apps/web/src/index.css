@@ -59,14 +59,29 @@
   font-display: block;
 }
 
+html {
+  background: var(--cream);
+}
+
 body {
   font-family: var(--font-body);
-  background: var(--cream);
-  /* Notebook ruling: one continuous 36px rhythm behind the whole screen */
-  background-image: repeating-linear-gradient(transparent, transparent 35px, var(--cream-ruled) 35px, var(--cream-ruled) 36px);
+  background: transparent;
   color: var(--ink);
   -webkit-font-smoothing: antialiased;
   line-height: 1.55;
+}
+
+/* Notebook ruling: ONE fixed 36px grid pinned to the viewport behind every
+   screen. Because it never scrolls or depends on section heights, the lines
+   stay perfectly even top to bottom on every page (Emerald, build 42 —
+   headers no longer need to be multiples of 36px to keep the rhythm). */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image: repeating-linear-gradient(transparent, transparent 35px, var(--cream-ruled) 35px, var(--cream-ruled) 36px);
 }
 
 /* The clear header space at the top of every screen, like school notebook

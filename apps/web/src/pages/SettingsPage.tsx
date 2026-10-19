@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { listDrafts } from '../lib/drafts'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { api } from '../lib/api'
@@ -28,6 +29,7 @@ export default function SettingsPage() {
   const [reminderStatus, setReminderStatus] = useState<ReminderResult | 'idle' | 'working'>('idle')
   const [hasHandwriting, setHasHandwriting] = useState(false)
   const [scheduledCount, setScheduledCount] = useState(0)
+  const draftCount = listDrafts().length
 
   useEffect(() => {
     api.get('/address/me')
@@ -83,6 +85,12 @@ export default function SettingsPage() {
           <button style={rowStyle} onClick={() => navigate('/settings/scheduled')}>
             <span style={rowLabel}>Scheduled cards</span>
             <span style={rowValue}>{scheduledCount || ''}</span>
+            {chevron}
+          </button>
+
+          <button style={rowStyle} onClick={() => navigate('/send')}>
+            <span style={rowLabel}>Drafts</span>
+            <span style={rowValue}>{draftCount || ''}</span>
             {chevron}
           </button>
 
