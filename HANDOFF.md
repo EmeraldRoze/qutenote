@@ -1,8 +1,16 @@
 # QuteNote — Handoff / Status Board
-Written: 2026-10-06 (replaces stale April 10 handoff). Last updated: 2026-10-16.
+Written: 2026-10-06 (replaces stale April 10 handoff). Last updated: 2026-10-18.
 
 ## PROTOCOL CHANGE (Emerald, Oct 17 — MANDATORY for every TestFlight round)
 Before any plan or FIREFLY ask: clarifying questions about the TestFlight feedback go to Emerald ONE AT A TIME (she answers, the next appears). Every vague item gets a question — zero assumptions. Questions are mandatory pre-FIREFLY. Never bury questions in a long briefing.
+
+## BUILD 41 UPLOADED Oct 18 (FIREFLY) — THE SECRET LANGUAGE (Emerald's cipher)
+- Her hand-drawn 26-symbol alphabet is now a real font: apps/web/secret-font/ (trace.py pixel-boundary tracer + contours.json + build-secret-font.mjs) → public/fonts/QuteNoteSecret.otf (40 glyphs, monospace ADV=620). Rebuild with `node secret-font/build-secret-font.mjs` after editing contours.
+- RULES (hers, confirmed): vowels a/e/i/u tuck UNDER the previous letter, o floats OVER; word-initial vowels attach UNDER/OVER the NEXT letter (amy: a under m); doubles stack outward max 2 deep then stand inline; standalone "I" and "a" words get tall diamond glyphs; numbers + punctuation stay normal. Encoder: apps/web/src/lib/secret.ts encodeSecret() — marks are zero-advance PUA combining glyphs (0xE100+vowel*2+level; I=0xE120, a=0xE121). Plain text is what's STORED; the cipher is only how it renders.
+- IN APP: "Secret 🤫" pen in pens.ts (editor stays readable Fraunces + hint; preview renders cipher). Profile grid cards now OPEN (CardSheet in ProfilePage) — secret cards show cipher + DECODE THE SECRET toggle. Decoder key page /secret-key (SecretKeyPage: full alphabet, vowel rules, examples) linked from Settings → Secret language.
+- PRINT: apps/api/assets/QuteNoteSecret.otf + src/lib/secret.ts (port); admin-pdf registers the OTF and prints encodeSecret(noteText) for SECRET cards (fallback italic if font missing). FontChoice SECRET pushed to prod DB.
+- FUTURE ROUND (promised): camera/CV translation — point the camera at a secret card to decode it. Phase 1 (this build) is the in-app Decode button + key screen only.
+- Prisma db push gotcha: root .env holds DATABASE_URL; `set -a && source ../../.env && set +a` before npx prisma db push from apps/api.
 
 ## BUILD 40 APPROVED Oct 18 (FIREFLY) — LETTER VARIATIONS + quality gate
 - VARIATIONS ENGINE (her idea: real handwriting varies): lib/handwriting/variants.ts. Storage: alternates live beside primaries as "a#1"/"a#2" keys in the same glyphs JSON (no schema change). Word-session captures of an existing letter slide in as alternates (newest→#1, old #1→#2); Fix-one-letter REPLACES primary + clears the family. compileFont v5 emits alternates at PUA codepoints (0xE000 + charIdx*2 + n-1 via ALL_CHARS order) and SYNTHESIZES wobble (jitterStrokes: ±2.25° rotation, 0.965-1.035 scale, deterministic seed) for empty slots — every captured letter has 3 looks. varyHandwrittenText() cycles occurrences (primary→alt1→alt2) — applied in the ReviewStep back preview ONLY (editing surfaces stay plain text).
