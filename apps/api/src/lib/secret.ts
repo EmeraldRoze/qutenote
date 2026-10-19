@@ -13,17 +13,22 @@
 // QuteNoteSecret font renders; the plain text itself is what's stored, so
 // "decoding" inside QuteNote is simply showing the original message.
 
-const PUA_MARK = 0xe100 // + vowelIdx(aeiou)*2 + level(0|1)
-const PUA_STANDALONE_I = 0xe120
-const PUA_STANDALONE_A = 0xe121
+import { SECRET_MARK_CLS, SECRET_DEFAULT_CLS } from './secretMetrics'
+
+// mark codepoint = PUA_MARK + (vowelIdx(aeiou)*2 + level(0|1)) * 16 + widthClass
+// (letters are proportional, so each mark exists once per host width class)
+const PUA_MARK = 0xe100
+const PUA_STANDALONE_I = 0xe1a0
+const PUA_STANDALONE_A = 0xe1a1
 
 const VOWELS = 'aeiou'
 const isLetter = (c: string) => /[a-z]/i.test(c)
 const isVowel = (c: string) => VOWELS.includes(c.toLowerCase())
 
-function mark(vowel: string, level: number): string {
+function mark(vowel: string, level: number, host: string): string {
   const vi = VOWELS.indexOf(vowel.toLowerCase())
-  return String.fromCodePoint(PUA_MARK + vi * 2 + Math.min(level, 1))
+  const cls = SECRET_MARK_CLS[host] ?? SECRET_DEFAULT_CLS
+  return String.fromCodePoint(PUA_MARK + (vi * 2 + Math.min(level, 1)) * 16 + cls)
 }
 
 function encodeWord(word: string): string {
@@ -54,7 +59,7 @@ function encodeWord(word: string): string {
     for (const v of h.vowels) {
       const level = v === 'o' ? over++ : under++
       if (level >= 2) { out += v; continue } // too deep — stand inline
-      out += mark(v, level)
+      out += mark(v, level, h.consonant as string)
     }
   }
   // An all-vowel word ("eau") has no consonant hosts — render inline.
@@ -65,12 +70,15 @@ function encodeWord(word: string): string {
 }
 
 export function encodeSecret(text: string): string {
+  // Words run together with no gap (her call: the plain text is always one
+  // Decode tap away). A zero-width space replaces each real space so long
+  // messages still wrap; everything else (numbers, punctuation) stays inline.
   let out = ''
   let word = ''
   for (const ch of text) {
     if (isLetter(ch)) { word += ch; continue }
     if (word) { out += encodeWord(word); word = '' }
-    out += ch
+    out += ch === ' ' ? '\u200b' : ch
   }
   if (word) out += encodeWord(word)
   return out

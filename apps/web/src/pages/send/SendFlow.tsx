@@ -509,7 +509,7 @@ function placeCaretAtEnd(el: HTMLElement) {
 
 const NOTE_LIMIT = 450
 const PEN_PREVIEW_SIZE: Record<string, number> = {
-  [HANDWRITING_PEN.value]: 17, FRAUNCES: 19, SORA: 16, DM_MONO: 15, ROCK_SALT: 13,
+  [HANDWRITING_PEN.value]: 17, FRAUNCES: 19, SORA: 16, DM_MONO: 15, ROCK_SALT: 13, SECRET: 24,
 }
 
 function WriteStep({ note, update, onNext }: {
@@ -703,6 +703,8 @@ function WriteStep({ note, update, onNext }: {
             <button key={p.value} role="radio" aria-checked={selected} onClick={() => update({ fontChoice: p.value })} style={{
               ...penPill(selected),
               fontFamily: p.family, fontStyle: p.italic ? 'italic' : 'normal', fontSize: `${PEN_PREVIEW_SIZE[p.value] ?? 16}px`,
+              // the cipher strokes are hairline-thin at chip size — fatten them
+              ...(p.value === 'SECRET' ? { WebkitTextStroke: '0.8px currentColor' } : {}),
             }}>
               {p.label}
             </button>

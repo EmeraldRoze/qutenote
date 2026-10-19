@@ -160,16 +160,34 @@ export function segmentWord(strokes: Stroke[], word: string): SegmentResult {
       return (b.maxX - b.minX) > 0.7 * clusterSpan
     })
 
+    // A nearly-flat stroke wider than its own letter's share is a crossbar
+    // (t, f) reaching into the neighbor. It's too short to count as spanning,
+    // but left whole it gets glued to whichever letter holds its midpoint —
+    // the horizontal line through Emerald's e and m (build 41). Cut it too.
+    const avgLetterW = clusterSpan / letters.length
+    const isFlatWide = (s: Stroke) => {
+      const b = bounds(s)
+      const w = b.maxX - b.minX
+      let minY = Infinity, maxY = -Infinity
+      for (const p of s) { minY = Math.min(minY, p.y); maxY = Math.max(maxY, p.y) }
+      return w > 1.5 * avgLetterW && (maxY - minY) < Math.max(14, 0.28 * w)
+    }
+    const hasFlatWide = () => pool.some(isFlatWide)
+
     // Not enough separate strokes for these letters? The writer connected
     // them — cut the widest-spanning stroke at predicted boundaries until
     // there are enough pieces. Only that stroke is cut; neighbors stay whole.
     let safety = 8
-    while ((pool.length < letters.length || hasSpanningStroke()) && safety-- > 0) {
+    while ((pool.length < letters.length || hasSpanningStroke() || hasFlatWide()) && safety-- > 0) {
       confidence = 'low'
-      let widest = 0
-      for (let i = 1; i < pool.length; i++) {
-        const a = bounds(pool[i]); const b = bounds(pool[widest])
-        if (a.maxX - a.minX > b.maxX - b.minX) widest = i
+      // A crossbar-like stroke takes the knife first; otherwise the widest.
+      let widest = pool.findIndex(isFlatWide)
+      if (widest < 0) {
+        widest = 0
+        for (let i = 1; i < pool.length; i++) {
+          const a = bounds(pool[i]); const b = bounds(pool[widest])
+          if (a.maxX - a.minX > b.maxX - b.minX) widest = i
+        }
       }
       const target = pool[widest]
       const tb = bounds(target)
