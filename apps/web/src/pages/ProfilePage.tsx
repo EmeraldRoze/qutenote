@@ -10,6 +10,7 @@ import { CARD_LOOKUP } from '../lib/cards'
 import QRCodeSheet from '../components/QRCodeSheet'
 import { penStyle } from '../lib/pens'
 import { encodeSecret, SECRET_FONT_FAMILY } from '../lib/secret'
+import FlowerText from '../components/FlowerText'
 
 // Profile tab — Oct 15 2026 redesign, screen 15-profile.html.
 // Postmark-heart header with initials, status box, Sent/Received photo grid,
@@ -80,6 +81,7 @@ function CardSheet({ note, onClose }: { note: NoteThumb; onClose: () => void }) 
   const [decoded, setDecoded] = useState(false)
   const design = CARD_LOOKUP[note.cardDesignId ?? '']
   const isSecret = note.fontChoice === 'SECRET'
+  const isFlower = note.fontChoice === 'FLOWER'
   const text = note.noteText ?? ''
   const shown = isSecret && !decoded ? encodeSecret(text) : text
   const penFont = isSecret && !decoded ? { fontFamily: SECRET_FONT_FAMILY, fontSize: '20px' } : penStyle(note.fontChoice)
@@ -94,11 +96,15 @@ function CardSheet({ note, onClose }: { note: NoteThumb; onClose: () => void }) 
               : design?.art ? `url(${design.art}) center/cover` : design?.bg ?? 'var(--lavender-pale)',
           }} />
           <div style={{ marginTop: '14px', background: '#fff', border: '1.5px solid var(--stone)', borderRadius: '14px', padding: '16px' }}>
-            <p style={{ margin: 0, ...penFont, lineHeight: 1.7, color: 'var(--note-ink)', whiteSpace: 'pre-wrap', overflowWrap: 'break-word', filter: 'grayscale(1)' }}>
-              {shown}
-            </p>
+            {isFlower && !decoded ? (
+              <FlowerText text={text} size={54} />
+            ) : (
+              <p style={{ margin: 0, ...penFont, lineHeight: 1.7, color: 'var(--note-ink)', whiteSpace: 'pre-wrap', overflowWrap: 'break-word', filter: 'grayscale(1)' }}>
+                {shown}
+              </p>
+            )}
           </div>
-          {isSecret && (
+          {(isSecret || isFlower) && (
             <button onClick={() => setDecoded((d) => !d)} style={{
               width: '100%', marginTop: '12px', height: '50px', borderRadius: '25px', border: 'none',
               background: uv, color: '#fff', cursor: 'pointer',

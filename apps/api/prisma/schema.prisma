@@ -294,6 +294,7 @@ enum FontChoice {
   DM_MONO
   ROCK_SALT
   SECRET
+  FLOWER
 }
 
 enum BadgeType {

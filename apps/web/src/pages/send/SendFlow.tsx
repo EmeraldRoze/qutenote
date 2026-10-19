@@ -14,6 +14,7 @@ import TabBar from '../../components/TabBar'
 import StepRecipient from './StepRecipient'
 import { askForAddressByText } from '../../lib/inviteText'
 import { listDrafts, saveDraft, deleteDraft, getDraft, type CardDraft } from '../../lib/drafts'
+import FlowerText from '../../components/FlowerText'
 import { encodeSecret } from '../../lib/secret'
 
 // The four-step send flow, rebuilt to the Oct 15 2026 redesign:
@@ -613,10 +614,11 @@ function WriteStep({ note, update, onNext }: {
   }
 
   const count = (note.noteText ?? '').length
-  // The Secret pen ciphers in the PREVIEW — while writing you stay readable
-  // (editing symbols you can't read would be chaos).
+  // The Secret and Flower pens transform in the PREVIEW — while writing you
+  // stay readable (editing symbols you can't read would be chaos).
   const isSecretPen = note.fontChoice === 'SECRET'
-  const penFont = isSecretPen
+  const isFlowerPen = note.fontChoice === 'FLOWER'
+  const penFont = isSecretPen || isFlowerPen
     ? { fontFamily: "'Fraunces', serif", fontStyle: 'italic' as const, fontSize: '20px' }
     : penStyle(note.fontChoice)
 
@@ -668,8 +670,9 @@ function WriteStep({ note, update, onNext }: {
           )}
         </div>
       </div>
-      <div style={{ margin: '8px 0 0', display: 'flex', justifyContent: isSecretPen ? 'space-between' : 'flex-end', alignItems: 'center', fontSize: '13px', fontFamily: 'var(--font-body)', color: 'var(--ink-mid)' }}>
+      <div style={{ margin: '8px 0 0', display: 'flex', justifyContent: isSecretPen || isFlowerPen ? 'space-between' : 'flex-end', alignItems: 'center', fontSize: '13px', fontFamily: 'var(--font-body)', color: 'var(--ink-mid)' }}>
         {isSecretPen && <span>🤫 Prints in the Secret Language — peek at the preview.</span>}
+        {isFlowerPen && <span>🌷 Blooms into bouquets — peek at the preview.</span>}
         <span>{count}/{NOTE_LIMIT}</span>
       </div>
 
@@ -926,13 +929,17 @@ function ReviewStep({ note, onSent, onEditNote, onEditRecipient, onSaveDraft, ed
           }}>
             <div style={{ flex: 1, overflow: 'hidden' }}>
               <StampSvg width={44} height={52} style={{ float: 'right', margin: '0 0 8px 12px', transform: 'rotate(4deg)' }} />
-              <p style={{
-                margin: 0, ...penStyle(note.fontChoice), lineHeight: '36px', color: 'var(--note-ink)',
-                whiteSpace: 'pre-wrap', overflowWrap: 'break-word',
-                filter: 'grayscale(1)', // cards print black-and-white — emoji preview honestly
-              }}>
-                {displayNoteText}
-              </p>
+              {note.fontChoice === 'FLOWER' ? (
+                <FlowerText text={note.noteText ?? ''} size={58} />
+              ) : (
+                <p style={{
+                  margin: 0, ...penStyle(note.fontChoice), lineHeight: '36px', color: 'var(--note-ink)',
+                  whiteSpace: 'pre-wrap', overflowWrap: 'break-word',
+                  filter: 'grayscale(1)', // cards print black-and-white — emoji preview honestly
+                }}>
+                  {displayNoteText}
+                </p>
+              )}
             </div>
             <div style={{ marginTop: '10px', display: 'flex', alignItems: 'center', gap: '8px' }}>
               <span style={{ fontSize: '14px', fontWeight: 700, fontFamily: 'var(--font-body)', color: 'var(--ink)' }}>To: {note.recipientName}</span>

@@ -26,6 +26,8 @@ export const PENS: Pen[] = [
   { value: 'ROCK_SALT', label: 'Rock Salt', family: "'Rock Salt', cursive", size: 16 },
   // Emerald's cipher — renders through encodeSecret() (lib/secret.ts)
   { value: 'SECRET', label: 'Secret 🤫', family: "'QuteNoteSecret'", size: 22 },
+  // Emerald's Flower Language — words bloom into bouquets (components/FlowerText)
+  { value: 'FLOWER', label: 'Flowers 🌷', family: "'Fraunces', serif", size: 20 },
 ]
 
 const ALL: Pen[] = [HANDWRITING_PEN, ...PENS]

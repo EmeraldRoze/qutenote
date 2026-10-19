@@ -7,6 +7,7 @@ import PDFDocument from 'pdfkit'
 import path from 'path'
 import fs from 'fs'
 import { encodeSecret } from '../lib/secret'
+import { drawFlowerText, hasFlowerAssets } from '../lib/flower'
 
 export const adminPdfRouter = Router()
 
@@ -132,7 +133,11 @@ adminPdfRouter.get('/notes/:id/pdf', async (req: AuthRequest, res) => {
   // recipient decodes with the in-app key. Fall back to italic plain text
   // only if the font file is somehow missing.
   const isSecret = (note.fontChoice as string) === 'SECRET'
-  if (isSecret && hasSecretFont) {
+  const isFlower = (note.fontChoice as string) === 'FLOWER'
+  if (isFlower && hasFlowerAssets()) {
+    // Flower Language: the printed card IS the bouquet arrangement.
+    drawFlowerText(doc, note.noteText, 28, 46, midX - 56, 46)
+  } else if (isSecret && hasSecretFont) {
     doc.registerFont('QuteNoteSecret', SECRET_FONT_PATH)
     doc.font('QuteNoteSecret').fontSize(13).fillColor('#2E2440')
     doc.text(encodeSecret(note.noteText), 28, 46, {
@@ -140,7 +145,7 @@ adminPdfRouter.get('/notes/:id/pdf', async (req: AuthRequest, res) => {
       lineGap: 12,
     })
   } else {
-    const noteFont = isSecret ? 'Helvetica-Oblique' : (FONT_MAP[note.fontChoice] ?? 'Helvetica')
+    const noteFont = isSecret || isFlower ? 'Helvetica-Oblique' : (FONT_MAP[note.fontChoice] ?? 'Helvetica')
     doc.font(noteFont).fontSize(11).fillColor('#2E2440')
     doc.text(note.noteText, 28, 46, {
       width: midX - 56,
