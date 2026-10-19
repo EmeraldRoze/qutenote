@@ -131,6 +131,12 @@ export default function SettingsPage() {
             {chevron}
           </button>
 
+          <button style={rowStyle} onClick={() => navigate('/secret-key')}>
+            <span style={rowLabel}>Secret language</span>
+            <span style={rowValue}>🤫</span>
+            {chevron}
+          </button>
+
           <a href="mailto:hello@qutenote.com" style={{ ...rowStyle, borderBottom: 'none' }}>
             <span style={rowLabel}>Get help</span>
             <span style={rowValue} />

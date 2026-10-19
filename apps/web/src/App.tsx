@@ -17,6 +17,7 @@ import ProfilePage from './pages/ProfilePage'
 import InvitePage from './pages/InvitePage'
 import CollectAddressPage from './pages/CollectAddressPage'
 import ImportantDatesPage from './pages/ImportantDatesPage'
+import SecretKeyPage from './pages/SecretKeyPage'
 import SettingsPage from './pages/SettingsPage'
 import AccountSettingsPage from './pages/AccountSettingsPage'
 import NotificationPreferencesPage from './pages/NotificationPreferencesPage'
@@ -67,6 +68,7 @@ function AppRoutes() {
       <Route path="/send" element={<ProtectedRoute><SendFlow /></ProtectedRoute>} />
       <Route path="/connections" element={<ProtectedRoute><ConnectionsPage /></ProtectedRoute>} />
       <Route path="/dates" element={<ProtectedRoute><ImportantDatesPage /></ProtectedRoute>} />
+      <Route path="/secret-key" element={<ProtectedRoute><SecretKeyPage /></ProtectedRoute>} />
       <Route path="/signup/handle" element={<ProtectedRoute><PickHandlePage /></ProtectedRoute>} />
       <Route path="/signup/address" element={<ProtectedRoute><SignupAddressPage /></ProtectedRoute>} />
       <Route path="/signup/birthday" element={<ProtectedRoute><SignupBirthdayPage /></ProtectedRoute>} />

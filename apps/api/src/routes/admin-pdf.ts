@@ -4,6 +4,9 @@ import { prisma } from '../lib/prisma'
 import type { AuthRequest } from '../middleware/auth'
 import { verifyToken } from '../lib/jwt'
 import PDFDocument from 'pdfkit'
+import path from 'path'
+import fs from 'fs'
+import { encodeSecret } from '../lib/secret'
 
 export const adminPdfRouter = Router()
 
@@ -43,6 +46,11 @@ const FONT_MAP: Record<string, string> = {
   DM_MONO: 'Courier',
   ROCK_SALT: 'Helvetica-Oblique',
 }
+
+// Emerald's cipher font, shipped with the API so printed secret cards render
+// the real symbols. assets/ sits next to src/ and dist/, so resolve from cwd.
+const SECRET_FONT_PATH = path.join(process.cwd(), 'assets', 'QuteNoteSecret.otf')
+const hasSecretFont = fs.existsSync(SECRET_FONT_PATH)
 
 // GET /admin/notes/:id/pdf — generate a printable postcard PDF
 adminPdfRouter.get('/notes/:id/pdf', async (req: AuthRequest, res) => {
@@ -120,13 +128,25 @@ adminPdfRouter.get('/notes/:id/pdf', async (req: AuthRequest, res) => {
   doc.strokeColor('#F0B8C0').lineWidth(0.8)
   doc.moveTo(midX, 20).lineTo(midX, HEIGHT - 20).stroke()
 
-  // LEFT SIDE: note text
-  const noteFont = FONT_MAP[note.fontChoice] ?? 'Helvetica'
-  doc.font(noteFont).fontSize(11).fillColor('#2E2440')
-  doc.text(note.noteText, 28, 46, {
-    width: midX - 56,
-    lineGap: 10.5,
-  })
+  // LEFT SIDE: note text. Secret-pen cards print the cipher itself — the
+  // recipient decodes with the in-app key. Fall back to italic plain text
+  // only if the font file is somehow missing.
+  const isSecret = (note.fontChoice as string) === 'SECRET'
+  if (isSecret && hasSecretFont) {
+    doc.registerFont('QuteNoteSecret', SECRET_FONT_PATH)
+    doc.font('QuteNoteSecret').fontSize(13).fillColor('#2E2440')
+    doc.text(encodeSecret(note.noteText), 28, 46, {
+      width: midX - 56,
+      lineGap: 12,
+    })
+  } else {
+    const noteFont = isSecret ? 'Helvetica-Oblique' : (FONT_MAP[note.fontChoice] ?? 'Helvetica')
+    doc.font(noteFont).fontSize(11).fillColor('#2E2440')
+    doc.text(note.noteText, 28, 46, {
+      width: midX - 56,
+      lineGap: 10.5,
+    })
+  }
 
   // Sender sign-off at bottom left
   doc.fontSize(9).fillColor('#5C5070')

@@ -13,6 +13,7 @@ import QEmoji from '../../components/QEmoji'
 import TabBar from '../../components/TabBar'
 import StepRecipient from './StepRecipient'
 import { askForAddressByText } from '../../lib/inviteText'
+import { encodeSecret } from '../../lib/secret'
 
 // The four-step send flow, rebuilt to the Oct 15 2026 redesign:
 // pick a card → who's it for → write your note → preview and mail.
@@ -567,7 +568,12 @@ function WriteStep({ note, update, onNext }: {
   }
 
   const count = (note.noteText ?? '').length
-  const penFont = penStyle(note.fontChoice)
+  // The Secret pen ciphers in the PREVIEW — while writing you stay readable
+  // (editing symbols you can't read would be chaos).
+  const isSecretPen = note.fontChoice === 'SECRET'
+  const penFont = isSecretPen
+    ? { fontFamily: "'Fraunces', serif", fontStyle: 'italic' as const, fontSize: '20px' }
+    : penStyle(note.fontChoice)
 
   const penPill = (selected: boolean): React.CSSProperties => ({
     flex: 'none', minHeight: '52px', padding: '6px 18px', borderRadius: '26px', cursor: 'pointer',
@@ -615,7 +621,8 @@ function WriteStep({ note, update, onNext }: {
           )}
         </div>
       </div>
-      <div style={{ margin: '8px 0 0', display: 'flex', justifyContent: 'flex-end', alignItems: 'center', fontSize: '13px', fontFamily: 'var(--font-body)', color: 'var(--ink-mid)' }}>
+      <div style={{ margin: '8px 0 0', display: 'flex', justifyContent: isSecretPen ? 'space-between' : 'flex-end', alignItems: 'center', fontSize: '13px', fontFamily: 'var(--font-body)', color: 'var(--ink-mid)' }}>
+        {isSecretPen && <span>🤫 Prints in the Secret Language — peek at the preview.</span>}
         <span>{count}/{NOTE_LIMIT}</span>
       </div>
 
@@ -740,7 +747,9 @@ function ReviewStep({ note, onSent, onEditNote, onEditRecipient, editingNoteId, 
   }, [note.fontChoice])
   const displayNoteText = note.fontChoice === HANDWRITING_PEN.value
     ? varyHandwrittenText(note.noteText ?? '', altMap)
-    : note.noteText
+    : note.fontChoice === 'SECRET'
+      ? encodeSecret(note.noteText ?? '')
+      : note.noteText
 
   const design = note.cardDesignId ? CARD_LOOKUP[note.cardDesignId] : undefined
   const frontArt = note.cardImageUrl ?? design?.art

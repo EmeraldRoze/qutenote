@@ -24,6 +24,8 @@ export const PENS: Pen[] = [
   { value: 'SORA', label: 'Sora', family: "'Sora', sans-serif", size: 19 },
   { value: 'DM_MONO', label: 'DM Mono', family: "'DM Mono', monospace", size: 17 },
   { value: 'ROCK_SALT', label: 'Rock Salt', family: "'Rock Salt', cursive", size: 16 },
+  // Emerald's cipher — renders through encodeSecret() (lib/secret.ts)
+  { value: 'SECRET', label: 'Secret 🤫', family: "'QuteNoteSecret'", size: 22 },
 ]
 
 const ALL: Pen[] = [HANDWRITING_PEN, ...PENS]

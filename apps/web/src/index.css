@@ -52,6 +52,13 @@
   --font-handwriting: 'Anonymous Pro', monospace;
 }
 
+/* Emerald's Secret Language — traced from her hand-drawn symbol alphabet */
+@font-face {
+  font-family: 'QuteNoteSecret';
+  src: url('/fonts/QuteNoteSecret.otf') format('opentype');
+  font-display: block;
+}
+
 body {
   font-family: var(--font-body);
   background: var(--cream);

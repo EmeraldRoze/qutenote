@@ -8,6 +8,8 @@ import StatusBox from '../components/StatusBox'
 import { STATUS_EMOJI } from '../components/Happenings'
 import { CARD_LOOKUP } from '../lib/cards'
 import QRCodeSheet from '../components/QRCodeSheet'
+import { penStyle } from '../lib/pens'
+import { encodeSecret, SECRET_FONT_FAMILY } from '../lib/secret'
 
 // Profile tab — Oct 15 2026 redesign, screen 15-profile.html.
 // Postmark-heart header with initials, status box, Sent/Received photo grid,
@@ -46,6 +48,10 @@ interface NoteThumb {
   cardDesignId?: string | null
   cardImageUrl?: string | null
   createdAt: string
+  noteText?: string
+  fontChoice?: string
+  sender?: { displayName: string; username: string }
+  recipient?: { displayName: string; username: string }
 }
 
 const OCCASION_ART: Record<string, string> = {
@@ -68,6 +74,48 @@ const actionTile: React.CSSProperties = {
   textTransform: 'none', letterSpacing: 0, padding: '8px 4px',
 }
 
+// A received (or sent) card, opened from the grid. Secret-language cards
+// show the cipher with a DECODE toggle — the message itself is the secret.
+function CardSheet({ note, onClose }: { note: NoteThumb; onClose: () => void }) {
+  const [decoded, setDecoded] = useState(false)
+  const design = CARD_LOOKUP[note.cardDesignId ?? '']
+  const isSecret = note.fontChoice === 'SECRET'
+  const text = note.noteText ?? ''
+  const shown = isSecret && !decoded ? encodeSecret(text) : text
+  const penFont = isSecret && !decoded ? { fontFamily: SECRET_FONT_FAMILY, fontSize: '20px' } : penStyle(note.fontChoice)
+  return (
+    <div style={{ position: 'fixed', inset: 0, zIndex: 100, background: 'rgba(43,34,56,0.45)', display: 'flex', alignItems: 'flex-end' }} onClick={onClose}>
+      <div style={{ width: '100%', maxHeight: '86vh', overflowY: 'auto', background: 'var(--cream)', borderRadius: '16px 16px 0 0', padding: '20px 20px calc(26px + env(safe-area-inset-bottom))' }} onClick={(e) => e.stopPropagation()}>
+        <div style={{ maxWidth: '480px', margin: '0 auto' }}>
+          <div style={{
+            aspectRatio: '3 / 2', borderRadius: '10px', overflow: 'hidden', border: '1.5px solid var(--stone)',
+            background: note.cardImageUrl
+              ? `url(${note.cardImageUrl}) center/cover`
+              : design?.art ? `url(${design.art}) center/cover` : design?.bg ?? 'var(--lavender-pale)',
+          }} />
+          <div style={{ marginTop: '14px', background: '#fff', border: '1.5px solid var(--stone)', borderRadius: '14px', padding: '16px' }}>
+            <p style={{ margin: 0, ...penFont, lineHeight: 1.7, color: 'var(--note-ink)', whiteSpace: 'pre-wrap', overflowWrap: 'break-word' }}>
+              {shown}
+            </p>
+          </div>
+          {isSecret && (
+            <button onClick={() => setDecoded((d) => !d)} style={{
+              width: '100%', marginTop: '12px', height: '50px', borderRadius: '25px', border: 'none',
+              background: uv, color: '#fff', cursor: 'pointer',
+              fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '14px', letterSpacing: '0.08em',
+            }}>
+              {decoded ? 'HIDE IT AGAIN 🤫' : 'DECODE THE SECRET'}
+            </button>
+          )}
+          <p style={{ margin: '12px 0 0', textAlign: 'center', fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--ink-mid)' }}>
+            {note.sender ? `From ${note.sender.displayName}` : note.recipient ? `To ${note.recipient.displayName}` : ''} · {new Date(note.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+          </p>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export default function ProfilePage() {
   const { username } = useParams()
   const navigate = useNavigate()
@@ -81,6 +129,7 @@ export default function ProfilePage() {
   const [pickingAvatar, setPickingAvatar] = useState(false)
   const [showQR, setShowQR] = useState(false)
   const [showAllStamps, setShowAllStamps] = useState(false)
+  const [openCard, setOpenCard] = useState<NoteThumb | null>(null)
 
   useEffect(() => {
     setLoading(true)
@@ -257,15 +306,15 @@ export default function ProfilePage() {
           ) : (
             <div style={{ marginTop: '12px', display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: '4px' }}>
               {notes.map((n, i) => (
-                <div key={n.id} aria-label={`${tab === 'sent' ? 'Sent' : 'Received'} card ${i + 1}`} style={{
-                  aspectRatio: '1 / 1', borderRadius: '6px', overflow: 'hidden',
+                <button key={n.id} aria-label={`${tab === 'sent' ? 'Sent' : 'Received'} card ${i + 1} — open`} onClick={() => setOpenCard(n)} style={{
+                  aspectRatio: '1 / 1', borderRadius: '6px', overflow: 'hidden', border: 'none', padding: 0, cursor: 'pointer',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   ...cardFace(n),
                 }}>
                   {!n.cardImageUrl && !CARD_LOOKUP[n.cardDesignId ?? '']?.art && (
                     <QEmoji name={OCCASION_ART[n.occasionType] ?? 'envelope'} size={52} />
                   )}
-                </div>
+                </button>
               ))}
             </div>
           )}
@@ -344,6 +393,7 @@ export default function ProfilePage() {
         </div>
 
         {showQR && <QRCodeSheet username={profile.username} onClose={() => setShowQR(false)} />}
+        {openCard && <CardSheet note={openCard} onClose={() => setOpenCard(null)} />}
 
         {pickingAvatar && (
           <div style={{ position: 'fixed', inset: 0, zIndex: 100, background: 'rgba(43,34,58,0.45)', display: 'flex', alignItems: 'flex-end' }} onClick={() => setPickingAvatar(false)}>
