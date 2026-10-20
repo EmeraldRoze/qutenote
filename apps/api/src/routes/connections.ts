@@ -47,6 +47,15 @@ connectionsRouter.get('/requests', async (req: AuthRequest, res: Response) => {
   return res.json({ data: requests.map((r) => ({ ...r.follower, requestId: r.id })) })
 })
 
+// GET /connections/outgoing — ids this user already sent requests to (pending)
+connectionsRouter.get('/outgoing', async (req: AuthRequest, res: Response) => {
+  const rows = await prisma.connection.findMany({
+    where: { followerId: req.userId, status: 'PENDING' },
+    select: { followingId: true },
+  })
+  return res.json({ data: rows.map((r) => r.followingId) })
+})
+
 // GET /connections/user/:userId — get a user's accepted connections
 connectionsRouter.get('/user/:userId', async (req: AuthRequest, res: Response) => {
   const { userId } = req.params

@@ -1,4 +1,4 @@
-import { flowerPieces, type BouquetWord } from '../lib/flower'
+import { flowerPieces, type BouquetWord, type MarkPiece } from '../lib/flower'
 
 // Renders a message in the Flower Language: each word is a tied bouquet
 // (letters fan left to right), punctuation stands between bouquets as its own
@@ -41,9 +41,20 @@ export default function FlowerText({ text, size = 64 }: { text: string; size?: n
         if (p.kind === 'mark') {
           const h = p.heightFactor * size
           const w = (p.sprite.w / p.sprite.h) * h
-          // a mark right after a word nestles against its bouquet (the acorn
-          // period shouldn't stand alone — Emerald, build 44)
           const afterWord = i > 0 && pieces[i - 1].kind === 'word'
+          // The acorn period and the comma sit at the BASE of their bouquet,
+          // just right of where the stems gather — the base is narrow, so
+          // they can slide way in without touching a petal (Emerald, b45).
+          const mk = p as MarkPiece
+          const isBaseMark = mk.name === 'period' || mk.name === 'comma'
+          const prevW = afterWord ? (pieces[i - 1] as BouquetWord).width * size : 0
+          const tuck = afterWord
+            ? isBaseMark
+              ? -Math.max(size * 0.26, prevW / 2 - size * 0.18)
+              : mk.name === 'number' ? 0 : -size * 0.26
+            : 0
+          // a comma hangs below the line, like a written comma
+          const drop = mk.name === 'comma' ? -size * 0.12 : size * 0.04
           return (
             <img
               key={i}
@@ -53,8 +64,8 @@ export default function FlowerText({ text, size = 64 }: { text: string; size?: n
               height={h}
               style={{
                 display: 'block',
-                marginBottom: p.raise ? `${size * 0.6}px` : `${size * 0.04}px`,
-                marginLeft: afterWord ? `${-size * 0.26}px` : 0,
+                marginBottom: p.raise ? `${size * 0.6}px` : `${drop}px`,
+                marginLeft: `${tuck}px`,
               }}
             />
           )

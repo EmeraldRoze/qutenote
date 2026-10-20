@@ -51,7 +51,10 @@ handwritingRouter.put('/', async (req: AuthRequest, res: Response) => {
     return res.status(400).json({ error: result.error.errors[0].message })
   }
   const { glyphs, fontData } = result.data
-  if (Object.keys(glyphs).length > 100) {
+  // 67 characters x up to 3 takes each (primary + two alternates), plus a
+  // little slack. The old cap of 100 rejected saves the moment variations
+  // filled up (Emerald's "not working, I'm on WiFi" — build 45).
+  if (Object.keys(glyphs).length > 220) {
     return res.status(400).json({ error: 'That is more characters than we ask for.' })
   }
   let buf: Buffer

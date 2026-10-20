@@ -11,7 +11,7 @@ export interface BouquetStem extends FlowerSprite {
   scale: number   // multiply natural size
 }
 export interface BouquetWord { kind: 'word'; stems: BouquetStem[]; width: number; height: number; tieX: number }
-export interface MarkPiece { kind: 'mark'; sprite: FlowerSprite; heightFactor: number; raise: boolean }
+export interface MarkPiece { kind: 'mark'; sprite: FlowerSprite; heightFactor: number; raise: boolean; name?: string }
 export interface PlainPiece { kind: 'plain'; text: string }
 export type FlowerPiece = BouquetWord | MarkPiece | PlainPiece
 
@@ -42,7 +42,9 @@ export function spriteFor(name: string): FlowerSprite | null {
 function bouquet(word: string): BouquetWord {
   const chars = word.toLowerCase().split('').filter((c) => letters[c])
   const n = chars.length
-  const maxA = n <= 1 ? 0 : Math.min(46, 10 + n * 7)
+  // short words sit like a little bud vase: stems nearly parallel, blooms
+  // close but not overlapping (Emerald, build 45)
+  const maxA = n <= 1 ? 0 : n === 2 ? 10 : n === 3 ? 15 : Math.min(46, 10 + n * 7)
   const stems: BouquetStem[] = chars.map((ch, i) => {
     const g = letters[ch]
     const angle = n <= 1 ? 0 : -maxA + (2 * maxA * i) / (n - 1)
@@ -71,7 +73,7 @@ export function flowerPieces(text: string): FlowerPiece[] {
     if (numbers[ch]) {
       // her botanical numerals stand tall between the bouquets
       const g = numbers[ch]
-      out.push({ kind: 'mark', sprite: { src: `/flower/num-${ch}.png`, w: g.w, h: g.h }, heightFactor: 0.85, raise: false })
+      out.push({ kind: 'mark', sprite: { src: `/flower/num-${ch}.png`, w: g.w, h: g.h }, heightFactor: 0.85, raise: false, name: 'number' })
       continue
     }
     const mk = key ? marks[key] : undefined
@@ -81,6 +83,7 @@ export function flowerPieces(text: string): FlowerPiece[] {
         sprite: { src: `/flower/${mk.name}.png`, w: mk.w, h: mk.h },
         heightFactor: MARK_HEIGHT[mk.name] ?? 0.4,
         raise: RAISED.has(mk.name),
+        name: mk.name,
       })
     } else {
       out.push({ kind: 'plain', text: ch })

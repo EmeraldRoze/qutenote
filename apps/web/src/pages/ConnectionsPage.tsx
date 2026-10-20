@@ -87,6 +87,8 @@ export default function ConnectionsPage() {
       api.get('/connections').then((res) => setConnections(res.data.data)),
       api.get('/connections/requests').then((res) => setPendingRequests(res.data.data)),
       api.get('/important-dates').then((res) => setDates(res.data.data)).catch(() => {}),
+      // requests already sent render as "Requested" instead of a dead Add QT
+      api.get('/connections/outgoing').then((res) => setRequested(new Set(res.data.data))).catch(() => {}),
     ]).finally(() => setLoading(false))
     // Opened as "/connections?sync=1" (e.g. from Home's SYNC CONTACTS button)
     if (new URLSearchParams(window.location.search).get('sync') === '1' && contactsAvailable) {
@@ -105,7 +107,12 @@ export default function ConnectionsPage() {
   }, [query])
 
   async function sendRequest(userId: string) {
-    await api.post(`/connections/request/${userId}`)
+    try {
+      await api.post(`/connections/request/${userId}`)
+    } catch (err: any) {
+      // 409 = already sent — the button should settle into Requested, not sulk
+      if (err.response?.status !== 409) return
+    }
     setRequested(new Set([...requested, userId]))
   }
   async function acceptRequest(requestId: string) {

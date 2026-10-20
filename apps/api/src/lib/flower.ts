@@ -39,7 +39,7 @@ export function drawFlowerText(doc: any, text: string, boxX: number, boxY: numbe
   const lineH = size * 1.3
   let openQuote = true
 
-  const pieces: Array<{ w: number; isWord?: boolean; isMark?: boolean; draw: (px: number, py: number) => void }> = []
+  const pieces: Array<{ w: number; isWord?: boolean; isMark?: boolean; isNumber?: boolean; baseMark?: boolean; draw: (px: number, py: number) => void }> = []
   let word = ''
   const flushWord = () => {
     if (!word) return
@@ -47,7 +47,7 @@ export function drawFlowerText(doc: any, text: string, boxX: number, boxY: numbe
     word = ''
     const n = chars.length
     if (!n) return
-    const maxA = n <= 1 ? 0 : Math.min(46, 10 + n * 7)
+    const maxA = n <= 1 ? 0 : n === 2 ? 10 : n === 3 ? 15 : Math.min(46, 10 + n * 7)
     const W = Math.min(2.2, Math.max(0.6, 0.55 + 0.34 * (n - 1) * Math.sin((maxA * Math.PI) / 180 + 0.2))) * size
     pieces.push({
       w: W,
@@ -81,6 +81,7 @@ export function drawFlowerText(doc: any, text: string, boxX: number, boxY: numbe
       pieces.push({
         w: nw,
         isMark: true,
+        isNumber: true,
         draw: (px, py) => {
           doc.image(path.join(ASSETS, `num-${ch}.png`), px, py + size * 1.08 - nh, { width: nw, height: nh })
         },
@@ -94,11 +95,14 @@ export function drawFlowerText(doc: any, text: string, boxX: number, boxY: numbe
       const mh = (MARK_HEIGHT[mk.name] ?? 0.4) * size
       const mw = (mk.w / mk.h) * mh
       const raised = mk.name.startsWith('quote')
+      const isBase = mk.name === 'period' || mk.name === 'comma'
       pieces.push({
         w: mw,
         isMark: true,
+        baseMark: isBase,
         draw: (px, py) => {
-          const bottom = py + size * (raised ? 0.5 : 1.08)
+          // comma hangs below the line like a written comma
+          const bottom = py + size * (raised ? 0.5 : mk.name === 'comma' ? 1.22 : 1.08)
           doc.image(path.join(ASSETS, `${mk.name}.png`), px, bottom - mh, { width: mw, height: mh })
         },
       })
@@ -115,14 +119,17 @@ export function drawFlowerText(doc: any, text: string, boxX: number, boxY: numbe
   }
   flushWord()
 
-  let prevWasWord = false
+  let prevWord: { w: number } | null = null
   for (const p of pieces) {
-    // marks nestle against the bouquet they follow (the acorn period)
-    if (prevWasWord && p.isMark) x -= size * 0.26 + gapX
+    // punctuation nestles against the bouquet it follows; base marks (acorn
+    // period, comma) slide all the way to the right of the stem base
+    if (prevWord && p.isMark && !p.isNumber) {
+      x -= (p.baseMark ? Math.max(size * 0.26, prevWord.w / 2 - size * 0.18) : size * 0.26) + gapX
+    }
     if (x + p.w > boxX + boxW && x > boxX) { x = boxX; y += lineH }
     p.draw(x, y)
     x += p.w + gapX
-    prevWasWord = !!p.isWord
+    prevWord = p.isWord ? p : null
   }
   return y + lineH
 }
