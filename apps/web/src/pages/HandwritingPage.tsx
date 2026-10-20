@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { useHandwritingFontFace, HANDWRITING_FONT_FAMILY } from '../lib/handwriting/useHandwritingFontFace'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { SESSIONS, WORD_SESSIONS, ALL_CHARS, TOTAL_CHARS, charName, type WordSession } from '../lib/handwriting/alphabet'
@@ -357,6 +358,9 @@ export default function HandwritingPage() {
   const { user } = useAuth()
   const [glyphs, setGlyphs] = useState<GlyphStrokes | null>(null)
   const [fixing, setFixing] = useState<string | null>(null)
+  const [redoWord, setRedoWord] = useState<string | null>(null)
+  // reloadKey = glyphs: after any rewrite the fresh font swaps in right away
+  const { ready: fontReady } = useHandwritingFontFace(undefined, glyphs)
 
   useEffect(() => {
     fetchHandwritingProgress().then((r) => {
@@ -393,6 +397,29 @@ export default function HandwritingPage() {
       <div style={{ minHeight: '100vh' }}>
         {nav}
         <WordFlow key={activeSession.key} session={activeSession} glyphs={glyphs} onSaved={setGlyphs} />
+      </div>
+    )
+  }
+
+  // Rewriting one word from the "Your words" list — a tiny one-word session.
+  if (redoWord && glyphs) {
+    return (
+      <div style={{ minHeight: '100vh' }}>
+        <nav style={{ background: 'var(--cream)', borderBottom: '1px solid var(--stone)', padding: '14px 18px', display: 'flex', alignItems: 'center', gap: '14px' }}>
+          <button onClick={() => setRedoWord(null)} aria-label="Back" style={{
+            width: '36px', height: '36px', borderRadius: '50%', background: 'var(--lavender-pale)',
+            border: 'none', cursor: 'pointer', color: uv, display: 'flex', alignItems: 'center', justifyContent: 'center',
+          }}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M15 6l-6 6 6 6" /></svg>
+          </button>
+          <span style={{ fontFamily: 'var(--font-display)', fontSize: '18px', fontWeight: 400, color: 'var(--ink)' }}>Rewrite "{redoWord}"</span>
+        </nav>
+        <WordFlow
+          key={`redo-${redoWord}`}
+          session={{ key: `redo-${redoWord}`, label: 'Rewrite', detail: 'Write it fresh — this take becomes the one your font uses', words: [redoWord] }}
+          glyphs={glyphs}
+          onSaved={(g) => { setGlyphs(g); setRedoWord(null) }}
+        />
       </div>
     )
   }
@@ -441,6 +468,27 @@ export default function HandwritingPage() {
             </button>
           )
         })}
+
+        {/* See every captured word in the real font; tap one to rewrite it */}
+        {writtenChars.length > 0 && (
+          <div style={{ marginTop: '26px' }}>
+            <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '18px', fontWeight: 400, color: 'var(--ink)', margin: '0 0 4px' }}>Your words</h2>
+            <p style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--ink-mid)', margin: '0 0 12px' }}>
+              This is how each word came out. Tap one to rewrite it.
+            </p>
+            <div key={String(fontReady)} style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+              {WORD_SESSIONS.flatMap((s) => s.words).filter((w) => w.length > 1).map((w) => (
+                <button key={w} onClick={() => setRedoWord(w)} style={{
+                  minWidth: '64px', padding: '8px 14px', borderRadius: '12px', background: '#fff',
+                  border: '1px solid var(--stone)', cursor: 'pointer', textTransform: 'none', letterSpacing: 0, fontWeight: 400,
+                  fontFamily: `'${HANDWRITING_FONT_FAMILY}', 'Fraunces', serif`, fontSize: '22px', color: 'var(--ink)',
+                }}>
+                  {w}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Touch-up: redo any single letter */}
         {writtenChars.length > 0 && (

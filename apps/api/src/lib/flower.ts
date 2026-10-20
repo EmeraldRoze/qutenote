@@ -8,7 +8,7 @@ import path from 'path'
 const ASSETS = path.join(process.cwd(), 'assets', 'flower')
 
 interface GlyphMeta { w: number; h: number }
-let META: { letters: Record<string, GlyphMeta>; marks: Record<string, GlyphMeta & { name: string }> } | null = null
+let META: { letters: Record<string, GlyphMeta>; marks: Record<string, GlyphMeta & { name: string }>; numbers?: Record<string, GlyphMeta> } | null = null
 function meta() {
   if (!META) META = JSON.parse(fs.readFileSync(path.join(ASSETS, 'glyphs.json'), 'utf8'))
   return META!
@@ -39,7 +39,7 @@ export function drawFlowerText(doc: any, text: string, boxX: number, boxY: numbe
   const lineH = size * 1.3
   let openQuote = true
 
-  const pieces: Array<{ w: number; draw: (px: number, py: number) => void }> = []
+  const pieces: Array<{ w: number; isWord?: boolean; isMark?: boolean; draw: (px: number, py: number) => void }> = []
   let word = ''
   const flushWord = () => {
     if (!word) return
@@ -51,6 +51,7 @@ export function drawFlowerText(doc: any, text: string, boxX: number, boxY: numbe
     const W = Math.min(2.2, Math.max(0.6, 0.55 + 0.34 * (n - 1) * Math.sin((maxA * Math.PI) / 180 + 0.2))) * size
     pieces.push({
       w: W,
+      isWord: true,
       draw: (px, py) => {
         const tieX = px + W / 2
         const tieY = py + size * 1.09
@@ -73,6 +74,19 @@ export function drawFlowerText(doc: any, text: string, boxX: number, boxY: numbe
     if (/[a-zA-Z'’]/.test(ch)) { if (ch !== "'" && ch !== '’') word += ch; continue }
     flushWord()
     if (ch === ' ' || ch === '\n') continue
+    const num = m.numbers?.[ch]
+    if (num) {
+      const nh = 0.85 * size
+      const nw = (num.w / num.h) * nh
+      pieces.push({
+        w: nw,
+        isMark: true,
+        draw: (px, py) => {
+          doc.image(path.join(ASSETS, `num-${ch}.png`), px, py + size * 1.08 - nh, { width: nw, height: nh })
+        },
+      })
+      continue
+    }
     let key = MARK_FOR[ch]
     if (ch === '"') { key = openQuote ? 'qo' : 'qc'; openQuote = !openQuote }
     const mk = key ? m.marks[key] : undefined
@@ -82,6 +96,7 @@ export function drawFlowerText(doc: any, text: string, boxX: number, boxY: numbe
       const raised = mk.name.startsWith('quote')
       pieces.push({
         w: mw,
+        isMark: true,
         draw: (px, py) => {
           const bottom = py + size * (raised ? 0.5 : 1.08)
           doc.image(path.join(ASSETS, `${mk.name}.png`), px, bottom - mh, { width: mw, height: mh })
@@ -100,10 +115,14 @@ export function drawFlowerText(doc: any, text: string, boxX: number, boxY: numbe
   }
   flushWord()
 
+  let prevWasWord = false
   for (const p of pieces) {
+    // marks nestle against the bouquet they follow (the acorn period)
+    if (prevWasWord && p.isMark) x -= size * 0.26 + gapX
     if (x + p.w > boxX + boxW && x > boxX) { x = boxX; y += lineH }
     p.draw(x, y)
     x += p.w + gapX
+    prevWasWord = !!p.isWord
   }
   return y + lineH
 }

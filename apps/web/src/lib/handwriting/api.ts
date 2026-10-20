@@ -20,10 +20,12 @@ export async function fetchHandwritingProgress(): Promise<{ glyphs: GlyphStrokes
 // Merge newly captured letters into the full set, compile a font, and save it.
 // Returns the full merged glyph set so the caller's local state stays in sync.
 //
-// asAlternates (word sessions): a letter that already exists keeps its primary
-// and the new take slides into the alternate slots (newest first) — real
-// handwriting variation, collected for free. Without it (Fix-one-letter), the
-// capture REPLACES the primary and clears the letter's alternates.
+// asAlternates (word sessions): the FRESH capture becomes the primary — what
+// you just wrote is what you expect to see (Emerald, build 44: "I redid my
+// handwriting but it didn't update"). The old primary demotes to alternate 1
+// and the old alternate 1 to alternate 2, so variation still accumulates.
+// Without it (Fix-one-letter), the capture replaces the primary and clears
+// the letter's alternates entirely.
 export async function saveHandwritingProgress(
   existing: GlyphStrokes,
   freshlyCaptured: GlyphStrokes,
@@ -34,9 +36,10 @@ export async function saveHandwritingProgress(
   for (const [char, strokes] of Object.entries(freshlyCaptured)) {
     if (!strokes?.length) continue
     if (opts?.asAlternates && merged[char]?.length) {
-      // newest take → alt 1, previous alt 1 → alt 2, oldest falls off
+      // fresh take → primary, old primary → alt 1, old alt 1 → alt 2
       merged[altKey(char, 2)] = merged[altKey(char, 1)] ?? merged[altKey(char, 2)]
-      merged[altKey(char, 1)] = strokes
+      merged[altKey(char, 1)] = merged[char]
+      merged[char] = strokes
     } else {
       merged[char] = strokes
       delete merged[altKey(char, 1)]

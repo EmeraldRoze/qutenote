@@ -41,6 +41,9 @@ export default function FlowerText({ text, size = 64 }: { text: string; size?: n
         if (p.kind === 'mark') {
           const h = p.heightFactor * size
           const w = (p.sprite.w / p.sprite.h) * h
+          // a mark right after a word nestles against its bouquet (the acorn
+          // period shouldn't stand alone — Emerald, build 44)
+          const afterWord = i > 0 && pieces[i - 1].kind === 'word'
           return (
             <img
               key={i}
@@ -48,7 +51,11 @@ export default function FlowerText({ text, size = 64 }: { text: string; size?: n
               alt=""
               width={w}
               height={h}
-              style={{ display: 'block', marginBottom: p.raise ? `${size * 0.6}px` : `${size * 0.04}px` }}
+              style={{
+                display: 'block',
+                marginBottom: p.raise ? `${size * 0.6}px` : `${size * 0.04}px`,
+                marginLeft: afterWord ? `${-size * 0.26}px` : 0,
+              }}
             />
           )
         }

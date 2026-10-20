@@ -17,6 +17,7 @@ export type FlowerPiece = BouquetWord | MarkPiece | PlainPiece
 
 const letters = (GLYPHS as any).letters as Record<string, { w: number; h: number }>
 const marks = (GLYPHS as any).marks as Record<string, { name: string; w: number; h: number }>
+const numbers = ((GLYPHS as any).numbers ?? {}) as Record<string, { w: number; h: number }>
 
 // How tall each punctuation mark stands relative to the bouquet height.
 const MARK_HEIGHT: Record<string, number> = {
@@ -67,6 +68,12 @@ export function flowerPieces(text: string): FlowerPiece[] {
     if (ch === ' ' || ch === '\n') continue // bouquets breathe on their own
     let key = MARK_FOR[ch]
     if (ch === '"') { key = openQuote ? 'qo' : 'qc'; openQuote = !openQuote }
+    if (numbers[ch]) {
+      // her botanical numerals stand tall between the bouquets
+      const g = numbers[ch]
+      out.push({ kind: 'mark', sprite: { src: `/flower/num-${ch}.png`, w: g.w, h: g.h }, heightFactor: 0.85, raise: false })
+      continue
+    }
     const mk = key ? marks[key] : undefined
     if (mk) {
       out.push({
