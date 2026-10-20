@@ -4,6 +4,10 @@ Written: 2026-10-06 (replaces stale April 10 handoff). Last updated: 2026-10-18.
 ## PROTOCOL CHANGE (Emerald, Oct 17 — MANDATORY for every TestFlight round)
 Before any plan or FIREFLY ask: clarifying questions about the TestFlight feedback go to Emerald ONE AT A TIME (she answers, the next appears). Every vague item gets a question — zero assumptions. Questions are mandatory pre-FIREFLY. Never bury questions in a long briefing.
 
+## WEBSITE SEO ROUND Oct 19 (FIREFLY) — rank for "qute note"
+- waitlist/robots.txt + waitlist/sitemap.xml (real files now; previously the DO catchall served app.html for them). JSON-LD Organization+WebSite in waitlist/index.html with alternateName "Qute Note"; new FAQ entry "Is it QuteNote or Qute Note?"; footer "© 2026 QuteNote (Qute Note)".
+- REMINDER FOR EMERALD (pending her action): Google Search Console setup — add property qutenote.com (domain property via DNS TXT on Cloudflare, or URL-prefix via HTML file we can host), submit sitemap.xml, Request Indexing on the homepage. Also: put qutenote.com in her Instagram bio + ask featured artists to link. Brand term should rank within ~2 weeks of submission.
+
 ## BUILD 45 UPLOADED Oct 19 (FIREFLY) — FLOWER NUMBERS + HANDWRITING TAKE-OVER FIX
 - NUMBERS: her botanical numerals 0-9 traced (make-number-sprites.py; chart had ghost numerals + a stray printed label under the 0 — STRONG threshold 140 segmentation + connected-component filter keeps only ink near the main glyph while preserving her dot accents). Sprites num-0..9.png in public/flower/ + api assets; render inline 0.85x bouquet height in both renderers; flowerGlyphs.json gained a numbers block.
 - Long-word packing KEPT AS-IS (she rejected the florist two-rank proposal — likes the dense hippopotamus). Punctuation after a word NESTLES: FlowerText negative marginLeft -0.26*size; API drawFlowerText same pull before isMark pieces.
