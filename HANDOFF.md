@@ -4,6 +4,13 @@ Written: 2026-10-06 (replaces stale April 10 handoff). Last updated: 2026-10-18.
 ## PROTOCOL CHANGE (Emerald, Oct 17 — MANDATORY for every TestFlight round)
 Before any plan or FIREFLY ask: clarifying questions about the TestFlight feedback go to Emerald ONE AT A TIME (she answers, the next appears). Every vague item gets a question — zero assumptions. Questions are mandatory pre-FIREFLY. Never bury questions in a long briefing.
 
+## BUILD 46 + SEO PART 2 Oct 19-20 (FIREFLY)
+- HANDWRITING SAVE BUG (her "Not wirking, I'm on WiFi"): glyphs hit EXACTLY 100 keys (67 chars + 33 alternates) and the PUT /handwriting 100-key cap rejected every save after; client showed the generic connection error. Cap now 220 (67x3 + slack).
+- ADD QT dead button: she already had a PENDING request to emmasirena33 (Oct 18, private account) → 409 swallowed silently. Fix: GET /connections/outgoing (pending followingIds) seeds the requested set on load so the button reads "Requested"; sendRequest treats 409 as requested.
+- FLOWER: bud-vase short words (maxA: n=2→10°, n=3→15°); acorn+comma tuck to the bouquet BASE right of the stems (pull = max(0.26, prevWordW/2 - 0.18size)); comma hangs below the line (drop -0.12size web / bottom 1.22size PDF); numbers DON'T nestle. Mirrored in web FlowerText + api flower.ts.
+- SEO part 2: FAQPage JSON-LD generated from the live FAQ (8 Q&As), canonical link, twitter:card meta, Organization sameAs → instagram.com/qutenote. She completed Search Console: domain verified, sitemap submitted (needed FULL url https://qutenote.com/sitemap.xml — relative "sitemap.xml" threw Invalid sitemap address), homepage indexing requested. REMAINING FOR HER: Bing Webmaster import, Instagram bio link, artist links, BetaList.
+- GOTCHA: build 46 exportArchive said EXPORT FAILED/Redundant Binary on retry — the first chained attempt HAD uploaded (output swallowed). Check ASC before assuming an export failed.
+
 ## WEBSITE SEO ROUND Oct 19 (FIREFLY) — rank for "qute note"
 - waitlist/robots.txt + waitlist/sitemap.xml (real files now; previously the DO catchall served app.html for them). JSON-LD Organization+WebSite in waitlist/index.html with alternateName "Qute Note"; new FAQ entry "Is it QuteNote or Qute Note?"; footer "© 2026 QuteNote (Qute Note)".
 - REMINDER FOR EMERALD (pending her action): Google Search Console setup — add property qutenote.com (domain property via DNS TXT on Cloudflare, or URL-prefix via HTML file we can host), submit sitemap.xml, Request Indexing on the homepage. Also: put qutenote.com in her Instagram bio + ask featured artists to link. Brand term should rank within ~2 weeks of submission.
