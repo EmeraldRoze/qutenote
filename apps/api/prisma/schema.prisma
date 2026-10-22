@@ -394,3 +394,35 @@ model HandwritingFont {
   updatedAt DateTime @updatedAt
   createdAt DateTime @default(now())
 }
+
+// ─── USAGE ANALYTICS (Emerald's breadcrumbs, Oct 2026) ──────────────────────
+// Every screen visit, tap, funnel step and error from the app. Own-built —
+// no third parties. Named per tester by design (she knows her testers).
+
+model UsageEvent {
+  id        String   @id @default(uuid())
+  userId    String?
+  sessionId String   // one app launch
+  name      String   // screen_view | tap | funnel | feature | error | slow_screen
+  screen    String?
+  target    String?  // button label / funnel step / feature key
+  props     Json?
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([userId, createdAt])
+  @@index([name, createdAt])
+}
+
+// A detected usability brick wall: rage taps, errors, slow screens.
+model WallFlag {
+  id        String   @id @default(uuid())
+  userId    String?
+  kind      String   // rage_tap | error | slow_screen
+  screen    String?
+  target    String?
+  detail    String?
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+}

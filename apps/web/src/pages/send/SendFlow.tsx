@@ -15,6 +15,7 @@ import StepRecipient from './StepRecipient'
 import { askForAddressByText } from '../../lib/inviteText'
 import { listDrafts, saveDraft, deleteDraft, getDraft, type CardDraft } from '../../lib/drafts'
 import FlowerText from '../../components/FlowerText'
+import { trackFunnel, trackFeature, trackError } from '../../lib/analytics'
 import { encodeSecret } from '../../lib/secret'
 
 // The four-step send flow, rebuilt to the Oct 15 2026 redesign:
@@ -122,7 +123,12 @@ export default function SendFlow() {
 
   function update(data: Partial<NoteData>) {
     setNote((prev) => ({ ...prev, ...data }))
+    if (data.fontChoice === 'SECRET') trackFeature('secret-pen')
+    if (data.fontChoice === 'FLOWER') trackFeature('flower-pen')
   }
+
+  // the send funnel, step by step (Emerald's analytics)
+  useEffect(() => { trackFunnel('send', step) }, [step])
 
   // Editing a scheduled card (from Settings → Scheduled cards): load it,
   // jump straight to the write step; SAVE CHANGES patches text + pen.
@@ -288,10 +294,11 @@ export default function SendFlow() {
               note={note as NoteData}
               editingNoteId={sentNoteId}
               canEditRecipient={!skipRecipient}
-              onSent={(id) => { if (draftId) deleteDraft(draftId); setSentNoteId(id); setStep('sent') }}
+              onSent={(id) => { trackFunnel('send', 'mailed'); if (draftId) deleteDraft(draftId); setSentNoteId(id); setStep('sent') }}
               onEditNote={() => setStep('write')}
               onEditRecipient={() => setStep('recipient')}
               onSaveDraft={() => {
+                trackFeature('drafts')
                 const d = saveDraft(note as Record<string, unknown>, draftId)
                 setDraftId(d.id)
                 setDrafts(listDrafts())
@@ -797,6 +804,7 @@ function ReviewStep({ note, onSent, onEditNote, onEditRecipient, onSaveDraft, ed
     && (user.notesUsed ?? 0) >= (user.notesAllowance ?? 0)
     && (user.giftedCredits ?? 0) <= 0
   async function buyExtraCard() {
+    trackFeature('extra-card')
     setBuying(true)
     setError('')
     try {
@@ -842,7 +850,8 @@ function ReviewStep({ note, onSent, onEditNote, onEditRecipient, onSaveDraft, ed
       : 'Included this month'
 
   // Send now, or schedule it to land near a chosen day (Emerald, Oct 18)
-  const [mailWhen, setMailWhen] = useState<'now' | 'schedule'>('now')
+  const [mailWhen, setMailWhenRaw] = useState<'now' | 'schedule'>('now')
+  const setMailWhen = (v: 'now' | 'schedule') => { if (v === 'schedule') trackFeature('scheduling'); setMailWhenRaw(v) }
   const [scheduleDate, setScheduleDate] = useState('')
   const minScheduleDate = (() => { const d = new Date(); d.setDate(d.getDate() + 1); return d.toISOString().slice(0, 10) })()
   const maxScheduleDate = (() => { const d = new Date(); d.setDate(d.getDate() + 365); return d.toISOString().slice(0, 10) })()
@@ -877,6 +886,7 @@ function ReviewStep({ note, onSent, onEditNote, onEditRecipient, onSaveDraft, ed
     } catch (err: any) {
       // The allowance-exceeded 403 (and anything else) shows the server's own message.
       const msg = err.response?.data?.error ?? ''
+      trackError(`mail-failed: ${(msg || err?.message || 'unknown').slice(0, 80)}`)
       setError(msg || 'Something went sideways. Try again.')
     } finally {
       setSending(false)

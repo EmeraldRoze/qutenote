@@ -11,6 +11,7 @@ import QRCodeSheet from '../components/QRCodeSheet'
 import { penStyle } from '../lib/pens'
 import { encodeSecret, SECRET_FONT_FAMILY } from '../lib/secret'
 import FlowerText from '../components/FlowerText'
+import { trackFeature } from '../lib/analytics'
 
 // Profile tab — Oct 15 2026 redesign, screen 15-profile.html.
 // Postmark-heart header with initials, status box, Sent/Received photo grid,
@@ -105,7 +106,7 @@ function CardSheet({ note, onClose }: { note: NoteThumb; onClose: () => void }) 
             )}
           </div>
           {(isSecret || isFlower) && (
-            <button onClick={() => setDecoded((d) => !d)} style={{
+            <button onClick={() => { if (!decoded) trackFeature('decode'); setDecoded((d) => !d) }} style={{
               width: '100%', marginTop: '12px', height: '50px', borderRadius: '25px', border: 'none',
               background: uv, color: '#fff', cursor: 'pointer',
               fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '14px', letterSpacing: '0.08em',

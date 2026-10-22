@@ -68,3 +68,13 @@ export async function sendPush(deviceToken: string, title: string, body: string)
     req.end(JSON.stringify({ aps: { alert: { title, body }, sound: 'default' } }))
   })
 }
+
+// Push straight to every device a user has registered, ignoring notification
+// preferences — used for admin-only alerts (brick walls, daily digests).
+import { prisma as _prisma } from './prisma'
+export async function pushToUserDevices(userId: string, title: string, body: string): Promise<void> {
+  const tokens = await _prisma.deviceToken.findMany({ where: { userId }, select: { token: true } })
+  for (const t of tokens) {
+    sendPush(t.token, title, body).catch(() => {})
+  }
+}

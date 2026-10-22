@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { trackFunnel } from '../lib/analytics'
 import { useNavigate } from 'react-router-dom'
 import { api } from '../lib/api'
 import { postSocialAuthRoute } from '../lib/postAuthRoute'
@@ -43,6 +44,7 @@ export default function SignUpPage() {
     setLoading(true)
     try {
       const res = await api.post('/auth/register', form)
+      trackFunnel('setup', 'account-created')
       login(res.data.data.token, res.data.data.user)
       navigate('/signup/address')
     } catch (err: any) {

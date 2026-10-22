@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { trackFunnel } from '../../lib/analytics'
 import { useNavigate } from 'react-router-dom'
 import { api } from '../../lib/api'
 import { useAuth } from '../../context/AuthContext'
@@ -91,6 +92,7 @@ export default function SignupBirthdayPage() {
     try {
       await api.put('/users/me', { birthday: `${YEARS[yearIdx]}-${mm}-${dd}` })
       refreshUser()
+      trackFunnel('setup', 'setup-complete')
       navigate('/home')
     } catch (err: any) {
       setError(err.response?.data?.error ?? 'Something went wrong. Try again.')

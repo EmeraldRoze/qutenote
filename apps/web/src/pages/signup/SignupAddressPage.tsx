@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { trackFunnel } from '../../lib/analytics'
 import { useNavigate } from 'react-router-dom'
 import { api } from '../../lib/api'
 import QEmoji from '../../components/QEmoji'
@@ -42,6 +43,7 @@ export default function SignupAddressPage() {
     setSaving(true)
     try {
       await api.post('/address', form)
+      trackFunnel('setup', 'address-saved')
       navigate('/signup/birthday')
     } catch (err: any) {
       setError(err.response?.data?.error ?? 'Something went wrong. Try again.')

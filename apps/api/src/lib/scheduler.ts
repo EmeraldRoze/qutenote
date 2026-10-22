@@ -56,6 +56,36 @@ async function halfBirthdayPushes(): Promise<void> {
   if (due.length) console.log(`[scheduler] halfppy birthday pushes sent for ${due.length} date(s)`)
 }
 
+// Daily usage digest (Emerald's analytics spec): one push each day
+// summarizing yesterday's breadcrumbs and brick walls, sent to admins.
+async function dailyUsageDigest(): Promise<void> {
+  const { prisma } = await import('./prisma')
+  const { pushToUserDevices } = await import('./apns')
+  const since = new Date(Date.now() - 24 * 3600_000)
+  const [events, walls, users] = await Promise.all([
+    prisma.usageEvent.findMany({ where: { createdAt: { gte: since } }, select: { userId: true, name: true, target: true } }),
+    prisma.wallFlag.findMany({ where: { createdAt: { gte: since } } }),
+    prisma.user.findMany({ select: { id: true, displayName: true } }),
+  ])
+  const nameOf = new Map(users.map((u) => [u.id, u.displayName]))
+  const actives = new Set(events.map((e) => e.userId).filter(Boolean))
+  const mailed = events.filter((e) => e.name === 'funnel' && e.target === 'send:mailed')
+  const started = new Set(events.filter((e) => e.name === 'funnel' && e.target?.startsWith('send:')).map((e) => e.userId))
+  const features = new Set(events.filter((e) => e.name === 'feature').map((e) => e.target))
+  const wallBits = walls.slice(0, 3).map((w) => `${nameOf.get(w.userId ?? '') ?? '?'} ${w.kind} on ${w.screen ?? '?'}`)
+  const body = [
+    `${actives.size} tester${actives.size === 1 ? '' : 's'} active`,
+    `${started.size} started cards, ${mailed.length} mailed`,
+    `${walls.length} wall${walls.length === 1 ? '' : 's'}${wallBits.length ? ` (${wallBits.join('; ')})` : ''}`,
+    features.size ? `features touched: ${[...features].slice(0, 6).join(', ')}` : 'no feature touches',
+  ].join(' · ')
+  const admins = await prisma.user.findMany({ where: { isAdmin: true }, select: { id: true } })
+  for (const a of admins) {
+    await pushToUserDevices(a.id, 'QuteNote daily digest 🗞️', body).catch(() => {})
+  }
+  console.log('[scheduler] daily usage digest sent:', body)
+}
+
 export function startScheduler(): void {
   setInterval(async () => {
     try {
@@ -70,6 +100,7 @@ export function startScheduler(): void {
         lastReminderDate = today
         await birthdayReminders()
         await halfBirthdayPushes()
+        await dailyUsageDigest().catch((e: any) => console.error('[scheduler] digest error:', e?.message))
         // Free mode: the monthly card allowance used to reset when Stripe
         // billed. With nothing billed, reset everyone on the 1st instead.
         // (Idempotent — resetting an already-zero counter is harmless.)

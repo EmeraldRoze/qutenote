@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { trackFeature, trackFunnel } from '../lib/analytics'
 import { useHandwritingFontFace, HANDWRITING_FONT_FAMILY } from '../lib/handwriting/useHandwritingFontFace'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
@@ -159,6 +160,8 @@ function WordFlow({ session, onSaved, glyphs }: {
     timerRef.current = window.setTimeout(() => finishWord(next, word, index), IDLE_MS)
   }
 
+  useEffect(() => { trackFeature('handwriting-studio'); trackFunnel('handwriting', `start-${session.key}`) }, [session.key])
+
   async function finishWord(drawn: Stroke[], forWord: string, atIndex: number) {
     if (!drawn.length || saving) return
     setSaving(true)
@@ -202,7 +205,7 @@ function WordFlow({ session, onSaved, glyphs }: {
       setFlash(forWord)
       window.setTimeout(() => setFlash(null), 900)
       if (!isLastWord) setIndex(atIndex + 1)
-      else navigate('/handwriting', { replace: true })
+      else { trackFunnel('handwriting', `done-${session.key}`); navigate('/handwriting', { replace: true }) }
     } catch {
       setError("That didn't save. Check your connection and write the word again.")
       setStrokes([])

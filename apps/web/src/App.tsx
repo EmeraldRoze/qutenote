@@ -2,6 +2,8 @@ import { useEffect } from 'react'
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import { AuthProvider, useAuth } from './context/AuthContext'
 import { isNativeApp } from './lib/native'
+import { trackScreen, installTapTracking } from './lib/analytics'
+import AdminAnalyticsPage from './pages/AdminAnalyticsPage'
 import SignUpPage from './pages/SignUpPage'
 import LoginPage from './pages/LoginPage'
 import HomePage from './pages/HomePage'
@@ -35,6 +37,9 @@ import ScheduledCardsPage from './pages/ScheduledCardsPage'
 function ScrollToTop() {
   const { pathname } = useLocation()
   useEffect(() => { window.scrollTo(0, 0) }, [pathname])
+  // breadcrumbs: every screen change is a crumb (lib/analytics)
+  useEffect(() => { trackScreen(pathname) }, [pathname])
+  useEffect(() => { installTapTracking() }, [])
   return null
 }
 
@@ -79,6 +84,7 @@ function AppRoutes() {
       <Route path="/settings/address" element={<ProtectedRoute><AddressPage /></ProtectedRoute>} />
       <Route path="/settings/scheduled" element={<ProtectedRoute><ScheduledCardsPage /></ProtectedRoute>} />
       <Route path="/admin" element={<ProtectedRoute><AdminPage /></ProtectedRoute>} />
+      <Route path="/admin/analytics" element={<ProtectedRoute><AdminAnalyticsPage /></ProtectedRoute>} />
       <Route path="/invite" element={<ProtectedRoute><InvitePage /></ProtectedRoute>} />
       <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
       <Route path="/settings/account" element={<ProtectedRoute><AccountSettingsPage /></ProtectedRoute>} />

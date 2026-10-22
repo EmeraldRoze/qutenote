@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { trackFeature } from '../lib/analytics'
 import { useNavigate } from 'react-router-dom'
 import { api } from '../lib/api'
 import { useAuth } from '../context/AuthContext'
@@ -107,6 +108,7 @@ export default function ConnectionsPage() {
   }, [query])
 
   async function sendRequest(userId: string) {
+    trackFeature('add-qt')
     try {
       await api.post(`/connections/request/${userId}`)
     } catch (err: any) {

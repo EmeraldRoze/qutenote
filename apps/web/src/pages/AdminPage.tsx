@@ -92,6 +92,11 @@ export default function AdminPage() {
         <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '24px', fontWeight: 600, color: 'var(--lavender-deep)' }}>
           QuteNote Admin
         </h1>
+      <button onClick={() => (window.location.href = '/admin/analytics')} style={{
+        marginTop: '10px', height: '40px', padding: '0 16px', borderRadius: '20px', cursor: 'pointer',
+        border: '1.5px solid #5A32D6', background: '#fff', color: '#5A32D6',
+        fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '13px',
+      }}>USABILITY DASHBOARD →</button>
         <button
           onClick={() => navigate('/home')}
           style={{ fontSize: '13px', color: 'var(--ink-muted)', background: 'none', border: 'none', cursor: 'pointer' }}
