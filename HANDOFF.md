@@ -4,6 +4,10 @@ Written: 2026-10-06 (replaces stale April 10 handoff). Last updated: 2026-10-18.
 ## PROTOCOL CHANGE (Emerald, Oct 17 — MANDATORY for every TestFlight round)
 Before any plan or FIREFLY ask: clarifying questions about the TestFlight feedback go to Emerald ONE AT A TIME (she answers, the next appears). Every vague item gets a question — zero assumptions. Questions are mandatory pre-FIREFLY. Never bury questions in a long briefing.
 
+## ⏰ REMIND EMERALD (she asked Oct 20, "next day or two")
+1. USABILITY ANALYTICS INTERVIEW — she wants custom breadcrumbs on every screen: funnels (who starts a card and abandons where), feature discovery (what's loved vs invisible), usability brick walls (NOT crash monitoring, Sentry covers that). She wants to be INTERVIEWED about it, one question at a time. Question 1 pending her answer: consume via (A) admin dashboard, (B) Claude round-briefings, (C) both.
+2. LIVE RELOAD SETUP — she wants her friend's workflow: iPhone plugged into the Mac mini, dev build sideloaded via Xcode, Capacitor Live Reload (capacitor.config server.url → local Vite dev server) so tweaks appear on her phone instantly between rounds. LANDMINE when built: NEVER ship a TestFlight build with server.url set — strip it for archive builds.
+
 ## BUILD 46 + SEO PART 2 Oct 19-20 (FIREFLY)
 - HANDWRITING SAVE BUG (her "Not wirking, I'm on WiFi"): glyphs hit EXACTLY 100 keys (67 chars + 33 alternates) and the PUT /handwriting 100-key cap rejected every save after; client showed the generic connection error. Cap now 220 (67x3 + slack).
 - ADD QT dead button: she already had a PENDING request to emmasirena33 (Oct 18, private account) → 409 swallowed silently. Fix: GET /connections/outgoing (pending followingIds) seeds the requested set on load so the button reads "Requested"; sendRequest treats 409 as requested.
