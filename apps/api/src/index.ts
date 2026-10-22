@@ -41,15 +41,22 @@ app.set('trust proxy', 1)
 
 // ─── Security & middleware ────────────────────────────────────────────────────
 app.use(helmet())
+const ALLOWED_ORIGINS = [
+  process.env.WEB_URL ?? 'http://localhost:3000',
+  'https://qutenote.com',
+  'https://www.qutenote.com',
+  'https://cutenote.club',
+  'https://www.cutenote.club',
+  'capacitor://localhost',
+]
+// The live-reload dev copy (Qute Dev) loads from the Mac mini's private LAN
+// address on the Vite port — allow private-network origins on :5173 only.
+const DEV_ORIGIN = /^http:\/\/(10\.|192\.168\.|172\.(1[6-9]|2\d|3[01])\.)[\d.]+:5173$/
 app.use(cors({
-  origin: [
-    process.env.WEB_URL ?? 'http://localhost:3000',
-    'https://qutenote.com',
-    'https://www.qutenote.com',
-    'https://cutenote.club',
-    'https://www.cutenote.club',
-    'capacitor://localhost',
-  ],
+  origin: (origin, cb) => {
+    if (!origin || ALLOWED_ORIGINS.includes(origin) || DEV_ORIGIN.test(origin)) cb(null, true)
+    else cb(null, false)
+  },
   credentials: true,
 }))
 app.use(compression())
