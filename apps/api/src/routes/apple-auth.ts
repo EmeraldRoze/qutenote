@@ -9,6 +9,9 @@ export const appleAuthRouter = Router()
 const appleJWKS = createRemoteJWKSet(new URL('https://appleid.apple.com/auth/keys'))
 
 const APPLE_BUNDLE_ID = process.env.APPLE_BUNDLE_ID ?? 'club.cutenote.app'
+// The sideloaded live-reload dev copy carries its own bundle id; Apple mints
+// its tokens for that audience, so accept both (same team, same app).
+const APPLE_AUDIENCES = [APPLE_BUNDLE_ID, `${APPLE_BUNDLE_ID}.dev`]
 
 const userSelect = {
   id: true, email: true, username: true, displayName: true,
@@ -27,7 +30,7 @@ appleAuthRouter.post('/apple', async (req: Request, res: Response) => {
   try {
     const { payload } = await jwtVerify(identityToken, appleJWKS, {
       issuer: 'https://appleid.apple.com',
-      audience: APPLE_BUNDLE_ID,
+      audience: APPLE_AUDIENCES,
     })
 
     const appleId = payload.sub
