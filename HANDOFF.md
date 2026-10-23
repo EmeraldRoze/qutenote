@@ -1,5 +1,18 @@
 # QuteNote — Handoff / Status Board
-Written: 2026-10-06 (replaces stale April 10 handoff). Last updated: 2026-10-23.
+Written: 2026-10-06 (replaces stale April 10 handoff). Last updated: 2026-10-23 (evening).
+
+## PALETTE 4 FULL REPAINT Oct 23 evening — BUILD 48 (FIREFLY ~4:20pm; "move forward with build unless you have any other questions" = ship pre-approved)
+Source: ~/Downloads/qutenote-app-palette4.zip (18 screen HTMLs + tokens.json + palette.md + assets; HTML copy is source of truth per its README). Oct 21 warm-palette draft on style-refresh is RETIRED, superseded by palette 4.
+- FOUNDATION: index.css legacy vars remapped to palette 4 (ultraviolet/lavender aliases → oxblood #4A2424; stone/lilac/dashed → rosy brown #B4897A; cream → paper #F1EBE3; white → card #FBF8F3; lime → neon #EEFC4E; error warmed #B4453C). paper_texture.png tiled on body::before, title-band, tab bar (Emerald: texture on ALL backgrounds). New classes: .qn-stamp (perforated stamp box, masked pseudo-elements from the package), .rose-paper (ombre), .tab-inactive (warm tint filter).
+- TAB BAR: perforated dusty rose SEND stamp (radial-gradient scallops + send_stamp_heart.png), active label #9E625F, no divider.
+- ALL SCREENS restyled via 6-agent swarm (auth/onboarding, home+QTs, send flow, dates, profile+settings, undesigned screens incl. scan/handwriting/admin), copy word-for-word from the HTMLs. EXCEPTION kept deliberately: "Send a little somethin'" title (her explicit Oct 19 rename beats the older mockup copy "Send a card") — FLAGGED to her. Home subtitle is now always "Feelin' Qute?" per HTML (replaced the two dynamic variants).
+- Artist catalog tints: apps/web/src/lib/cards.ts AND apps/api/src/lib/submitNote.ts kept in sync (palette tints).
+- APP ICON: new palette 4 icon (neon heart in oxblood ring on paper grain) in AppIcon.appiconset.
+- PRINTED CARD: admin-pdf.ts repainted (oxblood ink/QR, rosy ruling #C4A396, blush divider, neon stamp heart, dusty rose scan-me heart); QR re-verified decoding after recolor.
+- WAITLIST SITE: css + inline colors repainted, new logo + regenerated white inverse webp.
+- PREVIEWED pre-ship: 8 screens screenshotted via headless Chrome with a temporary public/__preview.html token injector (DELETED after), demo account applereview against prod data through vite's QN_PROXY_PROD proxy. Sent to Emerald.
+- LANDMINES (new): npx tsx hangs when tsx isn't installed (use node dist or QN_PROXY_PROD vite proxy instead of a local API); claude-in-chrome couldn't reach localhost in her Chrome (headless CLI + token-injector page is the reliable preview path); headless screenshots clip ~70px on the right at any width (artifact, compare an approved screen before blaming layout).
+- Ship: push → DO deploy; build 48 (icon + repaint, no schema change).
 
 ## VOICE NOTES + SCAN QR ROUND Oct 23 — SHIPPED AS BUILD 47 (second FIREFLY 11:45am: db push → deploy ACTIVE + health verified → build 47 uploaded, VALID, beta review submitted ~11am PT). Analytics from the Oct 22 interview are in this build too (first build with breadcrumbs — start /usage/summary briefings next round). Palette still held on style-refresh, she's reworking it.
 (History: FIREFLY given 10:03am; first session died 2 min in when her computer shut down — rebuilt from the recovered plan.)
