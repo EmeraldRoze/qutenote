@@ -3,49 +3,63 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  /* QuteNote iOS Design Guide, Oct 2026 — typed mail on good paper */
-  --ultraviolet:    #5A32D6;  /* the one action color */
-  --lavender:       #5A32D6;  /* legacy alias: old action color -> ultraviolet */
-  --lavender-light: #E9E2FB;  /* brightened to match the Oct 2026 design file's "lavender" token */
-  --lavender-pale:  #F3EEFF;  /* brightened to match the design file's "lavenderPale" token */
-  --lavender-dark:  #4A28B4;  /* pressed/hover: darker ultraviolet */
-  --lavender-deep:  #2B2238;  /* legacy alias: heading color -> ink */
-  --lavender-soft:  #A78BC7;  /* dashed borders, outline accents */
+  /* QuteNote palette 4, Oct 2026 — warm paper, oxblood ink, baby blue buttons.
+     Legacy variable names stay so every inline style follows the repaint. */
+  --paper:          #F1EBE3;  /* the background of every screen */
+  --card:           #FBF8F3;  /* white cards sitting on the ruled lines */
+  --outline:        #B4897A;  /* rosy brown: EVERY outline, solid and dashed */
+  --btn:            #BADAFF;  /* baby blue: primary button fill */
+  --highlight:      #EEFC4E;  /* neon yellow: progress, pills, badges, stamp hearts */
+  --stamp-center:   #9E625F;  /* dusty rose: note-card stamp center, + badges */
+  --selected-fill:  #F4ECE6;  /* fill behind dashed selected states */
+  --light-blush:    #E3D5CC;  /* back buttons, panels, segmented switches */
+  --light-blue:     #E9EDF1;  /* I NEED WORDS and soft note boxes */
+  --nav-inactive:   #9E7B70;  /* inactive tab labels */
+  --progress-track: #EBDDD6;
 
-  --blush:          #E9E2FB;  /* pink is retired; legacy aliases map to lavender */
-  --blush-pale:     #F3EEFF;
+  /* Legacy aliases → palette 4 */
+  --ultraviolet:    #4A2424;  /* old action color: accents/links read as oxblood now */
+  --lavender:       #4A2424;
+  --lavender-light: #E3D5CC;
+  --lavender-pale:  #F4ECE6;
+  --lavender-dark:  #3A1C1C;
+  --lavender-deep:  #4A2424;
+  --lavender-soft:  #B4897A;
 
-  --ink:            #231A3A;  /* darker/crisper per the design file (was #2B2238) */
-  --ink-mid:        #4A4163;  /* darker per the design file (was #5C5468) */
-  --ink-muted:      #7A7389;  /* per the design file (was #766E82) */
+  --blush:          #D5ADA3;  /* edge of the Rose paper ombre, avatars */
+  --blush-pale:     #F4ECE6;
 
-  --cream:          #FBF8F2;  /* matches the design file's "paper" token */
-  --cream-warm:     #F3EEFF;  /* panels that matter sit on lavender-pale */
-  --cream-ruled:    #E7E1EF;  /* matches the design file's "rulingLine" token */
-  --stone:          #E3DCF2;  /* card/field border per Oct 15 redesign ("border" token) */
-  --divider:        #EEEAF5;  /* thin dividers inside grouped cards */
-  --title-band-rule:#D9CFEC;  /* 2px rule under every screen's title band */
-  --lime:           #C6FF3D;  /* small accents only: pills, badges, switch-on, stamp heart */
-  --lime-tint:      #F3FFD1;
-  --lime-border:    #9ECF1B;
-  --neon-pink:      #FF6EB4;  /* carousel card accent only */
-  --pink-pale:      #F3D6E5;
-  --lilac:          #BE8EF5;  /* dashed selected-state borders — never on Write/Send buttons */
-  --stamp-frame:    #EEE8FB;  /* SEND stamp frame fill */
-  --placeholder:    #9A92AD;
-  --note-ink:       #2A1F4A;
-  --logo-heart:     #A78BC7;
-  --white:          #FFFFFF;
+  --ink:            #4A2424;  /* ALL text and icons — nothing is black */
+  --ink-mid:        #A07D7D;  /* secondary text: lighter oxblood */
+  --ink-muted:      #8A8078;  /* muted icons */
 
-  --error:          #E04E6B;
-  --error-pale:     #FDEDF1;
+  --cream:          #F1EBE3;
+  --cream-warm:     #F4ECE6;
+  --cream-ruled:    #ACA8B8;  /* 1px ruled line every 36px */
+  --stone:          #B4897A;  /* card/field border */
+  --divider:        #E6DED3;
+  --title-band-rule:#ACA8B8;
+  --lime:           #EEFC4E;  /* highlights keep their old hook names */
+  --lime-tint:      #E9EDF1;  /* I NEED WORDS box is light blue now */
+  --lime-border:    #B4897A;
+  --neon-pink:      #D5ADA3;  /* carousel accent → blush */
+  --pink-pale:      #EBDDD6;
+  --lilac:          #B4897A;  /* dashed selected-state borders */
+  --stamp-frame:    #F4ECE6;
+  --placeholder:    #A07D7D;
+  --note-ink:       #4A2424;
+  --logo-heart:     #EEFC4E;
+  --white:          #FBF8F3;  /* "white" cards are card-white */
 
-  --border-default: #E6E1DC;
-  --border-focused: #5A32D6;
+  --error:          #B4453C;  /* warmed into the palette */
+  --error-pale:     #F6E3DE;
 
-  --shadow-card:    0 4px 14px rgba(43,34,56,0.08);
-  --shadow-button:  0 4px 14px rgba(43,34,56,0.10);
-  --shadow-input:   0 0 0 3px rgba(90,50,214,0.15);
+  --border-default: #B4897A;
+  --border-focused: #4A2424;
+
+  --shadow-card:    0 4px 14px rgba(74,36,36,0.08);
+  --shadow-button:  0 4px 14px rgba(74,36,36,0.10);
+  --shadow-input:   0 0 0 3px rgba(180,137,122,0.25);
 
   --font-display:     'Unbounded', sans-serif;
   --font-body:        'Anonymous Pro', monospace;
@@ -81,18 +95,44 @@ body::before {
   inset: 0;
   z-index: -1;
   pointer-events: none;
-  background-image: repeating-linear-gradient(transparent, transparent 35px, var(--cream-ruled) 35px, var(--cream-ruled) 36px);
+  /* ruled lines over the paper grain over the paper color */
+  background-image:
+    repeating-linear-gradient(transparent, transparent 35px, var(--cream-ruled) 35px, var(--cream-ruled) 36px),
+    url('/brand/paper_texture.png');
 }
 
 /* The clear header space at the top of every screen, like school notebook
    paper. Height must be a multiple of 36 (144/216/252/288/324) so the ruled
    lines below keep their rhythm. Solid cream hides the ruling behind it. */
 .title-band {
-  background: var(--cream);
+  /* paper + grain, no ruled lines */
+  background: url('/brand/paper_texture.png'), var(--paper);
   border-bottom: 2px solid var(--title-band-rule);
   display: flex;
   flex-direction: column;
   justify-content: center;
+}
+
+/* Perforated postage-stamp box (palette 4): one continuous perforated rosy
+   brown edge, a strip of paper inside it, a thin inner frame, light blue
+   inside. From the design package's .qn-stamp CSS (masked pseudo-elements,
+   not tiled images, so the edge never shows hairline gaps). Give the element
+   `border: 10px solid transparent; background: transparent`. */
+.qn-stamp{position:relative;isolation:isolate;border-radius:0 !important;outline:none !important;box-shadow:none !important;background:transparent !important}
+.qn-stamp::before,.qn-stamp::after{content:'';position:absolute;inset:-10px;pointer-events:none}
+.qn-stamp::before{z-index:-2;background:#B4897A;-webkit-mask:linear-gradient(#000 0 0) 50% 50%/calc(100% - 6px) calc(100% - 6px) no-repeat,radial-gradient(circle at 50% 50%,#0000 2.7px,#000 3.2px) -5px -5px/10px 10px round;mask:linear-gradient(#000 0 0) 50% 50%/calc(100% - 6px) calc(100% - 6px) no-repeat,radial-gradient(circle at 50% 50%,#0000 2.7px,#000 3.2px) -5px -5px/10px 10px round}
+.qn-stamp::after{z-index:-1;background:linear-gradient(#E9EDF1,#E9EDF1) 50% 50%/calc(100% - 17px) calc(100% - 17px) no-repeat,linear-gradient(#B4897A,#B4897A) 50% 50%/calc(100% - 15px) calc(100% - 15px) no-repeat,#F1EBE3;-webkit-mask:linear-gradient(#000 0 0) 50% 50%/calc(100% - 9px) calc(100% - 9px) no-repeat,radial-gradient(circle at 50% 50%,#0000 4px,#000 4.5px) -5px -5px/10px 10px round,linear-gradient(#000 0 0) 50% 50%/calc(100% - 2.6px) calc(100% - 2.6px) no-repeat;-webkit-mask-composite:source-over,source-in;mask:linear-gradient(#000 0 0) 50% 50%/calc(100% - 9px) calc(100% - 9px) no-repeat,radial-gradient(circle at 50% 50%,#0000 4px,#000 4.5px) -5px -5px/10px 10px round,linear-gradient(#000 0 0) 50% 50%/calc(100% - 2.6px) calc(100% - 2.6px) no-repeat;mask-composite:add,intersect}
+
+/* The Rose paper ombre (Home carousel + Dates empty state) */
+.rose-paper {
+  background-image: url('/brand/paper_texture.png'), radial-gradient(circle at 50% 38%, #F1EBE3 0%, #D5ADA3 100%);
+  border: 1.5px solid var(--outline);
+}
+
+/* Inactive tab icons: tinted warm brown, never gray */
+.tab-inactive {
+  filter: grayscale(1) sepia(0.35) hue-rotate(-20deg) saturate(0.9);
+  opacity: 0.45;
 }
 
 /* Headlines: Unbounded, never bold — hierarchy comes from size */
