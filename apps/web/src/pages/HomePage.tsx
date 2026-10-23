@@ -11,27 +11,24 @@ import { remindersEnabled } from '../lib/push'
 import QRCodeSheet from '../components/QRCodeSheet'
 import { PENDING_SCAN_KEY } from './CardScanPage'
 
-// Home tab, rebuilt to the Oct 15 redesign (design/redesign-oct15-2026, 10-home).
-
-const uv = '#5A32D6'
+// Home tab, restyled to palette 4 (qutenote-app-palette4, 10-home).
 
 interface OfferCard {
-  bg: string
-  border?: string
   art: string
   artWidth: number
   title: string
   cta: string
   onClick: (navigate: ReturnType<typeof useNavigate>) => void
 }
-// Colors and copy come straight from 10-home.html, plus the handwriting card
+// Copy comes straight from 10-home.html, plus the handwriting card
 // (Emerald, Oct 18). Invite + photo live forever; the others retire once done.
+// Every card wears the same Rose paper ombre now (.rose-paper).
 const ALL_OFFER_CARDS: (OfferCard & { key: string })[] = [
-  { key: 'first-card', bg: 'var(--lilac)', art: 'heart-sparkle', artWidth: 170, title: 'Your first card is on us', cta: 'SEND A CARD', onClick: (nav) => nav('/send') },
-  { key: 'invite', bg: 'var(--neon-pink)', art: 'bff', artWidth: 140, title: 'Invite a friend. You both get a free card.', cta: 'INVITE', onClick: (nav) => nav('/invite') },
-  { key: 'alerts', bg: 'var(--lavender-light)', art: 'mailbox', artWidth: 165, title: 'Know when something is in the mail', cta: 'TURN ON ALERTS', onClick: (nav) => nav('/settings/notifications') },
-  { key: 'handwriting', bg: 'var(--lime)', art: 'pen', artWidth: 150, title: 'Make it look like YOU wrote it', cta: 'TEACH YOUR HANDWRITING', onClick: (nav) => nav('/handwriting') },
-  { key: 'photo', bg: '#FFFFFF', border: '1.5px solid var(--stone)', art: 'camera', artWidth: 170, title: 'Got a good photo?\nMail it.', cta: 'UPLOAD A PHOTO', onClick: (nav) => nav('/send') },
+  { key: 'first-card', art: 'heart-sparkle', artWidth: 170, title: 'Your first card is on us', cta: 'SEND A CARD', onClick: (nav) => nav('/send') },
+  { key: 'invite', art: 'bff', artWidth: 140, title: 'Invite a friend. You both get a free card.', cta: 'INVITE', onClick: (nav) => nav('/invite') },
+  { key: 'alerts', art: 'mailbox', artWidth: 165, title: 'Know when something is in the mail', cta: 'TURN ON ALERTS', onClick: (nav) => nav('/settings/notifications') },
+  { key: 'handwriting', art: 'pen', artWidth: 150, title: 'Make it look like YOU wrote it', cta: 'TEACH YOUR HANDWRITING', onClick: (nav) => nav('/handwriting') },
+  { key: 'photo', art: 'camera', artWidth: 190, title: 'Got a good photo? Mail it.', cta: 'UPLOAD A PHOTO', onClick: (nav) => nav('/send') },
 ]
 
 function OfferCarousel({ hasSentCard, hasHandwriting }: { hasSentCard: boolean; hasHandwriting: boolean }) {
@@ -64,9 +61,9 @@ function OfferCarousel({ hasSentCard, hasHandwriting }: { hasSentCard: boolean; 
         }}
       >
         {OFFER_CARDS.map((c, i) => (
-          <div key={i} style={{
+          <div key={i} className="rose-paper" style={{
             flex: '0 0 calc(100% - 32px)', height: '370px', scrollSnapAlign: 'start',
-            borderRadius: '26px', background: c.bg, border: c.border ?? '0',
+            borderRadius: '26px', boxSizing: 'border-box',
             padding: '26px 22px 22px', display: 'flex', flexDirection: 'column',
             alignItems: 'center', textAlign: 'center',
           }}>
@@ -77,9 +74,9 @@ function OfferCarousel({ hasSentCard, hasHandwriting }: { hasSentCard: boolean; 
               {c.title}
             </p>
             <button onClick={() => c.onClick(navigate)} style={{
-              marginTop: 'auto', height: '50px', padding: '0 28px', borderRadius: '25px', border: 'none', cursor: 'pointer',
-              background: 'var(--ink)', color: '#fff', fontFamily: 'var(--font-body)',
-              fontSize: '15px', fontWeight: 700, letterSpacing: '0.08em',
+              marginTop: 'auto', height: '50px', padding: '0 28px', borderRadius: '25px', border: '2px solid var(--outline)', cursor: 'pointer',
+              background: 'var(--btn)', color: 'var(--ink)', fontFamily: 'var(--font-body)',
+              fontSize: '15px', fontWeight: 700, letterSpacing: '0.08em', boxSizing: 'border-box',
             }}>{c.cta}</button>
           </div>
         ))}
@@ -88,7 +85,7 @@ function OfferCarousel({ hasSentCard, hasHandwriting }: { hasSentCard: boolean; 
         {OFFER_CARDS.map((_, i) => (
           <span key={i} style={{
             width: i === active ? '22px' : '6px', height: '6px', borderRadius: '3px',
-            background: i === active ? 'var(--ink)' : '#CFC5E8', transition: 'width 0.2s',
+            background: i === active ? 'var(--ink)' : '#D0C6BA', transition: 'width 0.2s',
           }} />
         ))}
       </div>
@@ -107,16 +104,16 @@ function SetupChecklist({ tasks }: { tasks: SetupTask[] }) {
   return (
     <div style={{ marginTop: '30px' }}>
       <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
-        <h2 style={{ margin: 0, fontFamily: 'var(--font-display)', fontSize: '20px', fontWeight: 400 }}>Get set up</h2>
-        <span style={{ fontSize: '14px', fontFamily: 'var(--font-body)', color: 'var(--ink-mid)' }}>{done} of {total} done</span>
+        <h2 style={{ margin: 0, fontFamily: 'var(--font-display)', fontSize: '20px', fontWeight: 400 }}>Get set</h2>
+        <span style={{ fontSize: '14px', fontFamily: 'var(--font-body)', color: 'var(--ink)' }}>{done} of {total} done</span>
       </div>
-      <div aria-hidden style={{ marginTop: '10px', height: '8px', borderRadius: '4px', background: 'var(--lavender-light)' }}>
-        <div style={{ width: `${(done / total) * 100}%`, height: '8px', borderRadius: '4px', background: uv, transition: 'width 0.3s' }} />
+      <div aria-hidden style={{ marginTop: '10px', height: '8px', borderRadius: '4px', background: 'var(--progress-track)' }}>
+        <div style={{ width: `${(done / total) * 100}%`, height: '8px', borderRadius: '4px', background: 'var(--highlight)', transition: 'width 0.3s' }} />
       </div>
       <div style={{ marginTop: '16px', display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: '12px' }}>
         {tasks.filter((t) => !t.done).map((t) => (
           <button key={t.key} onClick={() => t.onClick(navigate)} style={{
-            minHeight: '168px', borderRadius: '22px', background: '#fff', border: '1.5px solid var(--stone)',
+            minHeight: '168px', borderRadius: '22px', background: 'var(--card)', border: '1.5px solid var(--outline)',
             padding: '18px 14px', cursor: 'pointer', display: 'flex', flexDirection: 'column',
             justifyContent: 'center', alignItems: 'center', gap: '14px', textAlign: 'center',
             textTransform: 'none', letterSpacing: 0,
@@ -248,13 +245,13 @@ export default function HomePage() {
     <div style={{ minHeight: '100vh', paddingBottom: '120px' }}>
 
       {/* Title band: clear header space, like the top of notebook paper */}
-      <header className="title-band" style={{ height: '216px' }}>
+      <header className="title-band" style={{ height: '252px' }}>
         <div style={{ width: '100%', maxWidth: '480px', margin: '0 auto', padding: '0 20px' }}>
 
           {/* Search + QR row */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <label style={{ flex: 1, height: '48px', borderRadius: '24px', background: '#fff', border: '1.5px solid var(--stone)', display: 'flex', alignItems: 'center', gap: '10px', padding: '0 16px' }}>
-              <svg aria-hidden width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ink-mid)" strokeWidth="2" strokeLinecap="round"><circle cx="11" cy="11" r="6.5" /><path d="M16 16l4.5 4.5" /></svg>
+            <label style={{ flex: 1, height: '48px', borderRadius: '24px', background: 'var(--card)', border: '1.5px solid var(--outline)', display: 'flex', alignItems: 'center', gap: '10px', padding: '0 16px' }}>
+              <svg aria-hidden width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" strokeWidth="2" strokeLinecap="round"><circle cx="11" cy="11" r="6.5" /><path d="M16 16l4.5 4.5" /></svg>
               <input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
@@ -265,7 +262,7 @@ export default function HomePage() {
               />
             </label>
             <button onClick={() => setShowQR(true)} aria-label="Your QR code" style={{
-              width: '48px', height: '48px', borderRadius: '50%', border: '1.5px solid var(--stone)', background: '#fff',
+              width: '48px', height: '48px', borderRadius: '50%', border: '1.5px solid var(--outline)', background: 'var(--card)',
               display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--ink)', cursor: 'pointer', flexShrink: 0,
             }}>
               <svg aria-hidden width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3.5" y="3.5" width="6" height="6" rx="1" /><rect x="14.5" y="3.5" width="6" height="6" rx="1" /><rect x="3.5" y="14.5" width="6" height="6" rx="1" /><path d="M14.5 14.5h2v2h-2zM18.5 18.5h2v2h-2zM14.5 18.5h2" /></svg>
@@ -275,8 +272,8 @@ export default function HomePage() {
           {/* Greeting */}
           <div style={{ marginTop: '26px' }}>
             <h1 style={{ margin: 0, fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: '28px', letterSpacing: '-0.02em', color: 'var(--ink)' }}>Hi, {firstName}.</h1>
-            <p style={{ margin: '6px 0 0', fontFamily: 'var(--font-body)', fontSize: '16px', color: 'var(--ink-mid)' }}>
-              {setupDone ? "How's your heart?" : "Let's get your first card in the mail."}
+            <p style={{ margin: '6px 0 0', fontFamily: 'var(--font-body)', fontSize: '16px', color: 'var(--ink)' }}>
+              Feelin' Qute?
             </p>
           </div>
 
@@ -297,7 +294,7 @@ export default function HomePage() {
 
         {/* Date nudge */}
         {nudge && (
-          <div style={{ marginTop: '18px', padding: '16px', borderRadius: '16px', background: 'var(--lavender-pale)', border: '1px solid var(--lavender-light)', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+          <div style={{ marginTop: '18px', padding: '16px', borderRadius: '22px', background: 'var(--card)', border: '1.5px solid var(--outline)', display: 'flex', flexDirection: 'column', gap: '12px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
               <QEmoji name={/birth/i.test(nudge.label) ? 'cake' : 'star'} size={48} />
               <div style={{ flex: 1 }}>
@@ -314,7 +311,7 @@ export default function HomePage() {
             </div>
             <button onClick={() => navigate(`/send?toName=${encodeURIComponent(nudge.connectionName.split(' ')[0])}`)} style={{
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', height: '50px',
-              borderRadius: '25px', background: uv, color: '#fff', border: 'none', cursor: 'pointer',
+              borderRadius: '25px', background: 'var(--btn)', color: 'var(--ink)', border: '2px solid var(--outline)', cursor: 'pointer',
               fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '15px', letterSpacing: '0.08em',
             }}>
               Write to {nudge.connectionName.split(' ')[0]}
@@ -327,8 +324,8 @@ export default function HomePage() {
         {setupDone && hasAddress === false && (
           <button onClick={() => navigate('/address')} style={{
             width: '100%', marginTop: '14px', padding: '12px 16px', borderRadius: '22px',
-            border: '2px dashed var(--lilac)', background: 'var(--lavender-pale)', cursor: 'pointer',
-            fontFamily: 'var(--font-body)', fontSize: '13px', color: uv, fontWeight: 700,
+            border: '2px dashed var(--outline)', background: 'var(--selected-fill)', cursor: 'pointer',
+            fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--ink)', fontWeight: 700,
             textTransform: 'uppercase', letterSpacing: '0.12em',
           }}>
             Add your address so QTs can mail you back
@@ -339,25 +336,25 @@ export default function HomePage() {
         <h2 style={{ margin: '30px 0 12px', fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: '20px' }}>From your QTs</h2>
 
         {feed.length === 0 && (
-          <div style={{ borderRadius: '22px', border: '2px dashed var(--lilac)', background: 'var(--lavender-pale)', padding: '22px 20px', display: 'flex', gap: '16px', alignItems: 'center' }}>
+          <div className="qn-stamp" style={{ border: '10px solid transparent', background: 'transparent', padding: '14px 12px', display: 'flex', gap: '16px', alignItems: 'center' }}>
             <QEmoji name="mailbox" size={84} style={{ flexShrink: 0 }} />
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
               <p style={{ margin: 0, fontFamily: 'var(--font-body)', fontSize: '15px', lineHeight: 1.45, color: 'var(--ink)' }}>
                 It's quiet in here. Once friends join, their birthdays, news and sends show up here.
               </p>
               <button onClick={() => navigate('/connections?sync=1')} style={{
-                alignSelf: 'flex-start', height: '44px', padding: '0 18px', borderRadius: '22px', border: 'none', cursor: 'pointer',
-                background: uv, color: '#fff', fontFamily: 'var(--font-body)', fontSize: '14px', fontWeight: 700, letterSpacing: '0.08em',
+                alignSelf: 'flex-start', height: '44px', padding: '0 18px', borderRadius: '22px', border: '2px solid var(--outline)', cursor: 'pointer',
+                background: 'var(--btn)', color: 'var(--ink)', fontFamily: 'var(--font-body)', fontSize: '14px', fontWeight: 700, letterSpacing: '0.08em', boxSizing: 'border-box',
               }}>SYNC CONTACTS</button>
             </div>
           </div>
         )}
 
         {feed.map((item) => (
-          <div key={`${item.kind}-${item.id}`} style={{ display: 'flex', gap: '12px', padding: '16px 0', borderBottom: '1.5px solid var(--stone)' }}>
+          <div key={`${item.kind}-${item.id}`} style={{ display: 'flex', gap: '12px', padding: '16px 0', borderBottom: '1.5px solid var(--outline)' }}>
             {item.kind === 'status' ? (
-              <span style={{ width: '44px', height: '44px', minWidth: '44px', borderRadius: '50%', background: 'var(--lavender-pale)', border: '1.5px solid var(--ink)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '14px' }}>
-                {(item.user?.displayName ?? '?').split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2)}
+              <span style={{ width: '44px', minWidth: '44px', display: 'flex', alignItems: 'flex-start', justifyContent: 'center' }}>
+                <QEmoji name="heart-sparkle" size={44} />
               </span>
             ) : (
               <span style={{ width: '44px', minWidth: '44px', display: 'flex', alignItems: 'flex-start', justifyContent: 'center' }}>
@@ -371,17 +368,17 @@ export default function HomePage() {
                     <strong>{item.user?.displayName}</strong>{' '}
                     <span style={{ color: 'var(--ink-mid)' }}>shared a status · {timeAgo(item.createdAt)}</span>
                     {+new Date(item.createdAt) > lastSeen && (
-                      <span style={{ display: 'inline-block', width: '10px', height: '10px', marginLeft: '6px', borderRadius: '5px', background: 'var(--lime)', border: '1.5px solid var(--ink)', verticalAlign: 'middle' }} />
+                      <span style={{ display: 'inline-block', width: '10px', height: '10px', marginLeft: '6px', borderRadius: '5px', background: 'var(--highlight)', border: '1.5px solid var(--outline)', verticalAlign: 'middle' }} />
                     )}
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <div style={{ flex: 1, display: 'flex', alignItems: 'flex-start', gap: '8px', padding: '10px 12px', borderRadius: '14px', background: '#fff', border: '1.5px solid var(--stone)' }}>
+                    <div style={{ flex: 1, display: 'flex', alignItems: 'flex-start', gap: '8px', padding: '10px 12px', borderRadius: '14px', background: 'var(--card)', border: '1.5px solid var(--outline)' }}>
                       {item.emoji && <QEmoji name={item.emoji} size={18} />}
                       <span style={{ fontSize: '15px', lineHeight: 1.4, fontFamily: 'var(--font-body)' }}>{item.text}</span>
                     </div>
                     <button aria-label="Send a little somethin'" onClick={() => navigate(`/send?toName=${encodeURIComponent(item.user?.displayName.split(' ')[0] ?? '')}`)} style={{
-                      flexShrink: 0, width: '44px', height: '44px', borderRadius: '50%', background: 'var(--lavender-pale)',
-                      border: '1.5px solid var(--lilac)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0,
+                      flexShrink: 0, width: '44px', height: '44px', borderRadius: '50%', background: 'var(--card)',
+                      border: '1.5px solid var(--outline)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0,
                     }}>
                       <span style={{ position: 'relative', width: '30px', height: '20px' }}>
                         <img src="/brand/postmark-heart-only.png" alt="" style={{ position: 'absolute', inset: 0, width: '30px', height: '20px', objectFit: 'contain' }} />
@@ -401,10 +398,10 @@ export default function HomePage() {
                     <button onClick={() => toggleHeart(item)} style={{
                       height: '30px', display: 'flex', alignItems: 'center', gap: '5px', border: 'none',
                       background: 'transparent', padding: 0, fontSize: '13px', cursor: 'pointer',
-                      color: item.heartedByMe ? uv : 'var(--ink-mid)', fontFamily: 'var(--font-body)',
+                      color: item.heartedByMe ? 'var(--ink)' : 'var(--ink-mid)', fontFamily: 'var(--font-body)',
                       textTransform: 'none', letterSpacing: 0, fontWeight: item.heartedByMe ? 700 : 400,
                     }}>
-                      <svg width="17" height="17" viewBox="0 0 24 24" fill={item.heartedByMe ? uv : 'none'} stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z" /></svg>
+                      <svg width="17" height="17" viewBox="0 0 24 24" fill={item.heartedByMe ? '#4A2424' : 'none'} stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z" /></svg>
                       {item.hearts}
                     </button>
                   </div>

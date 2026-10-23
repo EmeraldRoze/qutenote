@@ -25,19 +25,19 @@ export interface Artist {
 
 export const ARTISTS: Artist[] = [
   {
-    key: 'ellis-tolsma', name: 'Ellis Tolsma', handle: '@ellis_tolsma', featured: true, avatar: '#BE8EF5',
+    key: 'ellis-tolsma', name: 'Ellis Tolsma', handle: '@ellis_tolsma', featured: true, avatar: '#D5ADA3',
     cards: [
-      { id: 'et-1', title: 'Insects', art: '/cards/ellis_tolsma/ellis_tolsma_1_insects.jpg', bg: '#D9C9F1' },
+      { id: 'et-1', title: 'Insects', art: '/cards/ellis_tolsma/ellis_tolsma_1_insects.jpg', bg: '#E3D5CC' },
       { id: 'et-2', title: 'Furby', art: '/cards/ellis_tolsma/ellis_tolsma_2_furby.jpg', bg: 'var(--neon-pink)' },
       { id: 'et-3', title: 'Mermaid', art: '/cards/ellis_tolsma/ellis_tolsma_3_mermaid.jpg', bg: 'var(--lime)' },
     ],
   },
   {
-    key: 'bobbybealspresents', name: 'Bobby Beals', handle: '@bobbybealspresents', avatar: '#C6FF3D',
+    key: 'bobbybealspresents', name: 'Bobby Beals', handle: '@bobbybealspresents', avatar: '#EEFC4E',
     cards: [
-      { id: 'bb-1', title: 'Horse', art: '/cards/bobbybealspresents/bobbybealspresents_1_horse.jpg', bg: '#F3EEFF' },
-      { id: 'bb-2', title: 'Flower', art: '/cards/bobbybealspresents/bobbybealspresents_2_flower.jpg', bg: '#E9E2FB' },
-      { id: 'bb-3', title: 'Roses', art: '/cards/bobbybealspresents/bobbybealspresents_3_roses.jpg', bg: '#FDE8F2' },
+      { id: 'bb-1', title: 'Horse', art: '/cards/bobbybealspresents/bobbybealspresents_1_horse.jpg', bg: '#F4ECE6' },
+      { id: 'bb-2', title: 'Flower', art: '/cards/bobbybealspresents/bobbybealspresents_2_flower.jpg', bg: '#E9EDF1' },
+      { id: 'bb-3', title: 'Roses', art: '/cards/bobbybealspresents/bobbybealspresents_3_roses.jpg', bg: '#F4ECE6' },
     ],
   },
   {
@@ -59,7 +59,7 @@ export const ARTISTS: Artist[] = [
   {
     key: 'artist-4', name: 'Artist 4', avatar: 'var(--pink-pale)',
     cards: [
-      { id: 'a4-1', title: 'Coming soon', bg: '#FDE8F2', placeholder: true },
+      { id: 'a4-1', title: 'Coming soon', bg: '#F4ECE6', placeholder: true },
       { id: 'a4-2', title: 'Coming soon', bg: 'var(--neon-pink)', placeholder: true },
       { id: 'a4-3', title: 'Coming soon', bg: '#D6407F', placeholder: true },
     ],

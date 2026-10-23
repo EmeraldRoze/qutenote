@@ -10,7 +10,6 @@ import QEmoji from '../../components/QEmoji'
 // Birthday is OPTIONAL: SAVE MY BIRTHDAY saves via PUT /users/me, and
 // "Skip for now" goes straight home.
 
-const uv = '#5A32D6'
 const ROW = 36 // one notebook-ruling line per wheel row
 
 const col: React.CSSProperties = {
@@ -112,7 +111,7 @@ export default function SignupBirthdayPage() {
         <div style={col}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <button onClick={() => navigate(-1)} aria-label="Back" style={{
-              width: '44px', height: '44px', borderRadius: '50%', background: 'var(--lavender-light)',
+              width: '44px', height: '44px', borderRadius: '50%', background: 'var(--light-blush)',
               border: 'none', cursor: 'pointer', color: 'var(--ink)', display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 5l-7 7 7 7" /></svg>
@@ -131,27 +130,27 @@ export default function SignupBirthdayPage() {
       </header>
 
       <div style={{ ...col, flex: 1, display: 'flex', flexDirection: 'column', paddingBottom: '40px' }}>
-        <p style={{ margin: '18px 0 0', fontSize: '15px', lineHeight: 1.45, color: 'var(--ink-mid)' }}>
+        <p style={{ margin: '18px 0 0', fontSize: '15px', lineHeight: 1.45, color: 'var(--ink)' }}>
           Some birthday wishes deserve to be held.
         </p>
 
         <div role="group" aria-label="Birthday" style={{
-          marginTop: '20px', position: 'relative', background: '#FFFFFF',
-          border: '1.5px solid var(--stone)', borderRadius: '18px', padding: '8px 10px', display: 'flex', gap: '4px',
+          marginTop: '20px', position: 'relative', background: 'var(--card)',
+          border: '1.5px solid var(--outline)', borderRadius: '18px', padding: '8px 10px', display: 'flex', gap: '4px',
         }}>
           {/* The highlight band behind the chosen row */}
           <span aria-hidden style={{
             position: 'absolute', left: '8px', right: '8px', top: `${8 + ROW * 2}px`, height: `${ROW}px`,
-            borderRadius: '12px', background: 'var(--lavender-pale)', border: '1.5px solid var(--lilac)', boxSizing: 'border-box',
+            borderRadius: '12px', background: 'var(--selected-fill)', border: '1.5px solid var(--outline)', boxSizing: 'border-box',
           }} />
           <WheelColumn items={MONTHS} index={monthIdx} onChange={setMonthIdx} flex={1.6} />
           <WheelColumn items={DAYS} index={dayIdx} onChange={setDayIdx} flex={0.8} />
           <WheelColumn items={YEARS} index={yearIdx} onChange={setYearIdx} flex={1} />
         </div>
 
-        <div style={{
-          marginTop: '14px', background: 'var(--lime-tint)', border: '2px dashed var(--lime-border)',
-          borderRadius: '16px', padding: '12px 14px', display: 'flex', alignItems: 'center', gap: '12px',
+        <div className="qn-stamp" style={{
+          marginTop: '14px', background: 'transparent', border: '10px solid transparent',
+          borderRadius: '16px', padding: '4px 6px', display: 'flex', alignItems: 'center', gap: '12px',
         }}>
           <QEmoji name="mailbox" size={46} style={{ flex: 'none' }} />
           <p style={{ margin: 0, fontSize: '14px', lineHeight: 1.4 }}>
@@ -160,7 +159,7 @@ export default function SignupBirthdayPage() {
         </div>
 
         {error && (
-          <div style={{ background: 'var(--error-pale)', border: '1px solid rgba(224,78,107,0.3)', color: 'var(--error)', borderRadius: '10px', padding: '12px 16px', marginTop: '14px', fontSize: '14px' }}>
+          <div style={{ background: 'var(--error-pale)', border: '1px solid var(--error)', color: 'var(--error)', borderRadius: '10px', padding: '12px 16px', marginTop: '14px', fontSize: '14px' }}>
             {error}
           </div>
         )}
@@ -170,9 +169,9 @@ export default function SignupBirthdayPage() {
             onClick={save}
             disabled={saving}
             style={{
-              height: '56px', borderRadius: '28px', border: 'none',
+              height: '56px', borderRadius: '28px', border: '2px solid #B4897A', boxSizing: 'border-box',
               cursor: saving ? 'not-allowed' : 'pointer',
-              background: saving ? 'var(--lavender-light)' : uv, color: '#FFFFFF',
+              background: saving ? 'var(--light-blush)' : 'var(--btn)', color: 'var(--ink)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               fontFamily: 'var(--font-body)', fontSize: '15px', fontWeight: 700, letterSpacing: '0.08em',
             }}
@@ -184,7 +183,7 @@ export default function SignupBirthdayPage() {
             style={{
               minHeight: '44px', border: 'none', background: 'transparent', cursor: 'pointer',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontFamily: 'var(--font-body)', fontSize: '15px', color: 'var(--ink-mid)',
+              fontFamily: 'var(--font-body)', fontSize: '15px', color: 'var(--ink)',
               fontWeight: 400, textTransform: 'none', letterSpacing: 0,
             }}
           >

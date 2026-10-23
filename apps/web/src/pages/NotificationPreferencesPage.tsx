@@ -4,8 +4,6 @@ import { api } from '../lib/api'
 import { enableReminders, remindersEnabled } from '../lib/push'
 import { isNativeApp } from '../lib/native'
 
-const uv = '#5A32D6'
-
 interface Prefs {
   notifyBirthdays: boolean
   notifyFriendSentCard: boolean
@@ -69,8 +67,8 @@ export default function NotificationPreferencesPage() {
         display: 'flex', alignItems: 'center', gap: '14px',
       }}>
         <button onClick={() => navigate(-1)} aria-label="Back" style={{
-          width: '36px', height: '36px', borderRadius: '50%', background: 'var(--lavender-pale)',
-          border: 'none', cursor: 'pointer', color: uv, display: 'flex', alignItems: 'center', justifyContent: 'center',
+          width: '44px', height: '44px', borderRadius: '50%', background: '#E3D5CC',
+          border: 'none', cursor: 'pointer', color: '#4A2424', display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M15 6l-6 6 6 6" /></svg>
         </button>
@@ -87,8 +85,8 @@ export default function NotificationPreferencesPage() {
           {/* Master switch */}
           <div style={{
             display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '14px',
-            padding: '16px 18px', marginBottom: '14px', background: 'var(--lavender-pale)',
-            border: '2px dashed var(--lilac)', borderRadius: '18px',
+            padding: '16px 18px', marginBottom: '14px', background: '#F4ECE6',
+            border: '2px dashed #B4897A', borderRadius: '18px',
           }}>
             <div style={{ minWidth: 0 }}>
               <p style={{ fontFamily: 'var(--font-body)', fontSize: '15px', fontWeight: 700, color: 'var(--ink)', margin: 0 }}>Everything</p>
@@ -99,17 +97,17 @@ export default function NotificationPreferencesPage() {
               aria-label={`Turn everything ${allOn ? 'off' : 'on'}`}
               style={{
                 width: '46px', height: '28px', minWidth: '46px', borderRadius: '14px', border: 'none', cursor: 'pointer',
-                background: allOn ? 'var(--lime)' : 'var(--stone)', position: 'relative', transition: 'background 0.15s',
+                background: allOn ? '#EEFC4E' : '#EBDDD6', position: 'relative', transition: 'background 0.15s',
               }}
             >
               <span style={{
                 position: 'absolute', top: '3px', left: allOn ? '21px' : '3px',
-                width: '22px', height: '22px', borderRadius: '11px', background: '#fff',
-                boxShadow: '0 1px 3px rgba(43,34,56,0.3)', transition: 'left 0.15s',
+                width: '22px', height: '22px', borderRadius: '11px', background: 'var(--card)',
+                boxShadow: '0 1px 3px rgba(74,36,36,0.3)', transition: 'left 0.15s',
               }} />
             </button>
           </div>
-          <div style={{ background: '#fff', borderRadius: '18px', boxShadow: 'var(--shadow-card)', overflow: 'hidden' }}>
+          <div style={{ background: 'var(--card)', border: '1.5px solid var(--stone)', borderRadius: '18px', boxShadow: 'var(--shadow-card)', overflow: 'hidden' }}>
             {ROWS.map((row, i) => (
               <div key={row.key} style={{
                 display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '14px',
@@ -124,13 +122,13 @@ export default function NotificationPreferencesPage() {
                   aria-label={`Turn ${row.label} ${prefs[row.key] ? 'off' : 'on'}`}
                   style={{
                     width: '46px', height: '28px', minWidth: '46px', borderRadius: '14px', border: 'none', cursor: 'pointer',
-                    background: prefs[row.key] ? uv : 'var(--stone)', position: 'relative', transition: 'background 0.15s',
+                    background: prefs[row.key] ? '#EEFC4E' : '#EBDDD6', position: 'relative', transition: 'background 0.15s',
                   }}
                 >
                   <span style={{
                     position: 'absolute', top: '3px', left: prefs[row.key] ? '21px' : '3px',
-                    width: '22px', height: '22px', borderRadius: '11px', background: '#fff',
-                    boxShadow: '0 1px 3px rgba(43,34,56,0.3)', transition: 'left 0.15s',
+                    width: '22px', height: '22px', borderRadius: '11px', background: 'var(--card)',
+                    boxShadow: '0 1px 3px rgba(74,36,36,0.3)', transition: 'left 0.15s',
                   }} />
                 </button>
               </div>

@@ -39,14 +39,18 @@ export interface NoteData {
   voiceDuration?: number
 }
 
-const uv = '#5A32D6'
-const PINK = '#FF6EB4'
-
 const primaryPill: React.CSSProperties = {
   display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px',
-  width: '100%', height: '56px', borderRadius: '28px', border: 'none', cursor: 'pointer',
-  background: uv, color: '#fff', fontFamily: 'var(--font-body)', fontWeight: 700,
+  width: '100%', height: '56px', borderRadius: '28px', border: '2px solid var(--outline)',
+  boxSizing: 'border-box', cursor: 'pointer',
+  background: 'var(--btn)', color: 'var(--ink)', fontFamily: 'var(--font-body)', fontWeight: 700,
   fontSize: '15px', letterSpacing: '0.08em', textTransform: 'uppercase',
+}
+
+// Secondary actions (SAVE DRAFT, Edit this note): card-white fill, same outline
+const secondaryPill: React.CSSProperties = {
+  ...primaryPill,
+  background: 'var(--card)',
 }
 
 const KNOWN_PENS = [HANDWRITING_PEN.value, ...PENS.map((p) => p.value)]
@@ -56,7 +60,7 @@ const KNOWN_PENS = [HANDWRITING_PEN.value, ...PENS.map((p) => p.value)]
 function BackCircle({ onClick }: { onClick: () => void }) {
   return (
     <button onClick={onClick} aria-label="Back" style={{
-      width: '44px', height: '44px', borderRadius: '50%', background: 'var(--lavender-light)',
+      width: '44px', height: '44px', borderRadius: '50%', background: 'var(--light-blush)',
       border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
       color: 'var(--ink)', padding: 0,
     }}>
@@ -70,10 +74,10 @@ function StepRow({ onBack, stepIndex, stepCount }: { onBack: () => void; stepInd
     <div style={{ display: 'grid', gridTemplateColumns: '44px 1fr 44px', alignItems: 'center', gap: '12px' }}>
       <BackCircle onClick={onBack} />
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
-        <span style={{ fontSize: '13px', fontFamily: 'var(--font-body)', color: 'var(--ink-mid)' }}>Step {stepIndex} of {stepCount}</span>
+        <span style={{ fontSize: '13px', fontFamily: 'var(--font-body)', color: 'var(--ink)' }}>Step {stepIndex} of {stepCount}</span>
         <div aria-hidden style={{ display: 'flex', gap: '4px' }}>
           {Array.from({ length: stepCount }).map((_, i) => (
-            <span key={i} style={{ width: '28px', height: '5px', borderRadius: '3px', background: i < stepIndex ? PINK : 'var(--pink-pale)' }} />
+            <span key={i} style={{ width: '28px', height: '5px', borderRadius: '3px', background: i < stepIndex ? 'var(--highlight)' : 'var(--progress-track)' }} />
           ))}
         </div>
       </div>
@@ -93,20 +97,17 @@ function Band({ height, children }: { height: number; children: React.ReactNode 
   )
 }
 
-// The dashed postage stamp with the lime heart — floats top-right on the
-// note so the writing wraps around it.
+// The dashed postage stamp with the neon yellow heart, floats top-right on
+// the note so the writing wraps around it. Palette 4: light-blush frame,
+// rosy brown dashes, dusty rose center.
 function StampSvg({ width = 52, height = 62, style }: { width?: number; height?: number; style?: React.CSSProperties }) {
   return (
     <svg aria-hidden width={width} height={height} viewBox="0 0 46 54" style={style}>
-      <rect x="2" y="2" width="42" height="50" rx="3" fill="var(--stamp-frame)" stroke={uv} strokeWidth="2" strokeDasharray="4 3" />
-      <rect x="8" y="8" width="30" height="38" rx="2" fill={uv} />
+      <rect x="2" y="2" width="42" height="50" rx="3" fill="var(--stamp-frame)" stroke="var(--outline)" strokeWidth="2" strokeDasharray="4 3" />
+      <rect x="8" y="8" width="30" height="38" rx="2" fill="var(--stamp-center)" />
       <path d="M23 37c-6-4-9-7.5-9-11 0-2.5 2-4.5 4.5-4.5 1.8 0 3.3 1 4.5 2.5 1.2-1.5 2.7-2.5 4.5-2.5 2.5 0 4.5 2 4.5 4.5 0 3.5-3 7-9 11z" fill="var(--lime)" />
     </svg>
   )
-}
-
-function initials(name: string) {
-  return name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2)
 }
 
 /* ── The flow ───────────────────────────────────────────────────── */
@@ -216,11 +217,11 @@ export default function SendFlow() {
       {step === 'card' && (
         <>
           <Band height={144}>
-            <h1 style={{ margin: 0, fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: '30px', letterSpacing: '-0.02em', color: 'var(--ink)' }}>Send a little somethin'</h1>
+            <h1 style={{ margin: 0, fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: '30px', letterSpacing: '-0.02em', color: 'var(--ink)' }}>Send a card</h1>
           </Band>
           <div style={content}>
             {drafts.length > 0 && (
-              <div style={{ marginTop: '18px', background: '#fff', border: '1.5px solid var(--stone)', borderRadius: '16px', overflow: 'hidden' }}>
+              <div style={{ marginTop: '18px', background: 'var(--card)', border: '1.5px solid var(--outline)', borderRadius: '16px', overflow: 'hidden' }}>
                 {drafts.map((d: CardDraft, i: number) => (
                   <div key={d.id} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '12px 16px', borderBottom: i < drafts.length - 1 ? '1px solid var(--divider)' : 'none' }}>
                     <span style={{ fontSize: '20px' }}>📝</span>
@@ -279,11 +280,11 @@ export default function SendFlow() {
             <StepRow onBack={() => backFrom('write')} stepIndex={stepIndex} stepCount={STEP_COUNT} />
             <div style={{ marginTop: '16px', position: 'relative' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <span style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'var(--lilac)', border: '1.5px solid var(--ink)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', fontWeight: 700, fontFamily: 'var(--font-body)' }}>{initials(note.recipientName ?? '?')}</span>
-                <span style={{ fontSize: '13px', fontFamily: 'var(--font-body)', color: 'var(--ink-mid)' }}>To:&nbsp;<span style={{ fontSize: '16px', fontWeight: 700, color: 'var(--ink)' }}>{note.recipientName}</span></span>
+                <QEmoji name="heart-sparkle" size={42} style={{ flex: 'none' }} />
+                <span style={{ fontSize: '13px', fontFamily: 'var(--font-body)', color: 'var(--ink)' }}>To:&nbsp;<span style={{ fontSize: '16px', fontWeight: 700, color: 'var(--ink)' }}>{note.recipientName}</span></span>
               </div>
               <h1 style={{ margin: '14px 0 0', paddingRight: '90px', fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: '28px', lineHeight: 1.1, letterSpacing: '-0.02em', color: 'var(--ink)' }}>Say the thing.</h1>
-              <p style={{ margin: '6px 0 0', paddingRight: '90px', fontSize: '15px', fontFamily: 'var(--font-body)', color: 'var(--ink-mid)' }}>Put it in writing, QT</p>
+              <p style={{ margin: '6px 0 0', paddingRight: '90px', fontSize: '15px', fontFamily: 'var(--font-body)', color: 'var(--ink)' }}>Put it in writing, QT</p>
               <QEmoji name="pen" size={92} style={{ position: 'absolute', right: 0, top: '8px', height: 'auto' }} />
             </div>
           </Band>
@@ -332,16 +333,16 @@ export default function SendFlow() {
           <QEmoji name="mailbox" size={72} />
           <h2 style={{ fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: '27px', letterSpacing: '-0.02em', color: 'var(--ink)', margin: '20px 0 10px' }}>It's on its way.</h2>
           <p style={{ fontSize: '15px', fontFamily: 'var(--font-body)', color: 'var(--ink-mid)', marginBottom: '8px' }}>
-            {note.recipientName?.split(' ')[0]} gets a real postcard in 3–5 business days.
+            {note.recipientName?.split(' ')[0]} gets a real postcard in 3 to 5 business days.
           </p>
-          <p style={{ fontSize: '16px', fontFamily: 'var(--font-body)', fontStyle: 'italic', color: uv, marginBottom: '10px' }}>
+          <p style={{ fontSize: '16px', fontFamily: 'var(--font-body)', fontStyle: 'italic', color: 'var(--stamp-center)', marginBottom: '10px' }}>
             Go make their day.
           </p>
           <p style={{ fontSize: '13px', fontFamily: 'var(--font-body)', color: 'var(--ink-muted)', marginBottom: '26px' }}>
             Changed your mind about a word? You can edit this note for the next 2 hours.
           </p>
           <button
-            style={{ ...primaryPill, background: '#fff', color: uv, border: `1.5px solid ${uv}`, marginBottom: '12px' }}
+            style={{ ...secondaryPill, marginBottom: '12px' }}
             onClick={() => setStep('write')}
           >
             Edit this note
@@ -350,7 +351,7 @@ export default function SendFlow() {
             Send another
           </button>
           <button
-            style={{ ...primaryPill, background: 'var(--lavender-light)', color: 'var(--ink)', marginTop: '12px' }}
+            style={{ ...primaryPill, background: 'var(--light-blush)', marginTop: '12px' }}
             onClick={() => navigate('/home')}
           >
             Back home
@@ -424,7 +425,7 @@ function CardPicker({ note, update, onWrite }: {
   return (
     <>
       {/* Featured swipe panel */}
-      <div style={{ marginTop: '20px', height: '400px', borderRadius: '28px', background: 'var(--lavender-light)', position: 'relative', overflow: 'hidden' }}>
+      <div style={{ marginTop: '20px', height: '400px', borderRadius: '28px', background: 'var(--light-blush)', position: 'relative', overflow: 'hidden' }}>
         <div
           key={artistIdx}
           ref={panelRef}
@@ -440,12 +441,12 @@ function CardPicker({ note, update, onWrite }: {
               {c.art ? (
                 <img src={c.art} alt={`${c.title} postcard by ${artist.handle ?? artist.name}`} style={{
                   height: '270px', width: 'auto', maxWidth: '86%', objectFit: 'cover', borderRadius: '4px',
-                  transform: `rotate(${CARD_ROTATIONS[i % 3]}deg)`, boxShadow: '0 12px 24px rgba(35, 26, 58, 0.2)',
+                  transform: `rotate(${CARD_ROTATIONS[i % 3]}deg)`, boxShadow: '0 12px 24px rgba(74, 36, 36, 0.2)',
                 }} />
               ) : (
                 <div style={{
                   height: '270px', width: '202px', borderRadius: '4px', background: c.bg,
-                  transform: `rotate(${CARD_ROTATIONS[i % 3]}deg)`, boxShadow: '0 12px 24px rgba(35, 26, 58, 0.2)',
+                  transform: `rotate(${CARD_ROTATIONS[i % 3]}deg)`, boxShadow: '0 12px 24px rgba(74, 36, 36, 0.2)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                 }}>
                   <span style={{ fontSize: '13px', fontFamily: 'var(--font-body)', color: 'var(--ink-mid)' }}>{c.title}</span>
@@ -456,11 +457,11 @@ function CardPicker({ note, update, onWrite }: {
         </div>
         <div aria-hidden style={{ position: 'absolute', left: 0, right: 0, top: '318px', display: 'flex', gap: '6px', justifyContent: 'center' }}>
           {artist.cards.map((_, i) => (
-            <span key={i} style={{ width: i === cardIdx ? '22px' : '6px', height: '6px', borderRadius: '3px', background: i === cardIdx ? 'var(--ink)' : '#B9AED6', transition: 'width 0.2s' }} />
+            <span key={i} style={{ width: i === cardIdx ? '22px' : '6px', height: '6px', borderRadius: '3px', background: i === cardIdx ? 'var(--ink)' : '#C2B6AA', transition: 'width 0.2s' }} />
           ))}
         </div>
         <div style={{ position: 'absolute', left: '18px', bottom: '18px', display: 'flex', flexDirection: 'column', gap: '2px' }}>
-          <span style={{ fontSize: '13px', fontFamily: 'var(--font-body)', color: 'var(--ink-mid)' }}>{artist.featured ? 'Featured this month' : 'October artist'}</span>
+          <span style={{ fontSize: '13px', fontFamily: 'var(--font-body)', color: 'var(--ink)' }}>{artist.featured ? 'Featured this month' : 'October artist'}</span>
           <span style={{ fontSize: '17px', fontWeight: 700, fontFamily: 'var(--font-body)', color: 'var(--ink)' }}>{artist.handle ?? artist.name}</span>
         </div>
         <button
@@ -470,7 +471,8 @@ function CardPicker({ note, update, onWrite }: {
           }}
           style={{
             position: 'absolute', right: '16px', bottom: '16px', height: '44px', padding: '0 18px',
-            borderRadius: '22px', background: uv, color: '#fff', border: 'none', cursor: 'pointer',
+            borderRadius: '22px', background: 'var(--btn)', color: 'var(--ink)',
+            border: '2px solid var(--outline)', boxSizing: 'border-box', cursor: 'pointer',
             display: 'flex', alignItems: 'center', fontFamily: 'var(--font-body)',
             fontSize: '14px', fontWeight: 700, letterSpacing: '0.08em',
           }}
@@ -481,30 +483,31 @@ function CardPicker({ note, update, onWrite }: {
       <input ref={fileRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={onFilePicked} />
       {note.cardImageUrl ? (
         <div style={{
-          marginTop: '16px', width: '100%', borderRadius: '18px', border: `2px solid ${uv}`,
-          background: '#fff', display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 14px',
+          marginTop: '16px', width: '100%', boxSizing: 'border-box', borderRadius: '18px', border: '2px solid var(--outline)',
+          background: 'var(--card)', display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 14px',
         }}>
-          <img src={note.cardImageUrl} alt="" style={{ width: '48px', height: '64px', objectFit: 'cover', borderRadius: '6px', border: '1.5px solid var(--ink)', flex: 'none' }} />
+          <img src={note.cardImageUrl} alt="" style={{ width: '48px', height: '64px', objectFit: 'cover', borderRadius: '6px', border: '1.5px solid var(--outline)', flex: 'none' }} />
           <button onClick={() => fileRef.current?.click()} style={{
             flex: 1, minHeight: '44px', textAlign: 'left', background: 'none', border: 'none', cursor: 'pointer',
-            fontFamily: 'var(--font-body)', fontSize: '14px', fontWeight: 700, color: uv,
+            fontFamily: 'var(--font-body)', fontSize: '14px', fontWeight: 700, color: 'var(--ink)',
             textTransform: 'none', letterSpacing: 0, padding: 0,
           }}>
             {uploading ? 'Uploading…' : 'Your photo is on it. Tap to swap.'}
           </button>
           <button onClick={onWrite} style={{
-            height: '44px', padding: '0 16px', borderRadius: '22px', background: uv, color: '#fff',
-            border: 'none', cursor: 'pointer', fontFamily: 'var(--font-body)', fontSize: '13px',
+            height: '44px', padding: '0 16px', borderRadius: '22px', background: 'var(--btn)', color: 'var(--ink)',
+            border: '2px solid var(--outline)', boxSizing: 'border-box', cursor: 'pointer',
+            fontFamily: 'var(--font-body)', fontSize: '13px',
             fontWeight: 700, letterSpacing: '0.08em', flex: 'none',
           }}>WRITE ON IT</button>
         </div>
       ) : (
-        <button onClick={() => fileRef.current?.click()} style={{
-          marginTop: '16px', width: '100%', minHeight: '84px', borderRadius: '18px',
-          border: '2px dashed var(--lilac)', background: 'var(--lavender-pale)',
+        <button className="qn-stamp" onClick={() => fileRef.current?.click()} style={{
+          marginTop: '24px', width: '100%', minHeight: '84px', borderRadius: '18px', boxSizing: 'border-box',
+          border: '10px solid transparent', background: 'transparent',
           display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '14px',
           fontFamily: 'var(--font-body)', fontSize: '15px', fontWeight: 700, letterSpacing: '0.08em',
-          color: uv, cursor: 'pointer',
+          color: 'var(--stamp-center)', cursor: 'pointer',
         }}>
           <QEmoji name="camera" size={64} style={{ height: 'auto' }} />
           {uploading ? 'UPLOADING…' : 'UPLOAD YOUR OWN PHOTO'}
@@ -516,37 +519,37 @@ function CardPicker({ note, update, onWrite }: {
 
       {/* Artist list */}
       <h2 style={{ margin: '30px 0 4px', fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: '20px', color: 'var(--ink)' }}>October artists</h2>
-      <p style={{ margin: '0 0 14px', fontSize: '15px', fontFamily: 'var(--font-body)', color: 'var(--ink-mid)' }}>Five artists, three cards each. New ones next month.</p>
+      <p style={{ margin: '0 0 14px', fontSize: '15px', fontFamily: 'var(--font-body)', color: 'var(--ink)' }}>5 artists, 3 cards each.<br /><br />New ones every month :)</p>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
         {ARTISTS.map((a, i) => {
           const active = i === artistIdx && !note.cardImageUrl
           return (
             <div key={a.key} style={{
-              background: '#fff', borderRadius: '18px', padding: '14px',
-              border: active ? `2px solid ${uv}` : '1.5px solid var(--stone)',
+              background: 'var(--card)', borderRadius: '18px', padding: '14px',
+              border: active ? '2px solid var(--outline)' : '1.5px solid var(--outline)',
             }}>
               <button onClick={() => selectArtist(i)} style={{
                 display: 'flex', alignItems: 'center', gap: '10px', border: 0, background: 'transparent',
                 padding: 0, minHeight: '44px', fontFamily: 'var(--font-body)', color: 'var(--ink)',
                 cursor: 'pointer', textTransform: 'none', letterSpacing: 0,
               }}>
-                <span aria-hidden style={{ width: '36px', height: '36px', borderRadius: '50%', background: a.avatar ?? 'var(--lavender-light)', border: '1.5px solid var(--ink)' }} />
+                <span aria-hidden style={{ width: '36px', height: '36px', borderRadius: '50%', background: a.avatar ?? 'var(--light-blue)', border: '1.5px solid var(--outline)' }} />
                 <span style={{ fontSize: '16px', fontWeight: 700 }}>{a.handle ?? a.name}</span>
               </button>
               <div style={{ marginTop: '12px', display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: '10px' }}>
                 {a.cards.map((c) => (
                   <button
                     key={c.id}
-                    aria-label={`${c.title} card by ${a.handle ?? a.name} — write on it`}
+                    aria-label={`${c.title} card by ${a.handle ?? a.name}, write on it`}
                     onClick={() => {
                       // Tap a card, go write on it (Emerald, Oct 18)
                       update({ cardDesignType: 'ARTIST', cardDesignId: c.id, cardImageUrl: undefined })
                       onWrite()
                     }}
                     style={{
-                      height: '104px', padding: 0, borderRadius: '8px', border: '1.5px solid var(--ink)',
-                      background: c.bg, overflow: 'hidden', cursor: 'pointer',
+                      height: '104px', padding: 0, borderRadius: '8px', border: '1.5px solid var(--outline)',
+                      background: c.bg ?? 'var(--card)', overflow: 'hidden', cursor: 'pointer',
                     }}
                   >
                     {c.art && <img src={c.art} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />}
@@ -646,13 +649,13 @@ function WriteStep({ note, update, onNext }: {
     ? { fontFamily: "'Fraunces', serif", fontStyle: 'italic' as const, fontSize: '20px' }
     : penStyle(note.fontChoice)
 
-  // Selected pen fills in solid purple — one obvious pick, no dashed borders
-  // (Emerald, build-42 feedback: the dashed style read as multi-select).
+  // Selected pen: the palette 4 selected state, dashed rosy brown on a
+  // light-blush fill (one pen stays obviously picked by the fill).
   const penPill = (selected: boolean): React.CSSProperties => ({
     flex: 'none', minHeight: '52px', padding: '6px 18px', borderRadius: '26px', cursor: 'pointer',
-    border: selected ? `2px solid ${uv}` : '1.5px solid var(--stone)',
-    background: selected ? uv : '#fff',
-    color: selected ? '#fff' : 'var(--ink)', textTransform: 'none', letterSpacing: 0, fontWeight: 400, lineHeight: 1.2,
+    border: selected ? '2px dashed var(--outline)' : '1.5px solid var(--outline)',
+    background: selected ? 'var(--selected-fill)' : 'var(--card)',
+    color: 'var(--ink)', textTransform: 'none', letterSpacing: 0, fontWeight: 400, lineHeight: 1.2,
   })
 
   return (
@@ -661,8 +664,8 @@ function WriteStep({ note, update, onNext }: {
       <div style={{ marginTop: '22px', position: 'relative' }}>
         <div onClick={() => { if (document.activeElement !== editorRef.current) { editorRef.current?.focus(); placeCaretAtEnd(editorRef.current!) } }} style={{
           height: '232px', boxSizing: 'border-box', overflowY: 'auto', cursor: 'text',
-          border: '1.5px solid var(--stone)', borderRadius: '18px', backgroundColor: '#fff',
-          backgroundImage: 'repeating-linear-gradient(transparent, transparent 35px, #ECE6F5 35px, #ECE6F5 36px)',
+          border: '1.5px solid var(--outline)', borderRadius: '18px', backgroundColor: 'var(--card)',
+          backgroundImage: "url('/brand/paper_texture.png'), repeating-linear-gradient(transparent, transparent 35px, var(--divider) 35px, var(--divider) 36px)",
           backgroundAttachment: 'local', backgroundPosition: '0 18px',
           padding: '18px 18px 14px 20px',
         }}>
@@ -694,7 +697,7 @@ function WriteStep({ note, update, onNext }: {
           )}
         </div>
       </div>
-      <div style={{ margin: '8px 0 0', display: 'flex', justifyContent: isSecretPen || isFlowerPen ? 'space-between' : 'flex-end', alignItems: 'center', fontSize: '13px', fontFamily: 'var(--font-body)', color: 'var(--ink-mid)' }}>
+      <div style={{ margin: '8px 0 0', display: 'flex', justifyContent: isSecretPen || isFlowerPen ? 'space-between' : 'flex-end', alignItems: 'center', fontSize: '13px', fontFamily: 'var(--font-body)', color: 'var(--ink)' }}>
         {isSecretPen && <span>🤫 Prints in the Secret Language — peek at the preview.</span>}
         {isFlowerPen && <span>🌷 Blooms into bouquets — peek at the preview.</span>}
         <span>{count}/{NOTE_LIMIT}</span>
@@ -702,19 +705,20 @@ function WriteStep({ note, update, onNext }: {
 
       {/* I NEED WORDS: prompt chips, with the occasion picker inside */}
       <div style={{ marginTop: '18px' }}>
-        <button aria-expanded={promptsOpen} onClick={() => setPromptsOpen(!promptsOpen)} style={{
-          minHeight: '52px', borderRadius: '16px', border: '2px dashed var(--lime-border)', background: 'var(--lime-tint)',
-          display: 'inline-flex', alignItems: 'center', gap: '10px', padding: '0 14px',
+        <button className="qn-stamp" aria-expanded={promptsOpen} onClick={() => setPromptsOpen(!promptsOpen)} style={{
+          width: '232px', minHeight: '52px', boxSizing: 'border-box', borderRadius: '16px',
+          border: '10px solid transparent', background: 'transparent',
+          display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '10px', padding: '0 14px',
           fontFamily: 'var(--font-body)', fontSize: '14px', fontWeight: 700, letterSpacing: '0.08em',
           color: 'var(--ink)', cursor: 'pointer',
         }}>
           <QEmoji name="thought-bubble" size={30} style={{ height: 'auto' }} />
-          <span>I NEED WORDS</span>
+          <span style={{ flex: 1, textAlign: 'left' }}>I NEED WORDS</span>
           <svg aria-hidden width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" style={{ transform: promptsOpen ? 'rotate(180deg)' : 'none' }}><path d="M6 9l6 6 6-6" /></svg>
         </button>
 
         {promptsOpen && (
-          <div style={{ padding: '14px', border: '1.5px solid var(--stone)', borderRadius: '16px', background: '#fff', marginTop: '10px' }}>
+          <div style={{ padding: '14px', border: '1.5px solid var(--outline)', borderRadius: '16px', background: 'var(--card)', marginTop: '16px' }}>
             <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '12px' }}>
               {OCCASIONS.map((o) => {
                 const selected = occasion === o.value
@@ -723,8 +727,8 @@ function WriteStep({ note, update, onNext }: {
                     display: 'flex', alignItems: 'center', gap: '6px', minHeight: '36px', padding: '4px 12px',
                     borderRadius: '999px', cursor: 'pointer', fontFamily: 'var(--font-body)',
                     fontWeight: 700, fontSize: '12px', letterSpacing: '0.04em', textTransform: 'none',
-                    background: selected ? 'var(--lavender-pale)' : '#fff',
-                    border: selected ? '2px dashed var(--lilac)' : '1.5px solid var(--stone)',
+                    background: selected ? 'var(--selected-fill)' : 'var(--card)',
+                    border: selected ? '2px dashed var(--outline)' : '1.5px solid var(--outline)',
                     color: 'var(--ink)',
                   }}>
                     <QEmoji name={o.art} size={16} />{o.label}
@@ -735,7 +739,7 @@ function WriteStep({ note, update, onNext }: {
             {visible.map((p) => (
               <button key={p} onClick={() => insertPrompt(p)} style={{
                 display: 'block', width: '100%', textAlign: 'left', padding: '10px 12px', marginBottom: '8px',
-                borderRadius: '10px', border: '1.5px solid var(--stone)', background: 'var(--cream)',
+                borderRadius: '10px', border: '1.5px solid var(--outline)', background: 'var(--cream)',
                 fontFamily: 'var(--font-body)', fontSize: '14px', color: 'var(--ink)', cursor: 'pointer',
                 textTransform: 'none', letterSpacing: 0, fontWeight: 400,
               }}>
@@ -744,7 +748,7 @@ function WriteStep({ note, update, onNext }: {
             ))}
             {allPrompts.length > 3 && (
               <button onClick={() => setPromptPage((promptPage + 1) % Math.ceil(allPrompts.length / 3))} style={{
-                background: 'none', border: 'none', color: uv, cursor: 'pointer',
+                background: 'none', border: 'none', color: 'var(--stamp-center)', cursor: 'pointer',
                 fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '12px', letterSpacing: '0.1em',
               }}>
                 ↻ MORE PROMPTS
@@ -757,7 +761,7 @@ function WriteStep({ note, update, onNext }: {
       {/* Pick your pen */}
       <h2 style={{ margin: '22px 0 0', fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: '18px', color: 'var(--ink)' }}>Pick your pen</h2>
       {!hasHandwriting && (
-        <a href="/handwriting" style={{ display: 'block', fontFamily: 'var(--font-body)', fontSize: '13px', color: uv, margin: '6px 0 0', textDecoration: 'underline' }}>Teach QuteNote your own handwriting →</a>
+        <a href="/handwriting" style={{ display: 'block', fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--stamp-center)', margin: '6px 0 0', textDecoration: 'underline' }}>Teach QuteNote your own handwriting →</a>
       )}
       <div role="radiogroup" aria-label="Pen" style={{ marginTop: '12px', display: 'flex', gap: '10px', overflowX: 'auto', scrollbarWidth: 'none', paddingBottom: '2px' }}>
         {hasHandwriting && (
@@ -790,7 +794,7 @@ function WriteStep({ note, update, onNext }: {
       {note.voiceDataUrl ? (
         <div style={{
           marginTop: '20px', display: 'flex', alignItems: 'center', gap: '12px',
-          background: '#fff', border: `2px solid ${uv}`, borderRadius: '16px', padding: '12px 16px',
+          background: 'var(--card)', border: '2px solid var(--outline)', borderRadius: '16px', padding: '12px 16px',
         }}>
           <span style={{ fontSize: '24px' }} aria-hidden>🎤</span>
           <span style={{ flex: 1, textAlign: 'left', fontFamily: 'var(--font-body)', fontSize: '14px', fontWeight: 700, color: 'var(--ink)' }}>
@@ -799,7 +803,7 @@ function WriteStep({ note, update, onNext }: {
           </span>
           <button onClick={() => setRecording(true)} style={{
             background: 'none', border: 'none', cursor: 'pointer', padding: '4px',
-            fontFamily: 'var(--font-body)', fontSize: '13px', fontWeight: 700, color: uv, letterSpacing: '0.06em',
+            fontFamily: 'var(--font-body)', fontSize: '13px', fontWeight: 700, color: 'var(--stamp-center)', letterSpacing: '0.06em',
           }}>REDO</button>
           <button aria-label="Remove voice note" onClick={() => update({ voiceDataUrl: undefined, voiceDuration: undefined })} style={{
             background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ink-muted)', fontSize: '16px', padding: '4px',
@@ -807,11 +811,11 @@ function WriteStep({ note, update, onNext }: {
         </div>
       ) : (
         <button onClick={() => { trackFeature('voice-note'); setRecording(true) }} style={{
-          marginTop: '20px', width: '100%', minHeight: '56px', borderRadius: '16px',
-          border: '2px dashed var(--lilac)', background: 'var(--lavender-pale)',
+          marginTop: '20px', width: '100%', minHeight: '56px', borderRadius: '16px', boxSizing: 'border-box',
+          border: '2px solid var(--outline)', background: 'var(--card)',
           display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px',
           fontFamily: 'var(--font-body)', fontSize: '14px', fontWeight: 700, letterSpacing: '0.08em',
-          color: uv, cursor: 'pointer',
+          color: 'var(--ink)', cursor: 'pointer',
         }}>
           <span style={{ fontSize: '22px' }} aria-hidden>🎤</span>
           ADD A VOICE NOTE
@@ -900,7 +904,7 @@ function ReviewStep({ note, onSent, onEditNote, onEditRecipient, onSaveDraft, ed
 
   // Free mode: no prices, just the monthly allowance count.
   const allowanceLine = user && (user.giftedCredits ?? 0) > 0 && (user.notesUsed ?? 0) >= (user.notesAllowance ?? 0)
-    ? 'Your extra card — ready to mail'
+    ? 'Your extra card, ready to mail'
     : user && typeof user.notesAllowance === 'number' && user.notesAllowance > 0
       ? `${Math.min((user.notesUsed ?? 0) + 1, user.notesAllowance)} of your ${user.notesAllowance} this month`
       : 'Included this month'

@@ -3,9 +3,8 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import { api } from '../lib/api'
 import QEmoji from '../components/QEmoji'
 
-// Add a date — Oct 15 redesign (screens/14-add-a-date.html). No tab bar here.
+// Add a date, palette 4 restyle (screens/14-add-a-date.html). No tab bar here.
 
-const uv = '#5A32D6'
 const ROW = 34 // wheel row height, 5 rows visible
 
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
@@ -27,10 +26,10 @@ interface SearchResult { id: string; username: string; displayName: string }
 
 const sectionLabel: React.CSSProperties = {
   margin: '20px 0 10px', fontSize: '13px', fontWeight: 700,
-  color: 'var(--ink-mid)', fontFamily: 'var(--font-body)',
+  color: 'var(--ink)', fontFamily: 'var(--font-body)',
 }
 const whiteCard: React.CSSProperties = {
-  background: '#fff', border: '1.5px solid var(--stone)', borderRadius: '18px',
+  background: 'var(--card)', border: '1.5px solid var(--stone)', borderRadius: '18px',
 }
 
 // One scroll-snap wheel column. The highlight band is drawn by the parent.
@@ -147,7 +146,7 @@ export default function AddDatePage() {
   async function handleSave() {
     if (saving) return
     if (!name.trim()) {
-      setFormError("Add who it's for — a name or nickname up top.")
+      setFormError("Add who it's for, a name or nickname up top.")
       return
     }
     const typeDef = TYPES.find((t) => t.key === type)
@@ -195,7 +194,7 @@ export default function AddDatePage() {
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <button onClick={() => navigate('/dates')} aria-label="Back to Important dates" style={{
               width: '44px', height: '44px', borderRadius: '50%', border: 'none',
-              background: 'var(--lavender-light)', color: 'var(--ink)', cursor: 'pointer',
+              background: '#E3D5CC', color: 'var(--ink)', cursor: 'pointer',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}>
               <svg aria-hidden width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 5l-7 7 7 7" /></svg>
@@ -203,7 +202,7 @@ export default function AddDatePage() {
           </div>
           <div style={{ marginTop: '14px', display: 'flex', alignItems: 'center', gap: '12px' }}>
             <h1 style={{ margin: 0, flex: 1, minWidth: 0, fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: '26px', lineHeight: 1.12, letterSpacing: '-0.02em', color: 'var(--ink)' }}>
-              Add a date worth mailing.
+              Add a date worth celebrating.
             </h1>
             <QEmoji name="calendar" size={58} style={{ height: 'auto', flex: 'none', transform: 'rotate(5deg)' }} />
           </div>
@@ -214,9 +213,9 @@ export default function AddDatePage() {
 
         {/* Who's it for */}
         <label style={{ ...whiteCard, marginTop: '18px', padding: '12px 16px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <svg aria-hidden width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ink-mid)" strokeWidth="2" strokeLinecap="round"><circle cx="11" cy="11" r="6.5" /><path d="M16 16l4.5 4.5" /></svg>
+          <svg aria-hidden width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" strokeWidth="2" strokeLinecap="round"><circle cx="11" cy="11" r="6.5" /><path d="M16 16l4.5 4.5" /></svg>
           <span style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '4px', minWidth: 0 }}>
-            <span style={{ fontSize: '13px', color: 'var(--ink-mid)', fontFamily: 'var(--font-body)' }}>Who's it for?</span>
+            <span style={{ fontSize: '13px', color: 'var(--ink)', fontFamily: 'var(--font-body)' }}>Who's it for?</span>
             <input
               value={name}
               onChange={(e) => { setName(e.target.value); setPicked(false) }}
@@ -234,7 +233,7 @@ export default function AddDatePage() {
             {results.slice(0, 4).map((r) => (
               <button key={r.id} onClick={() => { setName(r.displayName); setPicked(true); setResults([]) }} style={{
                 fontSize: '13px', padding: '7px 14px', borderRadius: '999px', cursor: 'pointer',
-                border: '1.5px solid var(--stone)', background: '#fff', color: 'var(--ink)',
+                border: '1.5px solid var(--stone)', background: 'var(--card)', color: 'var(--ink)',
                 fontFamily: 'var(--font-body)', textTransform: 'none', letterSpacing: 0, fontWeight: 400,
               }}>
                 {r.displayName} <span style={{ color: 'var(--ink-mid)' }}>@{r.username}</span>
@@ -256,8 +255,8 @@ export default function AddDatePage() {
                 onClick={() => setType(t.key)}
                 style={{
                   flex: 'none', minHeight: '44px', padding: '0 14px', borderRadius: '22px',
-                  border: selected ? '2px dashed var(--lilac)' : '1.5px solid var(--stone)',
-                  background: selected ? 'var(--lavender-pale)' : '#fff',
+                  border: selected ? '2px dashed var(--stone)' : '1.5px solid var(--stone)',
+                  background: selected ? 'var(--selected-fill)' : 'var(--card)',
                   display: 'flex', alignItems: 'center', gap: '8px',
                   fontFamily: 'var(--font-body)', fontSize: '14px', fontWeight: 700, color: 'var(--ink)',
                   cursor: 'pointer', textTransform: 'none', letterSpacing: 0,
@@ -271,7 +270,7 @@ export default function AddDatePage() {
         </div>
         {TYPES.find((t) => t.key === type)?.askOccasion && (
           <label style={{ ...whiteCard, marginTop: '10px', padding: '12px 16px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
-            <span style={{ fontSize: '13px', color: 'var(--ink-mid)', fontFamily: 'var(--font-body)' }}>What's the occasion?{type !== 'Other' ? ' (optional)' : ''}</span>
+            <span style={{ fontSize: '13px', color: 'var(--ink)', fontFamily: 'var(--font-body)' }}>What's the occasion?{type !== 'Other' ? ' (optional)' : ''}</span>
             <input
               value={occasion}
               onChange={(e) => setOccasion(e.target.value)}
@@ -290,7 +289,7 @@ export default function AddDatePage() {
         <div role="group" aria-label="Date" style={{ ...whiteCard, position: 'relative', padding: '6px 10px', display: 'flex', gap: '4px' }}>
           <span aria-hidden style={{
             position: 'absolute', left: '8px', right: '8px', top: `${6 + ROW * 2}px`, height: `${ROW}px`,
-            borderRadius: '12px', background: 'var(--lavender-pale)', border: '1.5px solid var(--lilac)',
+            borderRadius: '12px', background: 'var(--selected-fill)', border: '1.5px solid var(--stone)',
             boxSizing: 'border-box',
           }} />
           <Wheel label="Month" flex={1.6} items={MONTHS} index={monthIndex} onChange={setMonthIndex} />
@@ -301,7 +300,7 @@ export default function AddDatePage() {
         <div style={{ ...whiteCard, marginTop: '14px', padding: '12px 16px', display: 'flex', alignItems: 'center', gap: '12px' }}>
           <span style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '2px' }}>
             <span style={{ fontSize: '15px', fontWeight: 700, fontFamily: 'var(--font-body)', color: 'var(--ink)' }}>Every year</span>
-            <span style={{ fontSize: '13px', color: 'var(--ink-mid)', fontFamily: 'var(--font-body)' }}>We'll buzz you 7 days before.</span>
+            <span style={{ fontSize: '13px', color: 'var(--ink)', fontFamily: 'var(--font-body)' }}>We'll buzz you 7 days before.</span>
           </span>
           <button
             role="switch"
@@ -310,14 +309,14 @@ export default function AddDatePage() {
             onClick={() => setEveryYear(!everyYear)}
             style={{
               width: '52px', height: '32px', flex: 'none', borderRadius: '16px',
-              border: '1.5px solid var(--ink)', background: everyYear ? 'var(--lime)' : 'var(--stone)',
+              border: '1.5px solid var(--stone)', background: everyYear ? 'var(--lime)' : '#D9CFC2',
               position: 'relative', padding: 0, cursor: 'pointer',
             }}
           >
             <span style={{
               position: 'absolute', top: '2px', left: everyYear ? '22px' : '2px',
-              width: '25px', height: '25px', borderRadius: '50%', background: '#fff',
-              border: '1.5px solid var(--ink)', boxSizing: 'border-box', transition: 'left 0.15s ease',
+              width: '25px', height: '25px', borderRadius: '50%', background: 'var(--card)',
+              border: '1.5px solid var(--stone)', boxSizing: 'border-box', transition: 'left 0.15s ease',
             }} />
           </button>
         </div>
@@ -330,10 +329,10 @@ export default function AddDatePage() {
 
         <div aria-hidden style={{ flex: 1, minHeight: '24px' }} />
         <button onClick={handleSave} disabled={saving} style={{
-          height: '56px', flex: 'none', borderRadius: '28px', border: 'none',
-          background: uv, color: '#fff', fontFamily: 'var(--font-body)', fontSize: '15px',
+          height: '56px', flex: 'none', borderRadius: '28px', border: '2px solid var(--stone)',
+          background: 'var(--btn)', color: 'var(--ink)', fontFamily: 'var(--font-body)', fontSize: '15px',
           fontWeight: 700, letterSpacing: '0.08em', cursor: saving ? 'default' : 'pointer',
-          opacity: saving ? 0.7 : 1,
+          boxSizing: 'border-box', opacity: saving ? 0.7 : 1,
         }}>
           {saving ? 'SAVING…' : 'SAVE DATE'}
         </button>

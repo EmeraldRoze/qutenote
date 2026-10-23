@@ -12,8 +12,6 @@ import QEmoji from '../components/QEmoji'
 // round buttons up top, email form below. Birthday is NOT collected here; it
 // has its own step at /signup/birthday.
 
-const uv = '#5A32D6'
-
 const col: React.CSSProperties = {
   width: '100%', maxWidth: '480px', margin: '0 auto', padding: '0 20px', boxSizing: 'border-box',
 }
@@ -21,13 +19,13 @@ const fieldStyle: React.CSSProperties = {
   border: 0, outline: 'none', background: 'transparent', padding: 0,
   fontFamily: 'var(--font-body)', fontSize: '16px', color: 'var(--ink)', width: '100%',
 }
-const fieldLabel: React.CSSProperties = { fontSize: '13px', color: 'var(--ink-mid)' }
+const fieldLabel: React.CSSProperties = { fontSize: '13px', color: 'var(--ink)' }
 const fieldRow: React.CSSProperties = {
-  display: 'flex', flexDirection: 'column', gap: '4px', padding: '12px 16px', borderBottom: '1.5px solid var(--divider)',
+  display: 'flex', flexDirection: 'column', gap: '4px', padding: '12px 16px', borderBottom: '1.5px solid var(--outline)',
 }
 const roundBtn: React.CSSProperties = {
-  width: '68px', height: '68px', borderRadius: '50%', border: '2px solid var(--ink)',
-  background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
+  width: '68px', height: '68px', borderRadius: '50%', border: '2px solid var(--outline)',
+  background: 'var(--card)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
 }
 
 export default function SignUpPage() {
@@ -64,7 +62,7 @@ export default function SignUpPage() {
         <div style={col}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <button onClick={() => navigate('/welcome')} aria-label="Back" style={{
-              width: '44px', height: '44px', borderRadius: '50%', background: 'var(--lavender-light)',
+              width: '44px', height: '44px', borderRadius: '50%', background: 'var(--light-blush)',
               border: 'none', cursor: 'pointer', color: 'var(--ink)', display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 5l-7 7 7 7" /></svg>
@@ -104,7 +102,7 @@ export default function SignUpPage() {
                   setError(err?.response?.data?.error ?? `Apple sign-in didn't go through (${message || 'unknown error'}). Try again.`)
                 }
               }}
-              style={{ ...roundBtn, color: '#000', paddingBottom: '3px' }}
+              style={{ ...roundBtn, color: 'var(--ink)', paddingBottom: '3px' }}
             >
               <svg width="24" height="28" viewBox="0 0 170 200" fill="currentColor"><path d="M150.4 69.2c-1.1.8-20.3 11.6-20.3 35.6 0 27.8 24.4 37.6 25.1 37.8-.1.6-3.9 13.4-12.9 26.5-8 11.5-16.4 23-29.1 23s-16-7.4-30.7-7.4c-14.3 0-19.4 7.6-31 7.6s-19.7-10.7-29-23.8C11.8 153.1 3 129.3 3 106.7c0-36.2 23.5-55.4 46.7-55.4 12.3 0 22.6 8.1 30.3 8.1 7.4 0 18.9-8.6 32.9-8.6 5.3 0 24.5.5 37.5 18.4zM106.3 35.5c5.8-6.9 9.9-16.5 9.9-26.1 0-1.3-.1-2.7-.4-3.8-9.4.4-20.7 6.3-27.4 14.1-5.3 6-10.3 15.6-10.3 25.3 0 1.5.2 2.9.3 3.4.6.1 1.6.2 2.6.2 8.5 0 19.1-5.7 25.3-13.1z" /></svg>
             </button>
@@ -125,20 +123,20 @@ export default function SignUpPage() {
           </a>
         </div>
 
-        <div style={{ margin: '20px 0', display: 'flex', alignItems: 'center', gap: '12px', fontSize: '14px', color: 'var(--ink-mid)' }}>
-          <span style={{ flex: 1, height: '1.5px', background: 'var(--stone)' }} />
+        <div style={{ margin: '20px 0', display: 'flex', alignItems: 'center', gap: '12px', fontSize: '14px', color: 'var(--ink)' }}>
+          <span style={{ flex: 1, height: '1.5px', background: '#D9CFC2' }} />
           or use your email
-          <span style={{ flex: 1, height: '1.5px', background: 'var(--stone)' }} />
+          <span style={{ flex: 1, height: '1.5px', background: '#D9CFC2' }} />
         </div>
 
         {error && (
-          <div style={{ background: 'var(--error-pale)', border: '1px solid rgba(224,78,107,0.3)', color: 'var(--error)', borderRadius: '10px', padding: '12px 16px', marginBottom: '16px', fontSize: '14px' }}>
+          <div style={{ background: 'var(--error-pale)', border: '1px solid var(--error)', color: 'var(--error)', borderRadius: '10px', padding: '12px 16px', marginBottom: '16px', fontSize: '14px' }}>
             {error}
           </div>
         )}
 
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
-          <div style={{ background: '#FFFFFF', border: '1.5px solid var(--stone)', borderRadius: '18px', overflow: 'hidden' }}>
+          <div style={{ background: 'var(--card)', border: '1.5px solid var(--outline)', borderRadius: '18px', overflow: 'hidden' }}>
             <label style={fieldRow}>
               <span style={fieldLabel}>Your name</span>
               <input
@@ -150,7 +148,7 @@ export default function SignUpPage() {
             <label style={fieldRow}>
               <span style={fieldLabel}>Username</span>
               <span style={{ display: 'flex', alignItems: 'center', fontSize: '17px' }}>
-                <span style={{ color: uv, fontWeight: 700 }}>@</span>
+                <span style={{ color: 'var(--stamp-center)', fontWeight: 700 }}>@</span>
                 <input
                   autoComplete="username" required style={fieldStyle}
                   value={form.username}
@@ -178,7 +176,7 @@ export default function SignUpPage() {
               </label>
               <button type="button" onClick={() => setShowPassword((s) => !s)} style={{
                 minHeight: '44px', border: 0, background: 'transparent', fontFamily: 'var(--font-body)',
-                fontSize: '13px', fontWeight: 700, letterSpacing: '0.08em', color: uv, cursor: 'pointer',
+                fontSize: '13px', fontWeight: 700, letterSpacing: '0.08em', color: 'var(--stamp-center)', cursor: 'pointer',
               }}>
                 {showPassword ? 'HIDE' : 'SHOW'}
               </button>
@@ -190,16 +188,17 @@ export default function SignUpPage() {
               type="submit"
               disabled={loading}
               style={{
-                height: '56px', borderRadius: '28px', border: 'none', cursor: loading ? 'not-allowed' : 'pointer',
-                background: loading ? 'var(--lavender-light)' : uv, color: '#fff',
+                height: '56px', borderRadius: '28px', border: '2px solid #B4897A', boxSizing: 'border-box',
+                cursor: loading ? 'not-allowed' : 'pointer',
+                background: loading ? 'var(--light-blush)' : 'var(--btn)', color: 'var(--ink)',
                 fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '15px', letterSpacing: '0.08em',
               }}
             >
               {loading ? 'CREATING…' : 'CREATE ACCOUNT'}
             </button>
-            <p style={{ margin: 0, minHeight: '44px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', fontSize: '15px', color: 'var(--ink-mid)' }}>
+            <p style={{ margin: 0, minHeight: '44px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', fontSize: '15px', color: 'var(--ink)' }}>
               Already a QT?{' '}
-              <button type="button" onClick={() => navigate('/login')} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', fontWeight: 700, color: uv, fontFamily: 'var(--font-body)', fontSize: '15px', textTransform: 'none', letterSpacing: 0 }}>
+              <button type="button" onClick={() => navigate('/login')} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', fontWeight: 700, color: 'var(--stamp-center)', fontFamily: 'var(--font-body)', fontSize: '15px', textTransform: 'none', letterSpacing: 0 }}>
                 Log in
               </button>
             </p>

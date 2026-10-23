@@ -9,16 +9,14 @@ import QEmoji from '../../components/QEmoji'
 // restyled for the onboarding flow. On save → /signup/birthday.
 // The design shows no skip path, so there isn't one.
 
-const uv = '#5A32D6'
-
 const col: React.CSSProperties = {
   width: '100%', maxWidth: '480px', margin: '0 auto', padding: '0 24px', boxSizing: 'border-box',
 }
-const labelStyle: React.CSSProperties = { fontSize: '13px', color: 'var(--ink-mid)' }
+const labelStyle: React.CSSProperties = { fontSize: '13px', color: 'var(--ink)' }
 const inputStyle: React.CSSProperties = {
-  height: '56px', boxSizing: 'border-box', borderRadius: '14px', border: '1.5px solid #CFC5E8',
+  height: '56px', boxSizing: 'border-box', borderRadius: '14px', border: '1.5px solid #B4897A',
   padding: '0 16px', fontFamily: 'var(--font-body)', fontSize: '16px', color: 'var(--ink)',
-  background: '#FFFFFF', outline: 'none', width: '100%',
+  background: 'var(--card)', outline: 'none', width: '100%',
 }
 
 export default function SignupAddressPage() {
@@ -61,7 +59,7 @@ export default function SignupAddressPage() {
         <div style={col}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <button onClick={() => navigate(-1)} aria-label="Back" style={{
-              width: '44px', height: '44px', borderRadius: '50%', background: 'var(--lavender-light)',
+              width: '44px', height: '44px', borderRadius: '50%', background: 'var(--light-blush)',
               border: 'none', cursor: 'pointer', color: 'var(--ink)', display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 5l-7 7 7 7" /></svg>
@@ -74,17 +72,18 @@ export default function SignupAddressPage() {
             }}>
               Where do <br />they go?
             </h1>
-            <QEmoji name="house" size={64} style={{ flex: 'none', transform: 'rotate(-4deg)' }} />
+            <QEmoji name="house" size={64} style={{ flex: 'none' }} />
           </div>
         </div>
       </header>
 
       <form onSubmit={handleSubmit} style={{ ...col, flex: 1, display: 'flex', flexDirection: 'column', paddingBottom: '40px' }}>
         <div style={{
-          marginTop: '18px', background: 'var(--lavender-light)', borderRadius: '14px', padding: '14px 16px',
+          marginTop: '18px', background: 'var(--light-blue)', border: '1.5px solid var(--outline)',
+          borderRadius: '14px', padding: '14px 16px',
           display: 'flex', gap: '12px', alignItems: 'flex-start',
         }}>
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={uv} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flex: 'none', marginTop: '1px' }}>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#9E625F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flex: 'none', marginTop: '1px' }}>
             <rect x="5" y="11" width="14" height="10" rx="2" /><path d="M8 11V8a4 4 0 0 1 8 0v3" />
           </svg>
           <p style={{ margin: 0, fontSize: '15px', lineHeight: 1.45 }}>
@@ -93,7 +92,7 @@ export default function SignupAddressPage() {
         </div>
 
         {error && (
-          <div style={{ background: 'var(--error-pale)', border: '1px solid rgba(224,78,107,0.3)', color: 'var(--error)', borderRadius: '10px', padding: '12px 16px', marginTop: '14px', fontSize: '14px' }}>
+          <div style={{ background: 'var(--error-pale)', border: '1px solid var(--error)', color: 'var(--error)', borderRadius: '10px', padding: '12px 16px', marginTop: '14px', fontSize: '14px' }}>
             {error}
           </div>
         )}
@@ -149,9 +148,9 @@ export default function SignupAddressPage() {
           type="submit"
           disabled={saving}
           style={{
-            height: '56px', borderRadius: '28px', border: 'none', flex: 'none',
+            height: '56px', borderRadius: '28px', border: '2px solid #B4897A', boxSizing: 'border-box', flex: 'none',
             cursor: saving ? 'not-allowed' : 'pointer',
-            background: saving ? 'var(--lavender-light)' : uv, color: '#FFFFFF',
+            background: saving ? 'var(--light-blush)' : 'var(--btn)', color: 'var(--ink)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             fontFamily: 'var(--font-body)', fontSize: '15px', fontWeight: 700, letterSpacing: '0.08em',
           }}

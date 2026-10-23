@@ -7,8 +7,6 @@ import { api } from '../lib/api'
 // names on every step, the feature-discovery board, and the brick-wall log.
 // Admin-only; reads /usage/summary.
 
-const uv = '#5A32D6'
-
 const SEND_STEPS = ['card', 'recipient', 'write', 'review', 'mailed']
 const SETUP_STEPS = ['account-created', 'address-saved', 'setup-complete']
 const FEATURES = [
@@ -39,7 +37,7 @@ export default function AdminAnalyticsPage() {
 
   if (!user?.isAdmin) return <p style={{ padding: 40, fontFamily: 'var(--font-body)' }}>Admins only.</p>
 
-  const card: React.CSSProperties = { background: '#fff', border: '1.5px solid var(--stone)', borderRadius: '16px', padding: '16px', marginTop: '14px' }
+  const card: React.CSSProperties = { background: 'var(--card)', border: '1.5px solid var(--stone)', borderRadius: '16px', padding: '16px', marginTop: '14px' }
   const h2: React.CSSProperties = { margin: '0 0 10px', fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: '18px', color: 'var(--ink)' }
   const small: React.CSSProperties = { fontFamily: 'var(--font-body)', fontSize: '12px', color: 'var(--ink-mid)' }
 
@@ -56,8 +54,8 @@ export default function AdminAnalyticsPage() {
               <div style={{ display: 'flex', justifyContent: 'space-between', fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--ink)' }}>
                 <span>{s}</span><strong>{who.length}</strong>
               </div>
-              <div style={{ height: '10px', borderRadius: '5px', background: 'var(--pink-pale)', overflow: 'hidden' }}>
-                <div style={{ width: `${(who.length / max) * 100}%`, height: '100%', background: uv }} />
+              <div style={{ height: '10px', borderRadius: '5px', background: '#EBDDD6', overflow: 'hidden' }}>
+                <div style={{ width: `${(who.length / max) * 100}%`, height: '100%', background: '#EEFC4E' }} />
               </div>
               {who.length > 0 && <div style={small}>{who.join(', ')}</div>}
             </div>
@@ -71,7 +69,7 @@ export default function AdminAnalyticsPage() {
   return (
     <div style={{ minHeight: '100vh', maxWidth: '560px', margin: '0 auto', padding: '20px 20px 60px' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-        <button onClick={() => navigate(-1)} aria-label="Back" style={{ width: '36px', height: '36px', borderRadius: '50%', background: 'var(--lavender-pale)', border: 'none', cursor: 'pointer', color: uv }}>←</button>
+        <button onClick={() => navigate(-1)} aria-label="Back" style={{ width: '44px', height: '44px', borderRadius: '50%', background: '#E3D5CC', border: 'none', cursor: 'pointer', color: '#4A2424' }}>←</button>
         <h1 style={{ margin: 0, fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: '24px', color: 'var(--ink)' }}>Usability</h1>
         <div style={{ marginLeft: 'auto', display: 'flex', gap: '6px' }}>
           {[7, 30].map((d) => (

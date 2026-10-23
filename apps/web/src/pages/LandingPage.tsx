@@ -4,15 +4,15 @@ import { api } from '../lib/api'
 // QuteNote marketing homepage — faithful port of the Oct 2026 website redesign
 // (QuteNote Website – Homepage · desktop.html). Artwork lives in /public/site.
 
-const UV = '#5A32D6'
-const INK = '#2B2238'
+const UV = '#9E625F'
+const INK = '#4A2424'
 const INK_MID = '#5C5468'
 const INK_LIGHT = '#766E82'
 const CREAM = '#FBF8F4'
 const PALE = '#EEE6FA'
 const LILAC = '#D9C9F1'
 const STONE = '#E6E1DC'
-const LIME = '#C6FF3D'
+const LIME = '#EEFC4E'
 
 const mono = "'Anonymous Pro', monospace"
 const display = "'Unbounded', sans-serif"

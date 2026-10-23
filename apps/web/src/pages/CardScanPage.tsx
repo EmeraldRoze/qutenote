@@ -13,7 +13,6 @@ import { trackFeature } from '../lib/analytics'
 // Reply · Decode my secret message · Listen to voice note — the last two
 // grey themselves out when the card doesn't have one.
 
-const uv = '#5A32D6'
 const TESTFLIGHT_LINK = 'https://testflight.apple.com/join/BRW6MMEJ'
 
 // If someone scans before they have an account, remember the card so the
@@ -34,10 +33,10 @@ interface ScannedCard {
 }
 
 const bigButton = (active: boolean, filled: boolean): React.CSSProperties => ({
-  width: '100%', minHeight: '54px', borderRadius: '27px', cursor: active ? 'pointer' : 'default',
-  border: filled ? 'none' : `1.5px solid ${active ? uv : 'var(--stone)'}`,
-  background: filled ? uv : '#fff',
-  color: filled ? '#fff' : active ? uv : 'var(--ink-muted)',
+  width: '100%', minHeight: '56px', borderRadius: '999px', cursor: active ? 'pointer' : 'default',
+  border: '2px solid #B4897A',
+  background: filled ? '#BADAFF' : '#FBF8F3',
+  color: active ? '#4A2424' : '#A07D7D',
   opacity: active ? 1 : 0.55,
   fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '14px', letterSpacing: '0.08em',
 })
@@ -155,12 +154,12 @@ export default function CardScanPage() {
           {art ? (
             <img src={art} alt={`The front of your card from ${card.sender.displayName}`} style={{
               maxHeight: '300px', maxWidth: '92%', width: 'auto', borderRadius: '6px',
-              transform: 'rotate(-2deg)', boxShadow: '0 14px 28px rgba(35, 26, 58, 0.2)',
+              transform: 'rotate(-2deg)', boxShadow: '0 14px 28px rgba(74, 36, 36, 0.2)',
             }} />
           ) : (
             <div style={{
               height: '280px', width: '210px', borderRadius: '6px', background: design?.bg ?? 'var(--lavender-pale)',
-              transform: 'rotate(-2deg)', boxShadow: '0 14px 28px rgba(35, 26, 58, 0.2)',
+              transform: 'rotate(-2deg)', boxShadow: '0 14px 28px rgba(74, 36, 36, 0.2)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}>
               <QEmoji name="envelope" size={56} />
@@ -199,7 +198,7 @@ export default function CardScanPage() {
         </div>
 
         {decoded && hasSecret && (
-          <div style={{ marginTop: '16px', background: '#fff', border: '1.5px solid var(--stone)', borderRadius: '14px', padding: '16px' }}>
+          <div style={{ marginTop: '16px', background: 'var(--card)', border: '1.5px solid var(--stone)', borderRadius: '14px', padding: '16px' }}>
             <p style={{ margin: 0, fontFamily: "'Fraunces', serif", fontStyle: 'italic', fontSize: '18px', lineHeight: 1.7, color: 'var(--note-ink)', whiteSpace: 'pre-wrap', overflowWrap: 'break-word' }}>
               {card.noteText}
             </p>
@@ -207,7 +206,7 @@ export default function CardScanPage() {
         )}
 
         {playing && hasVoice && (
-          <p aria-live="polite" style={{ margin: '12px 0 0', textAlign: 'center', fontFamily: 'var(--font-body)', fontSize: '13px', color: uv }}>
+          <p aria-live="polite" style={{ margin: '12px 0 0', textAlign: 'center', fontFamily: 'var(--font-body)', fontSize: '13px', color: '#4A2424' }}>
             🎤 {firstName} is talking to you…
           </p>
         )}

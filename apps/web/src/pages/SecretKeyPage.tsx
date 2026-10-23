@@ -5,8 +5,6 @@ import { encodeSecret, SECRET_FONT_FAMILY } from '../lib/secret'
 // vowel rules, and the standalone words — pretty enough to screenshot and
 // share with someone who just got a mysterious postcard.
 
-const uv = '#5A32D6'
-
 const ROW1 = 'abcdefghijklm'.split('')
 const ROW2 = 'nopqrstuvwxyz'.split('')
 
@@ -16,7 +14,7 @@ export default function SecretKeyPage() {
   const cell = (ch: string) => (
     <div key={ch} style={{
       display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px',
-      background: '#fff', border: '1.5px solid var(--stone)', borderRadius: '12px', padding: '8px 2px 4px',
+      background: 'var(--card)', border: '1.5px solid var(--stone)', borderRadius: '12px', padding: '8px 2px 4px',
     }}>
       <span style={{ fontFamily: SECRET_FONT_FAMILY, fontSize: '30px', lineHeight: '44px', color: 'var(--ink)' }}>{ch}</span>
       <span style={{ fontFamily: 'var(--font-body)', fontSize: '12px', fontWeight: 700, color: 'var(--ink-mid)', textTransform: 'uppercase' }}>{ch}</span>
@@ -34,8 +32,8 @@ export default function SecretKeyPage() {
     <div style={{ minHeight: '100vh', paddingBottom: '60px' }}>
       <nav style={{ background: 'var(--cream)', borderBottom: '1px solid var(--stone)', padding: '14px 18px', display: 'flex', alignItems: 'center', gap: '14px' }}>
         <button onClick={() => navigate(-1)} aria-label="Back" style={{
-          width: '36px', height: '36px', borderRadius: '50%', background: 'var(--lavender-pale)',
-          border: 'none', cursor: 'pointer', color: uv, display: 'flex', alignItems: 'center', justifyContent: 'center',
+          width: '44px', height: '44px', borderRadius: '50%', background: '#E3D5CC',
+          border: 'none', cursor: 'pointer', color: '#4A2424', display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M15 6l-6 6 6 6" /></svg>
         </button>
@@ -52,7 +50,7 @@ export default function SecretKeyPage() {
           {ROW2.map(cell)}
         </div>
 
-        <div style={{ marginTop: '22px', background: 'var(--lavender-pale)', border: '2px dashed var(--lilac)', borderRadius: '16px', padding: '14px 16px' }}>
+        <div style={{ marginTop: '22px', background: '#F4ECE6', border: '2px dashed #B4897A', borderRadius: '16px', padding: '14px 16px' }}>
           <p style={{ margin: 0, fontFamily: 'var(--font-body)', fontSize: '14px', fontWeight: 700, color: 'var(--ink)' }}>The vowel rules</p>
           <ul style={{ margin: '8px 0 0', paddingLeft: '18px', fontFamily: 'var(--font-body)', fontSize: '14px', color: 'var(--ink)', lineHeight: 1.55 }}>
             <li>a, e, i and u tuck <strong>under</strong> the letter before them</li>
@@ -63,7 +61,7 @@ export default function SecretKeyPage() {
           </ul>
         </div>
 
-        <div style={{ marginTop: '18px', display: 'flex', justifyContent: 'space-around', flexWrap: 'wrap', gap: '10px', background: '#fff', border: '1.5px solid var(--stone)', borderRadius: '16px', padding: '14px' }}>
+        <div style={{ marginTop: '18px', display: 'flex', justifyContent: 'space-around', flexWrap: 'wrap', gap: '10px', background: 'var(--card)', border: '1.5px solid var(--stone)', borderRadius: '16px', padding: '14px' }}>
           {['love', 'amy', 'zoo', 'I', 'a'].map(example)}
         </div>
       </div>

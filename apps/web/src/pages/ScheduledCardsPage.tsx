@@ -6,8 +6,6 @@ import QEmoji from '../components/QEmoji'
 // Scheduled cards (Settings → Scheduled cards): everything waiting to mail,
 // editable or cancelable until the day it goes to print.
 
-const uv = '#5A32D6'
-
 interface ScheduledNote {
   id: string
   noteText: string
@@ -50,8 +48,8 @@ export default function ScheduledCardsPage() {
     <div style={{ minHeight: '100vh', paddingBottom: '60px' }}>
       <nav style={{ background: 'var(--cream)', borderBottom: '1px solid var(--stone)', padding: '14px 18px', display: 'flex', alignItems: 'center', gap: '14px' }}>
         <button onClick={() => navigate(-1)} aria-label="Back" style={{
-          width: '36px', height: '36px', borderRadius: '50%', background: 'var(--lavender-pale)',
-          border: 'none', cursor: 'pointer', color: uv, display: 'flex', alignItems: 'center', justifyContent: 'center',
+          width: '44px', height: '44px', borderRadius: '50%', background: '#E3D5CC',
+          border: 'none', cursor: 'pointer', color: '#4A2424', display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M15 6l-6 6 6 6" /></svg>
         </button>
@@ -68,7 +66,7 @@ export default function ScheduledCardsPage() {
         {notes === null ? (
           <p style={{ textAlign: 'center', color: 'var(--ink-muted)', fontFamily: 'var(--font-body)', fontSize: '14px', padding: '30px 0' }}>One sec…</p>
         ) : notes.length === 0 ? (
-          <div style={{ padding: '26px 20px', borderRadius: '20px', background: 'var(--lavender-pale)', border: '2px dashed var(--lilac)', display: 'flex', alignItems: 'center', gap: '16px' }}>
+          <div style={{ padding: '26px 20px', borderRadius: '20px', background: '#F4ECE6', border: '2px dashed #B4897A', display: 'flex', alignItems: 'center', gap: '16px' }}>
             <QEmoji name="calendar" size={52} />
             <p style={{ fontFamily: 'var(--font-body)', fontSize: '14px', color: 'var(--ink)', lineHeight: 1.45, margin: 0 }}>
               Nothing scheduled yet. When you send a card, pick "Schedule it" and we'll hold it for the big day.
@@ -76,7 +74,7 @@ export default function ScheduledCardsPage() {
           </div>
         ) : (
           notes.map((n) => (
-            <div key={n.id} style={{ background: '#fff', border: '1.5px solid var(--stone)', borderRadius: '18px', padding: '14px 16px', marginBottom: '12px' }}>
+            <div key={n.id} style={{ background: 'var(--card)', border: '1.5px solid var(--stone)', borderRadius: '18px', padding: '14px 16px', marginBottom: '12px' }}>
               <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: '10px' }}>
                 <span style={{ fontFamily: 'var(--font-body)', fontSize: '16px', fontWeight: 700, color: 'var(--ink)' }}>
                   To {n.recipient.displayName}
@@ -93,15 +91,15 @@ export default function ScheduledCardsPage() {
               </p>
               <div style={{ display: 'flex', gap: '10px' }}>
                 <button onClick={() => navigate(`/send?edit=${n.id}`)} style={{
-                  flex: 1, height: '42px', borderRadius: '21px', border: `1.5px solid ${uv}`, background: '#fff',
-                  color: uv, cursor: 'pointer', fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '13px', letterSpacing: '0.06em',
+                  flex: 1, height: '42px', borderRadius: '21px', border: '2px solid #B4897A', background: '#FBF8F3',
+                  color: '#4A2424', cursor: 'pointer', fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '13px', letterSpacing: '0.06em',
                 }}>
                   Edit
                 </button>
                 <button onClick={() => cancel(n.id)} style={{
                   flex: 1, height: '42px', borderRadius: '21px', cursor: 'pointer',
-                  border: `1.5px solid ${cancelArmed === n.id ? 'var(--error)' : 'var(--stone)'}`,
-                  background: cancelArmed === n.id ? 'var(--error-pale)' : '#fff',
+                  border: `2px solid ${cancelArmed === n.id ? 'var(--error)' : '#B4897A'}`,
+                  background: cancelArmed === n.id ? 'var(--error-pale)' : '#FBF8F3',
                   color: cancelArmed === n.id ? 'var(--error)' : 'var(--ink-mid)',
                   fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '13px', letterSpacing: '0.06em',
                 }}>

@@ -5,8 +5,6 @@ import { WEB_BUILD } from '../lib/buildGuard'
 // logo in the title band, headline + floating postmark stamp mid-screen on
 // the ruled lines, LOG IN and SIGN UP pinned at the bottom.
 
-const uv = '#5A32D6'
-
 const col: React.CSSProperties = {
   width: '100%', maxWidth: '480px', margin: '0 auto', padding: '0 24px', boxSizing: 'border-box',
 }
@@ -44,7 +42,7 @@ export default function WelcomePage() {
           <span>something</span>
           <span>real.</span>
         </h1>
-        <p style={{ margin: '22px 0 0', fontSize: '17px', lineHeight: 1.5, color: 'var(--ink-mid)', maxWidth: '300px' }}>
+        <p style={{ margin: '22px 0 0', fontSize: '17px', lineHeight: 1.5, color: 'var(--ink)', maxWidth: '300px' }}>
           Because sometimes a text isn't enough.
         </p>
       </div>
@@ -54,16 +52,18 @@ export default function WelcomePage() {
         display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: '12px',
       }}>
         <button onClick={() => navigate('/login')} style={{
-          height: '56px', borderRadius: '28px', border: '2px solid var(--ink)', background: '#FFFFFF',
+          height: '56px', borderRadius: '28px', border: '2px solid #B4897A', background: 'var(--card)',
           color: 'var(--ink)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
           fontFamily: 'var(--font-body)', fontSize: '16px', fontWeight: 700, letterSpacing: '0.08em',
+          boxSizing: 'border-box',
         }}>
           LOG IN
         </button>
         <button onClick={() => navigate('/signup')} style={{
-          height: '56px', borderRadius: '28px', border: 'none', background: uv,
-          color: '#FFFFFF', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+          height: '56px', borderRadius: '28px', border: '2px solid #B4897A', background: 'var(--btn)',
+          color: 'var(--ink)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
           fontFamily: 'var(--font-body)', fontSize: '16px', fontWeight: 700, letterSpacing: '0.08em',
+          boxSizing: 'border-box',
         }}>
           SIGN UP
         </button>

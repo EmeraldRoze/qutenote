@@ -7,19 +7,19 @@ import { enableReminders, remindersEnabled, lastReminderFailure, type ReminderRe
 import { isNativeApp } from '../lib/native'
 import { fetchHandwritingProgress } from '../lib/handwriting/api'
 
-// Settings — Oct 15 2026 redesign, screen 16-settings.html. No tab bar.
-// Free mode: no Membership, Payment methods or Scheduled cards rows.
+// Settings, palette 4 restyle of screen 16-settings.html. No tab bar.
+// Free mode: no Membership or Payment methods rows.
 
 const rowStyle: React.CSSProperties = {
   display: 'flex', alignItems: 'center', width: '100%', minHeight: '50px', boxSizing: 'border-box',
-  padding: '0 20px', background: '#fff', border: 'none', borderBottom: '1px solid var(--divider)',
+  padding: '0 20px', background: 'var(--card)', border: 'none', borderBottom: '1px solid var(--stone)',
   cursor: 'pointer', textAlign: 'left', textTransform: 'none', letterSpacing: 0, fontWeight: 400,
   textDecoration: 'none', color: 'var(--ink)',
 }
 const rowLabel: React.CSSProperties = { flex: 1, fontFamily: 'var(--font-body)', fontSize: '16px', color: 'var(--ink)' }
-const rowValue: React.CSSProperties = { fontFamily: 'var(--font-body)', fontSize: '14px', color: 'var(--ink-mid)', marginRight: '8px' }
+const rowValue: React.CSSProperties = { fontFamily: 'var(--font-body)', fontSize: '14px', color: 'var(--ink)', marginRight: '8px' }
 const chevron = (
-  <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--ink-mid)" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 5l7 7-7 7" /></svg>
+  <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--ink)', flex: 'none' }}><path d="M9 5l7 7-7 7" /></svg>
 )
 
 export default function SettingsPage() {
@@ -62,7 +62,7 @@ export default function SettingsPage() {
       <div className="title-band" style={{ height: '144px', boxSizing: 'border-box' }}>
         <div style={{ maxWidth: '480px', width: '100%', margin: '0 auto', boxSizing: 'border-box', padding: '0 20px', display: 'flex', alignItems: 'center', gap: '14px' }}>
           <button onClick={() => navigate(-1)} aria-label="Back" style={{
-            width: '44px', height: '44px', flex: 'none', borderRadius: '50%', background: 'var(--lavender-light)',
+            width: '44px', height: '44px', flex: 'none', borderRadius: '50%', background: 'var(--light-blush)',
             border: 'none', cursor: 'pointer', color: 'var(--ink)', padding: 0,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>

@@ -7,8 +7,6 @@ import { inviteByText } from '../lib/inviteText'
 
 // "Invite friends" — App Screens board layout in the Oct 2026 system
 
-const uv = '#5A32D6'
-
 interface Invite { id: string; recipientName: string; status: string; completedAt: string | null }
 
 export default function InvitePage() {
@@ -82,11 +80,11 @@ export default function InvitePage() {
             You get one, they get one. No catch.
           </p>
           <div style={{ display: 'flex', gap: '8px', width: '100%' }}>
-            <div style={{ flex: 1, padding: '12px', borderRadius: '12px', background: '#fff', border: '1px solid var(--stone)' }}>
+            <div style={{ flex: 1, padding: '12px', borderRadius: '12px', background: 'var(--card)', border: '1.5px solid var(--stone)' }}>
               <div style={{ fontFamily: 'var(--font-display)', fontSize: '22px' }}>{joined}</div>
               <div style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--ink-mid)' }}>friends joined</div>
             </div>
-            <div style={{ flex: 1, padding: '12px', borderRadius: '12px', background: '#fff', border: '1px solid var(--stone)' }}>
+            <div style={{ flex: 1, padding: '12px', borderRadius: '12px', background: 'var(--card)', border: '1.5px solid var(--stone)' }}>
               <div style={{ fontFamily: 'var(--font-display)', fontSize: '22px' }}>{joined}</div>
               <div style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--ink-mid)' }}>free cards earned</div>
             </div>
@@ -100,13 +98,13 @@ export default function InvitePage() {
         )}
 
         {/* Message preview + actions */}
-        <div style={{ marginTop: '22px', borderRadius: '22px', background: '#fff', boxShadow: '0 -4px 24px rgba(43,34,56,0.08), 0 4px 18px rgba(43,34,56,0.06)', padding: '18px 20px 24px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
+        <div style={{ marginTop: '22px', borderRadius: '22px', background: 'var(--card)', border: '1.5px solid var(--stone)', boxShadow: '0 -4px 24px rgba(74,36,36,0.08), 0 4px 18px rgba(74,36,36,0.06)', padding: '18px 20px 24px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
           <div style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--ink-mid)' }}>Your text will look like this</div>
           <div style={{ alignSelf: 'flex-end', maxWidth: '300px', borderRadius: '18px', overflow: 'hidden', background: 'var(--lavender-pale)', border: '1px solid var(--lavender-light)' }}>
             <div style={{ padding: '10px 14px', fontFamily: 'var(--font-body)', fontSize: '15px', lineHeight: 1.4 }}>
               I saved you a free postcard on QuteNote 💌 Claim it with my personal link:
             </div>
-            <div style={{ background: '#fff', borderTop: '1px solid var(--lavender-light)' }}>
+            <div style={{ background: 'var(--card)', borderTop: '1px solid var(--lavender-light)' }}>
               <div style={{ height: '72px', background: 'var(--cream)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <img src="/site/logo-ink.png" alt="QuteNote" style={{ width: '150px' }} />
               </div>
@@ -120,23 +118,23 @@ export default function InvitePage() {
           {composing ? (
             <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
               <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Their first name" required style={{
-                width: '100%', height: '48px', padding: '0 14px', borderRadius: '10px', border: '1px solid var(--stone)',
-                background: '#fff', outline: 'none', fontFamily: 'var(--font-body)', fontSize: '15px', color: 'var(--ink)',
+                width: '100%', height: '48px', padding: '0 14px', borderRadius: '10px', border: '1.5px solid var(--stone)',
+                background: 'var(--card)', outline: 'none', fontFamily: 'var(--font-body)', fontSize: '15px', color: 'var(--ink)',
               }} />
               <input value={phone} onChange={(e) => setPhone(formatPhone(e.target.value))} placeholder="(555) 123-4567" inputMode="tel" required style={{
-                width: '100%', height: '48px', padding: '0 14px', borderRadius: '10px', border: '1px solid var(--stone)',
-                background: '#fff', outline: 'none', fontFamily: 'var(--font-body)', fontSize: '15px', color: 'var(--ink)',
+                width: '100%', height: '48px', padding: '0 14px', borderRadius: '10px', border: '1.5px solid var(--stone)',
+                background: 'var(--card)', outline: 'none', fontFamily: 'var(--font-body)', fontSize: '15px', color: 'var(--ink)',
               }} />
               {error && <p style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--error)' }}>{error}</p>}
               <div style={{ display: 'flex', gap: '10px' }}>
                 <button type="submit" disabled={loading} style={{
-                  flex: 1, height: '52px', border: 'none', borderRadius: '10px', background: uv, color: '#fff',
+                  flex: 1, height: '52px', border: '2px solid #B4897A', borderRadius: '999px', background: '#BADAFF', color: '#4A2424',
                   fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '13px', textTransform: 'uppercase',
                   letterSpacing: '0.12em', cursor: 'pointer', opacity: loading ? 0.7 : 1,
                 }}>{loading ? 'Sending…' : 'Send the text'}</button>
                 <button type="button" onClick={() => setComposing(false)} style={{
-                  height: '52px', padding: '0 16px', borderRadius: '10px', border: '1px solid var(--stone)', background: '#fff',
-                  color: 'var(--ink-mid)', fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '13px',
+                  height: '52px', padding: '0 16px', borderRadius: '999px', border: '2px solid #B4897A', background: '#FBF8F3',
+                  color: '#4A2424', fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '13px',
                   textTransform: 'uppercase', letterSpacing: '0.12em', cursor: 'pointer',
                 }}>Back</button>
               </div>
@@ -144,7 +142,7 @@ export default function InvitePage() {
           ) : (
             <div style={{ display: 'flex', gap: '10px' }}>
               <button onClick={async () => { try { await inviteByText(user?.displayName?.split(' ')[0]); api.get('/invites').then((r) => setInvites(r.data.data)).catch(() => {}) } catch { setComposing(true) } }} style={{
-                flex: 1, height: '52px', border: 'none', borderRadius: '10px', background: uv, color: '#fff',
+                flex: 1, height: '52px', border: '2px solid #B4897A', borderRadius: '999px', background: '#BADAFF', color: '#4A2424',
                 fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '13px', textTransform: 'uppercase',
                 letterSpacing: '0.12em', cursor: 'pointer',
               }}>Invite by text</button>
@@ -156,8 +154,8 @@ export default function InvitePage() {
                   api.get('/invites').then((res) => setInvites(res.data.data)).catch(() => {})
                 } catch { /* clipboard or network said no — button just stays */ }
               }} style={{
-                height: '52px', padding: '0 16px', borderRadius: '10px', border: '1px solid var(--stone)', background: '#fff',
-                color: 'var(--ink)', fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '13px',
+                height: '52px', padding: '0 16px', borderRadius: '999px', border: '2px solid #B4897A', background: '#FBF8F3',
+                color: '#4A2424', fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '13px',
                 textTransform: 'uppercase', letterSpacing: '0.12em', cursor: 'pointer',
               }}>{copied ? 'Copied' : 'Copy link'}</button>
             </div>

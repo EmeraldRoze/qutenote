@@ -35,9 +35,9 @@ interface NoteItem {
 
 const statusColors: Record<string, string> = {
   PENDING: 'var(--blush)',
-  PRINTED: 'var(--lavender)',
-  SENT: '#6bc06b',
-  FAILED: '#e06060',
+  PRINTED: '#BADAFF',
+  SENT: '#EEFC4E',
+  FAILED: 'var(--error-pale)',
 }
 
 export default function AdminPage() {
@@ -94,7 +94,7 @@ export default function AdminPage() {
         </h1>
       <button onClick={() => (window.location.href = '/admin/analytics')} style={{
         marginTop: '10px', height: '40px', padding: '0 16px', borderRadius: '20px', cursor: 'pointer',
-        border: '1.5px solid #5A32D6', background: '#fff', color: '#5A32D6',
+        border: '2px solid #B4897A', background: '#FBF8F3', color: '#4A2424',
         fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '13px',
       }}>USABILITY DASHBOARD →</button>
         <button
@@ -115,9 +115,9 @@ export default function AdminPage() {
               onClick={() => setFilter(s)}
               style={{
                 padding: '8px 16px', borderRadius: '20px', fontSize: '13px', fontWeight: 500,
-                border: filter === s ? 'none' : '1px solid var(--border-default)',
-                background: filter === s ? 'var(--lavender)' : 'var(--white)',
-                color: filter === s ? '#fff' : 'var(--ink-muted)',
+                border: filter === s ? '2px solid #B4897A' : '1.5px solid var(--border-default)',
+                background: filter === s ? '#BADAFF' : 'var(--white)',
+                color: filter === s ? '#4A2424' : 'var(--ink-muted)',
                 cursor: 'pointer', fontFamily: 'var(--font-body)',
               }}
             >
@@ -159,7 +159,7 @@ export default function AdminPage() {
               <span style={{
                 padding: '4px 12px', borderRadius: '12px', fontSize: '11px', fontWeight: 600,
                 background: statusColors[note.status] ?? 'var(--lavender-pale)',
-                color: '#fff',
+                color: '#4A2424', border: '1.5px solid #B4897A',
               }}>
                 {note.status}
               </span>
@@ -193,8 +193,8 @@ export default function AdminPage() {
                 }}
                 style={{
                   padding: '8px 20px', borderRadius: '20px', fontSize: '13px', fontWeight: 500,
-                  border: '1px solid var(--lavender)', cursor: 'pointer', fontFamily: 'var(--font-body)',
-                  background: 'var(--white)', color: 'var(--lavender)',
+                  border: '2px solid #B4897A', cursor: 'pointer', fontFamily: 'var(--font-body)',
+                  background: '#FBF8F3', color: '#4A2424',
                 }}
               >
                 Download PDF
@@ -205,8 +205,8 @@ export default function AdminPage() {
                   disabled={updating === note.id}
                   style={{
                     padding: '8px 20px', borderRadius: '20px', fontSize: '13px', fontWeight: 500,
-                    border: 'none', cursor: 'pointer', fontFamily: 'var(--font-body)',
-                    background: 'var(--lavender)', color: '#fff',
+                    border: '2px solid #B4897A', cursor: 'pointer', fontFamily: 'var(--font-body)',
+                    background: '#BADAFF', color: '#4A2424',
                     opacity: updating === note.id ? 0.6 : 1,
                   }}
                 >
@@ -219,8 +219,8 @@ export default function AdminPage() {
                   disabled={updating === note.id}
                   style={{
                     padding: '8px 20px', borderRadius: '20px', fontSize: '13px', fontWeight: 500,
-                    border: 'none', cursor: 'pointer', fontFamily: 'var(--font-body)',
-                    background: '#6bc06b', color: '#fff',
+                    border: '2px solid #B4897A', cursor: 'pointer', fontFamily: 'var(--font-body)',
+                    background: '#EEFC4E', color: '#4A2424',
                     opacity: updating === note.id ? 0.6 : 1,
                   }}
                 >
@@ -233,8 +233,8 @@ export default function AdminPage() {
                   disabled={updating === note.id}
                   style={{
                     padding: '8px 20px', borderRadius: '20px', fontSize: '13px', fontWeight: 500,
-                    border: '1px solid #e06060', cursor: 'pointer', fontFamily: 'var(--font-body)',
-                    background: 'var(--white)', color: '#e06060',
+                    border: '1.5px solid var(--error)', cursor: 'pointer', fontFamily: 'var(--font-body)',
+                    background: '#FBF8F3', color: 'var(--error)',
                     opacity: updating === note.id ? 0.6 : 1,
                   }}
                 >
@@ -256,7 +256,7 @@ export default function AdminPage() {
               disabled={!signups.length}
               style={{
                 padding: '10px 18px', borderRadius: '20px', fontSize: '13px', fontWeight: 700,
-                border: 'none', background: 'var(--ultraviolet)', color: '#fff',
+                border: '2px solid #B4897A', background: '#BADAFF', color: '#4A2424',
                 cursor: signups.length ? 'pointer' : 'default', fontFamily: 'var(--font-body)',
                 opacity: signups.length ? 1 : 0.5,
               }}
@@ -269,7 +269,7 @@ export default function AdminPage() {
               Nobody on the list yet. Share qutenote.com and watch this fill up.
             </p>
           ) : (
-            <div style={{ background: '#fff', border: '1px solid var(--stone)', borderRadius: '12px', overflow: 'hidden' }}>
+            <div style={{ background: 'var(--card)', border: '1.5px solid var(--stone)', borderRadius: '12px', overflow: 'hidden' }}>
               {signups.map((s, i) => (
                 <div key={s.id} style={{
                   display: 'flex', gap: '12px', alignItems: 'baseline', padding: '12px 16px',

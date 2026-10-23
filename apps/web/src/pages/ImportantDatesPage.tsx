@@ -8,9 +8,7 @@ import { isNativeApp } from '../lib/native'
 import { contactsAvailable, readContacts, contactsWithBirthdays } from '../lib/contacts'
 import type { DeviceContact } from '../lib/contacts'
 
-// Dates tab — Oct 15 redesign (screens/13-dates.html)
-
-const uv = '#5A32D6'
+// Dates tab, palette 4 restyle (screens/13-dates.html)
 
 interface ImportantDate {
   id: string
@@ -52,7 +50,7 @@ function countdownLabel(days: number): string {
 }
 
 const whiteCard: React.CSSProperties = {
-  background: '#fff',
+  background: 'var(--card)',
   border: '1.5px solid var(--stone)',
   borderRadius: '18px',
 }
@@ -186,8 +184,8 @@ export default function ImportantDatesPage() {
             Important dates
           </h1>
           <button onClick={() => navigate('/dates/add')} aria-label="Add a date" style={{
-            width: '44px', height: '44px', borderRadius: '50%', border: 'none', flex: 'none',
-            background: uv, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
+            width: '44px', height: '44px', borderRadius: '50%', border: '2px solid var(--stone)', flex: 'none', boxSizing: 'border-box',
+            background: 'var(--btn)', color: 'var(--ink)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
           }}>
             <svg aria-hidden width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
           </button>
@@ -200,14 +198,14 @@ export default function ImportantDatesPage() {
         <div style={{ ...whiteCard, marginTop: '20px', padding: '14px 16px', display: 'flex', alignItems: 'center', gap: '14px' }}>
           <span aria-hidden style={{
             width: '44px', height: '44px', flex: 'none', borderRadius: '50%',
-            background: 'var(--lime)', border: '1.5px solid var(--ink)',
+            background: 'var(--lime)', border: '1.5px solid var(--stone)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15z" /><path d="M10 20.5a2 2 0 0 0 4 0" /></svg>
           </span>
           <span style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '2px' }}>
             <span style={{ fontSize: '16px', fontWeight: 700, fontFamily: 'var(--font-body)', color: 'var(--ink)' }}>Reminders</span>
-            <span style={{ fontSize: '14px', color: 'var(--ink-mid)', fontFamily: 'var(--font-body)' }}>We'll buzz you 7 days before.</span>
+            <span style={{ fontSize: '14px', color: 'var(--ink)', fontFamily: 'var(--font-body)' }}>We'll buzz you 7 days before.</span>
           </span>
           <button
             role="switch"
@@ -217,15 +215,15 @@ export default function ImportantDatesPage() {
             disabled={reminderStatus === 'working'}
             style={{
               width: '52px', height: '32px', flex: 'none', borderRadius: '16px',
-              border: '1.5px solid var(--ink)', background: remindersOn ? 'var(--lime)' : 'var(--stone)',
+              border: '1.5px solid var(--stone)', background: remindersOn ? 'var(--lime)' : '#D9CFC2',
               position: 'relative', padding: 0, cursor: 'pointer',
               opacity: reminderStatus === 'working' ? 0.6 : 1,
             }}
           >
             <span style={{
               position: 'absolute', top: '2px', left: remindersOn ? '22px' : '2px',
-              width: '25px', height: '25px', borderRadius: '50%', background: '#fff',
-              border: '1.5px solid var(--ink)', boxSizing: 'border-box', transition: 'left 0.15s ease',
+              width: '25px', height: '25px', borderRadius: '50%', background: 'var(--card)',
+              border: '1.5px solid var(--stone)', boxSizing: 'border-box', transition: 'left 0.15s ease',
             }} />
           </button>
         </div>
@@ -250,22 +248,21 @@ export default function ImportantDatesPage() {
             Fetching your dates…
           </p>
         ) : sorted.length === 0 ? (
-          <div style={{
-            marginTop: '18px', borderRadius: '26px', border: '2px dashed var(--neon-pink)',
-            background: '#FFE6F2', padding: '26px 20px 22px',
+          <div className="rose-paper" style={{
+            marginTop: '18px', borderRadius: '26px', padding: '26px 20px 22px',
             display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center',
           }}>
             <QEmoji name="cake" size={110} style={{ height: 'auto', transform: 'rotate(-4deg)' }} />
             <h2 style={{ margin: '14px 0 0', fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: '22px', lineHeight: 1.2, color: 'var(--ink)' }}>
               Never miss a birthday again.
             </h2>
-            <p style={{ margin: '8px 0 0', fontSize: '15px', lineHeight: 1.45, color: 'var(--ink-mid)', maxWidth: '280px', fontFamily: 'var(--font-body)' }}>
-              Add the days that matter and we'll nudge you in time to mail something real.
+            <p style={{ margin: '8px 0 0', fontSize: '15px', lineHeight: 1.45, color: 'var(--ink)', maxWidth: '280px', fontFamily: 'var(--font-body)' }}>
+              Add the days that matter and we'll give you a little nudge.
             </p>
             <button onClick={() => navigate('/dates/add')} style={{
-              marginTop: '18px', width: '100%', height: '56px', border: 'none', borderRadius: '28px',
-              background: uv, color: '#fff', fontFamily: 'var(--font-body)', fontSize: '16px',
-              fontWeight: 700, letterSpacing: '0.08em', cursor: 'pointer',
+              marginTop: '18px', width: '100%', height: '56px', border: '2px solid var(--stone)', borderRadius: '28px',
+              background: 'var(--btn)', color: 'var(--ink)', fontFamily: 'var(--font-body)', fontSize: '16px',
+              fontWeight: 700, letterSpacing: '0.08em', cursor: 'pointer', boxSizing: 'border-box',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}>+ ADD A DATE</button>
           </div>
@@ -287,8 +284,9 @@ export default function ImportantDatesPage() {
                   <span style={{
                     padding: '5px 11px', borderRadius: '999px', fontSize: '11px', fontWeight: 700,
                     fontFamily: 'var(--font-body)', letterSpacing: '0.04em', whiteSpace: 'nowrap', flex: 'none',
-                    background: days <= 7 ? 'var(--lime)' : 'var(--lavender-pale)',
-                    color: days <= 7 ? 'var(--ink)' : 'var(--ink-mid)',
+                    background: days <= 7 ? 'var(--lime)' : '#E3D5CC',
+                    border: '1.5px solid var(--stone)', boxSizing: 'border-box',
+                    color: 'var(--ink)',
                   }}>{countdownLabel(days)}</span>
                   <button onClick={() => handleDelete(d.id)} aria-label={`Remove ${d.connectionName}`} style={{
                     width: '34px', height: '34px', flex: 'none', borderRadius: '50%', border: 'none',
@@ -306,7 +304,7 @@ export default function ImportantDatesPage() {
           {quickAdd.map((q) => (
             <button key={q.chip} onClick={() => navigate(q.to)} style={{
               flex: 'none', display: 'flex', alignItems: 'center', minHeight: '44px', padding: '0 16px',
-              borderRadius: '22px', border: '1.5px solid var(--ink)', background: '#fff',
+              borderRadius: '22px', border: '1.5px solid var(--stone)', background: 'var(--card)',
               fontFamily: 'var(--font-body)', fontSize: '14px', fontWeight: 700, color: 'var(--ink)',
               cursor: 'pointer', textTransform: 'none', letterSpacing: 0, whiteSpace: 'nowrap',
             }}>{q.chip}</button>
@@ -328,9 +326,9 @@ export default function ImportantDatesPage() {
               <span style={{ fontSize: '15px', fontWeight: 700 }}>
                 {contactsState === 'loading' ? 'Reading your contacts…' : 'Pull birthdays from contacts'}
               </span>
-              <span style={{ fontSize: '13px', color: 'var(--ink-mid)', fontWeight: 400 }}>Fill this page in one tap</span>
+              <span style={{ fontSize: '13px', color: 'var(--ink)', fontWeight: 400 }}>Fill this page in one tap</span>
             </span>
-            <svg aria-hidden width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--ink-mid)" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 5l7 7-7 7" /></svg>
+            <svg aria-hidden width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 5l7 7-7 7" /></svg>
           </button>
         )}
         {contactsState === 'denied' && (
@@ -360,7 +358,7 @@ export default function ImportantDatesPage() {
             {!contactsOpen ? null : remainingBdays.length === 0 ? (
               <p style={{ fontFamily: 'var(--font-body)', fontSize: '14px', color: 'var(--ink-muted)' }}>
                 {contactBdays.length > 0
-                  ? 'All caught up — every contact birthday is already in your dates. 🎉'
+                  ? 'All caught up, every contact birthday is already in your dates. 🎉'
                   : 'None of them have a birthday saved on their contact card. Add birthdays in your Contacts app, or add dates here by hand.'}
               </p>
             ) : (
@@ -380,8 +378,8 @@ export default function ImportantDatesPage() {
                         onClick={() => handleAddContact(c)}
                         style={{
                           height: '34px', padding: '0 14px', borderRadius: '999px', flex: 'none',
-                          border: `1.5px solid ${uv}`, cursor: 'pointer',
-                          background: '#fff', color: uv,
+                          border: '1.5px solid var(--stone)', cursor: 'pointer',
+                          background: 'var(--card)', color: 'var(--ink)',
                           fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '11px', letterSpacing: '0.12em',
                           opacity: addingContact === c.name ? 0.6 : 1,
                         }}

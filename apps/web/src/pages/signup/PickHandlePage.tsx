@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { api } from '../../lib/api'
 import { useAuth } from '../../context/AuthContext'
 import QEmoji from '../../components/QEmoji'
@@ -9,17 +9,13 @@ import QEmoji from '../../components/QEmoji'
 // Pre-fills the auto-generated handle, checks availability live, and offers
 // three free alternatives as tappable chips.
 
-const uv = '#5A32D6'
-
 const col: React.CSSProperties = {
   width: '100%', maxWidth: '480px', margin: '0 auto', padding: '0 20px', boxSizing: 'border-box',
 }
 
 export default function PickHandlePage() {
   const navigate = useNavigate()
-  const location = useLocation()
   const { user, refreshUser } = useAuth()
-  const provider = (location.state as { provider?: string } | null)?.provider ?? 'Google'
 
   const [handle, setHandle] = useState('')
   const [status, setStatus] = useState<'idle' | 'checking' | 'available' | 'taken'>('idle')
@@ -75,7 +71,7 @@ export default function PickHandlePage() {
         <div style={col}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <button onClick={() => navigate(-1)} aria-label="Back" style={{
-              width: '44px', height: '44px', borderRadius: '50%', background: 'var(--lavender-light)',
+              width: '44px', height: '44px', borderRadius: '50%', background: 'var(--light-blush)',
               border: 'none', cursor: 'pointer', color: 'var(--ink)', display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 5l-7 7 7 7" /></svg>
@@ -95,18 +91,18 @@ export default function PickHandlePage() {
       </header>
 
       <div style={{ ...col, flex: 1, display: 'flex', flexDirection: 'column', paddingBottom: '34px' }}>
-        <p style={{ margin: '18px 0 0', fontSize: '15px', lineHeight: 1.45, color: 'var(--ink-mid)' }}>
-          You're in with {provider}. Now choose the name your QTs will search for.
+        <p style={{ margin: '18px 0 0', fontSize: '15px', lineHeight: 1.45, color: 'var(--ink)' }}>
+          Choose the name your QTs will search for.
         </p>
 
         <div style={{
-          marginTop: '18px', background: '#FFFFFF', border: `2px solid ${uv}`, borderRadius: '18px',
+          marginTop: '18px', background: 'var(--card)', border: '2px solid var(--outline)', borderRadius: '18px',
           padding: '12px 16px', display: 'flex', alignItems: 'center', gap: '10px',
         }}>
           <label style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '4px', minWidth: 0 }}>
-            <span style={{ fontSize: '13px', color: 'var(--ink-mid)' }}>Username</span>
+            <span style={{ fontSize: '13px', color: 'var(--ink)' }}>Username</span>
             <span style={{ display: 'flex', alignItems: 'center', fontSize: '16px' }}>
-              <span style={{ color: uv, fontWeight: 700 }}>@</span>
+              <span style={{ color: 'var(--stamp-center)', fontWeight: 700 }}>@</span>
               <input
                 value={handle}
                 autoComplete="username"
@@ -120,8 +116,8 @@ export default function PickHandlePage() {
           </label>
           {status === 'available' && (
             <span style={{
-              flex: 'none', display: 'inline-flex', alignItems: 'center', gap: '6px',
-              background: 'var(--lime)', borderRadius: '10px', padding: '4px 10px', fontSize: '13px', fontWeight: 700,
+              flex: 'none', display: 'inline-flex', alignItems: 'center', gap: '6px', color: 'var(--ink)',
+              background: '#EEFC4E', borderRadius: '10px', padding: '4px 10px', fontSize: '13px', fontWeight: 700,
             }}>
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg>
               Available
@@ -136,24 +132,22 @@ export default function PickHandlePage() {
             </span>
           )}
         </div>
-        <p style={{ margin: '10px 4px 0', fontSize: '13px', color: 'var(--ink-mid)' }}>
-          Letters, numbers, dots and underscores. You can change it later in Settings.
-        </p>
+        <p style={{ margin: '10px 4px 0', fontSize: '13px', color: 'var(--ink)' }}><br /></p>
 
         {error && (
-          <div style={{ background: 'var(--error-pale)', border: '1px solid rgba(224,78,107,0.3)', color: 'var(--error)', borderRadius: '10px', padding: '12px 16px', marginTop: '14px', fontSize: '14px' }}>
+          <div style={{ background: 'var(--error-pale)', border: '1px solid var(--error)', color: 'var(--error)', borderRadius: '10px', padding: '12px 16px', marginTop: '14px', fontSize: '14px' }}>
             {error}
           </div>
         )}
 
-        <h2 style={{ margin: '22px 0 10px', fontSize: '13px', fontWeight: 700, color: 'var(--ink-mid)', fontFamily: 'var(--font-body)' }}>
+        <h2 style={{ margin: '22px 0 10px', fontSize: '13px', fontWeight: 700, color: 'var(--ink)', fontFamily: 'var(--font-body)' }}>
           Or try one of these
         </h2>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
           {suggestions.map((s) => (
             <button key={s} onClick={() => setHandle(s)} style={{
               flex: 'none', minHeight: '40px', padding: '0 14px', borderRadius: '20px',
-              border: '1.5px solid var(--stone)', background: '#FFFFFF', fontFamily: 'var(--font-body)',
+              border: '1.5px solid var(--outline)', background: 'var(--card)', fontFamily: 'var(--font-body)',
               fontSize: '14px', color: 'var(--ink)', cursor: 'pointer', fontWeight: 400,
               textTransform: 'none', letterSpacing: 0,
             }}>
@@ -166,9 +160,9 @@ export default function PickHandlePage() {
           onClick={save}
           disabled={saving || status === 'taken' || !/^[a-z0-9_]{3,20}$/.test(handle)}
           style={{
-            marginTop: 'auto', height: '56px', borderRadius: '28px', border: 'none',
+            marginTop: 'auto', height: '56px', borderRadius: '28px', border: '2px solid #B4897A', boxSizing: 'border-box',
             cursor: saving ? 'not-allowed' : 'pointer',
-            background: saving ? 'var(--lavender-light)' : uv, color: '#FFFFFF',
+            background: saving ? 'var(--light-blush)' : 'var(--btn)', color: 'var(--ink)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             fontFamily: 'var(--font-body)', fontSize: '15px', fontWeight: 700, letterSpacing: '0.08em',
             opacity: status === 'taken' || !/^[a-z0-9_]{3,20}$/.test(handle) ? 0.5 : 1,

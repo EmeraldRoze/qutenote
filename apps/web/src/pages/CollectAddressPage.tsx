@@ -219,19 +219,20 @@ export default function CollectAddressPage() {
             </div>
 
             {error && (
-              <p style={{ fontSize: '13px', color: '#C9868D', textAlign: 'center' }}>{error}</p>
+              <p style={{ fontSize: '13px', color: 'var(--error)', textAlign: 'center' }}>{error}</p>
             )}
 
             <button
               type="submit"
               disabled={submitting || !line1.trim() || !city.trim() || !state.trim() || !zip.trim()}
               style={{
-                padding: '16px 24px', fontSize: '15px', fontWeight: 500,
-                borderRadius: '50px', border: 'none',
+                padding: '16px 24px', fontSize: '15px', fontWeight: 700,
+                borderRadius: '999px', border: '2px solid #B4897A',
                 cursor: submitting ? 'default' : 'pointer',
-                background: submitting ? 'var(--lavender-pale)' : 'var(--lavender)',
-                color: '#fff', fontFamily: 'var(--font-body)',
-                marginTop: '4px', transition: 'background 0.15s',
+                background: '#BADAFF', opacity: submitting ? 0.7 : 1,
+                color: '#4A2424', fontFamily: 'var(--font-body)',
+                textTransform: 'uppercase', letterSpacing: '0.08em',
+                marginTop: '4px', transition: 'opacity 0.15s',
               }}
             >
               {submitting ? 'Saving...' : 'Share my address'}
