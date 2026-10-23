@@ -1,7 +1,8 @@
 # QuteNote — Handoff / Status Board
 Written: 2026-10-06 (replaces stale April 10 handoff). Last updated: 2026-10-23.
 
-## VOICE NOTES + SCAN QR ROUND Oct 23 (FIREFLY given 10:03am; first session died 2 min in when her computer shut down — rebuilt from recovered plan, ALL CODE LOCAL, NOT PUSHED)
+## VOICE NOTES + SCAN QR ROUND Oct 23 — SHIPPED AS BUILD 47 (second FIREFLY 11:45am: db push → deploy ACTIVE + health verified → build 47 uploaded, VALID, beta review submitted ~11am PT). Analytics from the Oct 22 interview are in this build too (first build with breadcrumbs — start /usage/summary briefings next round). Palette still held on style-refresh, she's reworking it.
+(History: FIREFLY given 10:03am; first session died 2 min in when her computer shut down — rebuilt from the recovered plan.)
 Her spec (answers recovered from the dead session log): QR on the printed card back (bottom right), scanning opens a screen with the card picture + Reply + Decode my secret message + Listen to voice note (last two auto-greyed when N/A); card saves to the scanner's Received section; Reply lands on pick-an-artist with the friend preloaded; voice notes max 60s via an "Add a voice note" button on compose; account required, download page if no app; notifications OFF for now.
 - SCHEMA (NOT pushed to prod yet): Note.scanCode (unique, printed as QR), Note.voiceUploadId, new ReceivedCard model (userId+noteId unique). ⚠️ DEPLOY ORDER: prisma db push MUST happen BEFORE the API deploy — the new API selects these columns.
 - API: /uploads accepts audio data URLs (mp4/webm/mpeg/wav/aac/ogg/x-m4a); POST /notes takes voiceUploadId (validated: sender's own audio upload) + stamps a scanCode (crypto base64url 12 chars) on every new note; GET /cards/scan/:code (auth) upserts ReceivedCard (skips sender scanning own card) and returns card payload; GET /notes/received merges addressed + scanned cards (dedup, newest first, 30 cap).
