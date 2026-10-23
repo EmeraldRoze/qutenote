@@ -106,7 +106,7 @@ export default function AccountSettingsPage() {
             <span style={{
               position: 'absolute', left: '28px', top: '56px', width: '66px', height: '36px',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontFamily: 'var(--font-display)', fontSize: '19px', fontWeight: 600, color: '#B6CC33', textShadow: '0 -1px 0 rgba(255,255,255,0.65), 0 2px 2px rgba(96,110,10,0.6)',
+              fontFamily: 'var(--font-display)', fontSize: '19px', fontWeight: 600, color: '#758A14', textShadow: '0 -1px 1px rgba(80,92,10,0.55), 0 1px 1px rgba(255,255,255,0.8)',
             }}>{initialsOf(displayName || user?.username || '?')}</span>
             <button onClick={() => setPickingAvatar(true)} aria-label="Pick an emoji or add a photo" style={{
               position: 'absolute', left: '5px', top: '12px', width: '38px', height: '38px', borderRadius: '50%',
