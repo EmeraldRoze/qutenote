@@ -1,6 +1,13 @@
 # QuteNote — Handoff / Status Board
 Written: 2026-10-06 (replaces stale April 10 handoff). Last updated: 2026-10-23 (evening).
 
+## WAX HEART ROUND Oct 23 night — BUILD 49 (FIREFLY)
+Her two TestFlight items on build 48 (screenshots fetched via betaFeedbackScreenshotSubmissions attributes.screenshots[].url — download with node fetch, curl gets empty files) + her wax seal asset (blank, no letter).
+- ALL neon yellow hearts are now the WAX SEAL heart: public/brand/wax_heart.png (cut from her upload via edge flood-fill, interior highlights preserved). postmark_heart_stamp(.profile).png patched in place: felt heart + translucent shadow erased SELECTIVELY (yellow-hue or alpha<190 within the heart bbox — a rectangular erase eats the ring), wax composited 1.18x. send_stamp_heart.png overwritten (tab bar code unchanged). App icon regenerated. StampSvg (SendFlow) heart path → wax image. Printed card stamp box → doc.image(assets/wax_heart.png) with drawHeart fallback. Waitlist postmark-heart.webp overwritten with wax.
+- FEED ROWS (Home): heart-sparkle avatar GONE; the friend's status emoji leads the row (updates with their status, thought-bubble fallback); the send-them-somethin' button moved INSIDE the status bubble (wax heart + oxblood squiggle svg) — this also killed the last old-purple art (postmark-heart-only/waves-only.png were still rendering purple waves in that button; images dodge hex sweeps, grep for /brand/ image refs too).
+- EMBOSSED INITIALS on Profile/Account wax: color #758A14, textShadow '0 -1px 1px rgba(80,92,10,0.55), 0 1px 1px rgba(255,255,255,0.8)' (first pass #B6CC33 was invisible at 22px).
+- Neon yellow stays for non-heart highlights (progress, pills, switches).
+
 ## PALETTE 4 FULL REPAINT Oct 23 evening — BUILD 48 (FIREFLY ~4:20pm; "move forward with build unless you have any other questions" = ship pre-approved)
 Source: ~/Downloads/qutenote-app-palette4.zip (18 screen HTMLs + tokens.json + palette.md + assets; HTML copy is source of truth per its README). Oct 21 warm-palette draft on style-refresh is RETIRED, superseded by palette 4.
 - FOUNDATION: index.css legacy vars remapped to palette 4 (ultraviolet/lavender aliases → oxblood #4A2424; stone/lilac/dashed → rosy brown #B4897A; cream → paper #F1EBE3; white → card #FBF8F3; lime → neon #EEFC4E; error warmed #B4453C). paper_texture.png tiled on body::before, title-band, tab bar (Emerald: texture on ALL backgrounds). New classes: .qn-stamp (perforated stamp box, masked pseudo-elements from the package), .rose-paper (ombre), .tab-inactive (warm tint filter).
