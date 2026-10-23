@@ -4,6 +4,7 @@ import { prisma } from '../lib/prisma'
 import type { AuthRequest } from '../middleware/auth'
 import { verifyToken } from '../lib/jwt'
 import PDFDocument from 'pdfkit'
+import QRCode from 'qrcode'
 import path from 'path'
 import fs from 'fs'
 import { encodeSecret } from '../lib/secret'
@@ -36,6 +37,15 @@ adminPdfRouter.use(requireAdminOrQuery)
 // 6x9 postcard in points (72 points per inch)
 const WIDTH = 6 * 72   // 432
 const HEIGHT = 4 * 72   // 288 (standard 6x4 postcard)
+
+// The built-in PDF fonts have no ♥ glyph (it printed as "&e"), so hearts are
+// drawn as a real vector path. (cx, cy) is the heart's center, h its height.
+function drawHeart(doc: PDFKit.PDFDocument, cx: number, cy: number, h: number, color: string) {
+  const s = h / 16
+  doc.save().translate(cx - 9 * s, cy - 7.5 * s).scale(s)
+  doc.path('M9 16c-6-4-9-7.5-9-11C0 2.5 2 .5 4.5.5 6.3.5 7.8 1.5 9 3c1.2-1.5 2.7-2.5 4.5-2.5C16 .5 18 2.5 18 5c0 3.5-3 7-9 11z').fill(color)
+  doc.restore()
+}
 
 // Closest built-in PDF stand-ins for the Oct 2026 pens. Real pen fonts on
 // the printed card (including the person's own handwriting font) are a
@@ -161,8 +171,7 @@ adminPdfRouter.get('/notes/:id/pdf', async (req: AuthRequest, res) => {
   // Stamp placeholder
   doc.rect(WIDTH - 64, 24, 40, 48).lineWidth(1).strokeColor('#9B8EC4').stroke()
   doc.rect(WIDTH - 64, 24, 40, 48).fill('#EDE8F7')
-  doc.fontSize(16).fillColor('#9B8EC4')
-  doc.text('♥', WIDTH - 58, 36, { width: 28, align: 'center' })
+  drawHeart(doc, WIDTH - 44, 48, 18, '#9B8EC4')
 
   // "QuteNote" small branding top-right
   doc.fontSize(7).font('Helvetica-Bold').fillColor('#9B8EC4')
@@ -192,6 +201,29 @@ adminPdfRouter.get('/notes/:id/pdf', async (req: AuthRequest, res) => {
     const ly = HEIGHT / 2 + 50 + i * 20
     doc.strokeColor('#D8CEEA').lineWidth(0.5)
     doc.moveTo(lineStartX, ly).lineTo(lineEndX, ly).stroke()
+  }
+
+  // Bottom-right QR — scanning opens the card in the app (reply, decode,
+  // voice note). Printed on its own light patch so the ruled lines don't
+  // bleed into the code.
+  if (note.scanCode) {
+    const QR_SIZE = 44
+    const qrX = WIDTH - 24 - QR_SIZE
+    const qrY = HEIGHT - 20 - QR_SIZE
+    const qrPng = await QRCode.toBuffer(`https://qutenote.com/c/${note.scanCode}`, {
+      errorCorrectionLevel: 'M',
+      margin: 0,
+      width: 220,
+      color: { dark: '#2E2440', light: '#F3EDE3' },
+    })
+    doc.rect(qrX - 4, qrY - 16, QR_SIZE + 8, QR_SIZE + 20).fill('#F3EDE3')
+    doc.image(qrPng, qrX, qrY, { width: QR_SIZE, height: QR_SIZE })
+    doc.font('Helvetica-Bold').fontSize(6.5).fillColor('#9B8EC4')
+    const caption = 'Scan me'
+    const capW = doc.widthOfString(caption) + 9
+    const capX = qrX + QR_SIZE / 2 - capW / 2
+    doc.text(caption, capX, qrY - 13, { lineBreak: false })
+    drawHeart(doc, capX + capW - 3.5, qrY - 10, 7, '#9B8EC4')
   }
 
   doc.end()
