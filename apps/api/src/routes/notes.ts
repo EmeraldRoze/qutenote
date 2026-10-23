@@ -1,5 +1,6 @@
 import { Router } from 'express'
 import { z } from 'zod'
+import crypto from 'crypto'
 import { prisma } from '../lib/prisma'
 import { requireAuth } from '../middleware/auth'
 import type { AuthRequest } from '../middleware/auth'
@@ -23,7 +24,14 @@ const createNoteSchema = z.object({
   cardImageUrl: z.string().optional(),
   // Scheduling: the EVENT day the card should land near (we mail ~6 days out)
   scheduledFor: z.string().datetime().optional(),
+  // A recorded voice note (Upload id) the recipient hears by scanning the card
+  voiceUploadId: z.string().uuid().optional(),
 })
+
+// The code behind the QR on the card back — short, unguessable, URL-safe
+function makeScanCode(): string {
+  return crypto.randomBytes(9).toString('base64url')
+}
 
 // How far ahead of the event day we hand the card to the mail (Emerald's
 // 3-to-7-day window — we aim for the middle). "Mail is tricky; we do our
@@ -47,7 +55,16 @@ notesRouter.post('/', requireAuth, async (req: AuthRequest, res) => {
     cardDesignId,
     cardImageUrl,
     scheduledFor,
+    voiceUploadId,
   } = parsed.data
+
+  // A voice note must be the sender's own audio upload
+  if (voiceUploadId) {
+    const voice = await prisma.upload.findUnique({ where: { id: voiceUploadId }, select: { userId: true, mime: true } })
+    if (!voice || voice.userId !== req.userId || !voice.mime.startsWith('audio/')) {
+      return res.status(400).json({ error: "That voice note didn't come through. Try recording it again." })
+    }
+  }
 
   // Scheduling sanity: the event day must be ahead of us and within a year
   let eventDate: Date | null = null
@@ -118,6 +135,8 @@ notesRouter.post('/', requireAuth, async (req: AuthRequest, res) => {
       status: 'PENDING',
       scheduledFor: eventDate,
       mailAt,
+      voiceUploadId: voiceUploadId ?? null,
+      scanCode: makeScanCode(),
     },
   })
 
@@ -206,13 +225,28 @@ notesRouter.get('/sent', requireAuth, async (req: AuthRequest, res) => {
   return res.json({ data: notes })
 })
 
-// GET /notes/received — notes the current user received
+// GET /notes/received — notes addressed to the current user, plus physical
+// cards they scanned with the QR on the back (whoever holds the card gets it)
 notesRouter.get('/received', requireAuth, async (req: AuthRequest, res) => {
-  const notes = await prisma.note.findMany({
-    where: { recipientId: req.userId! },
-    include: { sender: { select: { id: true, displayName: true, username: true } } },
-    orderBy: { createdAt: 'desc' },
-    take: 20,
-  })
-  return res.json({ data: notes })
+  const senderSelect = { sender: { select: { id: true, displayName: true, username: true } } }
+  const [notes, scanned] = await Promise.all([
+    prisma.note.findMany({
+      where: { recipientId: req.userId! },
+      include: senderSelect,
+      orderBy: { createdAt: 'desc' },
+      take: 20,
+    }),
+    prisma.receivedCard.findMany({
+      where: { userId: req.userId! },
+      include: { note: { include: senderSelect } },
+      orderBy: { createdAt: 'desc' },
+      take: 20,
+    }),
+  ])
+  const seen = new Set(notes.map((n) => n.id))
+  const merged = [
+    ...notes,
+    ...scanned.filter((s) => !seen.has(s.noteId)).map((s) => s.note),
+  ].sort((a, b) => +new Date(b.createdAt) - +new Date(a.createdAt)).slice(0, 30)
+  return res.json({ data: merged })
 })

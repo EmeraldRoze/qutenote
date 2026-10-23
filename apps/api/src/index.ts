@@ -22,6 +22,7 @@ import { handwritingRouter } from './routes/handwriting'
 import { startScheduler } from './lib/scheduler'
 import { usersRouter } from './routes/users'
 import { notesRouter } from './routes/notes'
+import { cardsRouter } from './routes/cards'
 import { usageRouter } from './routes/usage'
 import { aiRouter } from './routes/ai'
 import { connectionsRouter } from './routes/connections'
@@ -83,6 +84,7 @@ app.use('/uploads', uploadsRouter)
 app.use('/handwriting', handwritingRouter)
 app.use('/users', usersRouter)
 app.use('/notes', notesRouter)
+app.use('/cards', cardsRouter)
 app.use('/usage', usageRouter)
 app.use('/ai', aiRouter)
 app.use('/connections', connectionsRouter)

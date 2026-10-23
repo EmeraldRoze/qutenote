@@ -65,6 +65,7 @@ model User {
   uploads          Upload[]
   handwritingFont  HandwritingFont?
   invitesSent      Invite[]
+  receivedCards    ReceivedCard[]
 }
 
 // ─── ADDRESSES (encrypted at app level) ─────────────────────────────────────
@@ -154,11 +155,31 @@ model Note {
   giftedByUserId  String?
   stripeChargeId  String?
   lobNoteId       String?
+  // Printed as a QR on the card back — scanning opens the card in the app
+  scanCode        String?        @unique
+  // Upload id of the sender's recorded voice note (audio), if they added one
+  voiceUploadId   String?
   createdAt       DateTime       @default(now())
 
-  sender     User        @relation("NotesSent", fields: [senderId], references: [id])
-  recipient  User        @relation("NotesReceived", fields: [recipientId], references: [id])
-  cardDesign CardDesign? @relation(fields: [cardDesignId], references: [id])
+  sender        User           @relation("NotesSent", fields: [senderId], references: [id])
+  recipient     User           @relation("NotesReceived", fields: [recipientId], references: [id])
+  cardDesign    CardDesign?    @relation(fields: [cardDesignId], references: [id])
+  receivedCards ReceivedCard[]
+}
+
+// A physical card someone scanned (QR on the card back) — it lands in the
+// scanner's Received section, whoever is holding the card.
+model ReceivedCard {
+  id        String   @id @default(uuid())
+  userId    String
+  noteId    String
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  note Note @relation(fields: [noteId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, noteId])
+  @@index([userId])
 }
 
 // ─── BADGES ──────────────────────────────────────────────────────────────────

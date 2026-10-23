@@ -8,14 +8,14 @@ export const uploadsRouter = Router()
 // Photos arrive as data URLs — bigger than the app-wide 1mb JSON cap.
 const bigJson = express.json({ limit: '10mb' })
 
-// POST /uploads — store a postcard photo, return its permanent URL
+// POST /uploads — store a postcard photo or voice note, return its permanent URL
 uploadsRouter.post('/', bigJson, requireAuth, async (req: AuthRequest, res: Response) => {
   const dataUrl: unknown = req.body?.dataUrl
   if (typeof dataUrl !== 'string') return res.status(400).json({ error: 'No image received.' })
-  const m = dataUrl.match(/^data:(image\/(?:jpeg|png|webp));base64,([A-Za-z0-9+/=]+)$/)
-  if (!m) return res.status(400).json({ error: "That doesn't look like a photo." })
+  const m = dataUrl.match(/^data:(image\/(?:jpeg|png|webp)|audio\/(?:mp4|webm|mpeg|wav|aac|ogg|x-m4a));base64,([A-Za-z0-9+/=]+)$/)
+  if (!m) return res.status(400).json({ error: "That doesn't look like a photo or a voice note." })
   const buf = Buffer.from(m[2], 'base64')
-  if (buf.length > 7 * 1024 * 1024) return res.status(400).json({ error: 'Photo is too large.' })
+  if (buf.length > 7 * 1024 * 1024) return res.status(400).json({ error: m[1].startsWith('audio/') ? 'Voice note is too large.' : 'Photo is too large.' })
 
   const upload = await prisma.upload.create({
     data: { userId: req.userId!, mime: m[1], data: buf },
