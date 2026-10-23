@@ -14,13 +14,11 @@ import { fetchHandwritingProgress, saveHandwritingProgress } from '../lib/handwr
 // one-at-a-time drawing. The app slices each word into letters, shows the
 // slice for approval, and a touch-up mode lets you redo any single letter.
 
-const uv = '#5A32D6'
-
 /* ── Shared ink-drawing helpers ── */
 
 function drawStrokes(ctx: CanvasRenderingContext2D, strokes: Stroke[], liveStroke?: Stroke) {
-  ctx.strokeStyle = '#231A3A'
-  ctx.fillStyle = '#231A3A'
+  ctx.strokeStyle = '#4A2424'
+  ctx.fillStyle = '#4A2424'
   ctx.lineWidth = 7
   ctx.lineCap = 'round'
   ctx.lineJoin = 'round'
@@ -57,11 +55,11 @@ function WordCanvas({ strokes, onDraw }: { strokes: Stroke[]; onDraw: (s: Stroke
     if (!canvas || !ctx) return
     ctx.clearRect(0, 0, WORD_W, WORD_H)
     // baseline + a faint x-height guide
-    ctx.strokeStyle = '#E6E1DC'
+    ctx.strokeStyle = '#B4897A'
     ctx.setLineDash([5, 5])
     ctx.lineWidth = 1.5
     ctx.beginPath(); ctx.moveTo(0, WORD_BASELINE); ctx.lineTo(WORD_W, WORD_BASELINE); ctx.stroke()
-    ctx.strokeStyle = '#F0EBE4'
+    ctx.strokeStyle = '#ACA8B8'
     ctx.beginPath(); ctx.moveTo(0, WORD_BASELINE - 70); ctx.lineTo(WORD_W, WORD_BASELINE - 70); ctx.stroke()
     ctx.setLineDash([])
     drawStrokes(ctx, strokes, liveStroke)
@@ -91,7 +89,7 @@ function WordCanvas({ strokes, onDraw }: { strokes: Stroke[]; onDraw: (s: Stroke
       ref={canvasRef}
       style={{
         width: '100%', aspectRatio: `${WORD_W} / ${WORD_H}`, borderRadius: '20px',
-        background: '#fff', border: '1.5px solid var(--stone)', touchAction: 'none', display: 'block',
+        background: '#FBF8F3', border: '1.5px solid #B4897A', touchAction: 'none', display: 'block',
       }}
       onPointerDown={(e) => {
         e.preventDefault()
@@ -246,8 +244,8 @@ function WordFlow({ session, onSaved, glyphs }: {
       <div style={{ display: 'flex', gap: '10px', marginTop: '18px', justifyContent: 'center' }}>
         <button onClick={() => { disarm(); setStrokes([]) }} disabled={!strokes.length || saving}
           style={{
-            height: '48px', borderRadius: '24px', border: '1.5px solid var(--stone)', cursor: 'pointer', padding: '0 26px',
-            background: '#fff', color: 'var(--ink-mid)', fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '13px',
+            height: '48px', borderRadius: '24px', border: '2px solid #B4897A', cursor: 'pointer', padding: '0 26px',
+            background: '#FBF8F3', color: '#4A2424', fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '13px',
             letterSpacing: '0.08em', opacity: strokes.length && !saving ? 1 : 0.5,
           }}>
           Clear & rewrite
@@ -279,7 +277,7 @@ function FixLetter({ char, glyphs, onSaved, onClose }: {
     const ctx = canvas?.getContext('2d')
     if (!canvas || !ctx) return
     ctx.clearRect(0, 0, S, S)
-    ctx.strokeStyle = '#E6E1DC'
+    ctx.strokeStyle = '#B4897A'
     ctx.setLineDash([5, 5])
     ctx.lineWidth = 1.5
     ctx.beginPath(); ctx.moveTo(0, HANDWRITING_BASELINE_Y); ctx.lineTo(S, HANDWRITING_BASELINE_Y); ctx.stroke()
@@ -307,13 +305,13 @@ function FixLetter({ char, glyphs, onSaved, onClose }: {
   const sessionKey = SESSIONS.find((s) => s.chars.includes(char))?.key ?? 'punctuation'
 
   return (
-    <div style={{ position: 'fixed', inset: 0, zIndex: 100, background: 'rgba(43,34,56,0.45)', display: 'flex', alignItems: 'flex-end' }} onClick={onClose}>
+    <div style={{ position: 'fixed', inset: 0, zIndex: 100, background: 'rgba(74,36,36,0.45)', display: 'flex', alignItems: 'flex-end' }} onClick={onClose}>
       <div style={{ width: '100%', background: 'var(--cream)', borderRadius: '16px 16px 0 0', padding: '22px 22px calc(26px + env(safe-area-inset-bottom))', textAlign: 'center' }} onClick={(e) => e.stopPropagation()}>
         <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '40px', fontWeight: 400, margin: 0 }}>{char}</h2>
         <p style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--ink-mid)', margin: '0 0 12px' }}>{charName(sessionKey, char)} — redo just this one</p>
         <canvas
           ref={canvasRef}
-          style={{ width: 'min(280px, 100%)', aspectRatio: '1', borderRadius: '20px', background: '#fff', border: '1.5px solid var(--stone)', touchAction: 'none', display: 'block', margin: '0 auto' }}
+          style={{ width: 'min(280px, 100%)', aspectRatio: '1', borderRadius: '20px', background: '#FBF8F3', border: '1.5px solid #B4897A', touchAction: 'none', display: 'block', margin: '0 auto' }}
           onPointerDown={(e) => { e.preventDefault(); drawingRef.current = true; currentRef.current = [posFromEvent(e)]; canvasRef.current?.setPointerCapture(e.pointerId) }}
           onPointerMove={(e) => { if (!drawingRef.current) return; currentRef.current.push(posFromEvent(e)); redraw(currentRef.current) }}
           onPointerUp={() => { if (!drawingRef.current) return; drawingRef.current = false; if (currentRef.current.length >= 1) setStrokes([...strokes, currentRef.current]); currentRef.current = [] }}
@@ -321,8 +319,8 @@ function FixLetter({ char, glyphs, onSaved, onClose }: {
         />
         <div style={{ display: 'flex', gap: '10px', marginTop: '14px' }}>
           <button onClick={() => setStrokes([])} disabled={!strokes.length} style={{
-            flex: 1, height: '48px', borderRadius: '24px', border: '1.5px solid var(--stone)', background: '#fff',
-            color: 'var(--ink-mid)', cursor: 'pointer', fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '13px', opacity: strokes.length ? 1 : 0.5,
+            flex: 1, height: '48px', borderRadius: '24px', border: '2px solid #B4897A', background: '#FBF8F3',
+            color: '#4A2424', cursor: 'pointer', fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '13px', opacity: strokes.length ? 1 : 0.5,
           }}>
             Clear
           </button>
@@ -340,7 +338,7 @@ function FixLetter({ char, glyphs, onSaved, onClose }: {
             }}
             disabled={!strokes.length || saving}
             style={{
-              flex: 2, height: '48px', borderRadius: '24px', border: 'none', background: uv, color: '#fff',
+              flex: 2, height: '48px', borderRadius: '24px', border: '2px solid #B4897A', background: '#BADAFF', color: '#4A2424',
               cursor: 'pointer', fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '13px',
               opacity: !strokes.length || saving ? 0.5 : 1,
             }}
@@ -385,8 +383,8 @@ export default function HandwritingPage() {
   const nav = (
     <nav style={{ background: 'var(--cream)', borderBottom: '1px solid var(--stone)', padding: '14px 18px', display: 'flex', alignItems: 'center', gap: '14px' }}>
       <button onClick={() => { if (activeSession) navigate('/handwriting', { replace: true }); else navigate(-1) }} aria-label="Back" style={{
-        width: '36px', height: '36px', borderRadius: '50%', background: 'var(--lavender-pale)',
-        border: 'none', cursor: 'pointer', color: uv, display: 'flex', alignItems: 'center', justifyContent: 'center',
+        width: '44px', height: '44px', borderRadius: '50%', background: '#E3D5CC',
+        border: 'none', cursor: 'pointer', color: '#4A2424', display: 'flex', alignItems: 'center', justifyContent: 'center',
       }}>
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M15 6l-6 6 6 6" /></svg>
       </button>
@@ -410,8 +408,8 @@ export default function HandwritingPage() {
       <div style={{ minHeight: '100vh' }}>
         <nav style={{ background: 'var(--cream)', borderBottom: '1px solid var(--stone)', padding: '14px 18px', display: 'flex', alignItems: 'center', gap: '14px' }}>
           <button onClick={() => setRedoWord(null)} aria-label="Back" style={{
-            width: '36px', height: '36px', borderRadius: '50%', background: 'var(--lavender-pale)',
-            border: 'none', cursor: 'pointer', color: uv, display: 'flex', alignItems: 'center', justifyContent: 'center',
+            width: '44px', height: '44px', borderRadius: '50%', background: '#E3D5CC',
+            border: 'none', cursor: 'pointer', color: '#4A2424', display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M15 6l-6 6 6 6" /></svg>
           </button>
@@ -454,7 +452,7 @@ export default function HandwritingPage() {
               onClick={() => navigate(`/handwriting/${s.key}`, { replace: true })}
               style={{
                 display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%',
-                padding: '16px 18px', borderRadius: '16px', background: '#fff', border: '1px solid var(--stone)',
+                padding: '16px 18px', borderRadius: '16px', background: 'var(--card)', border: '1.5px solid var(--stone)',
                 marginBottom: '10px', cursor: 'pointer', textAlign: 'left', textTransform: 'none', letterSpacing: 0, fontWeight: 400,
               }}
             >
@@ -464,7 +462,7 @@ export default function HandwritingPage() {
               </div>
               <span style={{
                 fontFamily: 'var(--font-body)', fontSize: '11px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase',
-                color: complete ? uv : 'var(--ink-mid)',
+                color: complete ? '#4A2424' : 'var(--ink-mid)',
               }}>
                 {complete ? '✓ Done' : sessionDone > 0 ? 'Continue' : 'Start'}
               </span>
@@ -482,8 +480,8 @@ export default function HandwritingPage() {
             <div key={String(fontReady)} style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
               {WORD_SESSIONS.flatMap((s) => s.words).filter((w) => w.length > 1).map((w) => (
                 <button key={w} onClick={() => setRedoWord(w)} style={{
-                  minWidth: '64px', padding: '8px 14px', borderRadius: '12px', background: '#fff',
-                  border: '1px solid var(--stone)', cursor: 'pointer', textTransform: 'none', letterSpacing: 0, fontWeight: 400,
+                  minWidth: '64px', padding: '8px 14px', borderRadius: '12px', background: 'var(--card)',
+                  border: '1.5px solid var(--stone)', cursor: 'pointer', textTransform: 'none', letterSpacing: 0, fontWeight: 400,
                   fontFamily: `'${HANDWRITING_FONT_FAMILY}', 'Fraunces', serif`, fontSize: '22px', color: 'var(--ink)',
                 }}>
                   {w}
@@ -503,8 +501,8 @@ export default function HandwritingPage() {
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
               {writtenChars.map((c) => (
                 <button key={c} onClick={() => setFixing(c)} style={{
-                  width: '44px', height: '44px', borderRadius: '12px', background: '#fff',
-                  border: '1px solid var(--stone)', cursor: 'pointer', fontFamily: 'var(--font-body)',
+                  width: '44px', height: '44px', borderRadius: '12px', background: 'var(--card)',
+                  border: '1.5px solid var(--stone)', cursor: 'pointer', fontFamily: 'var(--font-body)',
                   fontSize: '18px', color: 'var(--ink)', textTransform: 'none', letterSpacing: 0, fontWeight: 400,
                 }}>
                   {c}

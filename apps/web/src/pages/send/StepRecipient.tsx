@@ -10,8 +10,6 @@ import type { NoteData } from './SendFlow'
 // as selectable rows (birthdays coming up first), and the text-an-address
 // invite box for people who aren't on QuteNote yet.
 
-const uv = '#5A32D6'
-
 interface Connection {
   id: string
   username: string
@@ -23,7 +21,6 @@ interface Connection {
 interface ImportantDate { id: string; connectionName: string; label: string; month: number; day: number }
 
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
-const AVATAR_BGS = ['var(--lavender-pale)', 'var(--lavender-light)', 'var(--lilac)', 'var(--neon-pink)', 'var(--lime)']
 
 function daysUntil(month: number, day: number): number {
   const now = new Date()
@@ -37,9 +34,6 @@ function countdownLabel(days: number): string {
   if (days === 0) return 'Today'
   if (days === 1) return 'Tomorrow'
   return `In ${days} days`
-}
-function initials(name: string) {
-  return name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2)
 }
 
 export default function StepRecipient({ note, onChangeCard, onNext, initialQuery }: {
@@ -110,7 +104,6 @@ export default function StepRecipient({ note, onChangeCard, onNext, initialQuery
 
   function row(c: Connection, subtitle: string, pill?: string) {
     const isSelected = c.id === selectedId
-    const avatarBg = AVATAR_BGS[(c.username.length + c.displayName.length) % AVATAR_BGS.length]
     return (
       <button
         key={c.id}
@@ -119,25 +112,25 @@ export default function StepRecipient({ note, onChangeCard, onNext, initialQuery
         onClick={() => setSelectedId(isSelected ? null : c.id)}
         style={{
           width: '100%', minHeight: '64px', boxSizing: 'border-box', borderRadius: '16px',
-          border: isSelected ? '2px dashed var(--lilac)' : '1.5px solid var(--stone)',
-          background: isSelected ? 'var(--lavender-pale)' : '#fff',
+          border: isSelected ? '2px dashed var(--outline)' : '1.5px solid var(--outline)',
+          background: isSelected ? 'var(--selected-fill)' : 'var(--card)',
           display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 14px',
           fontFamily: 'var(--font-body)', textAlign: 'left', color: 'var(--ink)', cursor: 'pointer',
           textTransform: 'none', letterSpacing: 0, fontWeight: 400,
         }}
       >
-        <span style={{ width: '40px', height: '40px', flex: 'none', borderRadius: '50%', background: avatarBg, border: '1.5px solid var(--ink)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: '14px' }}>{initials(c.displayName)}</span>
+        <QEmoji name="heart-sparkle" size={42} style={{ flex: 'none' }} />
         <span style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '2px' }}>
           <span style={{ fontSize: '16px', fontWeight: 700 }}>{c.displayName}</span>
-          <span style={{ fontSize: '13px', color: 'var(--ink-mid)' }}>{subtitle}</span>
+          <span style={{ fontSize: '13px', color: 'var(--ink)' }}>{subtitle}</span>
         </span>
         {pill && (
-          <span style={{ fontSize: '13px', fontWeight: 700, background: 'var(--lime)', borderRadius: '10px', padding: '3px 9px', whiteSpace: 'nowrap' }}>{pill}</span>
+          <span style={{ fontSize: '13px', fontWeight: 700, background: 'var(--highlight)', borderRadius: '10px', padding: '3px 9px', whiteSpace: 'nowrap' }}>{pill}</span>
         )}
         <span style={{
           width: '24px', height: '24px', flex: 'none', borderRadius: '50%',
           display: isSelected ? 'flex' : 'none', alignItems: 'center', justifyContent: 'center',
-          background: uv, color: '#fff',
+          background: 'var(--stamp-center)', color: 'var(--card)',
         }}>
           <svg aria-hidden width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg>
         </span>
@@ -145,32 +138,32 @@ export default function StepRecipient({ note, onChangeCard, onNext, initialQuery
     )
   }
 
-  const sectionHead: React.CSSProperties = { margin: '18px 0 8px', fontSize: '13px', fontWeight: 700, fontFamily: 'var(--font-body)', color: 'var(--ink-mid)' }
+  const sectionHead: React.CSSProperties = { margin: '18px 0 8px', fontSize: '13px', fontWeight: 700, fontFamily: 'var(--font-body)', color: 'var(--ink)' }
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
 
       {/* Your card */}
-      <div style={{ marginTop: '16px', background: '#fff', border: '1.5px solid var(--stone)', borderRadius: '16px', padding: '8px 12px 8px 8px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+      <div style={{ marginTop: '16px', background: 'var(--card)', border: '1.5px solid var(--outline)', borderRadius: '16px', padding: '8px 12px 8px 8px', display: 'flex', alignItems: 'center', gap: '12px' }}>
         {cardThumb ? (
-          <img src={cardThumb} alt="" style={{ width: '40px', height: '56px', objectFit: 'cover', borderRadius: '4px', border: '1.5px solid var(--ink)', flex: 'none' }} />
+          <img src={cardThumb} alt="" style={{ width: '40px', height: '56px', objectFit: 'cover', borderRadius: '4px', border: '1.5px solid var(--outline)', flex: 'none' }} />
         ) : (
-          <span style={{ width: '40px', height: '56px', borderRadius: '4px', border: '1.5px solid var(--ink)', background: design?.bg ?? 'var(--lavender-pale)', flex: 'none' }} />
+          <span style={{ width: '40px', height: '56px', borderRadius: '4px', border: '1.5px solid var(--outline)', background: design?.bg ?? 'var(--selected-fill)', flex: 'none' }} />
         )}
         <span style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '2px' }}>
-          <span style={{ fontSize: '13px', fontFamily: 'var(--font-body)', color: 'var(--ink-mid)' }}>Your card</span>
+          <span style={{ fontSize: '13px', fontFamily: 'var(--font-body)', color: 'var(--ink)' }}>Your card</span>
           <span style={{ fontSize: '15px', fontWeight: 700, fontFamily: 'var(--font-body)', color: 'var(--ink)' }}>{cardLine}</span>
         </span>
         <button onClick={onChangeCard} style={{
           minHeight: '44px', padding: 0, background: 'none', border: 'none', cursor: 'pointer',
           display: 'flex', alignItems: 'center', fontFamily: 'var(--font-body)',
-          fontSize: '13px', fontWeight: 700, letterSpacing: '0.08em', color: uv,
+          fontSize: '13px', fontWeight: 700, letterSpacing: '0.08em', color: 'var(--stamp-center)',
         }}>CHANGE</button>
       </div>
 
       {/* Search */}
-      <label style={{ marginTop: '14px', height: '48px', borderRadius: '24px', background: '#fff', border: '1.5px solid var(--stone)', display: 'flex', alignItems: 'center', gap: '10px', padding: '0 16px' }}>
-        <svg aria-hidden width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ink-mid)" strokeWidth="2" strokeLinecap="round"><circle cx="11" cy="11" r="6.5" /><path d="M16 16l4.5 4.5" /></svg>
+      <label style={{ marginTop: '14px', height: '48px', borderRadius: '24px', background: 'var(--card)', border: '1.5px solid var(--outline)', display: 'flex', alignItems: 'center', gap: '10px', padding: '0 16px' }}>
+        <svg aria-hidden width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" strokeWidth="2" strokeLinecap="round"><circle cx="11" cy="11" r="6.5" /><path d="M16 16l4.5 4.5" /></svg>
         <input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
@@ -204,7 +197,7 @@ export default function StepRecipient({ note, onChangeCard, onNext, initialQuery
 
           {shown.upcoming.length === 0 && shown.rest.length === 0 && (
             <p style={{ fontFamily: 'var(--font-body)', fontSize: '14px', color: 'var(--ink-muted)', padding: '20px 0 4px' }}>
-              {q ? 'No QTs match that.' : 'No QTs yet — invite someone below and your card is the first thing in their mailbox.'}
+              {q ? 'No QTs match that.' : 'No QTs yet, invite someone below and your card is the first thing in their mailbox.'}
             </p>
           )}
         </>
@@ -212,12 +205,13 @@ export default function StepRecipient({ note, onChangeCard, onNext, initialQuery
 
       {/* Someone not on QuteNote yet? Text them for their address. */}
       <button
+        className="qn-stamp"
         onClick={inviteThem}
         disabled={inviteState === 'working'}
         style={{
           marginTop: '12px', minHeight: '60px', boxSizing: 'border-box', borderRadius: '16px',
-          border: '2px dashed var(--lilac)', background: 'var(--lavender-pale)',
-          display: 'flex', alignItems: 'center', gap: '12px', padding: '8px 14px',
+          border: '10px solid transparent', background: 'transparent',
+          display: 'flex', alignItems: 'center', gap: '12px', padding: '0 6px',
           color: 'var(--ink)', cursor: 'pointer', fontFamily: 'var(--font-body)',
           textTransform: 'none', letterSpacing: 0, fontWeight: 400, textAlign: 'left',
           opacity: inviteState === 'working' ? 0.7 : 1,
@@ -226,8 +220,8 @@ export default function StepRecipient({ note, onChangeCard, onNext, initialQuery
         <QEmoji name="mailbox" size={40} style={{ flex: 'none', height: 'auto' }} />
         <span style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
           <span style={{ fontSize: '15px', fontWeight: 700 }}>Someone not on QuteNote yet?</span>
-          <span style={{ fontSize: '13px', color: 'var(--ink-mid)' }}>
-            {inviteState === 'working' ? 'Getting your link…' : inviteState === 'sent' ? 'Link ready — sent!' : "We'll text them for their address."}
+          <span style={{ fontSize: '13px', color: 'var(--ink)' }}>
+            {inviteState === 'working' ? 'Getting your link…' : inviteState === 'sent' ? 'Link ready, sent!' : "We'll text them for their address."}
           </span>
         </span>
       </button>
@@ -241,9 +235,9 @@ export default function StepRecipient({ note, onChangeCard, onNext, initialQuery
         disabled={!selected}
         onClick={() => selected && onNext({ recipientId: selected.id, recipientName: selected.displayName })}
         style={{
-          marginTop: '24px', height: '56px', borderRadius: '28px', border: 'none',
-          cursor: selected ? 'pointer' : 'not-allowed',
-          background: uv, opacity: selected ? 1 : 0.45, color: '#fff',
+          marginTop: '24px', height: '56px', borderRadius: '28px', border: '2px solid var(--outline)',
+          boxSizing: 'border-box', cursor: selected ? 'pointer' : 'not-allowed',
+          background: 'var(--btn)', opacity: selected ? 1 : 0.45, color: 'var(--ink)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           fontFamily: 'var(--font-body)', fontSize: '15px', fontWeight: 700, letterSpacing: '0.08em',
         }}

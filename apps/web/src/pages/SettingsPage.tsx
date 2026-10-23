@@ -73,9 +73,9 @@ export default function SettingsPage() {
       </div>
 
       <div style={{ maxWidth: '480px', margin: '0 auto' }}>
-        <h2 style={{ margin: '24px 20px 8px', fontFamily: 'var(--font-body)', fontSize: '14px', fontWeight: 700, color: 'var(--ink-mid)' }}>Your account</h2>
+        <h2 style={{ margin: '24px 20px 8px', fontFamily: 'var(--font-body)', fontSize: '14px', fontWeight: 700, color: 'var(--ink)' }}>Your account</h2>
 
-        <div style={{ background: '#fff', borderTop: '1px solid var(--stone)', borderBottom: '1px solid var(--stone)' }}>
+        <div style={{ background: 'var(--card)', borderTop: '1.5px solid var(--stone)', borderBottom: '1.5px solid var(--stone)' }}>
           <button style={rowStyle} onClick={() => navigate('/settings/account')}>
             <span style={rowLabel}>Account</span>
             <span style={rowValue} />
@@ -105,7 +105,7 @@ export default function SettingsPage() {
             <span style={rowValue}>{user?.isPrivate ? 'Private' : 'Public'}</span>
             {chevron}
           </button>
-          <p style={{ margin: 0, fontFamily: 'var(--font-body)', fontSize: '12px', color: 'var(--ink-muted)', padding: '0 20px 10px', background: '#fff', borderBottom: '1px solid var(--divider)' }}>
+          <p style={{ margin: 0, fontFamily: 'var(--font-body)', fontSize: '12px', color: 'var(--ink-muted)', padding: '0 20px 10px', background: 'var(--card)', borderBottom: '1px solid var(--stone)' }}>
             {user?.isPrivate
               ? 'Private: your sends stay off feeds. Tap to go public.'
               : "Public: your sends show on your QTs' feeds. Tap to go private."}
@@ -123,12 +123,12 @@ export default function SettingsPage() {
             {isNativeApp && chevron}
           </button>
           {reminderStatus === 'denied' && (
-            <p style={{ margin: 0, fontFamily: 'var(--font-body)', fontSize: '12px', color: 'var(--ink-mid)', padding: '0 20px 10px', background: '#fff', borderBottom: '1px solid var(--divider)' }}>
+            <p style={{ margin: 0, fontFamily: 'var(--font-body)', fontSize: '12px', color: 'var(--ink-mid)', padding: '0 20px 10px', background: 'var(--card)', borderBottom: '1px solid var(--stone)' }}>
               Notifications are off in your iPhone Settings. Open Settings → QuteNote → Notifications to allow them.
             </p>
           )}
           {reminderStatus === 'failed' && (
-            <p style={{ margin: 0, fontFamily: 'var(--font-body)', fontSize: '12px', color: 'var(--ink-mid)', padding: '0 20px 10px', background: '#fff', borderBottom: '1px solid var(--divider)' }}>
+            <p style={{ margin: 0, fontFamily: 'var(--font-body)', fontSize: '12px', color: 'var(--ink-mid)', padding: '0 20px 10px', background: 'var(--card)', borderBottom: '1px solid var(--stone)' }}>
               That didn't go through{lastReminderFailure() ? ` (${lastReminderFailure()})` : ''}. Try again in a moment.
             </p>
           )}
@@ -157,7 +157,7 @@ export default function SettingsPage() {
           style={{
             display: 'block', margin: '22px 20px 0', padding: 0,
             background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left',
-            fontFamily: 'var(--font-body)', fontSize: '14px', color: 'var(--ink-mid)',
+            fontFamily: 'var(--font-body)', fontSize: '14px', color: 'var(--ink)',
             textTransform: 'none', letterSpacing: 0, fontWeight: 400,
           }}
         >

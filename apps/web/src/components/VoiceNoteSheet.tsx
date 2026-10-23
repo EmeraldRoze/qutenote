@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from 'react'
 // QR on the printed card and hears it. Max 60 seconds. The audio stays in
 // memory as a data URL until MAIL IT uploads it with the note.
 
-const uv = '#5A32D6'
 const MAX_SECONDS = 60
 
 export interface VoiceNote {
@@ -117,8 +116,8 @@ export default function VoiceNoteSheet({ onDone, onClose }: {
   })
 
   return (
-    <div style={{ position: 'fixed', inset: 0, zIndex: 100, background: 'rgba(43,34,56,0.45)', display: 'flex', alignItems: 'flex-end' }} onClick={() => { cleanup(); onClose() }}>
-      <div style={{ width: '100%', background: 'var(--cream)', borderRadius: '16px 16px 0 0', padding: '24px 24px calc(28px + env(safe-area-inset-bottom))' }} onClick={(e) => e.stopPropagation()}>
+    <div style={{ position: 'fixed', inset: 0, zIndex: 100, background: 'rgba(74,36,36,0.45)', display: 'flex', alignItems: 'flex-end' }} onClick={() => { cleanup(); onClose() }}>
+      <div style={{ width: '100%', background: 'var(--cream)', borderTop: '2px solid var(--outline)', borderRadius: '16px 16px 0 0', padding: '24px 24px calc(28px + env(safe-area-inset-bottom))' }} onClick={(e) => e.stopPropagation()}>
         <div style={{ maxWidth: '480px', margin: '0 auto', textAlign: 'center' }}>
           <h2 style={{ fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: '22px', color: 'var(--ink)', margin: '0 0 6px' }}>
             {phase === 'recorded' ? 'How does it sound?' : 'Say it out loud'}
@@ -130,15 +129,15 @@ export default function VoiceNoteSheet({ onDone, onClose }: {
           </p>
 
           {phase === 'idle' && (
-            <button aria-label="Start recording" onClick={startRecording} style={bigRound(uv)}>
-              <svg aria-hidden width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="2" width="6" height="12" rx="3" /><path d="M5 10a7 7 0 0 0 14 0M12 17v4M8 21h8" /></svg>
+            <button aria-label="Start recording" onClick={startRecording} style={bigRound('var(--stamp-center)', '2px solid var(--outline)')}>
+              <svg aria-hidden width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--card)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="2" width="6" height="12" rx="3" /><path d="M5 10a7 7 0 0 0 14 0M12 17v4M8 21h8" /></svg>
             </button>
           )}
 
           {phase === 'recording' && (
             <>
-              <button aria-label="Stop recording" onClick={stopRecording} style={bigRound('#E04E6B')}>
-                <svg aria-hidden width="30" height="30" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2" fill="#fff" /></svg>
+              <button aria-label="Stop recording" onClick={stopRecording} style={bigRound('var(--error)', '2px solid var(--outline)')}>
+                <svg aria-hidden width="30" height="30" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2" fill="var(--card)" /></svg>
               </button>
               <p aria-live="polite" style={{ fontFamily: 'var(--font-body)', fontSize: '18px', fontWeight: 700, color: 'var(--ink)', margin: '14px 0 0' }}>
                 {formatSeconds(seconds)} <span style={{ fontWeight: 400, color: 'var(--ink-mid)' }}>/ 1:00</span>
@@ -148,27 +147,28 @@ export default function VoiceNoteSheet({ onDone, onClose }: {
 
           {phase === 'recorded' && (
             <>
-              <button aria-label={playing ? 'Pause' : 'Play it back'} onClick={togglePlay} style={bigRound('#fff', `2px solid ${uv}`)}>
+              <button aria-label={playing ? 'Pause' : 'Play it back'} onClick={togglePlay} style={bigRound('var(--card)', '2px solid var(--outline)')}>
                 {playing ? (
-                  <svg aria-hidden width="30" height="30" viewBox="0 0 24 24" fill={uv}><rect x="6" y="5" width="4" height="14" rx="1.5" /><rect x="14" y="5" width="4" height="14" rx="1.5" /></svg>
+                  <svg aria-hidden width="30" height="30" viewBox="0 0 24 24" fill="var(--ink)"><rect x="6" y="5" width="4" height="14" rx="1.5" /><rect x="14" y="5" width="4" height="14" rx="1.5" /></svg>
                 ) : (
-                  <svg aria-hidden width="30" height="30" viewBox="0 0 24 24" fill={uv}><path d="M8 5.5v13l11-6.5z" /></svg>
+                  <svg aria-hidden width="30" height="30" viewBox="0 0 24 24" fill="var(--ink)"><path d="M8 5.5v13l11-6.5z" /></svg>
                 )}
               </button>
               <p style={{ fontFamily: 'var(--font-body)', fontSize: '15px', color: 'var(--ink-mid)', margin: '12px 0 0' }}>
                 {formatSeconds(takeRef.current?.duration ?? 0)} recorded
               </p>
               <button onClick={() => { if (takeRef.current) { cleanup(); onDone(takeRef.current) } }} style={{
-                width: '100%', marginTop: '18px', height: '54px', borderRadius: '27px', border: 'none',
-                background: uv, color: '#fff', cursor: 'pointer',
+                width: '100%', marginTop: '18px', height: '54px', borderRadius: '27px',
+                border: '2px solid var(--outline)', boxSizing: 'border-box',
+                background: 'var(--btn)', color: 'var(--ink)', cursor: 'pointer',
                 fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '15px', letterSpacing: '0.08em',
               }}>
                 PUT IT ON THE CARD
               </button>
               <button onClick={() => { takeRef.current = null; setPhase('idle'); setSeconds(0) }} style={{
-                width: '100%', marginTop: '10px', height: '48px', borderRadius: '24px', background: 'none',
-                border: '1.5px solid var(--stone)', cursor: 'pointer',
-                fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '13px', letterSpacing: '0.08em', color: 'var(--ink-mid)',
+                width: '100%', marginTop: '10px', height: '48px', borderRadius: '24px', background: 'var(--card)',
+                border: '2px solid var(--outline)', boxSizing: 'border-box', cursor: 'pointer',
+                fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '13px', letterSpacing: '0.08em', color: 'var(--ink)',
               }}>
                 RECORD IT AGAIN
               </button>

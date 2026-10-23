@@ -217,7 +217,7 @@ export default function SendFlow() {
       {step === 'card' && (
         <>
           <Band height={144}>
-            <h1 style={{ margin: 0, fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: '30px', letterSpacing: '-0.02em', color: 'var(--ink)' }}>Send a card</h1>
+            <h1 style={{ margin: 0, fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: '30px', letterSpacing: '-0.02em', color: 'var(--ink)' }}>Send a little somethin'</h1>
           </Band>
           <div style={content}>
             {drafts.length > 0 && (
@@ -698,8 +698,8 @@ function WriteStep({ note, update, onNext }: {
         </div>
       </div>
       <div style={{ margin: '8px 0 0', display: 'flex', justifyContent: isSecretPen || isFlowerPen ? 'space-between' : 'flex-end', alignItems: 'center', fontSize: '13px', fontFamily: 'var(--font-body)', color: 'var(--ink)' }}>
-        {isSecretPen && <span>🤫 Prints in the Secret Language — peek at the preview.</span>}
-        {isFlowerPen && <span>🌷 Blooms into bouquets — peek at the preview.</span>}
+        {isSecretPen && <span>🤫 Prints in the Secret Language, peek at the preview.</span>}
+        {isFlowerPen && <span>🌷 Blooms into bouquets, peek at the preview.</span>}
         <span>{count}/{NOTE_LIMIT}</span>
       </div>
 
@@ -961,7 +961,7 @@ function ReviewStep({ note, onSent, onEditNote, onEditRecipient, onSaveDraft, ed
   }
 
   const tabStyle = (active: boolean): React.CSSProperties => ({
-    border: 0, borderRadius: '20px', background: active ? '#fff' : 'transparent', cursor: 'pointer',
+    border: 0, borderRadius: '20px', background: active ? 'var(--card)' : 'transparent', cursor: 'pointer',
     fontFamily: 'var(--font-body)', fontSize: '14px', fontWeight: 700, color: 'var(--ink)',
     textTransform: 'none', letterSpacing: 0,
   })
@@ -971,7 +971,7 @@ function ReviewStep({ note, onSent, onEditNote, onEditRecipient, onSaveDraft, ed
       {/* Front / Back switch */}
       <div role="tablist" aria-label="Card side" style={{
         marginTop: '16px', marginLeft: 'auto', marginRight: 'auto', width: '220px', height: '44px',
-        borderRadius: '22px', background: 'var(--lavender-light)', padding: '4px', boxSizing: 'border-box',
+        borderRadius: '22px', background: 'var(--light-blush)', padding: '4px', boxSizing: 'border-box',
         display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
       }}>
         <button role="tab" aria-selected={side === 'front'} onClick={() => setSide('front')} style={tabStyle(side === 'front')}>Front</button>
@@ -984,12 +984,12 @@ function ReviewStep({ note, onSent, onEditNote, onEditRecipient, onSaveDraft, ed
           frontArt ? (
             <img src={frontArt} alt={design ? `Front of the card: ${design.title} by ${design.handle ?? design.artist}` : 'Front of the card: your photo'} style={{
               maxHeight: '320px', maxWidth: '92%', width: 'auto', borderRadius: '6px',
-              transform: 'rotate(-2deg)', boxShadow: '0 14px 28px rgba(35, 26, 58, 0.2)',
+              transform: 'rotate(-2deg)', boxShadow: '0 14px 28px rgba(74, 36, 36, 0.2)',
             }} />
           ) : (
             <div style={{
-              height: '320px', width: '240px', borderRadius: '6px', background: design?.bg ?? 'var(--lavender-pale)',
-              transform: 'rotate(-2deg)', boxShadow: '0 14px 28px rgba(35, 26, 58, 0.2)',
+              height: '320px', width: '240px', borderRadius: '6px', background: design?.bg ?? 'var(--selected-fill)',
+              transform: 'rotate(-2deg)', boxShadow: '0 14px 28px rgba(74, 36, 36, 0.2)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}>
               <span style={{ fontSize: '13px', fontFamily: 'var(--font-body)', color: 'var(--ink-mid)' }}>{design?.title ?? 'Your card'}</span>
@@ -998,9 +998,9 @@ function ReviewStep({ note, onSent, onEditNote, onEditRecipient, onSaveDraft, ed
         ) : (
           <div style={{
             width: '100%', maxWidth: '360px', minHeight: '320px', boxSizing: 'border-box',
-            background: '#fff', border: '1.5px solid var(--stone)', borderRadius: '6px',
-            transform: 'rotate(2deg)', boxShadow: '0 14px 28px rgba(35, 26, 58, 0.2)',
-            backgroundImage: 'repeating-linear-gradient(transparent, transparent 35px, #ECE6F5 35px, #ECE6F5 36px)',
+            background: 'var(--card)', border: '1.5px solid var(--outline)', borderRadius: '6px',
+            transform: 'rotate(2deg)', boxShadow: '0 14px 28px rgba(74, 36, 36, 0.2)',
+            backgroundImage: "url('/brand/paper_texture.png'), repeating-linear-gradient(transparent, transparent 35px, var(--divider) 35px, var(--divider) 36px)",
             backgroundPosition: '0 16px',
             padding: '16px 16px 12px 18px', display: 'flex', flexDirection: 'column',
           }}>
@@ -1023,7 +1023,7 @@ function ReviewStep({ note, onSent, onEditNote, onEditRecipient, onSaveDraft, ed
               <span style={{ fontSize: '12px', fontFamily: 'var(--font-body)', color: 'var(--ink-muted)' }}>address hidden</span>
               <button onClick={onEditNote} style={{
                 marginLeft: 'auto', minHeight: '32px', padding: 0, background: 'none', border: 'none', cursor: 'pointer',
-                fontFamily: 'var(--font-body)', fontSize: '13px', fontWeight: 700, letterSpacing: '0.08em', color: uv,
+                fontFamily: 'var(--font-body)', fontSize: '13px', fontWeight: 700, letterSpacing: '0.08em', color: 'var(--stamp-center)',
               }}>EDIT</button>
             </div>
           </div>
@@ -1031,28 +1031,28 @@ function ReviewStep({ note, onSent, onEditNote, onEditRecipient, onSaveDraft, ed
       </div>
 
       {/* Details */}
-      <div style={{ marginTop: '16px', background: '#fff', border: '1.5px solid var(--stone)', borderRadius: '18px', overflow: 'hidden' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px', borderBottom: '1.5px solid var(--divider)' }}>
-          <span style={{ flex: 1, fontSize: '13px', fontFamily: 'var(--font-body)', color: 'var(--ink-mid)' }}>To</span>
+      <div style={{ marginTop: '16px', background: 'var(--card)', border: '1.5px solid var(--outline)', borderRadius: '18px', overflow: 'hidden' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px', borderBottom: '1.5px solid var(--outline)' }}>
+          <span style={{ flex: 1, fontSize: '13px', fontFamily: 'var(--font-body)', color: 'var(--ink)' }}>To</span>
           <span style={{ fontSize: '15px', fontWeight: 700, fontFamily: 'var(--font-body)', color: 'var(--ink)' }}>{note.recipientName}</span>
           {canEditRecipient && (
             <button onClick={onEditRecipient} style={{
               minHeight: '32px', padding: 0, background: 'none', border: 'none', cursor: 'pointer',
               display: 'flex', alignItems: 'center',
-              fontFamily: 'var(--font-body)', fontSize: '13px', fontWeight: 700, letterSpacing: '0.08em', color: uv,
+              fontFamily: 'var(--font-body)', fontSize: '13px', fontWeight: 700, letterSpacing: '0.08em', color: 'var(--stamp-center)',
             }}>EDIT</button>
           )}
         </div>
-        <div style={{ padding: '12px 16px', borderBottom: '1.5px solid var(--divider)' }}>
-          <span style={{ fontSize: '13px', fontFamily: 'var(--font-body)', color: 'var(--ink-mid)' }}>When should it mail?</span>
+        <div style={{ padding: '12px 16px', borderBottom: '1.5px solid var(--outline)' }}>
+          <span style={{ fontSize: '13px', fontFamily: 'var(--font-body)', color: 'var(--ink)' }}>When should it mail?</span>
           <div role="radiogroup" aria-label="When to mail" style={{ marginTop: '8px', display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
             {(['now', 'schedule'] as const).map((opt) => {
               const selected = mailWhen === opt
               return (
                 <button key={opt} role="radio" aria-checked={selected} onClick={() => setMailWhen(opt)} style={{
                   flex: 'none', minHeight: '40px', padding: '0 14px', borderRadius: '20px',
-                  border: selected ? '2px dashed var(--lilac)' : '1.5px solid var(--stone)',
-                  background: selected ? 'var(--lavender-pale)' : '#fff',
+                  border: selected ? '2px dashed var(--outline)' : '1.5px solid var(--outline)',
+                  background: selected ? 'var(--selected-fill)' : 'var(--card)',
                   fontFamily: 'var(--font-body)', fontSize: '14px', fontWeight: 700, color: 'var(--ink)',
                   textTransform: 'none', letterSpacing: 0, cursor: 'pointer',
                 }}>{opt === 'now' ? 'Send now' : 'Schedule it'}</button>
@@ -1061,7 +1061,7 @@ function ReviewStep({ note, onSent, onEditNote, onEditRecipient, onSaveDraft, ed
           </div>
           {mailWhen === 'schedule' && (
             <div style={{ marginTop: '10px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
-              <label style={{ fontSize: '13px', fontFamily: 'var(--font-body)', color: 'var(--ink-mid)' }}>
+              <label style={{ fontSize: '13px', fontFamily: 'var(--font-body)', color: 'var(--ink)' }}>
                 What day is the occasion?
                 <input
                   type="date"
@@ -1070,30 +1070,30 @@ function ReviewStep({ note, onSent, onEditNote, onEditRecipient, onSaveDraft, ed
                   max={maxScheduleDate}
                   onChange={(e) => setScheduleDate(e.target.value)}
                   style={{
-                    display: 'block', marginTop: '4px', width: '100%', height: '44px', padding: '0 12px',
-                    borderRadius: '10px', border: '1.5px solid var(--stone)', background: '#fff',
+                    display: 'block', marginTop: '4px', width: '100%', height: '44px', padding: '0 12px', boxSizing: 'border-box',
+                    borderRadius: '10px', border: '1.5px solid var(--outline)', background: 'var(--card)',
                     fontFamily: 'var(--font-body)', fontSize: '16px', color: 'var(--ink)',
                   }}
                 />
               </label>
               <span style={{ fontSize: '12px', fontFamily: 'var(--font-body)', color: 'var(--ink-muted)' }}>
-                We'll mail it a few days ahead. Mail is tricky — we do our best to land it close to the date. 💌
+                We'll mail it a few days ahead. Mail is tricky, we do our best to land it close to the date. 💌
               </span>
             </div>
           )}
         </div>
         {note.voiceDataUrl && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px', borderBottom: '1.5px solid var(--divider)' }}>
-            <span style={{ flex: 1, fontSize: '13px', fontFamily: 'var(--font-body)', color: 'var(--ink-mid)' }}>Voice note</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px', borderBottom: '1.5px solid var(--outline)' }}>
+            <span style={{ flex: 1, fontSize: '13px', fontFamily: 'var(--font-body)', color: 'var(--ink)' }}>Voice note</span>
             <span style={{ fontSize: '15px', fontWeight: 700, fontFamily: 'var(--font-body)', color: 'var(--ink)' }}>🎤 {formatSeconds(note.voiceDuration ?? 0)} · they scan to hear it</span>
           </div>
         )}
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px' }}>
-          <span style={{ flex: 1, fontSize: '13px', fontFamily: 'var(--font-body)', color: 'var(--ink-mid)' }}>This card</span>
+          <span style={{ flex: 1, fontSize: '13px', fontFamily: 'var(--font-body)', color: 'var(--ink)' }}>This card</span>
           <span style={{ fontSize: '15px', fontWeight: 700, fontFamily: 'var(--font-body)', color: 'var(--ink)' }}>{allowanceLine}</span>
         </div>
       </div>
-      <p style={{ margin: '10px 4px 0', fontSize: '13px', fontFamily: 'var(--font-body)', color: 'var(--ink-mid)' }}>
+      <p style={{ margin: '10px 4px 0', fontSize: '13px', fontFamily: 'var(--font-body)', color: 'var(--ink)' }}>
         {mailWhen === 'schedule'
           ? 'Scheduled cards wait in Settings → Scheduled cards, editable until the day they mail.'
           : 'Changed your mind? You can edit it for 2 hours after you send.'}
@@ -1107,8 +1107,8 @@ function ReviewStep({ note, onSent, onEditNote, onEditRecipient, onSaveDraft, ed
             <button
               onClick={() => askForAddressByText(note.recipientName?.split(' ')[0])}
               style={{
-                display: 'block', width: '100%', marginTop: '10px', height: '46px', borderRadius: '23px',
-                border: 'none', background: uv, color: '#fff', cursor: 'pointer',
+                display: 'block', width: '100%', marginTop: '10px', height: '46px', borderRadius: '23px', boxSizing: 'border-box',
+                border: '2px solid var(--outline)', background: 'var(--btn)', color: 'var(--ink)', cursor: 'pointer',
                 fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '13px', letterSpacing: '0.08em',
               }}
             >
@@ -1120,10 +1120,10 @@ function ReviewStep({ note, onSent, onEditNote, onEditRecipient, onSaveDraft, ed
 
       {outOfCards && (
         <div style={{ background: 'var(--error-pale)', borderRadius: '12px', padding: '12px 16px', marginTop: '14px', fontSize: '14px', fontFamily: 'var(--font-body)', color: 'var(--error)' }}>
-          You've sent all your cards for this month. More unlock on the 1st — or add one now.
+          You've sent all your cards for this month. More unlock on the 1st, or add one now.
           <button onClick={buyExtraCard} disabled={buying} style={{
-            display: 'block', width: '100%', marginTop: '10px', height: '46px', borderRadius: '23px',
-            border: 'none', background: uv, color: '#fff', cursor: 'pointer', opacity: buying ? 0.7 : 1,
+            display: 'block', width: '100%', marginTop: '10px', height: '46px', borderRadius: '23px', boxSizing: 'border-box',
+            border: '2px solid var(--outline)', background: 'var(--btn)', color: 'var(--ink)', cursor: 'pointer', opacity: buying ? 0.7 : 1,
             fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '13px', letterSpacing: '0.08em',
           }}>
             {buying ? 'OPENING…' : 'ADD AN INDIVIDUAL CARD · $7.95'}
@@ -1136,9 +1136,9 @@ function ReviewStep({ note, onSent, onEditNote, onEditRecipient, onSaveDraft, ed
       </button>
       {!editingNoteId && (
         <button onClick={onSaveDraft} style={{
-          display: 'block', width: '100%', marginTop: '10px', height: '48px', borderRadius: '24px',
-          background: 'none', border: '1.5px solid var(--stone)', cursor: 'pointer',
-          fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '13px', letterSpacing: '0.08em', color: 'var(--ink-mid)',
+          display: 'block', width: '100%', marginTop: '10px', height: '48px', borderRadius: '24px', boxSizing: 'border-box',
+          background: 'var(--card)', border: '2px solid var(--outline)', cursor: 'pointer',
+          fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '13px', letterSpacing: '0.08em', color: 'var(--ink)',
         }}>
           SAVE DRAFT
         </button>

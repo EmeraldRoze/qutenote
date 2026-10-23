@@ -8,12 +8,11 @@ import QEmoji from '../components/QEmoji'
 import { inviteByText } from '../lib/inviteText'
 import { contactsAvailable, readContacts, matchContactsToMembers, type MatchedMember } from '../lib/contacts'
 
-// QTs tab, rebuilt to the Oct 15 redesign (design/redesign-oct15-2026, 12-qts):
+// QTs tab, restyled to palette 4 (qutenote-app-palette4, 12-qts):
 // invite box first, then search, then friends sorted by whose birthday is next.
 // On the native app it can also sync the address book to find people already
 // on QuteNote (opened with ?sync=1, or via the Sync contacts button).
 
-const uv = '#5A32D6'
 const label: React.CSSProperties = { fontSize: '13px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--ink-mid)', fontFamily: 'var(--font-body)' }
 
 interface Connection {
@@ -29,8 +28,6 @@ interface PendingRequest { id: string; username: string; displayName: string; av
 interface ImportantDate { id: string; connectionName: string; label: string; month: number; day: number }
 
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
-// Paper-collage avatar fills, cycled down the list like the design file.
-const AVATAR_BG = ['var(--lavender-pale)', 'var(--lavender-light)', 'var(--neon-pink)', 'var(--lime)', 'var(--lilac)', '#FFFFFF']
 
 function daysUntil(month: number, day: number): number {
   const now = new Date()
@@ -131,8 +128,6 @@ export default function ConnectionsPage() {
     refreshUser?.()
   }
 
-  const initials = (name: string) => name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2)
-
   // Connection birthdays come from the important-dates API, matched by name.
   const dateFor = useMemo(() => {
     const map = new Map<string, ImportantDate>()
@@ -160,15 +155,9 @@ export default function ConnectionsPage() {
 
   const newResults = results.filter((r) => !connections.some((c) => c.id === r.id) && r.id !== user?.id)
 
-  function avatar(name: string, i: number, size = 44) {
-    return (
-      <span style={{
-        width: `${size}px`, height: `${size}px`, flexShrink: 0, borderRadius: '50%',
-        background: AVATAR_BG[i % AVATAR_BG.length], border: '1.5px solid var(--ink)',
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '14px', color: 'var(--ink)',
-      }}>{initials(name)}</span>
-    )
+  // People rows lead with the heart sparkle emoji (palette 4), not initials.
+  function avatar(size = 44) {
+    return <QEmoji name="heart-sparkle" size={size} style={{ flexShrink: 0 }} />
   }
 
   const addButton = (id: string) => (
@@ -177,18 +166,18 @@ export default function ConnectionsPage() {
       onClick={() => sendRequest(id)}
       style={{
         height: '34px', padding: '0 12px', borderRadius: '999px', cursor: 'pointer', flexShrink: 0,
-        border: `1.5px solid ${uv}`, background: requested.has(id) ? 'var(--lavender-pale)' : '#fff',
-        color: uv, fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '11px', letterSpacing: '0.12em',
+        border: '1.5px solid var(--outline)', background: requested.has(id) ? 'var(--selected-fill)' : 'var(--card)',
+        color: 'var(--ink)', fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '11px', letterSpacing: '0.12em',
       }}
     >
       {requested.has(id) ? 'Requested' : 'Add QT'}
     </button>
   )
 
-  const listCard: React.CSSProperties = { background: '#fff', border: '1.5px solid var(--stone)', borderRadius: '18px', overflow: 'hidden' }
+  const listCard: React.CSSProperties = { background: 'var(--card)', border: '1.5px solid var(--outline)', borderRadius: '18px', overflow: 'hidden' }
   const row = (last: boolean): React.CSSProperties => ({
     display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 14px', minHeight: '68px',
-    borderBottom: last ? 'none' : '1.5px solid var(--stone)',
+    borderBottom: last ? 'none' : '1.5px solid var(--outline)',
   })
 
   return (
@@ -203,23 +192,23 @@ export default function ConnectionsPage() {
 
       <div style={{ maxWidth: '480px', margin: '0 auto', padding: '0 20px' }}>
 
-        {/* Invite box first */}
-        <div style={{ marginTop: '16px', borderRadius: '22px', background: 'var(--lilac)', padding: '16px 18px', display: 'flex', gap: '14px', alignItems: 'center' }}>
+        {/* Invite box first: a perforated postage-stamp box */}
+        <div className="qn-stamp" style={{ marginTop: '16px', border: '10px solid transparent', background: 'transparent', padding: '12px 10px', display: 'flex', gap: '14px', alignItems: 'center' }}>
           <QEmoji name="bff" size={64} style={{ flexShrink: 0 }} />
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
             <p style={{ margin: 0, fontFamily: 'var(--font-body)', fontSize: '15px', lineHeight: 1.4, color: 'var(--ink)' }}>
               Invite a friend. You both get a free card.
             </p>
             <button onClick={() => inviteByText(user?.displayName?.split(' ')[0]).catch(() => navigate('/invite'))} style={{
-              alignSelf: 'flex-start', height: '44px', padding: '0 18px', borderRadius: '22px', border: 0, cursor: 'pointer',
-              background: 'var(--ink)', color: '#fff', fontFamily: 'var(--font-body)', fontSize: '14px', fontWeight: 700, letterSpacing: '0.08em',
+              alignSelf: 'flex-start', height: '44px', padding: '0 18px', borderRadius: '22px', border: '2px solid var(--outline)', cursor: 'pointer',
+              background: 'var(--btn)', color: 'var(--ink)', fontFamily: 'var(--font-body)', fontSize: '14px', fontWeight: 700, letterSpacing: '0.08em', boxSizing: 'border-box',
             }}>INVITE</button>
           </div>
         </div>
 
         {/* Search */}
-        <label style={{ marginTop: '16px', height: '48px', borderRadius: '24px', background: '#fff', border: '1.5px solid var(--stone)', display: 'flex', alignItems: 'center', gap: '10px', padding: '0 16px' }}>
-          <svg aria-hidden width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ink-mid)" strokeWidth="2" strokeLinecap="round"><circle cx="11" cy="11" r="6.5" /><path d="M16 16l4.5 4.5" /></svg>
+        <label style={{ marginTop: '16px', height: '48px', borderRadius: '24px', background: 'var(--card)', border: '1.5px solid var(--outline)', display: 'flex', alignItems: 'center', gap: '10px', padding: '0 16px' }}>
+          <svg aria-hidden width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" strokeWidth="2" strokeLinecap="round"><circle cx="11" cy="11" r="6.5" /><path d="M16 16l4.5 4.5" /></svg>
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
@@ -233,7 +222,7 @@ export default function ConnectionsPage() {
         {contactsAvailable && syncState !== 'done' && (
           <button onClick={syncContacts} disabled={syncState === 'syncing'} style={{
             width: '100%', marginTop: '12px', height: '44px', borderRadius: '22px', cursor: 'pointer',
-            border: '2px dashed var(--lilac)', background: 'var(--lavender-pale)', color: uv,
+            border: '2px dashed var(--outline)', background: 'var(--selected-fill)', color: 'var(--ink)',
             fontFamily: 'var(--font-body)', fontSize: '14px', fontWeight: 700, letterSpacing: '0.08em',
           }}>
             {syncState === 'syncing' ? 'CHECKING YOUR CONTACTS…' : 'SYNC CONTACTS'}
@@ -260,7 +249,7 @@ export default function ConnectionsPage() {
               <div style={{ ...listCard, marginTop: '10px' }}>
                 {suggestedMatches.map((m, i) => (
                   <div key={m.id} style={row(i === suggestedMatches.length - 1)}>
-                    {avatar(m.displayName, i)}
+                    {avatar()}
                     <span style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '2px' }}>
                       <span style={{ fontFamily: 'var(--font-body)', fontSize: '16px', fontWeight: 700 }}>{m.displayName}</span>
                       <span style={{ fontFamily: 'var(--font-body)', fontSize: '14px', color: 'var(--ink-mid)' }}>@{m.username}</span>
@@ -280,7 +269,7 @@ export default function ConnectionsPage() {
             <div style={listCard}>
               {newResults.map((r, i) => (
                 <div key={r.id} style={row(i === newResults.length - 1)}>
-                  {avatar(r.displayName, i)}
+                  {avatar()}
                   <span style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '2px' }}>
                     <span style={{ fontFamily: 'var(--font-body)', fontSize: '16px', fontWeight: 700 }}>{r.displayName}</span>
                     <span style={{ fontFamily: 'var(--font-body)', fontSize: '14px', color: 'var(--ink-mid)' }}>@{r.username}</span>
@@ -298,14 +287,14 @@ export default function ConnectionsPage() {
             <p style={{ ...label, margin: '0 0 10px' }}>Wants to be your QT</p>
             <div style={listCard}>
               {pendingRequests.map((r, i) => (
-                <div key={r.requestId} style={{ ...row(i === pendingRequests.length - 1), background: 'var(--lavender-pale)' }}>
-                  {avatar(r.displayName, i + 1)}
+                <div key={r.requestId} style={{ ...row(i === pendingRequests.length - 1), background: 'var(--selected-fill)' }}>
+                  {avatar()}
                   <span style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '2px' }}>
                     <span style={{ fontFamily: 'var(--font-body)', fontSize: '16px', fontWeight: 700 }}>{r.displayName}</span>
                     <span style={{ fontFamily: 'var(--font-body)', fontSize: '14px', color: 'var(--ink-mid)' }}>@{r.username}</span>
                   </span>
-                  <button onClick={() => acceptRequest(r.requestId)} style={{ height: '34px', padding: '0 12px', borderRadius: '999px', border: 'none', background: uv, color: '#fff', fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '11px', letterSpacing: '0.12em', cursor: 'pointer' }}>Yes</button>
-                  <button onClick={() => declineRequest(r.requestId)} style={{ height: '34px', padding: '0 10px', borderRadius: '999px', border: '1.5px solid var(--stone)', background: '#fff', color: 'var(--ink-mid)', fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '11px', letterSpacing: '0.12em', cursor: 'pointer' }}>No</button>
+                  <button onClick={() => acceptRequest(r.requestId)} style={{ height: '34px', padding: '0 12px', borderRadius: '999px', border: '1.5px solid var(--outline)', background: 'var(--btn)', color: 'var(--ink)', fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '11px', letterSpacing: '0.12em', cursor: 'pointer' }}>Yes</button>
+                  <button onClick={() => declineRequest(r.requestId)} style={{ height: '34px', padding: '0 10px', borderRadius: '999px', border: '1.5px solid var(--outline)', background: 'var(--card)', color: 'var(--ink-mid)', fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '11px', letterSpacing: '0.12em', cursor: 'pointer' }}>No</button>
                 </div>
               ))}
             </div>
@@ -314,7 +303,7 @@ export default function ConnectionsPage() {
 
         {/* Friends, sorted by whose birthday is next */}
         {query.length < 2 && shownConnections.length > 0 && (
-          <p style={{ margin: '20px 0 0', fontFamily: 'var(--font-body)', fontSize: '15px', color: 'var(--ink-mid)' }}>
+          <p style={{ margin: '20px 0 0', fontFamily: 'var(--font-body)', fontSize: '15px', color: 'var(--ink)' }}>
             Sorted by whose birthday is next.
           </p>
         )}
@@ -337,10 +326,10 @@ export default function ConnectionsPage() {
                   textTransform: 'none', letterSpacing: 0, fontWeight: 400,
                   borderLeft: 'none', borderRight: 'none', borderTop: 'none',
                 }}>
-                  {avatar(c.displayName, i)}
+                  {avatar()}
                   <span style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '2px' }}>
                     <span style={{ fontFamily: 'var(--font-body)', fontSize: '16px', fontWeight: 700, color: 'var(--ink)' }}>{c.displayName}</span>
-                    <span style={{ fontFamily: 'var(--font-body)', fontSize: '14px', color: 'var(--ink-mid)' }}>
+                    <span style={{ fontFamily: 'var(--font-body)', fontSize: '14px', color: d ? 'var(--ink)' : 'var(--ink-mid)' }}>
                       {d ? `${MONTHS[d.month - 1]} ${d.day}` : `@${c.username}`}
                     </span>
                   </span>
@@ -348,7 +337,7 @@ export default function ConnectionsPage() {
                     <span style={{
                       fontSize: '13px', fontWeight: 700, fontFamily: 'var(--font-body)', color: 'var(--ink)',
                       borderRadius: '10px', padding: '3px 9px', whiteSpace: 'nowrap', flexShrink: 0,
-                      background: days <= 7 ? 'var(--lime)' : 'var(--lavender-light)',
+                      background: days <= 7 ? 'var(--highlight)' : 'var(--light-blush)',
                     }}>{countdownLabel(days)}</span>
                   )}
                 </button>
@@ -358,16 +347,16 @@ export default function ConnectionsPage() {
         )}
 
         {/* Privacy */}
-        <div style={{ marginTop: '22px', padding: '14px 16px', borderRadius: '18px', background: '#fff', border: '1.5px solid var(--stone)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px' }}>
+        <div style={{ marginTop: '22px', padding: '14px 16px', borderRadius: '18px', background: 'var(--card)', border: '1.5px solid var(--outline)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px' }}>
           <div>
             <div style={{ fontFamily: 'var(--font-body)', fontSize: '15px', fontWeight: 700 }}>Who sees your sends</div>
             <div style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--ink-mid)' }}>
               {user?.isPrivate ? 'Private: your sends stay off feeds.' : 'Public: your sends show on QT feeds. Messages are never shown.'}
             </div>
           </div>
-          <span style={{ display: 'flex', padding: '3px', borderRadius: '10px', background: 'var(--lavender-pale)', flexShrink: 0 }}>
-            <button onClick={() => user?.isPrivate || togglePrivacy()} style={{ height: '32px', padding: '0 12px', border: 'none', borderRadius: '8px', background: user?.isPrivate ? '#fff' : 'transparent', fontFamily: 'var(--font-body)', fontSize: '11px', fontWeight: 700, letterSpacing: '0.1em', color: 'var(--ink)', cursor: 'pointer' }}>Private</button>
-            <button onClick={() => user?.isPrivate && togglePrivacy()} style={{ height: '32px', padding: '0 12px', border: 'none', borderRadius: '8px', background: user?.isPrivate ? 'transparent' : '#fff', fontFamily: 'var(--font-body)', fontSize: '11px', fontWeight: 700, letterSpacing: '0.1em', color: 'var(--ink)', cursor: 'pointer' }}>Public</button>
+          <span style={{ display: 'flex', padding: '3px', borderRadius: '10px', background: 'var(--light-blush)', flexShrink: 0 }}>
+            <button onClick={() => user?.isPrivate || togglePrivacy()} style={{ height: '32px', padding: '0 12px', border: 'none', borderRadius: '8px', background: user?.isPrivate ? 'var(--card)' : 'transparent', fontFamily: 'var(--font-body)', fontSize: '11px', fontWeight: 700, letterSpacing: '0.1em', color: 'var(--ink)', cursor: 'pointer' }}>Private</button>
+            <button onClick={() => user?.isPrivate && togglePrivacy()} style={{ height: '32px', padding: '0 12px', border: 'none', borderRadius: '8px', background: user?.isPrivate ? 'transparent' : 'var(--card)', fontFamily: 'var(--font-body)', fontSize: '11px', fontWeight: 700, letterSpacing: '0.1em', color: 'var(--ink)', cursor: 'pointer' }}>Public</button>
           </span>
         </div>
       </div>

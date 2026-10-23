@@ -34,7 +34,7 @@ export default function GoogleAuthSuccessPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--cream)' }}>
-      <p style={{ fontSize: '15px', color: 'var(--ink-muted)' }}>Signing you in...</p>
+      <p style={{ fontSize: '15px', color: 'var(--ink-mid)', fontFamily: 'var(--font-body)' }}>Signing you in...</p>
     </div>
   )
 }

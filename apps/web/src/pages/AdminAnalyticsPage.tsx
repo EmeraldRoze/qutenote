@@ -75,8 +75,8 @@ export default function AdminAnalyticsPage() {
           {[7, 30].map((d) => (
             <button key={d} onClick={() => setDays(d)} style={{
               height: '32px', padding: '0 12px', borderRadius: '16px', cursor: 'pointer',
-              border: `1.5px solid ${days === d ? uv : 'var(--stone)'}`,
-              background: days === d ? uv : '#fff', color: days === d ? '#fff' : 'var(--ink)',
+              border: `${days === d ? '2px' : '1.5px'} solid #B4897A`,
+              background: days === d ? '#BADAFF' : '#FBF8F3', color: '#4A2424',
               fontFamily: 'var(--font-body)', fontSize: '12px', fontWeight: 700,
             }}>{d}d</button>
           ))}
