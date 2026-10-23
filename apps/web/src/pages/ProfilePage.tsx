@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { api } from '../lib/api'
+import { waxLetterSrc, WAX_CENTER_X, WAX_CENTER_Y, WAX_WIDTH } from '../lib/wax'
 import QEmoji from '../components/QEmoji'
 import TabBar from '../components/TabBar'
 import StatusBox from '../components/StatusBox'
@@ -252,13 +253,12 @@ export default function ProfilePage() {
 
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
               <div style={{ position: 'relative', width: '290px', height: '174px', transform: 'translateX(71px) rotate(-4deg)' }}>
-                <img src="/brand/postmark_heart_stamp_profile.png" alt="" style={{ width: '290px', height: 'auto', display: 'block' }} />
-                {/* Initials inside the neon yellow heart, the only place Unbounded 600 is allowed */}
-                <span style={{
-                  position: 'absolute', left: '34px', top: '68px', width: '80px', height: '44px',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontFamily: 'var(--font-display)', fontSize: '22px', fontWeight: 600, color: '#758A14', textShadow: '0 -1px 1px rgba(80,92,10,0.55), 0 1px 1px rgba(255,255,255,0.8)',
-                }}>{initialsOf(profile.displayName)}</span>
+                <img src="/brand/postmark_stamp_heartless.png" alt="" style={{ width: '290px', height: 'auto', display: 'block' }} />
+                {/* her wax seal alphabet: the first initial pressed into the wax */}
+                <img src={waxLetterSrc(profile.displayName)} alt={`Wax seal with the initial ${initialsOf(profile.displayName)[0]}`} style={{
+                  position: 'absolute', left: `${290 * WAX_CENTER_X}px`, top: `${290 * WAX_CENTER_Y}px`,
+                  width: `${Math.round(290 * WAX_WIDTH)}px`, transform: 'translate(-50%, -50%)',
+                }} />
                 <button onClick={() => setPickingAvatar(true)} aria-label="Pick your status emoji" style={{
                   position: 'absolute', left: '6px', top: '15px', width: '38px', height: '38px', borderRadius: '50%',
                   border: '3px solid var(--stone)', background: 'var(--stamp-center)', color: 'var(--card)', padding: 0, boxSizing: 'border-box',
@@ -459,12 +459,11 @@ export default function ProfilePage() {
       <div className="title-band" style={{ height: '288px', boxSizing: 'border-box' }}>
         <div style={{ maxWidth: '480px', width: '100%', margin: '0 auto', boxSizing: 'border-box', padding: '14px 20px 0', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
           <div style={{ position: 'relative', width: '230px', height: '138px', transform: 'translateX(56px) rotate(-4deg)' }}>
-            <img src="/brand/postmark_heart_stamp_profile.png" alt="" style={{ width: '230px', height: 'auto', display: 'block' }} />
-            <span style={{
-              position: 'absolute', left: '27px', top: '54px', width: '63px', height: '35px',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontFamily: 'var(--font-display)', fontSize: '18px', fontWeight: 600, color: '#758A14', textShadow: '0 -1px 1px rgba(80,92,10,0.55), 0 1px 1px rgba(255,255,255,0.8)',
-            }}>{initialsOf(profile.displayName)}</span>
+            <img src="/brand/postmark_stamp_heartless.png" alt="" style={{ width: '230px', height: 'auto', display: 'block' }} />
+            <img src={waxLetterSrc(profile.displayName)} alt={`Wax seal with the initial ${initialsOf(profile.displayName)[0]}`} style={{
+              position: 'absolute', left: `${230 * WAX_CENTER_X}px`, top: `${230 * WAX_CENTER_Y}px`,
+              width: `${Math.round(230 * WAX_WIDTH)}px`, transform: 'translate(-50%, -50%)',
+            }} />
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px' }}>
             <span style={{ fontFamily: 'var(--font-display)', fontSize: '22px', letterSpacing: '-0.01em', color: 'var(--ink)' }}>{profile.displayName}</span>

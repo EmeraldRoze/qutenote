@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { api } from '../lib/api'
+import { waxLetterSrc, WAX_CENTER_X, WAX_CENTER_Y, WAX_WIDTH } from '../lib/wax'
 import QEmoji from '../components/QEmoji'
 import { STATUS_EMOJI } from '../components/Happenings'
 
@@ -102,12 +103,11 @@ export default function AccountSettingsPage() {
         {/* Your stamp with your initials inside the neon yellow heart */}
         <div style={{ marginTop: '14px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
           <div style={{ position: 'relative', width: '240px', height: '144px', transform: 'translateX(59px) rotate(-4deg)' }} role="img" aria-label={`Your stamp with your initials, ${initialsOf(displayName || user?.username || '?')}`}>
-            <img src="/brand/postmark_heart_stamp_profile.png" alt="" style={{ width: '240px', height: 'auto', display: 'block' }} />
-            <span style={{
-              position: 'absolute', left: '28px', top: '56px', width: '66px', height: '36px',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontFamily: 'var(--font-display)', fontSize: '19px', fontWeight: 600, color: '#758A14', textShadow: '0 -1px 1px rgba(80,92,10,0.55), 0 1px 1px rgba(255,255,255,0.8)',
-            }}>{initialsOf(displayName || user?.username || '?')}</span>
+            <img src="/brand/postmark_stamp_heartless.png" alt="" style={{ width: '240px', height: 'auto', display: 'block' }} />
+            <img src={waxLetterSrc(displayName || user?.username || '?')} alt="" style={{
+              position: 'absolute', left: `${240 * WAX_CENTER_X}px`, top: `${240 * WAX_CENTER_Y}px`,
+              width: `${Math.round(240 * WAX_WIDTH)}px`, transform: 'translate(-50%, -50%)',
+            }} />
             <button onClick={() => setPickingAvatar(true)} aria-label="Pick an emoji or add a photo" style={{
               position: 'absolute', left: '5px', top: '12px', width: '38px', height: '38px', borderRadius: '50%',
               border: '3px solid var(--stone)', background: 'var(--stamp-center)', color: 'var(--card)', padding: 0, boxSizing: 'border-box',
