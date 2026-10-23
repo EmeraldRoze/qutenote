@@ -9,6 +9,7 @@ import { type MyStatus } from '../components/Happenings'
 import { fetchHandwritingProgress } from '../lib/handwriting/api'
 import { remindersEnabled } from '../lib/push'
 import QRCodeSheet from '../components/QRCodeSheet'
+import { PENDING_SCAN_KEY } from './CardScanPage'
 
 // Home tab, rebuilt to the Oct 15 redesign (design/redesign-oct15-2026, 10-home).
 
@@ -186,6 +187,18 @@ export default function HomePage() {
   const [lastSeen] = useState(() => Number(localStorage.getItem('qn_feed_seen') ?? 0))
   const [search, setSearch] = useState('')
   const statusBoxRef = useRef<HTMLDivElement>(null)
+
+  // A card scanned before signing in waits here — open it now (1-hour window)
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(PENDING_SCAN_KEY)
+      if (!raw) return
+      localStorage.removeItem(PENDING_SCAN_KEY)
+      const { code, at } = JSON.parse(raw)
+      if (code && Date.now() - at < 60 * 60 * 1000) navigate(`/card/${code}`)
+    } catch { /* a malformed entry just gets dropped */ }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   useEffect(() => {
     api.get('/statuses/home-feed').then((r) => setFeed(r.data.data)).catch(() => {})

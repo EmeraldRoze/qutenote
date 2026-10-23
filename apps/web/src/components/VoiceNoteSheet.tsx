@@ -64,7 +64,7 @@ export default function VoiceNoteSheet({ onDone, onClose }: {
     try {
       stream = await navigator.mediaDevices.getUserMedia({ audio: true })
     } catch {
-      setError("QuteNote can't hear you — allow the microphone in Settings and try again.")
+      setError("QuteNote can't hear you. Allow the microphone in Settings and try again.")
       return
     }
     const mime = pickMime()
@@ -76,7 +76,7 @@ export default function VoiceNoteSheet({ onDone, onClose }: {
       const baseMime = (rec.mimeType || mime || 'audio/mp4').split(';')[0]
       const blob = new Blob(chunksRef.current, { type: baseMime })
       stream.getTracks().forEach((t) => t.stop())
-      if (blob.size === 0) { setPhase('idle'); setError("Nothing recorded — give it another go."); return }
+      if (blob.size === 0) { setPhase('idle'); setError("Nothing recorded, give it another go."); return }
       const dataUrl = await blobToDataUrl(blob, baseMime)
       takeRef.current = { dataUrl, duration: secondsRef.current }
       setPhase('recorded')

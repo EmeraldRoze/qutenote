@@ -120,6 +120,7 @@ export default function SendFlow() {
   const [skipRecipient, setSkipRecipient] = useState(false)
 
   const toName = params.get('toName') ?? undefined
+  const toId = params.get('toId') ?? undefined
   const editId = params.get('edit') ?? undefined
   const draftParam = params.get('draft') ?? undefined
   const [draftId, setDraftId] = useState<string | undefined>(undefined)
@@ -169,10 +170,19 @@ export default function SendFlow() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  // Replying to a scanned card: the sender's id comes straight from the card,
+  // so they land on pick-a-card with their friend already filled in.
+  useEffect(() => {
+    if (!toId) return
+    setSkipRecipient(true)
+    update({ recipientId: toId, recipientName: toName ?? '' })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   // Deep link from a birthday or a profile: the recipient is already known,
   // so resolve them from the QT list, skip step 2, and count 3 steps.
   useEffect(() => {
-    if (!toName) return
+    if (!toName || toId) return
     api.get('/connections').then((res) => {
       const list: { id: string; displayName: string }[] = res.data.data ?? []
       const q = toName.toLowerCase()
@@ -303,7 +313,7 @@ export default function SendFlow() {
               onEditRecipient={() => setStep('recipient')}
               onSaveDraft={() => {
                 trackFeature('drafts')
-                // Audio is far too big for localStorage — drafts keep everything but the voice note
+                // Audio is far too big for localStorage, so drafts keep everything but the voice note
                 const { voiceDataUrl: _v, voiceDuration: _d, ...draftNote } = note
                 const d = saveDraft(draftNote as Record<string, unknown>, draftId)
                 setDraftId(d.id)

@@ -31,6 +31,7 @@ import SignupAddressPage from './pages/signup/SignupAddressPage'
 import SignupBirthdayPage from './pages/signup/SignupBirthdayPage'
 import AddDatePage from './pages/AddDatePage'
 import ScheduledCardsPage from './pages/ScheduledCardsPage'
+import CardScanPage from './pages/CardScanPage'
 
 // A new screen should always open at the top — without this, React Router
 // keeps whatever scroll position the previous screen was left at.
@@ -93,6 +94,9 @@ function AppRoutes() {
       <Route path="/handwriting/:sessionKey" element={<ProtectedRoute><HandwritingPage /></ProtectedRoute>} />
       <Route path="/collect-address/:token" element={<CollectAddressPage />} />
       <Route path="/i/:token" element={<CollectAddressPage />} />
+      {/* The QR on a printed card back — public link and in-app twin */}
+      <Route path="/c/:code" element={<CardScanPage />} />
+      <Route path="/card/:code" element={<CardScanPage />} />
     </Routes>
   )
 }

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { api } from '../lib/api'
@@ -52,6 +52,7 @@ interface NoteThumb {
   createdAt: string
   noteText?: string
   fontChoice?: string
+  voiceUploadId?: string | null
   sender?: { displayName: string; username: string }
   recipient?: { displayName: string; username: string }
 }
@@ -80,6 +81,18 @@ const actionTile: React.CSSProperties = {
 // show the cipher with a DECODE toggle — the message itself is the secret.
 function CardSheet({ note, onClose }: { note: NoteThumb; onClose: () => void }) {
   const [decoded, setDecoded] = useState(false)
+  const [playing, setPlaying] = useState(false)
+  const audioRef = useRef<HTMLAudioElement | null>(null)
+  useEffect(() => () => { audioRef.current?.pause() }, [])
+  function toggleVoice() {
+    if (playing) { audioRef.current?.pause(); setPlaying(false); return }
+    trackFeature('voice-listen')
+    const a = new Audio(`${api.defaults.baseURL}/uploads/${note.voiceUploadId}`)
+    audioRef.current = a
+    a.onended = () => setPlaying(false)
+    a.play().catch(() => setPlaying(false))
+    setPlaying(true)
+  }
   const design = CARD_LOOKUP[note.cardDesignId ?? '']
   const isSecret = note.fontChoice === 'SECRET'
   const isFlower = note.fontChoice === 'FLOWER'
@@ -112,6 +125,15 @@ function CardSheet({ note, onClose }: { note: NoteThumb; onClose: () => void }) 
               fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '14px', letterSpacing: '0.08em',
             }}>
               {decoded ? 'HIDE IT AGAIN 🤫' : 'DECODE THE SECRET'}
+            </button>
+          )}
+          {note.voiceUploadId && (
+            <button onClick={toggleVoice} style={{
+              width: '100%', marginTop: '12px', height: '50px', borderRadius: '25px',
+              border: `1.5px solid ${uv}`, background: '#fff', color: uv, cursor: 'pointer',
+              fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '14px', letterSpacing: '0.08em',
+            }}>
+              {playing ? '❚❚ PAUSE' : '🎤 LISTEN TO VOICE NOTE'}
             </button>
           )}
           <p style={{ margin: '12px 0 0', textAlign: 'center', fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--ink-mid)' }}>
