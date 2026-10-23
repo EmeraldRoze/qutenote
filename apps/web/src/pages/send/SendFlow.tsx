@@ -14,6 +14,7 @@ import TabBar from '../../components/TabBar'
 import StepRecipient from './StepRecipient'
 import { askForAddressByText } from '../../lib/inviteText'
 import { listDrafts, saveDraft, deleteDraft, getDraft, type CardDraft } from '../../lib/drafts'
+import VoiceNoteSheet, { formatSeconds } from '../../components/VoiceNoteSheet'
 import FlowerText from '../../components/FlowerText'
 import { trackFunnel, trackFeature, trackError } from '../../lib/analytics'
 import { encodeSecret } from '../../lib/secret'
@@ -33,6 +34,9 @@ export interface NoteData {
   noteText: string
   toneUsed: string
   fontChoice: string
+  // A recorded voice note, held in memory until MAIL IT uploads it
+  voiceDataUrl?: string
+  voiceDuration?: number
 }
 
 const uv = '#5A32D6'
@@ -299,7 +303,9 @@ export default function SendFlow() {
               onEditRecipient={() => setStep('recipient')}
               onSaveDraft={() => {
                 trackFeature('drafts')
-                const d = saveDraft(note as Record<string, unknown>, draftId)
+                // Audio is far too big for localStorage — drafts keep everything but the voice note
+                const { voiceDataUrl: _v, voiceDuration: _d, ...draftNote } = note
+                const d = saveDraft(draftNote as Record<string, unknown>, draftId)
                 setDraftId(d.id)
                 setDrafts(listDrafts())
                 setStep('card')
@@ -570,6 +576,7 @@ function WriteStep({ note, update, onNext }: {
   update: (d: Partial<NoteData>) => void
   onNext: () => void
 }) {
+  const [recording, setRecording] = useState(false)
   const [promptsOpen, setPromptsOpen] = useState(false)
   const [promptPage, setPromptPage] = useState(0)
   const [hasHandwriting, setHasHandwriting] = useState(false)
@@ -769,6 +776,38 @@ function WriteStep({ note, update, onNext }: {
         })}
       </div>
 
+      {/* Voice note — they scan the QR on the printed card to hear it */}
+      {note.voiceDataUrl ? (
+        <div style={{
+          marginTop: '20px', display: 'flex', alignItems: 'center', gap: '12px',
+          background: '#fff', border: `2px solid ${uv}`, borderRadius: '16px', padding: '12px 16px',
+        }}>
+          <span style={{ fontSize: '24px' }} aria-hidden>🎤</span>
+          <span style={{ flex: 1, textAlign: 'left', fontFamily: 'var(--font-body)', fontSize: '14px', fontWeight: 700, color: 'var(--ink)' }}>
+            Voice note on the card · {formatSeconds(note.voiceDuration ?? 0)}
+            <span style={{ display: 'block', fontSize: '12px', fontWeight: 400, color: 'var(--ink-mid)' }}>They scan the card to hear you</span>
+          </span>
+          <button onClick={() => setRecording(true)} style={{
+            background: 'none', border: 'none', cursor: 'pointer', padding: '4px',
+            fontFamily: 'var(--font-body)', fontSize: '13px', fontWeight: 700, color: uv, letterSpacing: '0.06em',
+          }}>REDO</button>
+          <button aria-label="Remove voice note" onClick={() => update({ voiceDataUrl: undefined, voiceDuration: undefined })} style={{
+            background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ink-muted)', fontSize: '16px', padding: '4px',
+          }}>✕</button>
+        </div>
+      ) : (
+        <button onClick={() => { trackFeature('voice-note'); setRecording(true) }} style={{
+          marginTop: '20px', width: '100%', minHeight: '56px', borderRadius: '16px',
+          border: '2px dashed var(--lilac)', background: 'var(--lavender-pale)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px',
+          fontFamily: 'var(--font-body)', fontSize: '14px', fontWeight: 700, letterSpacing: '0.08em',
+          color: uv, cursor: 'pointer',
+        }}>
+          <span style={{ fontSize: '22px' }} aria-hidden>🎤</span>
+          ADD A VOICE NOTE
+        </button>
+      )}
+
       <button
         style={{ ...primaryPill, marginTop: '24px', opacity: (note.noteText ?? '').trim().length >= 3 ? 1 : 0.45 }}
         disabled={(note.noteText ?? '').trim().length < 3}
@@ -777,6 +816,13 @@ function WriteStep({ note, update, onNext }: {
         PREVIEW MY CARD
         <svg aria-hidden width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
       </button>
+
+      {recording && (
+        <VoiceNoteSheet
+          onClose={() => setRecording(false)}
+          onDone={(v) => { update({ voiceDataUrl: v.dataUrl, voiceDuration: v.duration }); setRecording(false) }}
+        />
+      )}
     </>
   )
 }
@@ -868,6 +914,12 @@ function ReviewStep({ note, onSent, onEditNote, onEditRecipient, onSaveDraft, ed
         await api.patch(`/notes/${editingNoteId}`, { noteText: note.noteText, fontChoice: note.fontChoice })
         onSent(editingNoteId)
       } else {
+        // The voice note rides along: upload the audio first, attach its id
+        let voiceUploadId: string | undefined
+        if (note.voiceDataUrl) {
+          const up = await api.post('/uploads', { dataUrl: note.voiceDataUrl })
+          voiceUploadId = up.data.data.id
+        }
         const r = await api.post('/notes', {
           recipientId: note.recipientId,
           occasionType: note.occasionType,
@@ -877,6 +929,7 @@ function ReviewStep({ note, onSent, onEditNote, onEditRecipient, onSaveDraft, ed
           cardDesignType: note.cardDesignType,
           cardDesignId: note.cardDesignId,
           cardImageUrl: note.cardImageUrl,
+          ...(voiceUploadId ? { voiceUploadId } : {}),
           ...(mailWhen === 'schedule' && scheduleDate
             ? { scheduledFor: new Date(scheduleDate + 'T12:00:00').toISOString() }
             : {}),
@@ -1015,6 +1068,12 @@ function ReviewStep({ note, onSent, onEditNote, onEditRecipient, onSaveDraft, ed
             </div>
           )}
         </div>
+        {note.voiceDataUrl && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px', borderBottom: '1.5px solid var(--divider)' }}>
+            <span style={{ flex: 1, fontSize: '13px', fontFamily: 'var(--font-body)', color: 'var(--ink-mid)' }}>Voice note</span>
+            <span style={{ fontSize: '15px', fontWeight: 700, fontFamily: 'var(--font-body)', color: 'var(--ink)' }}>🎤 {formatSeconds(note.voiceDuration ?? 0)} · they scan to hear it</span>
+          </div>
+        )}
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px' }}>
           <span style={{ flex: 1, fontSize: '13px', fontFamily: 'var(--font-body)', color: 'var(--ink-mid)' }}>This card</span>
           <span style={{ fontSize: '15px', fontWeight: 700, fontFamily: 'var(--font-body)', color: 'var(--ink)' }}>{allowanceLine}</span>
