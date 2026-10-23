@@ -259,13 +259,8 @@ export default function ProfilePage() {
                   position: 'absolute', left: `${290 * WAX_CENTER_X}px`, top: `${290 * WAX_CENTER_Y}px`,
                   width: `${Math.round(290 * WAX_WIDTH)}px`, transform: 'translate(-50%, -50%)',
                 }} />
-                <button onClick={() => setPickingAvatar(true)} aria-label="Pick your status emoji" style={{
-                  position: 'absolute', left: '6px', top: '15px', width: '38px', height: '38px', borderRadius: '50%',
-                  border: '3px solid var(--stone)', background: 'var(--stamp-center)', color: 'var(--card)', padding: 0, boxSizing: 'border-box',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
-                }}>
-                  <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
-                </button>
+                {/* the + emoji-picker button is gone (Emerald, Oct 23);
+                    picking an avatar emoji still lives on Account (Deets) */}
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                 <span aria-hidden style={{ width: '40px', flex: 'none' }} />
