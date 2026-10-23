@@ -1,11 +1,11 @@
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 
-// The five-tab bar from the Oct 15 redesign: ruled paper behind it, no top
-// divider, grayscale inactive tabs, and the tilted SEND postage stamp.
+// The five-tab bar, palette 4: paper grain behind it, no top divider,
+// warm-tinted inactive tabs, and the perforated dusty rose SEND stamp.
 
-const UV = '#5A32D6'
-const INACTIVE = '#7A7389'
+const ACTIVE = '#9E625F'
+const INACTIVE = 'var(--nav-inactive)'
 
 export default function TabBar() {
   const navigate = useNavigate()
@@ -24,14 +24,11 @@ export default function TabBar() {
     return (
       <button key={t.label} onClick={() => navigate(t.path)} style={{
         display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '5px',
-        color: active ? UV : INACTIVE, background: 'none', border: 'none', cursor: 'pointer',
-        fontSize: '13px', fontWeight: 700, fontFamily: 'var(--font-body)',
+        color: active ? ACTIVE : INACTIVE, background: 'none', border: 'none', cursor: 'pointer',
+        fontSize: '14px', fontWeight: 700, fontFamily: 'var(--font-body)',
         textTransform: 'none', letterSpacing: 0, padding: 0,
       }}>
-        <img src={t.emojiIcon} alt="" style={{
-          height: '34px', width: 'auto',
-          filter: active ? 'none' : 'grayscale(1) opacity(0.55)',
-        }} />
+        <img src={t.emojiIcon} alt="" className={active ? undefined : 'tab-inactive'} style={{ height: '38px', width: 'auto' }} />
         {t.label}
       </button>
     )
@@ -40,30 +37,33 @@ export default function TabBar() {
   return (
     <nav aria-label="Tabs" style={{
       position: 'fixed', left: 0, right: 0, bottom: 0, zIndex: 50,
-      height: 'calc(88px + env(safe-area-inset-bottom))',
-      padding: '12px 6px env(safe-area-inset-bottom)',
-      backgroundColor: 'var(--cream)',
-      borderTop: '1px solid var(--cream-ruled)',
+      height: 'calc(90px + env(safe-area-inset-bottom))',
+      padding: '14px 6px env(safe-area-inset-bottom)',
+      backgroundColor: 'var(--paper)',
+      backgroundImage: 'url(/brand/paper_texture.png)',
       display: 'grid', gridTemplateColumns: 'repeat(5, minmax(0, 1fr))', alignItems: 'start',
     }}>
       {tab(tabs[0])}
       {tab(tabs[1])}
       <button onClick={() => navigate('/send')} aria-label="Send a card" style={{
-        justifySelf: 'center', marginTop: '-34px', padding: '5px',
-        width: '72px', height: '81px', boxSizing: 'border-box',
-        background: 'var(--stamp-frame)', border: `3.5px dashed ${UV}`, borderRadius: '10px',
-        boxShadow: '0 10px 24px rgba(90,50,214,0.28)', transform: 'rotate(-7deg)',
+        justifySelf: 'center', marginTop: '-36px', padding: '5px',
+        width: '84px', height: '94px', boxSizing: 'border-box',
+        background: 'radial-gradient(circle at 5px 5px, rgba(0, 0, 0, 0) 3.3px, #9E625F 3.8px) -5px -5px / 10px 10px round',
+        border: 'none', transform: 'rotate(-7deg)',
+        filter: 'drop-shadow(0 8px 12px rgba(158, 98, 95, 0.3))',
         display: 'flex', cursor: 'pointer',
       }}>
         <span style={{
-          flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center',
-          justifyContent: 'center', gap: '5px', background: UV, borderRadius: '6px',
+          flex: 1, borderRadius: '1px', border: '4px solid #F4ECE6', background: 'var(--btn)',
+          display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '6px',
+          color: 'var(--ink)', fontFamily: 'var(--font-body)', fontWeight: 700,
+          fontSize: '13px', letterSpacing: '0.2em', paddingLeft: '0.2em',
         }}>
-          <svg aria-hidden width="38" height="26" viewBox="0 0 44 30">
-            <path d="M14 27C6 21 2 16 2 10.5 2 6 5.5 3 9.5 3c2.4 0 4 1.2 4.5 2.6C14.5 4.2 16.1 3 18.5 3 22.5 3 26 6 26 10.5 26 16 22 21 14 27z" fill="#C6FF3D" />
-            <path d="M23 9c3-2 5-2 8 0s5 2 8 0M23 15c3-2 5-2 8 0s5 2 8 0M23 21c3-2 5-2 8 0s5 2 8 0" fill="none" stroke="#FFFFFF" strokeWidth="1.8" strokeLinecap="round" />
+          <svg aria-hidden width="44" height="30" viewBox="0 0 44 30">
+            <image href="/brand/send_stamp_heart.png" x="-1" y="2.5" width="29" height="25.6" />
+            <path d="M23 9c3-2 5-2 8 0s5 2 8 0M23 15c3-2 5-2 8 0s5 2 8 0M23 21c3-2 5-2 8 0s5 2 8 0" fill="none" stroke="#4A2424" strokeWidth="1.8" strokeLinecap="round" />
           </svg>
-          <span style={{ fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '11px', letterSpacing: '0.2em', paddingLeft: '0.2em', color: '#fff' }}>SEND</span>
+          SEND
         </span>
       </button>
       {tab(tabs[2])}
