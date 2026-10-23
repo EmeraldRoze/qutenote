@@ -257,7 +257,7 @@ export default function ProfilePage() {
                 <span style={{
                   position: 'absolute', left: '34px', top: '68px', width: '80px', height: '44px',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontFamily: 'var(--font-display)', fontSize: '22px', fontWeight: 600, color: 'var(--ink)',
+                  fontFamily: 'var(--font-display)', fontSize: '22px', fontWeight: 600, color: '#B6CC33', textShadow: '0 -1px 0 rgba(255,255,255,0.65), 0 2px 2px rgba(96,110,10,0.6)',
                 }}>{initialsOf(profile.displayName)}</span>
                 <button onClick={() => setPickingAvatar(true)} aria-label="Pick your status emoji" style={{
                   position: 'absolute', left: '6px', top: '15px', width: '38px', height: '38px', borderRadius: '50%',
@@ -463,7 +463,7 @@ export default function ProfilePage() {
             <span style={{
               position: 'absolute', left: '27px', top: '54px', width: '63px', height: '35px',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontFamily: 'var(--font-display)', fontSize: '18px', fontWeight: 600, color: 'var(--ink)',
+              fontFamily: 'var(--font-display)', fontSize: '18px', fontWeight: 600, color: '#B6CC33', textShadow: '0 -1px 0 rgba(255,255,255,0.65), 0 2px 2px rgba(96,110,10,0.6)',
             }}>{initialsOf(profile.displayName)}</span>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px' }}>

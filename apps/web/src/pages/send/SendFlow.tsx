@@ -105,7 +105,8 @@ function StampSvg({ width = 52, height = 62, style }: { width?: number; height?:
     <svg aria-hidden width={width} height={height} viewBox="0 0 46 54" style={style}>
       <rect x="2" y="2" width="42" height="50" rx="3" fill="var(--stamp-frame)" stroke="var(--outline)" strokeWidth="2" strokeDasharray="4 3" />
       <rect x="8" y="8" width="30" height="38" rx="2" fill="var(--stamp-center)" />
-      <path d="M23 37c-6-4-9-7.5-9-11 0-2.5 2-4.5 4.5-4.5 1.8 0 3.3 1 4.5 2.5 1.2-1.5 2.7-2.5 4.5-2.5 2.5 0 4.5 2 4.5 4.5 0 3.5-3 7-9 11z" fill="var(--lime)" />
+      {/* the wax seal heart (all stamp hearts are wax now; Emerald, Oct 23) */}
+      <image href="/brand/wax_heart.png" x="12" y="20" width="22" height="19.6" preserveAspectRatio="xMidYMid meet" />
     </svg>
   )
 }

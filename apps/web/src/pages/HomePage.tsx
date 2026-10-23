@@ -353,8 +353,10 @@ export default function HomePage() {
         {feed.map((item) => (
           <div key={`${item.kind}-${item.id}`} style={{ display: 'flex', gap: '12px', padding: '16px 0', borderBottom: '1.5px solid var(--outline)' }}>
             {item.kind === 'status' ? (
+              /* the friend's own status emoji leads the row, so it updates
+                 whenever their status does (Emerald, Oct 23) */
               <span style={{ width: '44px', minWidth: '44px', display: 'flex', alignItems: 'flex-start', justifyContent: 'center' }}>
-                <QEmoji name="heart-sparkle" size={44} />
+                <QEmoji name={item.emoji || 'thought-bubble'} size={40} />
               </span>
             ) : (
               <span style={{ width: '44px', minWidth: '44px', display: 'flex', alignItems: 'flex-start', justifyContent: 'center' }}>
@@ -371,19 +373,18 @@ export default function HomePage() {
                       <span style={{ display: 'inline-block', width: '10px', height: '10px', marginLeft: '6px', borderRadius: '5px', background: 'var(--highlight)', border: '1.5px solid var(--outline)', verticalAlign: 'middle' }} />
                     )}
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <div style={{ flex: 1, display: 'flex', alignItems: 'flex-start', gap: '8px', padding: '10px 12px', borderRadius: '14px', background: 'var(--card)', border: '1.5px solid var(--outline)' }}>
-                      {item.emoji && <QEmoji name={item.emoji} size={18} />}
-                      <span style={{ fontSize: '15px', lineHeight: 1.4, fontFamily: 'var(--font-body)' }}>{item.text}</span>
-                    </div>
+                  {/* the send-them-somethin' heart lives inside the status bar:
+                      wax heart + oxblood squiggles (Emerald, Oct 23) */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 12px', borderRadius: '14px', background: 'var(--card)', border: '1.5px solid var(--outline)' }}>
+                    <span style={{ flex: 1, fontSize: '15px', lineHeight: 1.4, fontFamily: 'var(--font-body)' }}>{item.text}</span>
                     <button aria-label="Send a little somethin'" onClick={() => navigate(`/send?toName=${encodeURIComponent(item.user?.displayName.split(' ')[0] ?? '')}`)} style={{
-                      flexShrink: 0, width: '44px', height: '44px', borderRadius: '50%', background: 'var(--card)',
-                      border: '1.5px solid var(--outline)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0,
+                      flexShrink: 0, minWidth: '44px', height: '34px', margin: '-5px -4px -5px 0', border: 'none', background: 'none',
+                      cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '3px', padding: 0,
                     }}>
-                      <span style={{ position: 'relative', width: '30px', height: '20px' }}>
-                        <img src="/brand/postmark-heart-only.png" alt="" style={{ position: 'absolute', inset: 0, width: '30px', height: '20px', objectFit: 'contain' }} />
-                        <img src="/brand/postmark-waves-only.png" alt="" style={{ position: 'absolute', inset: 0, width: '30px', height: '20px', objectFit: 'contain' }} />
-                      </span>
+                      <img src="/brand/wax_heart.png" alt="" style={{ width: '24px', height: 'auto' }} />
+                      <svg aria-hidden width="16" height="20" viewBox="0 0 16 20" fill="none" stroke="#4A2424" strokeWidth="1.8" strokeLinecap="round">
+                        <path d="M1 4c2.4-1.6 4-1.6 6.4 0s4 1.6 6.4 0M1 10c2.4-1.6 4-1.6 6.4 0s4 1.6 6.4 0M1 16c2.4-1.6 4-1.6 6.4 0s4 1.6 6.4 0" />
+                      </svg>
                     </button>
                   </div>
                 </>

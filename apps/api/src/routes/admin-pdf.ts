@@ -171,7 +171,14 @@ adminPdfRouter.get('/notes/:id/pdf', async (req: AuthRequest, res) => {
   // Stamp placeholder
   doc.rect(WIDTH - 64, 24, 40, 48).lineWidth(1).strokeColor('#B4897A').stroke()
   doc.rect(WIDTH - 64, 24, 40, 48).fill('#F4ECE6')
-  drawHeart(doc, WIDTH - 44, 48, 18, '#EEFC4E')
+  // the wax seal heart (all stamp hearts are wax now; falls back to a drawn
+  // heart only if the asset is somehow missing)
+  const WAX_PATH = path.join(process.cwd(), 'assets', 'wax_heart.png')
+  if (fs.existsSync(WAX_PATH)) {
+    doc.image(WAX_PATH, WIDTH - 55, 38, { width: 22 })
+  } else {
+    drawHeart(doc, WIDTH - 44, 48, 18, '#EEFC4E')
+  }
 
   // "QuteNote" small branding top-right
   doc.fontSize(7).font('Helvetica-Bold').fillColor('#B4897A')
