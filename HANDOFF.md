@@ -1,6 +1,10 @@
 # QuteNote — Handoff / Status Board
 Written: 2026-10-06 (replaces stale April 10 handoff). Last updated: 2026-10-23 (evening).
 
+## WAITLIST POLISH ROUND Oct 23 late night (FIREFLY) — website only, no build
+Her 9 items with screenshots, all shipped: new emoji set copied from app public/emoji into waitlist/assets keeping old names (cake/camera/mailbox/party-popper/teary/bff-bunnies/thinking/heart→heart-sparkle); hero postmark SVG strokes → oxblood + wax heart recentered on the ring (center 98,96); postmark-waves.webp recolored oxblood in place; hero .card.back → blush Rose paper ombre; .stamp → perforated scallop edge + #F4ECE6 margin + #BADAFF center + wax heart img (dashed border gone); .feed-ghost 64→80px/16 margin so populated statuses fit the rectangles; .mini-pc is now her torn-edge postcard (assets/postcard-heart.webp, white flood-filled out, animation transform preserved).
+- PREVIEW LANDMINE: the waitlist's scroll-animated sections render BLANK in headless Chrome (virtual-time doesn't run the scroll rAF loop; fragment anchors and synthetic scroll events don't help). The hero renders fine. For below-the-fold sections, extract the markup into a static harness with forced CSS state, or verify assets directly. Never diagnose "broken page" from a blank headless shot of those sections.
+
 ## WAX ALPHABET + BUILD 50 Oct 23 late night (her "Ship it")
 - Her 26-letter wax seal alphabet sliced into public/brand/wax/A..Z.png (white-bg flood fill → connected components → ROW CLUSTERING by center-y gaps, NOT fixed bands — fixed quarter-bands scrambled letters after G; rows were 7/7/7/5).
 - Profile + Account stamps: postmark_stamp_heartless.png (wax stripped from the profile stamp, same selective erase) + the FIRST initial's lettered wax overlaid in code. Geometry constants in src/lib/wax.ts (center 324/1272, 412/1272; width 417/1272 — reused for any render size via translate(-50%,-50%)). Non A-Z first letters fall back to the blank wax. My CSS-embossed initials are GONE (she called them terrible; her art replaced them).
