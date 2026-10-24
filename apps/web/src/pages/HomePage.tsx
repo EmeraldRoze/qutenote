@@ -244,9 +244,9 @@ export default function HomePage() {
   const [hasHandwriting, setHasHandwriting] = useState(false)
   const [showQR, setShowQR] = useState(false)
   const [inviting, setInviting] = useState(false)
-  const { results: foundUsers, searching } = useUserSearch(search)
   const [lastSeen] = useState(() => Number(localStorage.getItem('qn_feed_seen') ?? 0))
   const [search, setSearch] = useState('')
+  const { results: foundUsers, searching } = useUserSearch(search)
   const statusBoxRef = useRef<HTMLDivElement>(null)
 
   // A card scanned before signing in waits here — open it now (1-hour window)
