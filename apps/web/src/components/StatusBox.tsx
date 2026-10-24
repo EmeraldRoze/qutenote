@@ -80,7 +80,10 @@ export default function StatusBox({ onPosted }: { onPosted?: (s: any) => void })
   // No status yet, or editing: tap the emoji to pop up the picker
   // (Emerald's call: emojis hidden until you ask for them).
   return (
-    <div className="qn-stamp" style={{ ...shell, position: 'relative', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+    // zIndex: .qn-stamp isolates, so the picker was trapped under the carousel
+    // card below it (Emerald, Oct 24). Lift the whole box over the cards; the
+    // tab bar still sits above at 50.
+    <div className="qn-stamp" style={{ ...shell, position: 'relative', zIndex: 30, display: 'flex', flexDirection: 'column', gap: '10px' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
         <button
           onClick={() => setPickerOpen((o) => !o)}
