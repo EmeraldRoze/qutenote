@@ -30,8 +30,10 @@ header{ position:sticky; top:env(safe-area-inset-top,0px); z-index:50; backgroun
 .hero h1{ margin:0; font-family:var(--head); font-weight:300; letter-spacing:-.02em; font-size:clamp(44px,6.4vw,88px); line-height:1; }
 .hero .lede{ margin:0; font-size:clamp(18px,1.7vw,22px); line-height:1.55; max-width:520px; }
 .hero .sub{ margin:0; font-size:17px; line-height:1.65; color:var(--ink-mid); max-width:520px; }
-.signup{ display:flex; flex-wrap:wrap; gap:10px; max-width:520px; }
-.signup input{ flex:1 1 220px; min-width:0; height:56px; padding:0 18px; border-radius:12px; border:1.5px solid var(--lav-line); background:#FBF8F3; font-family:var(--body); font-size:16px; color:var(--ink); }
+.signup{ display:flex; flex-direction:column; gap:12px; max-width:420px; }
+.stamp-field{ display:block; padding:5px; background:radial-gradient(circle at 5px 5px, rgba(0,0,0,0) 3.3px, #B4897A 3.8px) -5px -5px / 10px 10px round; }
+.signup input{ display:block; width:100%; box-sizing:border-box; height:56px; padding:0 18px; border-radius:0; border:3px solid #F4ECE6; background:#FBF8F3; font-family:var(--body); font-size:16px; color:var(--ink); }
+.signup .btn{ align-self:flex-start; }
 .signup .btn{ height:56px; }
 .fine{ font-size:14px; color:var(--ink-mid); }
 
