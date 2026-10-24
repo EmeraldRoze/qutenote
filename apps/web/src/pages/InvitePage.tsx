@@ -57,8 +57,6 @@ export default function InvitePage() {
     }
   }
 
-  const firstName = user?.displayName?.split(' ')[0] ?? 'Your friend'
-
   return (
     <div style={{ minHeight: '100vh', paddingBottom: '40px' }}>
       <div style={{ maxWidth: '480px', margin: '0 auto', padding: '14px 24px 0' }}>
