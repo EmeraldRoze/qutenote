@@ -61,7 +61,7 @@ function OfferCarousel({ hasSentCard, hasHandwriting }: { hasSentCard: boolean; 
       >
         {OFFER_CARDS.map((c, i) => (
           <div key={i} className={c.key === 'invite' ? 'rose-paper ombre-live' : 'rose-paper'} style={{
-            ...(c.key === 'invite' ? { backgroundImage: 'url(/brand/paper_texture.png), linear-gradient(160deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 45%), linear-gradient(115deg, #EEFC4E 0%, #BADAFF 50%, #EEFC4E 100%)' } : {}),
+            ...(c.key === 'invite' ? { backgroundImage: 'url(/brand/paper_texture.png), linear-gradient(160deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 45%), linear-gradient(90deg, #EEFC4E 0%, #BADAFF 50%, #EEFC4E 100%)' } : {}),
             flex: '0 0 calc(100% - 32px)', height: '370px', scrollSnapAlign: 'start',
             position: 'relative', borderRadius: '26px', boxSizing: 'border-box',
             padding: '26px 22px 22px', display: 'flex', flexDirection: 'column',
