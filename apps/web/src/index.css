@@ -123,13 +123,17 @@ body::before {
 .qn-stamp::before{content:none}
 .qn-stamp::after{content:'';position:absolute;inset:-10px;z-index:-1;pointer-events:none;
   background:
-    linear-gradient(#E9EDF1,#E9EDF1) 50% 50%/calc(100% - 24px) calc(100% - 24px) no-repeat,
+    linear-gradient(var(--qn-panel,#E9EDF1),var(--qn-panel,#E9EDF1)) 50% 50%/calc(100% - 24px) calc(100% - 24px) no-repeat,
     linear-gradient(rgba(74,36,36,.3),rgba(74,36,36,.3)) 50% 50%/calc(100% - 22px) calc(100% - 22px) no-repeat,
     url('/brand/paper_texture.png'),
     linear-gradient(145deg, #F6EFE0 0%, #EFE5D0 55%, #E9DCC4 100%);
   -webkit-mask:linear-gradient(#000 0 0) 50% 50%/calc(100% - 13px) calc(100% - 13px) no-repeat,radial-gradient(circle at 50% 50%,#0000 4.4px,#000 4.8px) -7px -7px/14px 14px round;
   mask:linear-gradient(#000 0 0) 50% 50%/calc(100% - 13px) calc(100% - 13px) no-repeat,radial-gradient(circle at 50% 50%,#0000 4.4px,#000 4.8px) -7px -7px/14px 14px round;
   -webkit-mask-composite:source-over;mask-composite:add}
+/* Tight variant: the stamp art fills the element instead of bleeding 10px past
+   it. For small stamps that sit in a layout (the card-preview stamp, the tab
+   bar SEND stamp) where the footprint has to stay exactly what it was. */
+.qn-stamp-tight::after{inset:0}
 
 /* The Rose paper ombre (Home carousel + Dates empty state) */
 .rose-paper {

@@ -45,17 +45,19 @@ export default function TabBar() {
     }}>
       {tab(tabs[0])}
       {tab(tabs[1])}
-      <button onClick={() => navigate('/send')} aria-label="Send a card" style={{
-        justifySelf: 'center', marginTop: '-36px', padding: '5px',
+      {/* The real photorealistic stamp edge now (Emerald, Oct 24): textured
+          cardstock, punched perforations and the light blue printed panel are
+          all drawn by .qn-stamp, so the button itself stays transparent. */}
+      <button onClick={() => navigate('/send')} aria-label="Send a card" className="qn-stamp qn-stamp-tight" style={{
+        justifySelf: 'center', marginTop: '-36px', padding: 0,
         width: '84px', height: '94px', boxSizing: 'border-box',
-        background: 'radial-gradient(circle at 5px 5px, rgba(0, 0, 0, 0) 3.3px, #9E625F 3.8px) -5px -5px / 10px 10px round',
         border: 'none', transform: 'rotate(-7deg)',
         filter: 'drop-shadow(0 8px 12px rgba(158, 98, 95, 0.3))',
+        ['--qn-panel' as string]: 'var(--btn)',
         display: 'flex', cursor: 'pointer',
       }}>
         <span style={{
-          flex: 1, borderRadius: '1px', border: '4px solid #F4ECE6', background: 'var(--btn)',
-          display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '6px',
+          flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '6px',
           color: 'var(--ink)', fontFamily: 'var(--font-body)', fontWeight: 700,
           fontSize: '13px', letterSpacing: '0.2em', paddingLeft: '0.2em',
         }}>

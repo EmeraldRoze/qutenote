@@ -97,17 +97,23 @@ function Band({ height, children }: { height: number; children: React.ReactNode 
   )
 }
 
-// The dashed postage stamp with the neon yellow heart, floats top-right on
-// the note so the writing wraps around it. Palette 4: light-blush frame,
-// rosy brown dashes, dusty rose center.
+// The postage stamp that floats top-right on the note so the writing wraps
+// around it. Emerald, Oct 24: no more dashed outline — it wears the real
+// photorealistic stamp edge (.qn-stamp) with a light blue printed panel.
 function StampSvg({ width = 52, height = 62, style }: { width?: number; height?: number; style?: React.CSSProperties }) {
   return (
-    <svg aria-hidden width={width} height={height} viewBox="0 0 46 54" style={style}>
-      <rect x="2" y="2" width="42" height="50" rx="3" fill="var(--stamp-frame)" stroke="var(--outline)" strokeWidth="2" strokeDasharray="4 3" />
-      <rect x="8" y="8" width="30" height="38" rx="2" fill="var(--stamp-center)" />
+    <span aria-hidden className="qn-stamp qn-stamp-tight" style={{
+      display: 'inline-block', position: 'relative', boxSizing: 'border-box',
+      width: `${width}px`, height: `${height}px`, flex: 'none',
+      ['--qn-panel' as string]: '#BADAFF',
+      ...style,
+    }}>
       {/* the wax seal heart (all stamp hearts are wax now; Emerald, Oct 23) */}
-      <image href="/brand/wax_heart.png" x="12" y="20" width="22" height="19.6" preserveAspectRatio="xMidYMid meet" />
-    </svg>
+      <img src="/brand/wax_heart.png" alt="" style={{
+        position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)',
+        width: `${Math.round(width * 0.42)}px`, height: 'auto',
+      }} />
+    </span>
   )
 }
 
