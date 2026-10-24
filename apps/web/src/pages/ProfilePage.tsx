@@ -295,7 +295,7 @@ export default function ProfilePage() {
             </button>
             <button onClick={() => navigate('/invite')} style={{ ...actionTile, whiteSpace: 'pre-line' }}>
               <QEmoji name="gift" size={30} />
-              {'Invite friends,\nget free cards'}
+              {'Invite friends,\nget free cards.'}
             </button>
             <button onClick={() => navigate('/handwriting')} style={actionTile}>
               <QEmoji name="pen" size={32} />
