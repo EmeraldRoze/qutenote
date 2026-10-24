@@ -25,7 +25,7 @@ interface OfferCard {
 // (Emerald, Oct 18). Invite + photo live forever; the others retire once done.
 // Every card wears the same Rose paper ombre now (.rose-paper).
 const ALL_OFFER_CARDS: (OfferCard & { key: string })[] = [
-  { key: 'invite', art: 'bff-live', artWidth: 309, artBoxH: 224, title: 'Invite a friend. You both get a free card.', cta: 'INVITE', onClick: (nav) => nav('/invite') },
+  { key: 'invite', art: 'bff-live', artWidth: 309, artBoxH: 224, title: 'Invite friends…\nGet free cards', cta: 'INVITE', onClick: (nav) => nav('/invite') },
   { key: 'first-card', art: 'heart-sparkle', artWidth: 170, title: 'Your first card is on us', cta: 'SEND A CARD', onClick: (nav) => nav('/send') },
   { key: 'alerts', art: 'mailbox', artWidth: 165, title: 'Know when something is in the mail', cta: 'TURN ON ALERTS', onClick: (nav) => nav('/settings/notifications') },
   { key: 'handwriting', art: 'pen', artWidth: 150, title: 'Make it look like YOU wrote it', cta: 'TEACH YOUR HANDWRITING', onClick: (nav) => nav('/handwriting') },
@@ -63,7 +63,7 @@ function OfferCarousel({ hasSentCard, hasHandwriting }: { hasSentCard: boolean; 
           <div key={i} className={c.key === 'invite' ? 'rose-paper ombre-live' : 'rose-paper'}
             onClick={c.key === 'invite' ? () => c.onClick(navigate) : undefined}
             role={c.key === 'invite' ? 'button' : undefined}
-            aria-label={c.key === 'invite' ? 'Invite a friend. You both get a free card.' : undefined}
+            aria-label={c.key === 'invite' ? 'Invite friends, get free cards' : undefined}
             style={{
             ...(c.key === 'invite' ? { cursor: 'pointer' } : {}),
             ...(c.key === 'invite' ? { backgroundImage: 'url(/brand/paper_texture.png), linear-gradient(160deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 45%), linear-gradient(90deg, #EEFC4E 0%, #BADAFF 50%, #EEFC4E 100%)' } : {}),
