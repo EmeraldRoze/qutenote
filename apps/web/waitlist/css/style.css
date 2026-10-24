@@ -164,8 +164,8 @@ header{ position:sticky; top:env(safe-area-inset-top,0px); z-index:50; backgroun
   animation:thud .55s .5s cubic-bezier(.4,1.8,.5,1) both; }
 @keyframes thud{ from{ opacity:0; transform:scale(1.8) rotate(-14deg); } to{ opacity:1; transform:none; } }
 
-.thanks{ margin:0; max-width:520px; padding:16px 18px; border-radius:12px; background:var(--lav); border:1.5px solid var(--uv); font-size:16px; line-height:1.5; animation:rise .4s ease both; }
-.thanks b{ color:var(--uv); }
+.thanks{ margin:0; max-width:520px; padding:16px 18px; border-radius:12px; background:var(--lav); border:1.5px solid var(--uv); font-size:16px; line-height:1.5; color:#4A2424; animation:rise .4s ease both; }
+.thanks b{ color:#4A2424; }
 .cta-card .thanks{ margin:0 auto; text-align:left; }
 .cta-bff{ display:block; width:192px; margin:0 auto 14px; }
 /* notebook section headers: blank band, double rule, ruled paper below */
