@@ -60,7 +60,12 @@ function OfferCarousel({ hasSentCard, hasHandwriting }: { hasSentCard: boolean; 
         }}
       >
         {OFFER_CARDS.map((c, i) => (
-          <div key={i} className={c.key === 'invite' ? 'rose-paper ombre-live' : 'rose-paper'} style={{
+          <div key={i} className={c.key === 'invite' ? 'rose-paper ombre-live' : 'rose-paper'}
+            onClick={c.key === 'invite' ? () => c.onClick(navigate) : undefined}
+            role={c.key === 'invite' ? 'button' : undefined}
+            aria-label={c.key === 'invite' ? 'Invite a friend. You both get a free card.' : undefined}
+            style={{
+            ...(c.key === 'invite' ? { cursor: 'pointer' } : {}),
             ...(c.key === 'invite' ? { backgroundImage: 'url(/brand/paper_texture.png), linear-gradient(160deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 45%), linear-gradient(90deg, #EEFC4E 0%, #BADAFF 50%, #EEFC4E 100%)' } : {}),
             flex: '0 0 calc(100% - 32px)', height: '370px', scrollSnapAlign: 'start',
             position: 'relative', borderRadius: '26px', boxSizing: 'border-box',
@@ -73,11 +78,13 @@ function OfferCarousel({ hasSentCard, hasHandwriting }: { hasSentCard: boolean; 
             <p style={{ margin: '16px 0 0', fontFamily: 'var(--font-display)', fontSize: '22px', lineHeight: 1.2, letterSpacing: '-0.01em', color: 'var(--ink)', whiteSpace: 'pre-line' }}>
               {c.title}
             </p>
-            <button onClick={() => c.onClick(navigate)} style={{
-              marginTop: 'auto', height: '50px', padding: '0 28px', borderRadius: '25px', border: '2px solid var(--outline)', cursor: 'pointer',
-              background: 'var(--btn)', color: 'var(--ink)', fontFamily: 'var(--font-body)',
-              fontSize: '15px', fontWeight: 700, letterSpacing: '0.08em', boxSizing: 'border-box',
-            }}>{c.cta}</button>
+            {c.key !== 'invite' && (
+              <button onClick={() => c.onClick(navigate)} style={{
+                marginTop: 'auto', height: '50px', padding: '0 28px', borderRadius: '25px', border: '2px solid var(--outline)', cursor: 'pointer',
+                background: 'var(--btn)', color: 'var(--ink)', fontFamily: 'var(--font-body)',
+                fontSize: '15px', fontWeight: 700, letterSpacing: '0.08em', boxSizing: 'border-box',
+              }}>{c.cta}</button>
+            )}
             {i > 0 && (
               <button aria-label="Previous card" onClick={() => scrollToCard(i - 1)} style={{
                 position: 'absolute', left: '6px', top: '50%', transform: 'translateY(-50%)',
