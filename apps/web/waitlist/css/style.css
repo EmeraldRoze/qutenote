@@ -166,9 +166,11 @@ header{ position:sticky; top:env(safe-area-inset-top,0px); z-index:50; backgroun
 
 .hero h1 .l{ display:block; }
 .hero h1 .l1{ position:relative; display:inline-block; }
-.postmark{ position:absolute; left:calc(100% + .28em); top:-.08em; width:2.7em; height:auto; pointer-events:none; overflow:visible;
-  animation:thud .55s .5s cubic-bezier(.4,1.8,.5,1) both; }
-@keyframes thud{ from{ opacity:0; transform:scale(1.8) rotate(-14deg); } to{ opacity:1; transform:none; } }
+/* The postmark sits beside "Send" and must never cover the lines under it
+   (Emerald, Oct 24). It is 2.7em wide and half as tall, so top is set to land
+   its bottom edge just above line two. No fly-in: the stamp is static and the
+   only motion is her wax press pressing itself in the middle. */
+.postmark{ position:absolute; left:calc(100% + .28em); top:-.42em; width:2.7em; height:auto; pointer-events:none; overflow:visible; }
 
 .thanks{ margin:0; max-width:520px; padding:16px 18px; border-radius:12px; background:var(--lav); border:1.5px solid var(--uv); font-size:16px; line-height:1.5; color:#4A2424; animation:rise .4s ease both; }
 .thanks b{ color:#4A2424; }
@@ -308,7 +310,7 @@ footer .fl{ height:30px; width:auto; display:block; }
   .hero-copy{ min-height:calc(100svh - 72px); justify-content:flex-end; padding:48px 0 clamp(36px, 7svh, 64px); gap:20px; }
   .hero-copy .signup{ gap:16px; }
   .hero h1{ font-size:12.4vw; line-height:1.04; }
-  .postmark{ width:3.1em; top:-.05em; }
+  .postmark{ width:3.1em; top:-.58em; }
   .hero .lede{ font-size:17px; line-height:32px; color:var(--ink-mid); }
   .stack-box{ display:flex; flex-direction:column; justify-content:center; align-items:stretch; padding:0 0 32px; margin-top:0; }
   .stack-head{ display:block; margin:0 0 4px; font-family:var(--head); font-weight:300; letter-spacing:-.02em; font-size:clamp(24px,7vw,32px); line-height:1.15; }
