@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import { WEB_BUILD } from '../lib/buildGuard'
+import { WAX_CENTER_X, WAX_CENTER_Y, WAX_WIDTH } from '../lib/wax'
 
 // Welcome — screen 01 of the Oct 15 2026 redesign. The app's front door:
 // logo in the title band, headline + floating postmark stamp mid-screen on
@@ -35,9 +36,14 @@ export default function WelcomePage() {
         }}>
           <span style={{ position: 'relative' }}>
             <span>Send</span>
-            <img src="/brand/postmark_heart_stamp.png" alt="" style={{
-              position: 'absolute', left: '160px', top: '-52px', width: '196px', height: 'auto', transform: 'rotate(-6deg)',
-            }} />
+            {/* the postmark, with the wax heart being pressed live (Emerald, Oct 23) */}
+            <span style={{ position: 'absolute', left: '160px', top: '-52px', width: '196px', transform: 'rotate(-6deg)', display: 'block' }}>
+              <img src="/brand/postmark_stamp_heartless.png" alt="" style={{ width: '196px', height: 'auto', display: 'block' }} />
+              <img src="/brand/wax_press.png" alt="" style={{
+                position: 'absolute', left: `${196 * WAX_CENTER_X}px`, top: `${196 * WAX_CENTER_Y}px`,
+                width: `${Math.round(196 * WAX_WIDTH * 1.12)}px`, transform: 'translate(-50%, -50%)',
+              }} />
+            </span>
           </span>
           <span>something</span>
           <span>real.</span>
