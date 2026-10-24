@@ -98,20 +98,14 @@ export default function InvitePage() {
         {/* Message preview + actions */}
         <div style={{ marginTop: '22px', borderRadius: '22px', background: 'var(--card)', border: '1.5px solid var(--stone)', boxShadow: '0 -4px 24px rgba(74,36,36,0.08), 0 4px 18px rgba(74,36,36,0.06)', padding: '18px 20px 24px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
           <div style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--ink-mid)' }}>Your text will look like this</div>
-          <div style={{ alignSelf: 'flex-end', maxWidth: '300px', borderRadius: '18px', overflow: 'hidden', background: 'var(--lavender-pale)', border: '1px solid var(--lavender-light)' }}>
-            <div style={{ padding: '10px 14px', fontFamily: 'var(--font-body)', fontSize: '15px', lineHeight: 1.4 }}>
-              I saved you a free postcard on QuteNote 💌 Claim it with my personal link:
-            </div>
-            <div style={{ background: 'var(--card)', borderTop: '1px solid var(--lavender-light)' }}>
-              <div style={{ height: '72px', background: 'var(--cream)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <img src="/brand/postmark_heart_stamp.png" alt="" style={{ width: '150px' }} />
-              </div>
-              <div style={{ padding: '10px 14px' }}>
-                <div style={{ fontFamily: 'var(--font-body)', fontSize: '14px', fontWeight: 700 }}>You've been invited to join QuteNote, where birthdays are celebrated, hard times are acknowledged, and little surprises find their way to your mailbox.</div>
-                <div style={{ fontFamily: 'var(--font-body)', fontSize: '12px', color: 'var(--ink-mid)' }}>qutenote.com/i/{user?.username ?? 'you'}-…</div>
-              </div>
-            </div>
+          <div style={{ fontFamily: 'var(--font-body)', fontSize: '15px', lineHeight: 1.4, color: 'var(--ink)' }}>
+            I saved you a free postcard on QuteNote 💌 Claim it with my personal link:
           </div>
+          <img src="/brand/postmark_heart_stamp.png" alt="" style={{ width: '170px', alignSelf: 'flex-start' }} />
+          <div style={{ fontFamily: 'var(--font-body)', fontSize: '14px', fontWeight: 700, lineHeight: 1.45, color: 'var(--ink)' }}>
+            You've been invited to join QuteNote, where birthdays are celebrated, hard times are acknowledged, and little surprises find their way to your mailbox.
+          </div>
+          <div style={{ fontFamily: 'var(--font-body)', fontSize: '12px', color: 'var(--ink-mid)', marginTop: '-8px' }}>qutenote.com/i/{user?.username ?? 'you'}-…</div>
 
           {composing ? (
             <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
