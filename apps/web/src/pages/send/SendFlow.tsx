@@ -797,7 +797,7 @@ function WriteStep({ note, update, onNext }: {
           marginTop: '20px', display: 'flex', alignItems: 'center', gap: '12px',
           background: 'var(--card)', border: '2px solid var(--outline)', borderRadius: '16px', padding: '12px 16px',
         }}>
-          <span style={{ fontSize: '24px' }} aria-hidden>🎤</span>
+          <QEmoji name="mic" size={34} />
           <span style={{ flex: 1, textAlign: 'left', fontFamily: 'var(--font-body)', fontSize: '14px', fontWeight: 700, color: 'var(--ink)' }}>
             Voice note on the card · {formatSeconds(note.voiceDuration ?? 0)}
             <span style={{ display: 'block', fontSize: '12px', fontWeight: 400, color: 'var(--ink-mid)' }}>They scan the card to hear you</span>
@@ -818,7 +818,7 @@ function WriteStep({ note, update, onNext }: {
           fontFamily: 'var(--font-body)', fontSize: '14px', fontWeight: 700, letterSpacing: '0.08em',
           color: 'var(--ink)', cursor: 'pointer',
         }}>
-          <span style={{ fontSize: '22px' }} aria-hidden>🎤</span>
+          <QEmoji name="mic" size={32} />
           ADD A VOICE NOTE
         </button>
       )}
