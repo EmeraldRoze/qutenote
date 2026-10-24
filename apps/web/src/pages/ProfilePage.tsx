@@ -290,7 +290,7 @@ export default function ProfilePage() {
           {/* Add friends / Invite / Handwriting */}
           <div style={{ marginTop: '20px', display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: '10px' }}>
             <button onClick={() => navigate('/connections')} style={actionTile}>
-              <QEmoji name="bff" size={30} />
+              <QEmoji name="bff" size={48} />
               Add friends
             </button>
             <button onClick={() => navigate('/invite')} style={{ ...actionTile, whiteSpace: 'pre-line' }}>
