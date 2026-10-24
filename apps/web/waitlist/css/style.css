@@ -160,7 +160,7 @@ header{ position:sticky; top:env(safe-area-inset-top,0px); z-index:50; backgroun
 
 .hero h1 .l{ display:block; }
 .hero h1 .l1{ position:relative; display:inline-block; }
-.postmark{ position:absolute; left:calc(100% + .14em); top:-.72em; width:3.2em; height:auto; pointer-events:none; overflow:visible;
+.postmark{ position:absolute; left:calc(100% + .14em); top:-.38em; width:3.2em; height:auto; pointer-events:none; overflow:visible;
   animation:thud .55s .5s cubic-bezier(.4,1.8,.5,1) both; }
 @keyframes thud{ from{ opacity:0; transform:scale(1.8) rotate(-14deg); } to{ opacity:1; transform:none; } }
 
@@ -302,7 +302,7 @@ footer .fl{ height:30px; width:auto; display:block; }
   .hero-copy{ min-height:calc(100svh - 72px); justify-content:flex-end; padding:48px 0 clamp(36px, 7svh, 64px); gap:20px; }
   .hero-copy .signup{ gap:16px; }
   .hero h1{ font-size:12.4vw; line-height:1.04; }
-  .postmark{ width:3.75em; top:-.78em; }
+  .postmark{ width:3.75em; top:-.42em; }
   .hero .lede{ font-size:17px; line-height:32px; color:var(--ink-mid); }
   .stack-box{ display:flex; flex-direction:column; justify-content:center; align-items:stretch; padding:0 0 32px; margin-top:0; }
   .stack-head{ display:block; margin:0 0 4px; font-family:var(--head); font-weight:300; letter-spacing:-.02em; font-size:clamp(24px,7vw,32px); line-height:1.15; }
