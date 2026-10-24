@@ -97,10 +97,12 @@ export default function InvitePage() {
 
         {/* Message preview + actions */}
         <div style={{ marginTop: '22px', borderRadius: '22px', background: 'var(--card)', border: '1.5px solid var(--stone)', boxShadow: '0 -4px 24px rgba(74,36,36,0.08), 0 4px 18px rgba(74,36,36,0.06)', padding: '18px 20px 24px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
-          <div style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--ink-mid)' }}>Your text will look like this</div>
+          <div style={{ fontFamily: 'var(--font-display)', fontSize: '20px', fontWeight: 300, lineHeight: 1.2, letterSpacing: '-0.01em', color: 'var(--ink)' }}>
+            You've been invited to join QuteNote
+          </div>
           <img src="/brand/postmark_heart_stamp.png" alt="" style={{ width: '170px', alignSelf: 'flex-start' }} />
           <div style={{ fontFamily: 'var(--font-body)', fontSize: '14px', fontWeight: 700, lineHeight: 1.45, color: 'var(--ink)' }}>
-            You've been invited to join QuteNote, where birthdays are celebrated, hard times are acknowledged, and little surprises find their way to your mailbox.
+            Where birthdays are celebrated, hard times are acknowledged, and little surprises find their way to your mailbox.
           </div>
           <div style={{ fontFamily: 'var(--font-body)', fontSize: '12px', color: 'var(--ink-mid)', marginTop: '-8px' }}>qutenote.com/i/{user?.username ?? 'you'}-…</div>
 
