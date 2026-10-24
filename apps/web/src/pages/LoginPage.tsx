@@ -64,7 +64,6 @@ export default function LoginPage() {
             }}>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 5l-7 7 7 7" /></svg>
             </button>
-            <img src="/brand/qutenote_logo.png" alt="QuteNote" style={{ height: '26px', width: 'auto' }} />
           </div>
           <div style={{ marginTop: '14px', display: 'flex', alignItems: 'center', gap: '12px' }}>
             <h1 style={{
@@ -73,7 +72,7 @@ export default function LoginPage() {
             }}>
               Welcome back, QT.
             </h1>
-            <QEmoji name="heart-sparkle" size={64} style={{ flex: 'none', transform: 'rotate(8deg)' }} />
+            <QEmoji name="heart-sparkle" size={90} style={{ flex: 'none', transform: 'rotate(8deg)' }} />
           </div>
         </div>
       </header>
