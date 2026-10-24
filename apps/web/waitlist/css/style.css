@@ -288,8 +288,12 @@ details:first-of-type{ border-top:1px solid var(--lav-line); }
 summary{ list-style:none; cursor:pointer; display:flex; justify-content:space-between; gap:18px; padding:22px 0; font-family:var(--head); font-size:clamp(16px,1.6vw,19px); line-height:1.35; }
 summary::-webkit-details-marker{ display:none; }
 summary:focus-visible{ outline:3px solid var(--lilac); outline-offset:4px; border-radius:4px; }
-summary .pm{ flex-shrink:0; width:28px; height:28px; border-radius:50%; background:var(--lav); color:var(--uv); display:grid; place-items:center; font-family:var(--body); font-weight:700; transition:transform .3s, background .3s, color .3s; }
-details[open] summary .pm{ transform:rotate(45deg); background:var(--uv); color:#fff; }
+/* Thumbs instead of a plus: every question starts thumbs-down and flips to
+   thumbs-up when you open it (Emerald, Oct 24). */
+summary .pm{ flex-shrink:0; width:28px; height:28px; display:grid; place-items:center; font-size:19px; line-height:1; background:none; border-radius:0; transition:transform .25s ease; }
+summary .pm::before{ content:'\1F44E'; }
+details[open] summary .pm::before{ content:'\1F44D'; }
+details[open] summary .pm{ transform:scale(1.12); }
 details p{ margin:0 0 22px; font-size:16px; line-height:1.65; color:var(--ink-mid); max-width:620px; }
 details[open] p{ animation:rise .35s ease both; }
 
