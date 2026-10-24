@@ -1,6 +1,15 @@
 # QuteNote — Handoff / Status Board
 Written: 2026-10-06 (replaces stale April 10 handoff). Last updated: 2026-10-23 (evening).
 
+## ANIMATION BATCH 2 Oct 24 ~12-12:30am — BUILD 52 + site deploy (FIREFLY)
+- Watercolor mic (public/emoji/mic.png) on ADD A VOICE NOTE, the chip, and the voice sheet record button.
+- WELCOME WAX PRESS: her 10-frame 2x5 sheet (ChatGPT share links: curl the page, grep backend-api/estuary public_content URLs, download the non-unfurl one) → silhouette-locked APNG (/brand/wax_press.png) overlaid on postmark_stamp_heartless at wax.ts geometry; ALSO inside the website hero postmark SVG (<image href>). Smoothing recipe: align every frame to the FINAL frame by alpha-overlap, cross-fade tweens + melt-back for the loop. Headless-Chrome CANNOT verify APNG motion (virtual-time doesn't advance it) — test on a real device via the dev server URL (e.g. 10.0.0.92:5173/brand/wax_press.png).
+- HEART HANDS: seamless loop (close → ta-da hold → REOPEN through the middle frames + blends); file is why-hands.png (site, both spots) = bff-live.png (app invite card).
+- Home carousel: INVITE CARD FIRST for everyone, periwinkle→pink ombre (#A2ABBE→#FF9DC9 + grain), animated hands at 238px; dots REPLACED by tappable edge chevrons per slide.
+- Login: logo removed, sparkle heart 90px. App icon: wax postmark fills the box (static — iOS icons can't animate, told her).
+- Qute Dev ops: relaunch after she quits = xcrun devicectl device process launch --device 00008150-000451E03C7A401C club.cutenote.app.dev (dev server on :5173 usually still up; check first). Phone preview of the waitlist = python3 -m http.server 5200 --bind 0.0.0.0 in waitlist/ → http://<mini-ip>:5200.
+- PENDING: mailbox 10-frame story strip (prompt given: letter in, door shuts, flag up, letter out — destination TBD: alerts card / site phone demo); her wax-press-on-phone APNG verification never confirmed.
+
 ## LIVING EMOJIS NIGHT Oct 23 ~9pm-12am (FIREFLY for the round; "push all these animations live" = final deploy approval)
 Workflow this stretch: edits held locally (NO push until her go), previewed on localhost:5200 (python http.server serving waitlist/ working tree) + Qute Dev for the app. scratchpad/flipbook.py = reusable strip slicer (white flood-fill → frames → APNG/WebP with per-frame durations).
 - FLIPBOOK EMOJIS from her 4-frame AI strips (prompt format that works: ONE image, horizontal sprite strip, identical frames, only the animated element changes): party face (kazoo rolls out, 6-frame breathe), camera (flash pops: 2.2s idle hold then burst), heart (sparkles trade gleams), heart-hands on the Why header (hands close around the card, ta-da dashes), megaphone on the bleachers band.
