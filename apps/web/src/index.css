@@ -142,10 +142,12 @@ body::before {
    smooth, off under reduced motion. Pair with a background-image whose
    SECOND layer is the gradient (first layer stays the paper grain). */
 @media (prefers-reduced-motion: no-preference){
-  .ombre-live{ background-size: auto, 100% 240%; animation: qn-ombre 8s ease-in-out infinite; }
+  /* the colors travel across the card continuously (never solid), like
+     Venmo: a repeating yellow-blue-yellow gradient drifting sideways */
+  .ombre-live{ background-size: auto, auto, 300% 100%; animation: qn-ombre 11s linear infinite; }
   @keyframes qn-ombre{
-    0%, 100%{ background-position: 0 0, 50% 0%; }
-    50%{ background-position: 0 0, 50% 100%; }
+    0%{ background-position: 0 0, 0 0, 0% 50%; }
+    100%{ background-position: 0 0, 0 0, 150% 50%; }
   }
 }
 
