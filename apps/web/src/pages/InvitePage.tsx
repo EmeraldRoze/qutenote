@@ -74,10 +74,10 @@ export default function InvitePage() {
             <QEmoji name="envelope" size={86} style={{ transform: 'rotate(8deg)' }} />
           </div>
           <h1 style={{ fontFamily: 'var(--font-display)', fontWeight: 300, fontSize: '26px', lineHeight: 1.18, color: 'var(--ink)', margin: '14px 0 0', letterSpacing: '-0.01em' }}>
-            Every friend = a free card.
+            Every 10 friends who join = a free card.
           </h1>
           <p style={{ fontFamily: 'var(--font-body)', fontSize: '15px', lineHeight: 1.45, color: 'var(--ink-mid)', margin: '8px 0 18px' }}>
-            You get one, they get one. No catch.
+            They each get one too. No catch.
           </p>
           <div style={{ display: 'flex', gap: '8px', width: '100%' }}>
             <div style={{ flex: 1, padding: '12px', borderRadius: '12px', background: 'var(--card)', border: '1.5px solid var(--stone)' }}>
@@ -106,10 +106,10 @@ export default function InvitePage() {
             </div>
             <div style={{ background: 'var(--card)', borderTop: '1px solid var(--lavender-light)' }}>
               <div style={{ height: '72px', background: 'var(--cream)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <img src="/site/logo-ink.png" alt="QuteNote" style={{ width: '150px' }} />
+                <img src="/brand/postmark_heart_stamp.png" alt="" style={{ width: '150px' }} />
               </div>
               <div style={{ padding: '10px 14px' }}>
-                <div style={{ fontFamily: 'var(--font-body)', fontSize: '14px', fontWeight: 700 }}>{firstName} saved you a free card</div>
+                <div style={{ fontFamily: 'var(--font-body)', fontSize: '14px', fontWeight: 700 }}>You've been invited to join QuteNote, where birthdays are celebrated, hard times are acknowledged, and little surprises find their way to your mailbox.</div>
                 <div style={{ fontFamily: 'var(--font-body)', fontSize: '12px', color: 'var(--ink-mid)' }}>qutenote.com/i/{user?.username ?? 'you'}-…</div>
               </div>
             </div>
