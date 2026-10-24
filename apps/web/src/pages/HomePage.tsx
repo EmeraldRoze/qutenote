@@ -17,6 +17,7 @@ interface OfferCard {
   art: string
   artWidth: number
   artBoxH?: number
+  ombre?: string
   title: string
   cta: string
   onClick: (navigate: ReturnType<typeof useNavigate>) => void
@@ -25,8 +26,8 @@ interface OfferCard {
 // (Emerald, Oct 18). Invite + photo live forever; the others retire once done.
 // Every card wears the same Rose paper ombre now (.rose-paper).
 const ALL_OFFER_CARDS: (OfferCard & { key: string })[] = [
-  { key: 'invite', art: 'bff-live', artWidth: 309, artBoxH: 224, title: 'Invite friends…\nGet free cards', cta: 'INVITE', onClick: (nav) => nav('/invite') },
-  { key: 'first-card', art: 'heart-sparkle', artWidth: 170, title: 'Your first card is on us', cta: 'SEND A CARD', onClick: (nav) => nav('/send') },
+  { key: 'invite', art: 'bff-live', artWidth: 309, artBoxH: 224, ombre: 'url(/brand/paper_texture.png), linear-gradient(160deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 45%), linear-gradient(90deg, #EEFC4E 0%, #BADAFF 50%, #EEFC4E 100%)', title: 'Invite friends…\nGet free cards', cta: 'INVITE', onClick: (nav) => nav('/invite') },
+  { key: 'first-card', art: 'heart-sparkle', artWidth: 170, ombre: 'url(/brand/paper_texture.png), linear-gradient(160deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0) 45%), linear-gradient(90deg, #F1EBE3 0%, #E7DCE6 30%, #AE8FD1 50%, #E7DCE6 70%, #F1EBE3 100%)', title: 'Your first card is on us', cta: 'SEND A CARD', onClick: (nav) => nav('/send') },
   { key: 'alerts', art: 'mailbox', artWidth: 165, title: 'Know when something is in the mail', cta: 'TURN ON ALERTS', onClick: (nav) => nav('/settings/notifications') },
   { key: 'handwriting', art: 'pen', artWidth: 150, title: 'Make it look like YOU wrote it', cta: 'TEACH YOUR HANDWRITING', onClick: (nav) => nav('/handwriting') },
   { key: 'photo', art: 'camera', artWidth: 190, title: 'Got a good photo? Mail it.', cta: 'UPLOAD A PHOTO', onClick: (nav) => nav('/send') },
@@ -60,13 +61,13 @@ function OfferCarousel({ hasSentCard, hasHandwriting }: { hasSentCard: boolean; 
         }}
       >
         {OFFER_CARDS.map((c, i) => (
-          <div key={i} className={c.key === 'invite' ? 'rose-paper ombre-live' : 'rose-paper'}
+          <div key={i} className={c.ombre ? 'rose-paper ombre-live' : 'rose-paper'}
             onClick={c.key === 'invite' ? () => c.onClick(navigate) : undefined}
             role={c.key === 'invite' ? 'button' : undefined}
             aria-label={c.key === 'invite' ? 'Invite friends, get free cards' : undefined}
             style={{
             ...(c.key === 'invite' ? { cursor: 'pointer' } : {}),
-            ...(c.key === 'invite' ? { backgroundImage: 'url(/brand/paper_texture.png), linear-gradient(160deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 45%), linear-gradient(90deg, #EEFC4E 0%, #BADAFF 50%, #EEFC4E 100%)' } : {}),
+            ...(c.ombre ? { backgroundImage: c.ombre } : {}),
             flex: '0 0 calc(100% - 32px)', height: '370px', scrollSnapAlign: 'start',
             position: 'relative', borderRadius: '26px', boxSizing: 'border-box',
             padding: '26px 22px 22px', display: 'flex', flexDirection: 'column',
