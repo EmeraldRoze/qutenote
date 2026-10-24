@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { useNavigate } from 'react-router-dom'
 import { api } from '../lib/api'
+import { inviteByText } from '../lib/inviteText'
 import QEmoji from '../components/QEmoji'
 import TabBar from '../components/TabBar'
 import StatusBox from '../components/StatusBox'
@@ -209,6 +210,29 @@ function daysUntil(month: number, day: number) {
   return Math.round((+next - +today) / 86400000)
 }
 
+// Instagram-style people search on Home (Emerald, Oct 24): type a name and
+// matching QuteNote users populate underneath; if nobody matches, the panel
+// offers to text them an invite instead.
+interface FoundUser { id: string; username: string; displayName: string; avatarUrl: string | null }
+
+function useUserSearch(query: string) {
+  const [results, setResults] = useState<FoundUser[]>([])
+  const [searching, setSearching] = useState(false)
+  useEffect(() => {
+    const q = query.trim()
+    if (q.length < 2) { setResults([]); setSearching(false); return }
+    setSearching(true)
+    const t = setTimeout(() => {
+      api.get(`/users?q=${encodeURIComponent(q)}`)
+        .then((res) => setResults(res.data.data))
+        .catch(() => setResults([]))
+        .finally(() => setSearching(false))
+    }, 220)
+    return () => clearTimeout(t)
+  }, [query])
+  return { results, searching }
+}
+
 export default function HomePage() {
   const { user } = useAuth()
   const navigate = useNavigate()
@@ -219,6 +243,8 @@ export default function HomePage() {
   const [friendCount, setFriendCount] = useState<number | null>(null)
   const [hasHandwriting, setHasHandwriting] = useState(false)
   const [showQR, setShowQR] = useState(false)
+  const [inviting, setInviting] = useState(false)
+  const { results: foundUsers, searching } = useUserSearch(search)
   const [lastSeen] = useState(() => Number(localStorage.getItem('qn_feed_seen') ?? 0))
   const [search, setSearch] = useState('')
   const statusBoxRef = useRef<HTMLDivElement>(null)
@@ -283,11 +309,14 @@ export default function HomePage() {
     <div style={{ minHeight: '100vh', paddingBottom: '120px' }}>
 
       {/* Title band: clear header space, like the top of notebook paper */}
-      <header className="title-band" style={{ height: '252px' }}>
+      {/* The search sits right at the top of the page, not floating in the
+          middle of a tall band (Emerald, Oct 24). The body already carries the
+          status-bar inset in the app, so 12px is all the breathing room it needs. */}
+      <header className="title-band" style={{ height: '186px', justifyContent: 'flex-start', paddingTop: '12px' }}>
         <div style={{ width: '100%', maxWidth: '480px', margin: '0 auto', padding: '0 20px' }}>
 
           {/* Search + QR row */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', position: 'relative' }}>
             <label style={{ flex: 1, height: '48px', borderRadius: '24px', background: 'var(--card)', border: '1.5px solid var(--outline)', display: 'flex', alignItems: 'center', gap: '10px', padding: '0 16px' }}>
               <svg aria-hidden width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" strokeWidth="2" strokeLinecap="round"><circle cx="11" cy="11" r="6.5" /><path d="M16 16l4.5 4.5" /></svg>
               <input
@@ -305,10 +334,53 @@ export default function HomePage() {
             }}>
               <svg aria-hidden width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3.5" y="3.5" width="6" height="6" rx="1" /><rect x="14.5" y="3.5" width="6" height="6" rx="1" /><rect x="3.5" y="14.5" width="6" height="6" rx="1" /><path d="M14.5 14.5h2v2h-2zM18.5 18.5h2v2h-2zM14.5 18.5h2" /></svg>
             </button>
+            {/* Matches drop in under the bar as you type */}
+            {search.trim().length >= 2 && (
+              <div style={{
+                position: 'absolute', left: 0, right: 0, top: 'calc(100% + 8px)', zIndex: 40,
+                background: 'var(--card)', border: '1.5px solid var(--outline)', borderRadius: '18px',
+                boxShadow: '0 12px 30px rgba(74,36,36,0.16)', overflow: 'hidden',
+              }}>
+                {foundUsers.length > 0 ? (
+                  foundUsers.map((u, i) => (
+                    <button key={u.id} onClick={() => { setSearch(''); navigate(`/profile/${u.username}`) }} style={{
+                      display: 'flex', alignItems: 'center', gap: '12px', width: '100%', padding: '12px 14px',
+                      background: 'none', border: 0, borderTop: i === 0 ? 'none' : '1px solid var(--divider)',
+                      cursor: 'pointer', textAlign: 'left', fontFamily: 'var(--font-body)',
+                      textTransform: 'none', letterSpacing: 0, fontWeight: 400,
+                    }}>
+                      {u.avatarUrl
+                        ? <img src={u.avatarUrl} alt="" style={{ width: '36px', height: '36px', borderRadius: '18px', objectFit: 'cover', flex: 'none' }} />
+                        : <QEmoji name="heart-sparkle" size={34} style={{ flex: 'none' }} />}
+                      <span style={{ minWidth: 0, display: 'flex', flexDirection: 'column' }}>
+                        <span style={{ fontSize: '15px', fontWeight: 700, color: 'var(--ink)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{u.displayName}</span>
+                        <span style={{ fontSize: '13px', color: 'var(--ink-mid)' }}>@{u.username}</span>
+                      </span>
+                    </button>
+                  ))
+                ) : searching ? (
+                  <p style={{ margin: 0, padding: '14px', fontFamily: 'var(--font-body)', fontSize: '14px', color: 'var(--ink-mid)' }}>Looking…</p>
+                ) : (
+                  <div style={{ padding: '14px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                    <p style={{ margin: 0, fontFamily: 'var(--font-body)', fontSize: '14px', color: 'var(--ink)' }}>
+                      No one on QuteNote by that name.
+                    </p>
+                    <button disabled={inviting} onClick={async () => {
+                      setInviting(true)
+                      try { await inviteByText() } finally { setInviting(false) }
+                    }} style={{
+                      height: '46px', borderRadius: '23px', border: '2px solid var(--outline)', background: 'var(--btn)',
+                      color: 'var(--ink)', fontFamily: 'var(--font-body)', fontSize: '14px', fontWeight: 700,
+                      letterSpacing: '0.08em', cursor: 'pointer', opacity: inviting ? 0.6 : 1,
+                    }}>INVITE THEM BY TEXT</button>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Greeting */}
-          <div style={{ marginTop: '26px' }}>
+          <div style={{ marginTop: '20px' }}>
             <h1 style={{ margin: 0, fontFamily: 'var(--font-display)', fontWeight: 300, fontSize: '28px', letterSpacing: '-0.02em', color: 'var(--ink)' }}>Hi, {firstName}.</h1>
             <p style={{ margin: '6px 0 0', fontFamily: 'var(--font-body)', fontSize: '16px', color: 'var(--ink)' }}>
               Feelin' Qute?
