@@ -293,9 +293,9 @@ export default function ProfilePage() {
               <QEmoji name="bff" size={30} />
               Add friends
             </button>
-            <button onClick={() => navigate('/invite')} style={actionTile}>
-              <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" style={{ color: 'var(--stamp-center)' }}><rect x="3" y="6" width="18" height="13" rx="2" /><path d="M3 7l9 6 9-6" /></svg>
-              Invite, get a card
+            <button onClick={() => navigate('/invite')} style={{ ...actionTile, whiteSpace: 'pre-line' }}>
+              <QEmoji name="gift" size={30} />
+              {'Invite friends,\nget free cards'}
             </button>
             <button onClick={() => navigate('/handwriting')} style={actionTile}>
               <QEmoji name="pen" size={32} />
