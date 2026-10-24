@@ -104,9 +104,10 @@ export default function SignupBirthdayPage() {
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', fontFamily: 'var(--font-body)', color: 'var(--ink)' }}>
       <style>{`.qn-wheel::-webkit-scrollbar{display:none}`}</style>
 
-      {/* Title band — 216px, a multiple of 36 so the ruling keeps its rhythm */}
+      {/* Title band — 324px, still a multiple of 36 so the ruling keeps its
+          rhythm; it grew to hold the big cake (Emerald, Oct 24). */}
       <header className="title-band" style={{
-        height: '216px', boxSizing: 'border-box', flex: 'none',
+        height: '324px', boxSizing: 'border-box', flex: 'none',
         paddingTop: 'max(calc(54px - env(safe-area-inset-top)), 0px)',
       }}>
         <div style={col}>
@@ -125,7 +126,7 @@ export default function SignupBirthdayPage() {
             }}>
               When can we celebrate you?
             </h1>
-            <TwinklingCake size={64} style={{ transform: 'rotate(-6deg)' }} />
+            <TwinklingCake size={192} style={{ transform: 'rotate(-6deg)' }} />
           </div>
         </div>
       </header>
