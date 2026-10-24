@@ -5,6 +5,7 @@ import { api } from '../lib/api'
 import QEmoji from '../components/QEmoji'
 import TabBar from '../components/TabBar'
 import StatusBox from '../components/StatusBox'
+import TwinklingCake from '../components/TwinklingCake'
 import { type MyStatus } from '../components/Happenings'
 import { fetchHandwritingProgress } from '../lib/handwriting/api'
 import { remindersEnabled } from '../lib/push'
@@ -18,6 +19,8 @@ interface OfferCard {
   artWidth: number
   artBoxH?: number
   ombre?: string
+  /* false = the ombre holds still (her Lavender dusk card ships that way) */
+  live?: boolean
   title: string
   cta: string
   onClick: (navigate: ReturnType<typeof useNavigate>) => void
@@ -38,6 +41,10 @@ const ALL_OFFER_CARDS: (OfferCard & { key: string })[] = [
   // spread of the art — it stays put while the sheen passes through it.
   { key: 'alerts', art: 'mailbox', artWidth: 165, ombre: `url(/brand/paper_texture.png), ${SHEEN}, linear-gradient(90deg, #AE8FD1 0%, #D6C7DF 12.5%, #EFE7E0 25%, #D6C7DF 37.5%, #AE8FD1 50%, #D6C7DF 62.5%, #EFE7E0 75%, #D6C7DF 87.5%, #AE8FD1 100%)`, title: 'Know when something is in the mail', cta: 'TURN ON ALERTS', onClick: (nav) => nav('/settings/notifications') },
   { key: 'handwriting', art: 'pen', artWidth: 150, title: 'Make it look like YOU wrote it', cta: 'TEACH YOUR HANDWRITING', onClick: (nav) => nav('/handwriting') },
+  // Her Lavender dusk card (qutenote-home-dates-card package, Oct 24): slate
+  // into dusty lavender into baby blue, a glossy streak and a soft bottom
+  // shadow, no paper grain, and it does not drift like the others.
+  { key: 'dates', art: 'cake', artWidth: 160, live: false, ombre: 'linear-gradient(118deg, rgba(255,255,255,0) 32%, rgba(255,255,255,0.22) 46%, rgba(255,255,255,0.05) 56%, rgba(255,255,255,0) 64%), linear-gradient(160deg, rgba(0,0,0,0) 70%, rgba(74,36,36,0.10) 100%), linear-gradient(155deg, #495F68 0%, #495F68 14%, #AE8FD1 50%, #BADAFF 86%, #BADAFF 100%)', title: 'Remember the important things', cta: 'ADD A DATE', onClick: (nav) => nav('/dates/add') },
   { key: 'photo', art: 'camera', artWidth: 190, ombre: `url(/brand/paper_texture.png), ${SHEEN}, linear-gradient(90deg, #D88F73 0%, #E6DBD3 12.5%, #BADAFF 25%, #E6DBD3 37.5%, #D88F73 50%, #E6DBD3 62.5%, #BADAFF 75%, #E6DBD3 87.5%, #D88F73 100%)`, title: 'Got a good photo? Mail it.', cta: 'UPLOAD A PHOTO', onClick: (nav) => nav('/send') },
 ]
 
@@ -69,7 +76,7 @@ function OfferCarousel({ hasSentCard, hasHandwriting }: { hasSentCard: boolean; 
         }}
       >
         {OFFER_CARDS.map((c, i) => (
-          <div key={i} className={c.ombre ? 'rose-paper ombre-live' : 'rose-paper'}
+          <div key={i} className={c.ombre ? (c.live === false ? 'rose-paper' : 'rose-paper ombre-live') : 'rose-paper'}
             onClick={c.key === 'invite' ? () => c.onClick(navigate) : undefined}
             role={c.key === 'invite' ? 'button' : undefined}
             aria-label={c.key === 'invite' ? 'Invite friends, get free cards' : undefined}
@@ -82,7 +89,11 @@ function OfferCarousel({ hasSentCard, hasHandwriting }: { hasSentCard: boolean; 
             alignItems: 'center', textAlign: 'center',
           }}>
             <div style={{ height: `${c.artBoxH ?? 170}px`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <QEmoji name={c.art} size={c.artWidth} style={{ maxHeight: `${c.artBoxH ?? 170}px`, transform: 'rotate(-4deg)' }} />
+              {c.art === 'cake' ? (
+                <TwinklingCake size={c.artWidth} style={{ transform: 'rotate(-4deg)' }} />
+              ) : (
+                <QEmoji name={c.art} size={c.artWidth} style={{ maxHeight: `${c.artBoxH ?? 170}px`, transform: 'rotate(-4deg)' }} />
+              )}
             </div>
             <p style={{ margin: '16px 0 0', fontFamily: 'var(--font-display)', fontSize: '22px', lineHeight: 1.2, letterSpacing: '-0.01em', color: 'var(--ink)', whiteSpace: 'pre-line' }}>
               {c.title}

@@ -67,7 +67,7 @@ export default function StatusBox({ onPosted }: { onPosted?: (s: any) => void })
         </span>
         <button onClick={() => setEditing(true)} aria-label="Edit your status" style={{
           flexShrink: 0, width: '44px', height: '44px', border: 0, borderRadius: '22px',
-          background: 'var(--light-blush)', color: 'var(--ink)', cursor: 'pointer', padding: 0,
+          background: 'transparent', color: 'var(--ink)', cursor: 'pointer', padding: 0,
           display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}>
           {/* always her pen art, never a drawn pencil icon (Emerald, Oct 24) */}
