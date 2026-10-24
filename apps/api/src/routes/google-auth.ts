@@ -23,7 +23,7 @@ googleAuthRouter.get('/google', (req: Request, res: Response) => {
     scope: 'openid email profile',
     access_type: 'offline',
     prompt: 'select_account',
-    state: req.query.native === '1' ? 'native' : 'web',
+    state: req.query.native === '1' ? (req.query.dev === '1' ? 'native-dev' : 'native') : 'web',
   })
   res.redirect(`https://accounts.google.com/o/oauth2/v2/auth?${params}`)
 })
@@ -102,11 +102,15 @@ googleAuthRouter.get('/google/callback', async (req: Request, res: Response) => 
     }
 
     const jwt = signToken(user.id)
-    if (req.query.state === 'native') {
+    if (req.query.state === 'native' || req.query.state === 'native-dev') {
       // iOS often blocks automatic redirects into an app, so show a page
       // that tries automatically AND gives the user a button to tap.
       // new=1 tells the app to route this person to the pick-your-handle step.
-      const appLink = `qutenote://auth/success?token=${jwt}${isNew ? '&new=1' : ''}`
+      // Qute Dev and the TestFlight app both answer to qutenote://, so iOS
+      // handed dev sign-ins to the wrong app (Emerald, Oct 24: "logged in
+      // with Google and got kicked out"). The dev copy has its own scheme.
+      const scheme = req.query.state === 'native-dev' ? 'qutenotedev' : 'qutenote'
+      const appLink = `${scheme}://auth/success?token=${jwt}${isNew ? '&new=1' : ''}`
       return res.send(`<!doctype html>
 <html><head><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>QuteNote</title>

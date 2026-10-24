@@ -55,9 +55,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (!isNativeApp) return
     const sub = CapApp.addListener('appUrlOpen', ({ url }) => {
       // Scanned-card deep link: qutenote://card/<code> opens the card screen
-      const cardMatch = url.match(/^qutenote:\/\/card\/([A-Za-z0-9_-]+)/)
+      const cardMatch = url.match(/^qutenote(?:dev)?:\/\/card\/([A-Za-z0-9_-]+)/)
       if (cardMatch) { navigate(`/card/${cardMatch[1]}`); return }
-      if (!url.startsWith('qutenote://auth/success')) return
+      if (!/^qutenote(?:dev)?:\/\/auth\/success/.test(url)) return
       const params = new URL(url).searchParams
       const token = params.get('token')
       if (!token) return

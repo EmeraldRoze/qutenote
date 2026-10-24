@@ -33,5 +33,7 @@ export async function appleSignIn() {
 export async function openGoogleSignIn() {
   const configured = import.meta.env.VITE_API_BASE
   const base = configured && /^https?:\/\//.test(configured) ? configured : NATIVE_API_ORIGIN
-  await Browser.open({ url: `${base}/auth/google?native=1` })
+  // VITE_BUILD=dev is only ever baked by scripts/ios/dev-phone.sh
+  const dev = import.meta.env.VITE_BUILD === 'dev' ? '&dev=1' : ''
+  await Browser.open({ url: `${base}/auth/google?native=1${dev}` })
 }

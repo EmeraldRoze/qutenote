@@ -67,6 +67,10 @@ EOF
 /usr/libexec/PlistBuddy -c "Set :CFBundleDisplayName Qute Dev" "$PLIST"
 /usr/libexec/PlistBuddy -c "Add :NSAppTransportSecurity dict" "$PLIST" 2>/dev/null || true
 /usr/libexec/PlistBuddy -c "Add :NSAppTransportSecurity:NSAllowsArbitraryLoads bool true" "$PLIST" 2>/dev/null || true
+# Its own deep-link scheme: both apps answered to qutenote://, so iOS handed
+# Google sign-ins from Qute Dev to the TestFlight app and this one looked like
+# it logged you out (Emerald, Oct 24). Ship builds never see this line.
+/usr/libexec/PlistBuddy -c "Add :CFBundleURLTypes:0:CFBundleURLSchemes:1 string qutenotedev" "$PLIST" 2>/dev/null || true
 
 echo "→ building Qute Dev (Debug, automatic signing)"
 cd "$WEB"
