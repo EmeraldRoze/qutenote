@@ -85,7 +85,7 @@ export default function InvitePage() {
               <div style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--ink-mid)' }}>friends joined</div>
             </div>
             <div style={{ flex: 1, padding: '12px', borderRadius: '12px', background: 'var(--card)', border: '1.5px solid var(--stone)' }}>
-              <div style={{ fontFamily: 'var(--font-display)', fontSize: '22px' }}>{joined}</div>
+              <div style={{ fontFamily: 'var(--font-display)', fontSize: '22px' }}>{Math.floor(joined / 10)}</div>
               <div style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--ink-mid)' }}>free cards earned</div>
             </div>
           </div>
@@ -159,13 +159,6 @@ export default function InvitePage() {
                 textTransform: 'uppercase', letterSpacing: '0.12em', cursor: 'pointer',
               }}>{copied ? 'Copied' : 'Copy link'}</button>
             </div>
-          )}
-          {!composing && (
-            <button onClick={() => setComposing(true)} style={{
-              background: 'none', border: 'none', color: 'var(--ink-mid)', cursor: 'pointer',
-              fontFamily: 'var(--font-body)', fontSize: '12px', textTransform: 'none', letterSpacing: 0, fontWeight: 400,
-              textDecoration: 'underline',
-            }}>Or type their number and we'll text them for you</button>
           )}
         </div>
       </div>

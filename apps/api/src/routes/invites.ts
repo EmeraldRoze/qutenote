@@ -179,17 +179,26 @@ invitesRouter.post('/collect/:token', async (req: Request, res: Response) => {
     },
   })
 
-  // Every friend = a free card: the inviter earns one gifted credit per completed invite
-  await prisma.user.update({
-    where: { id: invite.senderId },
-    data: { giftedCredits: { increment: 1 } },
+  // Every 10 friends who join = a free card (Emerald, Oct 24). Everyone who
+  // joins still gets their own card from the monthly allowance.
+  const completed = await prisma.invite.count({
+    where: { senderId: invite.senderId, status: 'COMPLETED' },
   })
-
+  const earned = completed % 10 === 0
+  if (earned) {
+    await prisma.user.update({
+      where: { id: invite.senderId },
+      data: { giftedCredits: { increment: 1 } },
+    })
+  }
+  const toGo = 10 - (completed % 10 === 0 ? 10 : completed % 10)
   await notifyUser(
     invite.senderId,
     'inviteUsed',
     `${invite.recipientName.split(' ')[0]} shared their address`,
-    "You earned a free card! Go write them something.",
+    earned
+      ? 'That makes 10! You earned a free card, go write someone something.'
+      : `${toGo} more ${toGo === 1 ? 'friend' : 'friends'} until your next free card.`,
   )
 
   return res.json({ data: { message: 'Address saved! Your surprise is on its way.' } })
