@@ -26,10 +26,18 @@ header{ position:sticky; top:env(safe-area-inset-top,0px); z-index:50; backgroun
 .hero{ position:relative; height:175vh; }
 .hero-pin{ position:sticky; top:calc(72px + env(safe-area-inset-top,0px)); height:calc(100vh - 72px); overflow:hidden; display:flex; align-items:center; }
 .hero-inner{ width:100%; max-width:1200px; margin:0 auto; padding:0 clamp(20px,4vw,48px); display:grid; grid-template-columns:1.05fr 1fr; gap:clamp(24px,5vw,72px); align-items:center; }
-.hero-copy{ display:flex; flex-direction:column; gap:22px; transform:translateY(calc(var(--p,0) * -40px)); }
-.hero h1{ margin:0; font-family:var(--head); font-weight:300; letter-spacing:-.02em; font-size:clamp(44px,6.4vw,88px); line-height:1; }
-.hero .lede{ margin:0; font-size:clamp(18px,1.7vw,22px); line-height:1.55; max-width:520px; }
-.hero .sub{ margin:0; font-size:17px; line-height:1.65; color:var(--ink-mid); max-width:520px; }
+/* The hero copy is centred inside a pinned viewport-tall box, so on a short
+   laptop window anything taller than the window got sliced off under the header
+   (Emerald, Oct 24: "all of this is cut off on desktop"). Every size here also
+   answers to the window height, so the hero shrinks to fit instead of clipping.
+   On a tall window the vh value loses the min() and nothing changes. */
+.hero-copy{ display:flex; flex-direction:column; gap:min(22px, 2.1vh); transform:translateY(calc(var(--p,0) * -40px)); }
+.hero h1{ margin:0; font-family:var(--head); font-weight:300; letter-spacing:-.02em; font-size:min(clamp(44px,6.4vw,88px), 8.4vh); line-height:1; }
+.hero .lede{ margin:0; font-size:min(clamp(18px,1.7vw,22px), 3vh); line-height:1.55; max-width:520px; }
+.hero .sub{ margin:0; font-size:min(17px, 2.3vh); line-height:1.6; color:var(--ink-mid); max-width:520px; }
+.hero .signup{ gap:min(12px, 1.7vh); }
+.hero .stamp-field{ padding:min(11px, 1.5vh); }
+.hero .signup input{ height:min(50px, 6.8vh); }
 .signup{ display:flex; flex-direction:column; gap:12px; max-width:420px; }
 /* photorealistic die-cut stamp fields: real textured paper, punched
    perforations, and a shadow that follows every scallop */
