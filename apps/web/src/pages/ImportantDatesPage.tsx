@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { api } from '../lib/api'
 import TabBar from '../components/TabBar'
 import QEmoji from '../components/QEmoji'
+import TwinklingCake from '../components/TwinklingCake'
 import { enableReminders, remindersEnabled, lastReminderFailure } from '../lib/push'
 import { isNativeApp } from '../lib/native'
 import { contactsAvailable, readContacts, contactsWithBirthdays } from '../lib/contacts'
@@ -252,18 +253,7 @@ export default function ImportantDatesPage() {
             marginTop: '18px', borderRadius: '26px', padding: '26px 20px 22px',
             display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center',
           }}>
-            {/* The candles actually twinkle here (her twinkling-cake package,
-                Oct 24): flame and glow layers sit on the candles by percentage
-                so they hold their spots at any size. */}
-            <div className="qn-cake" style={{ width: '110px', transform: 'rotate(-4deg)' }} role="img" aria-label="Birthday cake with three lit candles">
-              <QEmoji name="cake" size={110} style={{ height: 'auto', width: '100%' }} />
-              <span className="qn-glow" style={{ left: '30.8%', top: '11%', animationDelay: '-0.3s' }} />
-              <span className="qn-glow" style={{ left: '50%', top: '10.5%', animationDelay: '-1.1s' }} />
-              <span className="qn-glow" style={{ left: '67.6%', top: '10%', animationDelay: '-0.7s' }} />
-              <span className="qn-flame" style={{ left: '30.8%', top: '13.4%', animationDelay: '-0.2s', animationDuration: '0.85s' }} />
-              <span className="qn-flame" style={{ left: '50%', top: '12.8%', animationDelay: '-0.55s', animationDuration: '1s' }} />
-              <span className="qn-flame" style={{ left: '67.6%', top: '12.1%', animationDelay: '-0.35s', animationDuration: '0.92s' }} />
-            </div>
+            <TwinklingCake size={110} style={{ transform: 'rotate(-4deg)' }} />
             <h2 style={{ margin: '14px 0 0', fontFamily: 'var(--font-display)', fontWeight: 300, fontSize: '22px', lineHeight: 1.2, color: 'var(--ink)' }}>
               Never miss a birthday again.
             </h2>
@@ -295,7 +285,7 @@ export default function ImportantDatesPage() {
                   <span style={{
                     padding: '5px 11px', borderRadius: '999px', fontSize: '11px', fontWeight: 700,
                     fontFamily: 'var(--font-body)', letterSpacing: '0.04em', whiteSpace: 'nowrap', flex: 'none',
-                    background: days <= 7 ? 'var(--lime)' : '#E3D5CC',
+                    background: days <= 7 ? 'var(--lime)' : 'var(--btn)',
                     border: '1.5px solid var(--stone)', boxSizing: 'border-box',
                     color: 'var(--ink)',
                   }}>{countdownLabel(days)}</span>
@@ -377,7 +367,7 @@ export default function ImportantDatesPage() {
                 {remainingBdays.map((c) => {
                   return (
                     <div key={c.name} style={{ ...whiteCard, padding: '10px 10px 10px 14px', display: 'flex', alignItems: 'center', gap: '12px' }}>
-                      <QEmoji name="cake" size={32} style={{ flex: 'none', height: 'auto' }} />
+                      <TwinklingCake size={32} />
                       <span style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column' }}>
                         <span style={{ fontFamily: 'var(--font-body)', fontSize: '15px', fontWeight: 700, color: 'var(--ink)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{c.name}</span>
                         <span style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--ink-mid)' }}>

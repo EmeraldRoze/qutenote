@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { api } from '../../lib/api'
 import { useAuth } from '../../context/AuthContext'
 import QEmoji from '../../components/QEmoji'
+import TwinklingCake from '../../components/TwinklingCake'
 
 // Sign-up: birthday — screen 05 of the Oct 15 2026 redesign. Month, day and
 // year on a scroll wheel (plain scroll-snap columns, no external deps).
@@ -124,7 +125,7 @@ export default function SignupBirthdayPage() {
             }}>
               When can we celebrate you?
             </h1>
-            <QEmoji name="cake" size={64} style={{ flex: 'none', transform: 'rotate(-6deg)' }} />
+            <TwinklingCake size={64} style={{ transform: 'rotate(-6deg)' }} />
           </div>
         </div>
       </header>
