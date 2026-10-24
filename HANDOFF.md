@@ -1,6 +1,12 @@
 # QuteNote — Handoff / Status Board
 Written: 2026-10-06 (replaces stale April 10 handoff). Last updated: 2026-10-23 (evening).
 
+## WAX ALPHABET + BUILD 50 Oct 23 late night (her "Ship it")
+- Her 26-letter wax seal alphabet sliced into public/brand/wax/A..Z.png (white-bg flood fill → connected components → ROW CLUSTERING by center-y gaps, NOT fixed bands — fixed quarter-bands scrambled letters after G; rows were 7/7/7/5).
+- Profile + Account stamps: postmark_stamp_heartless.png (wax stripped from the profile stamp, same selective erase) + the FIRST initial's lettered wax overlaid in code. Geometry constants in src/lib/wax.ts (center 324/1272, 412/1272; width 417/1272 — reused for any render size via translate(-50%,-50%)). Non A-Z first letters fall back to the blank wax. My CSS-embossed initials are GONE (she called them terrible; her art replaced them).
+- Profile's + emoji-picker button REMOVED per her ask (the picker still exists on Deets; ProfilePage's pickingAvatar sheet code is unreachable but left in place).
+- Build 49 shipped mid-round (blank wax + CSS initials — superseded within the hour); BUILD 50 = lettered wax + no plus, uploaded + beta review submitted. Website deployed with each push.
+
 ## WAX HEART ROUND Oct 23 night — BUILD 49 (FIREFLY)
 Her two TestFlight items on build 48 (screenshots fetched via betaFeedbackScreenshotSubmissions attributes.screenshots[].url — download with node fetch, curl gets empty files) + her wax seal asset (blank, no letter).
 - ALL neon yellow hearts are now the WAX SEAL heart: public/brand/wax_heart.png (cut from her upload via edge flood-fill, interior highlights preserved). postmark_heart_stamp(.profile).png patched in place: felt heart + translucent shadow erased SELECTIVELY (yellow-hue or alpha<190 within the heart bbox — a rectangular erase eats the ring), wax composited 1.18x. send_stamp_heart.png overwritten (tab bar code unchanged). App icon regenerated. StampSvg (SendFlow) heart path → wax image. Printed card stamp box → doc.image(assets/wax_heart.png) with drawHeart fallback. Waitlist postmark-heart.webp overwritten with wax.
