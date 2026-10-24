@@ -37,7 +37,7 @@ header{ position:sticky; top:env(safe-area-inset-top,0px); z-index:50; backgroun
 
 .stack{ position:relative; width:100%; max-width:520px; aspect-ratio:1/.92; margin:0 auto; }
 .card{ position:absolute; border-radius:6px; will-change:transform; }
-.card.back{ left:14%; top:18%; width:66%; aspect-ratio:3/2; background:var(--uv); box-shadow:0 18px 40px rgba(158,98,95,.25); display:grid; place-items:center;
+.card.back{ left:14%; top:18%; width:66%; aspect-ratio:3/2; background:radial-gradient(circle at 50% 38%, #F1EBE3 0%, #D5ADA3 100%); box-shadow:0 18px 40px rgba(158,98,95,.25); display:grid; place-items:center;
   transform:translate(calc(var(--p,0) * 34%), calc(var(--p,0) * -16%)) rotate(calc(7deg + var(--p,0) * 11deg)); }
 .card.back img{ width:34%; transform:rotate(-10deg); }
 .card.front{ left:6%; top:30%; width:74%; aspect-ratio:3/2; padding:6% 7%; background-color:var(--lav); background-image:repeating-linear-gradient(transparent,transparent 27px,var(--lav-line) 27px,var(--lav-line) 28px);
@@ -47,8 +47,8 @@ header{ position:sticky; top:env(safe-area-inset-top,0px); z-index:50; backgroun
 .front .msg span:last-child{ color:var(--uv); font-size:15px; }
 .front .divider{ width:1px; background:var(--lav-line); }
 .front .addr{ flex:.9; display:flex; flex-direction:column; align-items:flex-end; gap:6px; }
-.stamp{ width:58px; height:70px; padding:5px; background:var(--lav); border:2.5px dashed var(--uv); border-radius:5px; }
-.stamp i{ display:grid; place-items:center; width:100%; height:100%; background:var(--uv); border-radius:2px; color:#fff; font-style:normal; font-size:22px; }
+.stamp{ width:58px; height:70px; padding:5px; background:radial-gradient(circle at 5px 5px, rgba(0,0,0,0) 3.3px, #9E625F 3.8px) -5px -5px / 10px 10px round; border:none; border-radius:0; box-sizing:border-box; }
+.stamp i{ display:grid; place-items:center; width:100%; height:100%; background:#BADAFF; border:3px solid #F4ECE6; border-radius:1px; box-sizing:border-box; font-style:normal; } .stamp i img{ width:62%; height:auto; }
 .addr b{ margin-top:auto; font-size:13px; }
 .addr small{ font-size:11px; color:var(--ink-soft); }
 /* writing and address sit exactly on the card's ruled lines */
@@ -112,7 +112,7 @@ header{ position:sticky; top:env(safe-area-inset-top,0px); z-index:50; backgroun
 .qt.in{ opacity:1; transform:none; }
 .addq{ position:absolute; left:18px; right:18px; bottom:28px; height:46px; border-radius:12px; background:var(--uv); display:grid; place-items:center; color:#fff; font-weight:700; font-size:14px; letter-spacing:.12em; }
 /* 2: nudge */
-.feed-ghost{ height:64px; border-radius:14px; background:#FBF8F3; border:1px solid var(--lav-line); margin-bottom:10px; opacity:.55; }
+.feed-ghost{ height:80px; border-radius:18px; background:#FBF8F3; border:1px solid var(--lav-line); margin-bottom:16px; opacity:.55; }
 .notif{ position:absolute; left:12px; right:12px; top:96px; padding:14px; border-radius:18px; background:#FBF8F3; box-shadow:0 12px 30px rgba(74,36,36,.18); display:flex; gap:12px; align-items:center;
   transform:translateY(calc(-260px + var(--np,0) * 260px)) rotate(calc((1 - var(--np,0)) * -4deg)); }
 .notif{ z-index:2; }
@@ -130,10 +130,10 @@ header{ position:sticky; top:env(safe-area-inset-top,0px); z-index:50; backgroun
 /* 4: mail */
 .mail{ position:relative; height:400px; text-align:center; }
 /* the card flies down and slides into the mailbox's open door, behind the mailbox front */
-.mini-pc{ position:absolute; left:50%; top:4px; width:170px; margin-left:-85px; aspect-ratio:3/2; border-radius:6px; background:var(--uv); display:grid; place-items:center; box-shadow:0 10px 24px rgba(158,98,95,.25); z-index:3;
+.mini-pc{ position:absolute; left:50%; top:4px; width:170px; margin-left:-85px; height:auto; filter:drop-shadow(0 10px 24px rgba(158,98,95,.3)); z-index:3;
   transform:translate(calc(var(--mp,0) * -27px), calc(var(--mp,0) * 151px)) scale(calc(1 - var(--mp,0) * .8)) rotate(calc(-8deg + var(--mp,0) * 14deg));
   opacity:calc(1 - max(0, var(--mp,0) - .8) * 5); }
-.mini-pc img{ width:56px; }
+
 .mbox{ position:absolute; left:50%; top:150px; width:190px; margin-left:-95px; z-index:2; }
 .mail .done{ position:absolute; left:0; right:0; top:340px; }
 .thunk{ position:absolute; top:70px; right:28px; width:70px; padding:6px; border:2.5px dashed var(--uv); border-radius:6px; background:var(--lav);
