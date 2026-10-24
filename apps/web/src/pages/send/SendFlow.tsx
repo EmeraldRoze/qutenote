@@ -118,6 +118,15 @@ function StampSvg({ width = 56, style }: { width?: number; height?: number; styl
         width: `${NAV_STAMP_W}px`, height: `${NAV_STAMP_H}px`,
         transform: `scale(${k})${transform ? ` ${transform}` : ''}`, transformOrigin: 'top left',
         ['--qn-panel' as string]: '#BADAFF',
+        // The scale shrinks .qn-stamp's edge shadow along with everything else,
+        // which left this little stamp with no contrast against the paper
+        // (Emerald, Oct 24). Blow the radii up by 1/k so what lands on screen
+        // matches every other stamp in the app.
+        filter: [
+          `drop-shadow(0 0 ${(1.5 / k).toFixed(2)}px rgba(74,36,36,0.55))`,
+          `drop-shadow(0 0 ${(4 / k).toFixed(2)}px rgba(74,36,36,0.3))`,
+          `drop-shadow(0 0 ${(10 / k).toFixed(2)}px rgba(74,36,36,0.16))`,
+        ].join(' '),
       }}>
         {/* the same wax heart and postmark waves the tab bar wears, centered */}
         <svg aria-hidden width="48" height="33" viewBox="0 0 44 30" style={{ margin: 'auto' }}>
