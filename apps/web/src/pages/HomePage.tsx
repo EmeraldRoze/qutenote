@@ -93,7 +93,7 @@ function OfferCarousel({ hasSentCard, hasHandwriting }: { hasSentCard: boolean; 
   )
 }
 
-interface SetupTask { key: string; art: string; label: string; done: boolean; onClick: (navigate: ReturnType<typeof useNavigate>) => void }
+interface SetupTask { key: string; art: string; artSize?: number; label: string; done: boolean; onClick: (navigate: ReturnType<typeof useNavigate>) => void }
 
 // "Get set up": progress out of 5; each tile disappears once its task is done.
 function SetupChecklist({ tasks }: { tasks: SetupTask[] }) {
@@ -118,7 +118,7 @@ function SetupChecklist({ tasks }: { tasks: SetupTask[] }) {
             justifyContent: 'center', alignItems: 'center', gap: '14px', textAlign: 'center',
             textTransform: 'none', letterSpacing: 0,
           }}>
-            <QEmoji name={t.art} size={72} />
+            <QEmoji name={t.art} size={t.artSize ?? 72} />
             <span style={{ fontSize: '16px', fontWeight: 700, lineHeight: 1.3, fontFamily: 'var(--font-body)', color: 'var(--ink)' }}>{t.label}</span>
           </button>
         ))}
@@ -218,7 +218,7 @@ export default function HomePage() {
   // Five tasks; the address one counts as done at sign-up.
   const setupTasks: SetupTask[] = [
     { key: 'address', art: 'house', label: 'Add your address', done: hasAddress !== false, onClick: (nav) => nav('/address') },
-    { key: 'friends', art: 'bff', label: 'Find your people', done: !!friendCount && friendCount > 0, onClick: (nav) => nav('/connections') },
+    { key: 'friends', art: 'bff', artSize: 86, label: 'Find your people', done: !!friendCount && friendCount > 0, onClick: (nav) => nav('/connections') },
     { key: 'birthday', art: 'cake', label: 'Add your birthday. Get Qute Notes.', done: !!user?.birthday, onClick: (nav) => nav('/signup/birthday') },
     { key: 'status', art: 'thought-bubble', label: 'Set your status', done: !!myStatus, onClick: () => focusStatusBox() },
     { key: 'handwriting', art: 'pen', label: 'Teach us your handwriting', done: hasHandwriting, onClick: (nav) => nav('/handwriting') },
