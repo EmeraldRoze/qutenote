@@ -25,7 +25,7 @@ interface OfferCard {
 // Every card wears the same Rose paper ombre now (.rose-paper).
 const ALL_OFFER_CARDS: (OfferCard & { key: string })[] = [
   { key: 'first-card', art: 'heart-sparkle', artWidth: 170, title: 'Your first card is on us', cta: 'SEND A CARD', onClick: (nav) => nav('/send') },
-  { key: 'invite', art: 'bff', artWidth: 238, title: 'Invite a friend. You both get a free card.', cta: 'INVITE', onClick: (nav) => nav('/invite') },
+  { key: 'invite', art: 'bff-live', artWidth: 238, title: 'Invite a friend. You both get a free card.', cta: 'INVITE', onClick: (nav) => nav('/invite') },
   { key: 'alerts', art: 'mailbox', artWidth: 165, title: 'Know when something is in the mail', cta: 'TURN ON ALERTS', onClick: (nav) => nav('/settings/notifications') },
   { key: 'handwriting', art: 'pen', artWidth: 150, title: 'Make it look like YOU wrote it', cta: 'TEACH YOUR HANDWRITING', onClick: (nav) => nav('/handwriting') },
   { key: 'photo', art: 'camera', artWidth: 190, title: 'Got a good photo? Mail it.', cta: 'UPLOAD A PHOTO', onClick: (nav) => nav('/send') },
