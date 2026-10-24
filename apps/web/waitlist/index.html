@@ -51,6 +51,14 @@
   "mainEntity": [
     {
       "@type": "Question",
+      "name": "So I get an actual postcard in my actual mailbox?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes."
+      }
+    },
+    {
+      "@type": "Question",
       "name": "How do you send a postcard without knowing someone's address?",
       "acceptedAnswer": {
         "@type": "Answer",
@@ -86,7 +94,7 @@
       "name": "What if the person isn't on QuteNote yet?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "We'll help you text them a link. They add their address in about a minute, and your postcard goes out. They don't have to join to get it, but it's nice when they do."
+        "text": "Invite them! They need a free profile to receive mail."
       }
     },
     {
@@ -102,15 +110,7 @@
       "name": "When does the app launch?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "The iPhone app is coming soon, and Android follows after. Join the waitlist for early access, and your first postcard is on us."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "Is it QuteNote or Qute Note?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Either way, you found us. We write it QuteNote, some people search Qute Note, and both spell the same thing: real mail with real feeling, always with a Q."
+        "text": "Valentine's Day 2027! Join the waitlist for early access, and your first postcard is on us."
       }
     }
   ]
@@ -195,9 +195,9 @@
           <div class="notch"></div>
           <div class="scr on" data-s="0">
             <h4>QTs</h4>
-            <div class="qt"><span class="av" style="background:#9E625F">MO</span><div><b>Maya Okafor</b><small>Birthday Oct 19</small></div><span class="tag">IN 7 DAYS</span></div>
-            <div class="qt"><span class="av" style="background:#D5ADA3">JL</span><div><b>Jen Lowe</b><small>Birthday Dec 2</small></div></div>
-            <div class="qt"><span class="av" style="background:#4A2424">RA</span><div><b>Rafi Amar</b><small>Birthday Feb 11</small></div></div>
+            <div class="qt"><img class="av" src="assets/wax-m.webp" alt=""><div><b>Maya Okafor</b><small>Birthday Oct 19</small></div><span class="tag">IN 7 DAYS</span></div>
+            <div class="qt"><img class="av" src="assets/wax-j.webp" alt=""><div><b>Jen Lowe</b><small>Birthday Dec 2</small></div></div>
+            <div class="qt"><img class="av" src="assets/wax-r.webp" alt=""><div><b>Rafi Amar</b><small>Birthday Feb 11</small></div></div>
             <div class="addq">+ ADD QTS</div>
           </div>
           <div class="scr" data-s="1">
@@ -218,7 +218,7 @@
             <div class="mail">
               <img class="mini-pc" src="assets/postcard-heart.webp" alt="">
               <img class="mbox" src="assets/emoji-mailbox.webp" alt="">
-              <div class="done" id="done"><b>In the mail to Maya.</b><span>Lands in 3 to 5 days. Right on time.</span></div>
+              <div class="done" id="done"><b>In the mail to Maya.</b><span>Lands in 3 to 5 days.<br>Right on time.</span></div>
             </div>
           </div>
         </div>
@@ -234,7 +234,7 @@
     <div class="why-grid">
       <div class="feat" data-drop style="--tilt:-7deg"><img src="assets/emoji-envelope.webp" alt=""><div><h3>No address awkwardness.</h3><p>Connect with your people on QuteNote and you never have to ask for an address yourself.</p></div></div>
       <div class="feat" data-drop style="--tilt:6deg"><img src="assets/emoji-cake.webp" alt=""><div><h3>Remember the little things.</h3><p>We'll nudge you a week before birthdays, so there's time for the mail to do its thing. Being remembered feels pretty wonderful.</p></div></div>
-      <div class="feat" data-drop style="--tilt:5deg"><img src="assets/emoji-star.webp" alt=""><div><h3>Help when the words won't come.</h3><p>Get thoughtful prompts when you know what you feel but aren't quite sure how to say it. No AI BS, just real feelings.</p></div></div>
+      <div class="feat" data-drop style="--tilt:5deg"><img src="assets/emoji-pen.webp" alt=""><div><h3>Help when the words won't come.</h3><p>Get thoughtful prompts when you know what you feel but aren't quite sure how to say it. No AI BS, just real feelings.</p></div></div>
       <div class="feat" data-drop style="--tilt:-6deg"><img class="feat-stamp" src="assets/stamp-rainbow.webp" alt=""><div><h3>Stamps worth collecting.</h3><p>Every send earns a custom stamp for your profile. Purely for bragging rights.</p></div></div>
     </div>
   </div></div>
@@ -267,7 +267,7 @@
       <div class="plan pro" data-drop style="--tilt:5deg">
         <span class="tag">MOST POPULAR</span>
         <div class="top"><img src="assets/emoji-envelope.webp" alt=""><h3>QuteNote Subscriber</h3></div>
-        <div class="amount">$8.95<small>/month</small></div>
+        <div class="amount">$16.95<small>/month</small></div>
         <ul><li>2 real postcards every month</li><li>$2.95 for each extra card</li><li>Collectible stamps on every send</li><li>Cancel anytime</li></ul>
         <a class="btn" href="#join">Join waitlist<span class="ph" aria-hidden="true"><img src="assets/postmark-heart.webp" alt=""><img src="assets/postmark-waves.webp" alt=""></span></a>
       </div>
@@ -277,9 +277,7 @@
 </section>
 
 <section class="band" id="band">
-  <img class="bf a" src="assets/emoji-party-popper.webp" alt="">
-  <img class="bf b" src="assets/emoji-heart.webp" alt="">
-  <img class="bf c" src="assets/emoji-star.webp" alt="">
+  <img class="bf mega" src="assets/emoji-megaphone.webp" alt="">
   <div class="wrap">
     <h2>Yell it from the bleachers.</h2>
     <p class="fill" id="fill"><span>Don't</span> <span>save</span> <span>the</span> <span>good</span> <span>stuff</span> <span>for</span> <span>later.</span></p>
@@ -291,14 +289,14 @@
   <div class="sec-head"><div class="in"><div class="hd"><span class="kicker">FAQ</span><h2 class="h2">Good <br class="mbr">questions.</h2></div><img class="faq-think" data-drop style="--tilt:-10deg" src="assets/emoji-thinking.webp" alt=""></div></div>
   <div class="sec-body"><div class="wrap faq-wrap">
     <div>
-      <details open><summary>How do you send a postcard without knowing someone's address?<span class="pm">+</span></summary><p>Your QTs add their own address once. It stays with us, locked up, and you never see it. You pick the person, write your note, and we handle the rest.</p></details>
+      <details open><summary>So I get an actual postcard in my actual mailbox?<span class="pm">+</span></summary><p>Yes.</p></details>
+      <details><summary>How do you send a postcard without knowing someone's address?<span class="pm">+</span></summary><p>Your QTs add their own address once. It stays with us, locked up, and you never see it. You pick the person, write your note, and we handle the rest.</p></details>
       <details><summary>How long does delivery take?<span class="pm">+</span></summary><p>Usually 3 to 5 business days within the US. That's why we nudge you a week before birthdays. Running late? We'll help you make it a very fashionable belated card.</p></details>
       <details><summary>Can I design my own cards?<span class="pm">+</span></summary><p>Yes. Upload a photo for the front, or pick from this month's featured artists. Either way, you write the back.</p></details>
       <details><summary>Can I fix a typo after I hit send?<span class="pm">+</span></summary><p>Yes. You get a preview and two hours to edit before your card goes to print.</p></details>
-      <details><summary>What if the person isn't on QuteNote yet?<span class="pm">+</span></summary><p>We'll help you text them a link. They add their address in about a minute, and your postcard goes out. They don't have to join to get it, but it's nice when they do.</p></details>
+      <details><summary>What if the person isn't on QuteNote yet?<span class="pm">+</span></summary><p>Invite them! They need a free profile to receive mail.</p></details>
       <details><summary>Is my address actually private?<span class="pm">+</span></summary><p>Yes. It's encrypted and only used to mail your postcards. Senders never see it, and we will never sell it.</p></details>
-      <details><summary>When does the app launch?<span class="pm">+</span></summary><p>The iPhone app is coming soon, and Android follows after. Join the waitlist for early access, and your first postcard is on us.</p></details>
-      <details><summary>Is it QuteNote or Qute Note?<span class="pm">+</span></summary><p>Either way, you found us. We write it QuteNote, some people search Qute Note, and both spell the same thing: real mail with real feeling, always with a Q.</p></details>
+      <details><summary>When does the app launch?<span class="pm">+</span></summary><p>Valentine's Day 2027! Join the waitlist for early access, and your first postcard is on us.</p></details>
     </div>
   </div></div>
 </section>
@@ -307,7 +305,7 @@
   <div class="wrap">
     <div class="cta-card" id="ctaCard" data-drop style="--tilt:-4deg">
       <div class="send-stamp" id="sendStamp" aria-hidden="true"><span><span class="ph" aria-hidden="true"><img src="assets/postmark-heart.webp" alt=""><img src="assets/postmark-waves.webp" alt=""></span>SEND</span></div>
-      <img class="cta-bff" src="assets/emoji-bff-bunnies.webp" alt="">
+      <img class="cta-bff" src="assets/emoji-heart-hands.webp" alt="">
       <h2>Someone came to mind, didn't they?</h2>
       <p>Go make their day.</p>
       <form class="signup" data-source="waitlist-postcard">
