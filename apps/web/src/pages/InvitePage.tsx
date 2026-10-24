@@ -68,8 +68,7 @@ export default function InvitePage() {
         {/* Hero */}
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', marginTop: '14px' }}>
           <div style={{ display: 'flex', gap: '6px' }}>
-            <QEmoji name="gift" size={86} style={{ transform: 'rotate(-8deg)' }} />
-            <QEmoji name="envelope" size={86} style={{ transform: 'rotate(8deg)' }} />
+            <QEmoji name="gift" size={110} style={{ transform: 'rotate(-6deg)' }} />
           </div>
           <h1 style={{ fontFamily: 'var(--font-display)', fontWeight: 300, fontSize: '26px', lineHeight: 1.18, color: 'var(--ink)', margin: '14px 0 0', letterSpacing: '-0.01em' }}>
             Every 10 friends who join = a free card.

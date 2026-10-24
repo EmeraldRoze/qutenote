@@ -27,7 +27,7 @@ interface OfferCard {
 // Every card wears the same Rose paper ombre now (.rose-paper).
 const ALL_OFFER_CARDS: (OfferCard & { key: string })[] = [
   { key: 'invite', art: 'bff-live', artWidth: 309, artBoxH: 224, ombre: 'url(/brand/paper_texture.png), linear-gradient(160deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 45%), linear-gradient(90deg, #EEFC4E 0%, #BADAFF 50%, #EEFC4E 100%)', title: 'Invite friends…\nGet free cards', cta: 'INVITE', onClick: (nav) => nav('/invite') },
-  { key: 'first-card', art: 'heart-sparkle', artWidth: 170, ombre: 'url(/brand/paper_texture.png), linear-gradient(160deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0) 45%), linear-gradient(90deg, #F1EBE3 0%, #E7DCE6 30%, #AE8FD1 50%, #E7DCE6 70%, #F1EBE3 100%)', title: 'Your first card is on us', cta: 'SEND A CARD', onClick: (nav) => nav('/send') },
+  { key: 'first-card', art: 'gift', artWidth: 165, ombre: 'url(/brand/paper_texture.png), linear-gradient(160deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0) 45%), linear-gradient(90deg, #F1EBE3 0%, #E7DCE6 30%, #AE8FD1 50%, #E7DCE6 70%, #F1EBE3 100%)', title: 'Your first card is on us', cta: 'SEND A CARD', onClick: (nav) => nav('/send') },
   { key: 'alerts', art: 'mailbox', artWidth: 165, title: 'Know when something is in the mail', cta: 'TURN ON ALERTS', onClick: (nav) => nav('/settings/notifications') },
   { key: 'handwriting', art: 'pen', artWidth: 150, title: 'Make it look like YOU wrote it', cta: 'TEACH YOUR HANDWRITING', onClick: (nav) => nav('/handwriting') },
   { key: 'photo', art: 'camera', artWidth: 190, title: 'Got a good photo? Mail it.', cta: 'UPLOAD A PHOTO', onClick: (nav) => nav('/send') },
