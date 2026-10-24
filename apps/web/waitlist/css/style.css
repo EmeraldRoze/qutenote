@@ -365,14 +365,7 @@ footer .fl{ height:30px; width:auto; display:block; }
 @media (prefers-reduced-motion: no-preference){
   @keyframes qn-toot{ 0%,100%{ transform:rotate(0) scale(1) } 12%{ transform:rotate(-2.5deg) scale(1.015) } 24%{ transform:rotate(2deg) scale(1.035) } 36%{ transform:rotate(-1deg) scale(1.01) } 48%{ transform:rotate(0) scale(1) } }
 
-  /* heart: soft heartbeat + two gleaming sparkle glints */
-  .f-heart img{ animation:qn-beat 3.2s ease-in-out infinite; transform-origin:50% 55%; }
   @keyframes qn-beat{ 0%,100%{ transform:scale(1) } 12%{ transform:scale(1.045) } 20%{ transform:scale(1.01) } 28%{ transform:scale(1.035) } 40%{ transform:scale(1) } }
-  .f-heart::before,.f-heart::after{ content:''; position:absolute; width:26%; aspect-ratio:1; border-radius:50%;
-    background:radial-gradient(circle, rgba(255,252,220,.95) 0%, rgba(255,245,180,.5) 35%, transparent 65%);
-    opacity:0; pointer-events:none; }
-  .f-heart::before{ right:4%; top:10%; animation:qn-twinkle 2.8s ease-in-out infinite; }
-  .f-heart::after{ left:6%; bottom:14%; animation:qn-twinkle 2.8s ease-in-out 1.4s infinite; }
   @keyframes qn-twinkle{ 0%,100%{ opacity:0; transform:scale(.6) } 50%{ opacity:1; transform:scale(1.25) } }
 
   /* cake: candle flames flicker */
