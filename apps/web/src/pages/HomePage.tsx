@@ -104,7 +104,7 @@ function SetupChecklist({ tasks }: { tasks: SetupTask[] }) {
   return (
     <div style={{ marginTop: '30px' }}>
       <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
-        <h2 style={{ margin: 0, fontFamily: 'var(--font-display)', fontSize: '20px', fontWeight: 400 }}>Get set</h2>
+        <h2 style={{ margin: 0, fontFamily: 'var(--font-display)', fontSize: '20px', fontWeight: 300 }}>Get set</h2>
         <span style={{ fontSize: '14px', fontFamily: 'var(--font-body)', color: 'var(--ink)' }}>{done} of {total} done</span>
       </div>
       <div aria-hidden style={{ marginTop: '10px', height: '8px', borderRadius: '4px', background: 'var(--progress-track)' }}>
@@ -271,7 +271,7 @@ export default function HomePage() {
 
           {/* Greeting */}
           <div style={{ marginTop: '26px' }}>
-            <h1 style={{ margin: 0, fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: '28px', letterSpacing: '-0.02em', color: 'var(--ink)' }}>Hi, {firstName}.</h1>
+            <h1 style={{ margin: 0, fontFamily: 'var(--font-display)', fontWeight: 300, fontSize: '28px', letterSpacing: '-0.02em', color: 'var(--ink)' }}>Hi, {firstName}.</h1>
             <p style={{ margin: '6px 0 0', fontFamily: 'var(--font-body)', fontSize: '16px', color: 'var(--ink)' }}>
               Feelin' Qute?
             </p>
@@ -301,7 +301,7 @@ export default function HomePage() {
                 <div style={{ display: 'inline-block', fontSize: '13px', fontWeight: 700, fontFamily: 'var(--font-body)', color: 'var(--ink)', background: 'var(--lime)', padding: '3px 9px', borderRadius: '10px' }}>
                   {nudge.days === 0 ? 'Today' : `In ${nudge.days} day${nudge.days === 1 ? '' : 's'}`}
                 </div>
-                <div style={{ fontFamily: 'var(--font-display)', fontSize: '15px', marginTop: '2px', fontWeight: 400, letterSpacing: '-0.01em' }}>
+                <div style={{ fontFamily: 'var(--font-display)', fontSize: '15px', marginTop: '2px', fontWeight: 300, letterSpacing: '-0.01em' }}>
                   {nudge.connectionName}'s {nudge.label.toLowerCase()}
                 </div>
               </div>
@@ -333,7 +333,7 @@ export default function HomePage() {
         )}
 
         {/* From your QTs */}
-        <h2 style={{ margin: '30px 0 12px', fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: '20px' }}>From your QTs</h2>
+        <h2 style={{ margin: '30px 0 12px', fontFamily: 'var(--font-display)', fontWeight: 300, fontSize: '20px' }}>From your QTs</h2>
 
         {feed.length === 0 && (
           <div className="qn-stamp" style={{ border: '10px solid transparent', background: 'transparent', padding: '14px 12px', display: 'flex', gap: '16px', alignItems: 'center' }}>

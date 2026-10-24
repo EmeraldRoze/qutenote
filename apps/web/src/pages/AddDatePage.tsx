@@ -201,7 +201,7 @@ export default function AddDatePage() {
             </button>
           </div>
           <div style={{ marginTop: '14px', display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <h1 style={{ margin: 0, flex: 1, minWidth: 0, fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: '26px', lineHeight: 1.12, letterSpacing: '-0.02em', color: 'var(--ink)' }}>
+            <h1 style={{ margin: 0, flex: 1, minWidth: 0, fontFamily: 'var(--font-display)', fontWeight: 300, fontSize: '26px', lineHeight: 1.12, letterSpacing: '-0.02em', color: 'var(--ink)' }}>
               Add a date worth celebrating.
             </h1>
             <QEmoji name="calendar" size={58} style={{ height: 'auto', flex: 'none', transform: 'rotate(5deg)' }} />

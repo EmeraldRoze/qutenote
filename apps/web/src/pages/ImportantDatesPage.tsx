@@ -180,7 +180,7 @@ export default function ImportantDatesPage() {
       {/* Title band — clear header space, 144px keeps the 36px ruling rhythm */}
       <header className="title-band" style={{ height: '144px' }}>
         <div style={{ maxWidth: '480px', width: '100%', margin: '0 auto', padding: '0 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <h1 style={{ margin: 0, fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: '28px', letterSpacing: '-0.02em', color: 'var(--ink)' }}>
+          <h1 style={{ margin: 0, fontFamily: 'var(--font-display)', fontWeight: 300, fontSize: '28px', letterSpacing: '-0.02em', color: 'var(--ink)' }}>
             Important dates
           </h1>
           <button onClick={() => navigate('/dates/add')} aria-label="Add a date" style={{
@@ -253,7 +253,7 @@ export default function ImportantDatesPage() {
             display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center',
           }}>
             <QEmoji name="cake" size={110} style={{ height: 'auto', transform: 'rotate(-4deg)' }} />
-            <h2 style={{ margin: '14px 0 0', fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: '22px', lineHeight: 1.2, color: 'var(--ink)' }}>
+            <h2 style={{ margin: '14px 0 0', fontFamily: 'var(--font-display)', fontWeight: 300, fontSize: '22px', lineHeight: 1.2, color: 'var(--ink)' }}>
               Never miss a birthday again.
             </h2>
             <p style={{ margin: '8px 0 0', fontSize: '15px', lineHeight: 1.45, color: 'var(--ink)', maxWidth: '280px', fontFamily: 'var(--font-body)' }}>
@@ -299,7 +299,7 @@ export default function ImportantDatesPage() {
         )}
 
         {/* Quick add */}
-        <h2 style={{ margin: '26px 0 10px', fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: '18px', color: 'var(--ink)' }}>Quick add</h2>
+        <h2 style={{ margin: '26px 0 10px', fontFamily: 'var(--font-display)', fontWeight: 300, fontSize: '18px', color: 'var(--ink)' }}>Quick add</h2>
         <div className="qn-chips" style={{ display: 'flex', gap: '8px', overflowX: 'auto', scrollbarWidth: 'none', margin: '0 -20px', padding: '0 20px' }}>
           {quickAdd.map((q) => (
             <button key={q.chip} onClick={() => navigate(q.to)} style={{
@@ -346,7 +346,7 @@ export default function ImportantDatesPage() {
                 textTransform: 'none', letterSpacing: 0,
               }}
             >
-              <h2 style={{ margin: 0, flex: 1, fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: '18px', color: 'var(--ink)' }}>Birthdays in your contacts</h2>
+              <h2 style={{ margin: 0, flex: 1, fontFamily: 'var(--font-display)', fontWeight: 300, fontSize: '18px', color: 'var(--ink)' }}>Birthdays in your contacts</h2>
               <svg aria-hidden width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ink-mid)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
                 style={{ transform: contactsOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.15s' }}>
                 <path d="M6 9l6 6 6-6" />

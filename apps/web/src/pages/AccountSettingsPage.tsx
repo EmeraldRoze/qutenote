@@ -94,7 +94,7 @@ export default function AccountSettingsPage() {
           }}>
             <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 5l-7 7 7 7" /></svg>
           </button>
-          <h1 style={{ margin: 0, fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: '28px', letterSpacing: '-0.02em', color: 'var(--ink)' }}>Deets</h1>
+          <h1 style={{ margin: 0, fontFamily: 'var(--font-display)', fontWeight: 300, fontSize: '28px', letterSpacing: '-0.02em', color: 'var(--ink)' }}>Deets</h1>
         </div>
       </div>
 
@@ -179,7 +179,7 @@ export default function AccountSettingsPage() {
       {pickingAvatar && (
         <div style={{ position: 'fixed', inset: 0, zIndex: 100, background: 'rgba(74,36,36,0.45)', display: 'flex', alignItems: 'flex-end' }} onClick={() => setPickingAvatar(false)}>
           <div style={{ width: '100%', background: 'var(--cream)', borderRadius: '16px 16px 0 0', padding: '24px 24px calc(24px + env(safe-area-inset-bottom))' }} onClick={(e) => e.stopPropagation()}>
-            <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '22px', fontWeight: 400, marginBottom: '14px' }}>Pick your emoji</h2>
+            <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '22px', fontWeight: 300, marginBottom: '14px' }}>Pick your emoji</h2>
             <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
               {STATUS_EMOJI.map((e) => (
                 <button key={e} onClick={async () => {
@@ -202,7 +202,7 @@ export default function AccountSettingsPage() {
       {confirmingDelete && (
         <div style={{ position: 'fixed', inset: 0, zIndex: 100, background: 'rgba(74,36,36,0.45)', display: 'flex', alignItems: 'flex-end' }} onClick={() => !deleting && setConfirmingDelete(false)}>
           <div style={{ width: '100%', background: 'var(--cream)', borderRadius: '16px 16px 0 0', padding: '24px 24px calc(24px + env(safe-area-inset-bottom))', textAlign: 'center', boxSizing: 'border-box' }} onClick={(e) => e.stopPropagation()}>
-            <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '20px', fontWeight: 400, marginBottom: '10px' }}>Delete your account?</h2>
+            <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '20px', fontWeight: 300, marginBottom: '10px' }}>Delete your account?</h2>
             <p style={{ fontFamily: 'var(--font-body)', fontSize: '14px', lineHeight: 1.5, color: 'var(--ink-mid)', marginBottom: '16px' }}>
               This erases your account, your cards and your address for good. There's no undo. Type DELETE below if you're sure.
             </p>

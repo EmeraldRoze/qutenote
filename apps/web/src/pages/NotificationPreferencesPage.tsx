@@ -72,7 +72,7 @@ export default function NotificationPreferencesPage() {
         }}>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M15 6l-6 6 6 6" /></svg>
         </button>
-        <span style={{ fontFamily: 'var(--font-display)', fontSize: '18px', fontWeight: 400, color: 'var(--ink)' }}>Notifications</span>
+        <span style={{ fontFamily: 'var(--font-display)', fontSize: '18px', fontWeight: 300, color: 'var(--ink)' }}>Notifications</span>
       </nav>
 
       <div style={{ maxWidth: '480px', margin: '0 auto', padding: '24px 20px' }}>

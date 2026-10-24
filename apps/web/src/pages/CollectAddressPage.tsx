@@ -106,7 +106,7 @@ export default function CollectAddressPage() {
         background: 'var(--white)', borderBottom: '1px solid var(--lavender-pale)',
         padding: '16px 20px', textAlign: 'center',
       }}>
-        <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '22px', fontWeight: 600, color: 'var(--lavender-deep)' }}>
+        <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '22px', fontWeight: 300, color: 'var(--lavender-deep)' }}>
           QuteNote
         </h1>
       </div>

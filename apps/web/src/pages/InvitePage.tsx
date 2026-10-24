@@ -73,7 +73,7 @@ export default function InvitePage() {
             <QEmoji name="gift" size={86} style={{ transform: 'rotate(-8deg)' }} />
             <QEmoji name="envelope" size={86} style={{ transform: 'rotate(8deg)' }} />
           </div>
-          <h1 style={{ fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: '26px', lineHeight: 1.18, color: 'var(--ink)', margin: '14px 0 0', letterSpacing: '-0.01em' }}>
+          <h1 style={{ fontFamily: 'var(--font-display)', fontWeight: 300, fontSize: '26px', lineHeight: 1.18, color: 'var(--ink)', margin: '14px 0 0', letterSpacing: '-0.01em' }}>
             Every friend = a free card.
           </h1>
           <p style={{ fontFamily: 'var(--font-body)', fontSize: '15px', lineHeight: 1.45, color: 'var(--ink-mid)', margin: '8px 0 18px' }}>

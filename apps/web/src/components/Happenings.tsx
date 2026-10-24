@@ -63,7 +63,7 @@ export function StatusComposer({ onDone }: { onDone: (s: MyStatus | null) => voi
   return (
     <div style={{ position: 'fixed', inset: 0, zIndex: 100, background: 'rgba(74,36,36,0.45)', display: 'flex', alignItems: 'flex-end' }} onClick={() => onDone(null)}>
       <div style={{ width: '100%', background: 'var(--cream)', borderRadius: '16px 16px 0 0', padding: '24px 24px calc(24px + env(safe-area-inset-bottom))' }} onClick={(e) => e.stopPropagation()}>
-        <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '22px', fontWeight: 400, marginBottom: '14px', color: 'var(--ink)' }}>How's your heart?</h2>
+        <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '22px', fontWeight: 300, marginBottom: '14px', color: 'var(--ink)' }}>How's your heart?</h2>
         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '14px' }}>
           {STATUS_EMOJI.map((e) => (
             <button key={e} onClick={() => setEmoji(e)} style={{

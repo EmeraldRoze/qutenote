@@ -186,7 +186,7 @@ export default function ConnectionsPage() {
       {/* Title band */}
       <header className="title-band" style={{ height: '144px' }}>
         <div style={{ width: '100%', maxWidth: '480px', margin: '0 auto', padding: '0 20px' }}>
-          <h1 style={{ margin: 0, fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: '30px', letterSpacing: '-0.02em', color: 'var(--ink)' }}>QTs</h1>
+          <h1 style={{ margin: 0, fontFamily: 'var(--font-display)', fontWeight: 300, fontSize: '30px', letterSpacing: '-0.02em', color: 'var(--ink)' }}>QTs</h1>
         </div>
       </header>
 

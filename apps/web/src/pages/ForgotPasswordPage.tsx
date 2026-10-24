@@ -41,7 +41,7 @@ export default function ForgotPasswordPage() {
           {sent ? (
             <>
               <div style={{ textAlign: 'center', marginBottom: '16px' }}><QEmoji name="envelope" size={44} /></div>
-              <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '22px', fontWeight: 400, color: 'var(--ink)', marginBottom: '12px', textAlign: 'center' }}>
+              <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '22px', fontWeight: 300, color: 'var(--ink)', marginBottom: '12px', textAlign: 'center' }}>
                 Check your email
               </h2>
               <p style={{ fontSize: '14px', color: 'var(--ink-mid)', lineHeight: 1.6, textAlign: 'center', marginBottom: '24px' }}>
@@ -59,7 +59,7 @@ export default function ForgotPasswordPage() {
             </>
           ) : (
             <>
-              <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '22px', fontWeight: 400, color: 'var(--ink)', marginBottom: '8px' }}>
+              <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '22px', fontWeight: 300, color: 'var(--ink)', marginBottom: '8px' }}>
                 Forgot your password?
               </h2>
               <p style={{ fontSize: '14px', color: 'var(--ink-mid)', lineHeight: 1.6, marginBottom: '24px' }}>

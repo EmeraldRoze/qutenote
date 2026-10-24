@@ -68,7 +68,7 @@ export default function SettingsPage() {
           }}>
             <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 5l-7 7 7 7" /></svg>
           </button>
-          <h1 style={{ margin: 0, fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: '26px', letterSpacing: '-0.02em', color: 'var(--ink)' }}>Settings</h1>
+          <h1 style={{ margin: 0, fontFamily: 'var(--font-display)', fontWeight: 300, fontSize: '26px', letterSpacing: '-0.02em', color: 'var(--ink)' }}>Settings</h1>
         </div>
       </div>
 

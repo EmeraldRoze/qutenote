@@ -38,7 +38,7 @@ export default function AdminAnalyticsPage() {
   if (!user?.isAdmin) return <p style={{ padding: 40, fontFamily: 'var(--font-body)' }}>Admins only.</p>
 
   const card: React.CSSProperties = { background: 'var(--card)', border: '1.5px solid var(--stone)', borderRadius: '16px', padding: '16px', marginTop: '14px' }
-  const h2: React.CSSProperties = { margin: '0 0 10px', fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: '18px', color: 'var(--ink)' }
+  const h2: React.CSSProperties = { margin: '0 0 10px', fontFamily: 'var(--font-display)', fontWeight: 300, fontSize: '18px', color: 'var(--ink)' }
   const small: React.CSSProperties = { fontFamily: 'var(--font-body)', fontSize: '12px', color: 'var(--ink-mid)' }
 
   const funnel = (title: string, key: string, steps: string[]) => {
@@ -70,7 +70,7 @@ export default function AdminAnalyticsPage() {
     <div style={{ minHeight: '100vh', maxWidth: '560px', margin: '0 auto', padding: '20px 20px 60px' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
         <button onClick={() => navigate(-1)} aria-label="Back" style={{ width: '44px', height: '44px', borderRadius: '50%', background: '#E3D5CC', border: 'none', cursor: 'pointer', color: '#4A2424' }}>←</button>
-        <h1 style={{ margin: 0, fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: '24px', color: 'var(--ink)' }}>Usability</h1>
+        <h1 style={{ margin: 0, fontFamily: 'var(--font-display)', fontWeight: 300, fontSize: '24px', color: 'var(--ink)' }}>Usability</h1>
         <div style={{ marginLeft: 'auto', display: 'flex', gap: '6px' }}>
           {[7, 30].map((d) => (
             <button key={d} onClick={() => setDays(d)} style={{

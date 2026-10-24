@@ -67,7 +67,7 @@ export default function SignupAddressPage() {
           </div>
           <div style={{ marginTop: '14px', display: 'flex', alignItems: 'center', gap: '12px' }}>
             <h1 style={{
-              margin: 0, flex: 1, minWidth: 0, fontFamily: 'var(--font-display)', fontWeight: 400,
+              margin: 0, flex: 1, minWidth: 0, fontFamily: 'var(--font-display)', fontWeight: 300,
               fontSize: '26px', lineHeight: 1.12, letterSpacing: '-0.02em',
             }}>
               Where do <br />they go?

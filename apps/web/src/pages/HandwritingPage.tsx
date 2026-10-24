@@ -217,7 +217,7 @@ function WordFlow({ session, onSaved, glyphs }: {
       <p style={{ fontFamily: 'var(--font-body)', fontSize: '12px', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--ink-mid)', margin: 0 }}>
         {session.label} · {index + 1} of {session.words.length}
       </p>
-      <h1 style={{ fontFamily: 'var(--font-display)', fontSize: isSingleMark ? '56px' : '44px', fontWeight: 400, color: 'var(--ink)', margin: '6px 0 2px' }}>
+      <h1 style={{ fontFamily: 'var(--font-display)', fontSize: isSingleMark ? '56px' : '44px', fontWeight: 300, color: 'var(--ink)', margin: '6px 0 2px' }}>
         {word}
       </h1>
       <p style={{ fontFamily: 'var(--font-body)', fontSize: '14px', color: 'var(--ink-mid)', margin: '0 0 14px' }}>
@@ -307,7 +307,7 @@ function FixLetter({ char, glyphs, onSaved, onClose }: {
   return (
     <div style={{ position: 'fixed', inset: 0, zIndex: 100, background: 'rgba(74,36,36,0.45)', display: 'flex', alignItems: 'flex-end' }} onClick={onClose}>
       <div style={{ width: '100%', background: 'var(--cream)', borderRadius: '16px 16px 0 0', padding: '22px 22px calc(26px + env(safe-area-inset-bottom))', textAlign: 'center' }} onClick={(e) => e.stopPropagation()}>
-        <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '40px', fontWeight: 400, margin: 0 }}>{char}</h2>
+        <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '40px', fontWeight: 300, margin: 0 }}>{char}</h2>
         <p style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--ink-mid)', margin: '0 0 12px' }}>{charName(sessionKey, char)} — redo just this one</p>
         <canvas
           ref={canvasRef}
@@ -388,7 +388,7 @@ export default function HandwritingPage() {
       }}>
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M15 6l-6 6 6 6" /></svg>
       </button>
-      <span style={{ fontFamily: 'var(--font-display)', fontSize: '18px', fontWeight: 400, color: 'var(--ink)' }}>Your handwriting</span>
+      <span style={{ fontFamily: 'var(--font-display)', fontSize: '18px', fontWeight: 300, color: 'var(--ink)' }}>Your handwriting</span>
     </nav>
   )
 
@@ -413,7 +413,7 @@ export default function HandwritingPage() {
           }}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M15 6l-6 6 6 6" /></svg>
           </button>
-          <span style={{ fontFamily: 'var(--font-display)', fontSize: '18px', fontWeight: 400, color: 'var(--ink)' }}>Rewrite "{redoWord}"</span>
+          <span style={{ fontFamily: 'var(--font-display)', fontSize: '18px', fontWeight: 300, color: 'var(--ink)' }}>Rewrite "{redoWord}"</span>
         </nav>
         <WordFlow
           key={`redo-${redoWord}`}
@@ -473,7 +473,7 @@ export default function HandwritingPage() {
         {/* See every captured word in the real font; tap one to rewrite it */}
         {writtenChars.length > 0 && (
           <div style={{ marginTop: '26px' }}>
-            <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '18px', fontWeight: 400, color: 'var(--ink)', margin: '0 0 4px' }}>Your words</h2>
+            <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '18px', fontWeight: 300, color: 'var(--ink)', margin: '0 0 4px' }}>Your words</h2>
             <p style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--ink-mid)', margin: '0 0 12px' }}>
               This is how each word came out. Tap one to rewrite it.
             </p>
@@ -494,7 +494,7 @@ export default function HandwritingPage() {
         {/* Touch-up: redo any single letter */}
         {writtenChars.length > 0 && (
           <div style={{ marginTop: '26px' }}>
-            <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '18px', fontWeight: 400, color: 'var(--ink)', margin: '0 0 4px' }}>Fix one letter</h2>
+            <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '18px', fontWeight: 300, color: 'var(--ink)', margin: '0 0 4px' }}>Fix one letter</h2>
             <p style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--ink-mid)', margin: '0 0 12px' }}>
               One came out funky? Tap it and redo just that one.
             </p>

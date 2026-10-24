@@ -29,7 +29,7 @@ export default function WelcomePage() {
 
       <div style={{ ...col, flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
         <h1 style={{
-          margin: 0, fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: '50px',
+          margin: 0, fontFamily: 'var(--font-display)', fontWeight: 300, fontSize: '50px',
           lineHeight: 1.04, letterSpacing: '-0.03em', color: 'var(--ink)',
           display: 'flex', flexDirection: 'column', gap: '6px',
         }}>

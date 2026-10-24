@@ -67,7 +67,7 @@ export default function CardScanPage() {
       <div style={{ minHeight: '100vh', boxSizing: 'border-box', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px' }}>
         <div style={{ maxWidth: '400px', width: '100%', textAlign: 'center' }}>
           <QEmoji name="envelope" size={72} />
-          <h1 style={{ fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: '28px', letterSpacing: '-0.02em', color: 'var(--ink)', margin: '18px 0 8px' }}>
+          <h1 style={{ fontFamily: 'var(--font-display)', fontWeight: 300, fontSize: '28px', letterSpacing: '-0.02em', color: 'var(--ink)', margin: '18px 0 8px' }}>
             Someone mailed you a real one.
           </h1>
           <p style={{ fontFamily: 'var(--font-body)', fontSize: '15px', color: 'var(--ink-mid)', margin: '0 0 24px' }}>
@@ -139,7 +139,7 @@ export default function CardScanPage() {
     <div style={{ minHeight: '100vh', paddingBottom: '120px' }}>
       <div className="title-band" style={{ height: '144px', boxSizing: 'border-box' }}>
         <div style={{ maxWidth: '480px', width: '100%', margin: '0 auto', boxSizing: 'border-box', padding: '20px 20px 0' }}>
-          <h1 style={{ margin: 0, fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: '28px', letterSpacing: '-0.02em', color: 'var(--ink)' }}>
+          <h1 style={{ margin: 0, fontFamily: 'var(--font-display)', fontWeight: 300, fontSize: '28px', letterSpacing: '-0.02em', color: 'var(--ink)' }}>
             {card.isOwn ? 'Your card, in the flesh.' : 'You got a real one.'}
           </h1>
           <p style={{ margin: '8px 0 0', fontFamily: 'var(--font-body)', fontSize: '15px', color: 'var(--ink-mid)' }}>

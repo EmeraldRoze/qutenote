@@ -218,7 +218,7 @@ export default function SendFlow() {
       {step === 'card' && (
         <>
           <Band height={144}>
-            <h1 style={{ margin: 0, fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: '30px', letterSpacing: '-0.02em', color: 'var(--ink)' }}>Send a little somethin'</h1>
+            <h1 style={{ margin: 0, fontFamily: 'var(--font-display)', fontWeight: 300, fontSize: '30px', letterSpacing: '-0.02em', color: 'var(--ink)' }}>Send a little somethin'</h1>
           </Band>
           <div style={content}>
             {drafts.length > 0 && (
@@ -259,7 +259,7 @@ export default function SendFlow() {
           <Band height={180}>
             <StepRow onBack={() => backFrom('recipient')} stepIndex={stepIndex} stepCount={STEP_COUNT} />
             <div style={{ marginTop: '14px', display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <h1 style={{ margin: 0, flex: 1, minWidth: 0, fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: '26px', lineHeight: 1.12, letterSpacing: '-0.02em', color: 'var(--ink)' }}>Who's it for?</h1>
+              <h1 style={{ margin: 0, flex: 1, minWidth: 0, fontFamily: 'var(--font-display)', fontWeight: 300, fontSize: '26px', lineHeight: 1.12, letterSpacing: '-0.02em', color: 'var(--ink)' }}>Who's it for?</h1>
               <QEmoji name="bff" size={56} style={{ flex: 'none', transform: 'rotate(4deg)', height: 'auto' }} />
             </div>
           </Band>
@@ -284,7 +284,7 @@ export default function SendFlow() {
                 <QEmoji name="heart-sparkle" size={42} style={{ flex: 'none' }} />
                 <span style={{ fontSize: '13px', fontFamily: 'var(--font-body)', color: 'var(--ink)' }}>To:&nbsp;<span style={{ fontSize: '16px', fontWeight: 700, color: 'var(--ink)' }}>{note.recipientName}</span></span>
               </div>
-              <h1 style={{ margin: '14px 0 0', paddingRight: '90px', fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: '28px', lineHeight: 1.1, letterSpacing: '-0.02em', color: 'var(--ink)' }}>Say the thing.</h1>
+              <h1 style={{ margin: '14px 0 0', paddingRight: '90px', fontFamily: 'var(--font-display)', fontWeight: 300, fontSize: '28px', lineHeight: 1.1, letterSpacing: '-0.02em', color: 'var(--ink)' }}>Say the thing.</h1>
               <p style={{ margin: '6px 0 0', paddingRight: '90px', fontSize: '15px', fontFamily: 'var(--font-body)', color: 'var(--ink)' }}>Put it in writing, QT</p>
               <QEmoji name="pen" size={92} style={{ position: 'absolute', right: 0, top: '8px', height: 'auto' }} />
             </div>
@@ -301,7 +301,7 @@ export default function SendFlow() {
           <Band height={180}>
             <StepRow onBack={() => backFrom('review')} stepIndex={stepIndex} stepCount={STEP_COUNT} />
             <div style={{ marginTop: '14px', display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <h1 style={{ margin: 0, flex: 1, minWidth: 0, fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: '26px', lineHeight: 1.12, letterSpacing: '-0.02em', color: 'var(--ink)' }}>Looking good, QT.</h1>
+              <h1 style={{ margin: 0, flex: 1, minWidth: 0, fontFamily: 'var(--font-display)', fontWeight: 300, fontSize: '26px', lineHeight: 1.12, letterSpacing: '-0.02em', color: 'var(--ink)' }}>Looking good, QT.</h1>
               <QEmoji name="mailbox" size={60} style={{ flex: 'none', transform: 'rotate(5deg)', height: 'auto' }} />
             </div>
           </Band>
@@ -332,7 +332,7 @@ export default function SendFlow() {
       {step === 'sent' && (
         <div style={{ ...content, textAlign: 'center', paddingTop: '90px' }}>
           <QEmoji name="mailbox" size={72} />
-          <h2 style={{ fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: '27px', letterSpacing: '-0.02em', color: 'var(--ink)', margin: '20px 0 10px' }}>It's on its way.</h2>
+          <h2 style={{ fontFamily: 'var(--font-display)', fontWeight: 300, fontSize: '27px', letterSpacing: '-0.02em', color: 'var(--ink)', margin: '20px 0 10px' }}>It's on its way.</h2>
           <p style={{ fontSize: '15px', fontFamily: 'var(--font-body)', color: 'var(--ink-mid)', marginBottom: '8px' }}>
             {note.recipientName?.split(' ')[0]} gets a real postcard in 3 to 5 business days.
           </p>
@@ -519,7 +519,7 @@ function CardPicker({ note, update, onWrite }: {
       )}
 
       {/* Artist list */}
-      <h2 style={{ margin: '30px 0 4px', fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: '20px', color: 'var(--ink)' }}>October artists</h2>
+      <h2 style={{ margin: '30px 0 4px', fontFamily: 'var(--font-display)', fontWeight: 300, fontSize: '20px', color: 'var(--ink)' }}>October artists</h2>
       <p style={{ margin: '0 0 14px', fontSize: '15px', fontFamily: 'var(--font-body)', color: 'var(--ink)' }}>5 artists, 3 cards each.<br /><br />New ones every month :)</p>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -760,7 +760,7 @@ function WriteStep({ note, update, onNext }: {
       </div>
 
       {/* Pick your pen */}
-      <h2 style={{ margin: '22px 0 0', fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: '18px', color: 'var(--ink)' }}>Pick your pen</h2>
+      <h2 style={{ margin: '22px 0 0', fontFamily: 'var(--font-display)', fontWeight: 300, fontSize: '18px', color: 'var(--ink)' }}>Pick your pen</h2>
       {!hasHandwriting && (
         <a href="/handwriting" style={{ display: 'block', fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--stamp-center)', margin: '6px 0 0', textDecoration: 'underline' }}>Teach QuteNote your own handwriting →</a>
       )}

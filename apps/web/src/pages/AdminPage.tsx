@@ -89,7 +89,7 @@ export default function AdminPage() {
         alignItems: 'center',
         justifyContent: 'space-between',
       }}>
-        <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '24px', fontWeight: 600, color: 'var(--lavender-deep)' }}>
+        <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '24px', fontWeight: 300, color: 'var(--lavender-deep)' }}>
           QuteNote Admin
         </h1>
       <button onClick={() => (window.location.href = '/admin/analytics')} style={{
@@ -248,7 +248,7 @@ export default function AdminPage() {
         {/* Launch list */}
         <div style={{ marginTop: '48px' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
-            <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '20px', fontWeight: 400, color: 'var(--ink)' }}>
+            <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '20px', fontWeight: 300, color: 'var(--ink)' }}>
               Launch list ({signups.length})
             </h2>
             <button

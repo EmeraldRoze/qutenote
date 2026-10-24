@@ -16,7 +16,7 @@ export default function QRCodeSheet({ username, onClose }: { username: string; o
   return (
     <div style={{ position: 'fixed', inset: 0, zIndex: 100, background: 'rgba(74,36,36,0.45)', display: 'flex', alignItems: 'flex-end' }} onClick={onClose}>
       <div style={{ width: '100%', background: 'var(--cream)', borderRadius: '16px 16px 0 0', padding: '24px 24px calc(24px + env(safe-area-inset-bottom))', textAlign: 'center' }} onClick={(e) => e.stopPropagation()}>
-        <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '20px', fontWeight: 400, marginBottom: '10px', color: 'var(--ink)' }}>Add in person</h2>
+        <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '20px', fontWeight: 300, marginBottom: '10px', color: 'var(--ink)' }}>Add in person</h2>
         <p style={{ fontFamily: 'var(--font-body)', fontSize: '14px', color: 'var(--ink-mid)', marginBottom: '16px' }}>
           Have them scan this with their camera.
         </p>

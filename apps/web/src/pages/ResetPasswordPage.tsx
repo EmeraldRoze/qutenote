@@ -36,7 +36,7 @@ export default function ResetPasswordPage() {
     return (
       <div className="min-h-screen flex items-center justify-center px-4" style={{ background: 'var(--cream)' }}>
         <div className="w-full max-w-md text-center">
-          <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '24px', fontWeight: 400, color: 'var(--ink)', marginBottom: '12px' }}>
+          <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '24px', fontWeight: 300, color: 'var(--ink)', marginBottom: '12px' }}>
             Invalid reset link
           </h1>
           <p style={{ fontSize: '14px', color: 'var(--ink-mid)', marginBottom: '24px' }}>
@@ -68,7 +68,7 @@ export default function ResetPasswordPage() {
           {done ? (
             <>
               <div style={{ textAlign: 'center', marginBottom: '16px' }}><QEmoji name="popper" size={44} /></div>
-              <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '22px', fontWeight: 400, color: 'var(--ink)', marginBottom: '12px', textAlign: 'center' }}>
+              <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '22px', fontWeight: 300, color: 'var(--ink)', marginBottom: '12px', textAlign: 'center' }}>
                 Password updated!
               </h2>
               <p style={{ fontSize: '14px', color: 'var(--ink-mid)', lineHeight: 1.6, textAlign: 'center', marginBottom: '24px' }}>
@@ -89,7 +89,7 @@ export default function ResetPasswordPage() {
             </>
           ) : (
             <>
-              <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '22px', fontWeight: 400, color: 'var(--ink)', marginBottom: '8px' }}>
+              <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '22px', fontWeight: 300, color: 'var(--ink)', marginBottom: '8px' }}>
                 Set a new password
               </h2>
               <p style={{ fontSize: '14px', color: 'var(--ink-mid)', lineHeight: 1.6, marginBottom: '24px' }}>

@@ -119,7 +119,7 @@ export default function VoiceNoteSheet({ onDone, onClose }: {
     <div style={{ position: 'fixed', inset: 0, zIndex: 100, background: 'rgba(74,36,36,0.45)', display: 'flex', alignItems: 'flex-end' }} onClick={() => { cleanup(); onClose() }}>
       <div style={{ width: '100%', background: 'var(--cream)', borderTop: '2px solid var(--outline)', borderRadius: '16px 16px 0 0', padding: '24px 24px calc(28px + env(safe-area-inset-bottom))' }} onClick={(e) => e.stopPropagation()}>
         <div style={{ maxWidth: '480px', margin: '0 auto', textAlign: 'center' }}>
-          <h2 style={{ fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: '22px', color: 'var(--ink)', margin: '0 0 6px' }}>
+          <h2 style={{ fontFamily: 'var(--font-display)', fontWeight: 300, fontSize: '22px', color: 'var(--ink)', margin: '0 0 6px' }}>
             {phase === 'recorded' ? 'How does it sound?' : 'Say it out loud'}
           </h2>
           <p style={{ fontFamily: 'var(--font-body)', fontSize: '14px', color: 'var(--ink-mid)', margin: '0 0 20px' }}>
