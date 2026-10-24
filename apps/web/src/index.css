@@ -137,6 +137,18 @@ body::before {
   border: 1.5px solid var(--outline);
 }
 
+/* Living ombre (Emerald, Oct 24): the gradient slowly breathes across the
+   card like Venmo's, pink drifting up and settling back. Pure CSS, silky
+   smooth, off under reduced motion. Pair with a background-image whose
+   SECOND layer is the gradient (first layer stays the paper grain). */
+@media (prefers-reduced-motion: no-preference){
+  .ombre-live{ background-size: auto, 100% 240%; animation: qn-ombre 8s ease-in-out infinite; }
+  @keyframes qn-ombre{
+    0%, 100%{ background-position: 0 0, 50% 0%; }
+    50%{ background-position: 0 0, 50% 100%; }
+  }
+}
+
 /* Inactive tab icons: tinted warm brown, never gray */
 .tab-inactive {
   filter: grayscale(1) sepia(0.35) hue-rotate(-20deg) saturate(0.9);
