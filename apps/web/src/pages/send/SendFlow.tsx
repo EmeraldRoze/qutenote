@@ -510,7 +510,7 @@ function CardPicker({ note, update, onWrite }: {
           fontFamily: 'var(--font-body)', fontSize: '15px', fontWeight: 700, letterSpacing: '0.08em',
           color: 'var(--stamp-center)', cursor: 'pointer',
         }}>
-          <QEmoji name="camera" size={64} style={{ height: 'auto' }} />
+          <QEmoji name="camera" size={54} style={{ height: '54px', width: 'auto', objectFit: 'contain' }} />
           {uploading ? 'UPLOADING…' : 'UPLOAD YOUR OWN PHOTO'}
         </button>
       )}

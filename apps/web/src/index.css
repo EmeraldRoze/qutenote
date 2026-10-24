@@ -113,15 +113,23 @@ body::before {
   justify-content: center;
 }
 
-/* Perforated postage-stamp box (palette 4): one continuous perforated rosy
-   brown edge, a strip of paper inside it, a thin inner frame, light blue
-   inside. From the design package's .qn-stamp CSS (masked pseudo-elements,
-   not tiled images, so the edge never shows hairline gaps). Give the element
-   `border: 10px solid transparent; background: transparent`. */
-.qn-stamp{position:relative;isolation:isolate;border-radius:0 !important;outline:none !important;box-shadow:none !important;background:transparent !important}
-.qn-stamp::before,.qn-stamp::after{content:'';position:absolute;inset:-10px;pointer-events:none}
-.qn-stamp::before{z-index:-2;background:#B4897A;-webkit-mask:linear-gradient(#000 0 0) 50% 50%/calc(100% - 6px) calc(100% - 6px) no-repeat,radial-gradient(circle at 50% 50%,#0000 2.7px,#000 3.2px) -5px -5px/10px 10px round;mask:linear-gradient(#000 0 0) 50% 50%/calc(100% - 6px) calc(100% - 6px) no-repeat,radial-gradient(circle at 50% 50%,#0000 2.7px,#000 3.2px) -5px -5px/10px 10px round}
-.qn-stamp::after{z-index:-1;background:linear-gradient(#E9EDF1,#E9EDF1) 50% 50%/calc(100% - 17px) calc(100% - 17px) no-repeat,linear-gradient(#B4897A,#B4897A) 50% 50%/calc(100% - 15px) calc(100% - 15px) no-repeat,#F1EBE3;-webkit-mask:linear-gradient(#000 0 0) 50% 50%/calc(100% - 9px) calc(100% - 9px) no-repeat,radial-gradient(circle at 50% 50%,#0000 4px,#000 4.5px) -5px -5px/10px 10px round,linear-gradient(#000 0 0) 50% 50%/calc(100% - 2.6px) calc(100% - 2.6px) no-repeat;-webkit-mask-composite:source-over,source-in;mask:linear-gradient(#000 0 0) 50% 50%/calc(100% - 9px) calc(100% - 9px) no-repeat,radial-gradient(circle at 50% 50%,#0000 4px,#000 4.5px) -5px -5px/10px 10px round,linear-gradient(#000 0 0) 50% 50%/calc(100% - 2.6px) calc(100% - 2.6px) no-repeat;mask-composite:add,intersect}
+/* Photorealistic die-cut stamp box (Emerald, Oct 24): real textured
+   cardstock punched with perforations, a shadow following every scallop,
+   and the printed light blue panel inset into the paper. Same contract as
+   before: give the element `border: 10px solid transparent; background:
+   transparent`. The drop-shadow lives on the element so it wraps the
+   masked pseudo's scalloped silhouette. */
+.qn-stamp{position:relative;isolation:isolate;border-radius:0 !important;outline:none !important;box-shadow:none !important;background:transparent !important;filter:drop-shadow(0 1.5px 1.5px rgba(74,36,36,.33)) drop-shadow(0 6px 12px rgba(74,36,36,.15))}
+.qn-stamp::before{content:none}
+.qn-stamp::after{content:'';position:absolute;inset:-10px;z-index:-1;pointer-events:none;
+  background:
+    linear-gradient(#E9EDF1,#E9EDF1) 50% 50%/calc(100% - 24px) calc(100% - 24px) no-repeat,
+    linear-gradient(rgba(74,36,36,.3),rgba(74,36,36,.3)) 50% 50%/calc(100% - 22px) calc(100% - 22px) no-repeat,
+    url('/brand/paper_texture.png'),
+    linear-gradient(145deg, #F6EFE0 0%, #EFE5D0 55%, #E9DCC4 100%);
+  -webkit-mask:linear-gradient(#000 0 0) 50% 50%/calc(100% - 13px) calc(100% - 13px) no-repeat,radial-gradient(circle at 50% 50%,#0000 4.4px,#000 4.8px) -7px -7px/14px 14px round;
+  mask:linear-gradient(#000 0 0) 50% 50%/calc(100% - 13px) calc(100% - 13px) no-repeat,radial-gradient(circle at 50% 50%,#0000 4.4px,#000 4.8px) -7px -7px/14px 14px round;
+  -webkit-mask-composite:source-over;mask-composite:add}
 
 /* The Rose paper ombre (Home carousel + Dates empty state) */
 .rose-paper {
