@@ -65,7 +65,7 @@ header{ position:sticky; top:env(safe-area-inset-top,0px); z-index:50; backgroun
 .f-cake{ left:0; top:2%; width:21%; transform:translateY(calc(var(--p,0) * -150px)) rotate(calc(-10deg + var(--p,0) * -14deg)); }
 .f-pop{ right:2%; top:0; width:20%; transform:translate(calc(var(--p,0) * 40px), calc(var(--p,0) * -230px)) rotate(calc(8deg + var(--p,0) * 22deg)); }
 .f-cam{ right:0; bottom:6%; width:22%; transform:translateY(calc(var(--p,0) * -90px)) rotate(calc(-6deg + var(--p,0) * 8deg)); }
-.f-heart{ left:6%; bottom:0; width:16%; transform:translate(calc(var(--p,0) * -30px), calc(var(--p,0) * -300px)) rotate(calc(6deg + var(--p,0) * -18deg)); }
+.f-heart{ left:6%; bottom:0; width:20%; transform:translate(calc(var(--p,0) * -30px), calc(var(--p,0) * -300px)) rotate(calc(6deg + var(--p,0) * -18deg)); }
 .pill{ position:absolute; right:16%; top:22%; padding:6px 12px; border-radius:14px; background:var(--lime); font-weight:700; font-size:12px; letter-spacing:.12em; box-shadow:0 4px 10px rgba(74,36,36,.12);
   transform:rotate(6deg) scale(0); transition:transform .45s cubic-bezier(.34,1.8,.5,1); }
 .pill.on{ transform:rotate(6deg) scale(1); }
@@ -306,7 +306,7 @@ footer .fl{ height:30px; width:auto; display:block; }
   .f-cake{ left:1%; top:calc(50% - 52cqw); width:23%; }
   .f-pop{ right:5%; top:calc(50% - 45cqw); width:22%; z-index:2; }
   .f-cam{ right:0; top:calc(50% + 20cqw); width:25%; }
-  .f-heart{ left:1% !important; top:calc(50% + 24cqw) !important; bottom:auto !important; width:18% !important; }
+  .f-heart{ left:1% !important; top:calc(50% + 24cqw) !important; bottom:auto !important; width:22.5% !important; }
   .pill{ display:none; }
   .card.front{ --L:6.9cqw; padding:6cqw 6cqw; gap:3.5cqw; background-image:repeating-linear-gradient(transparent 0, transparent calc(var(--L) - 1px), var(--lav-line) calc(var(--L) - 1px), var(--lav-line) var(--L)) !important; background-origin:content-box; }
   .front .msg{ font-size:4cqw !important; line-height:var(--L) !important; gap:0 !important; }
