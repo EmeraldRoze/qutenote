@@ -1,6 +1,11 @@
 # QuteNote — Handoff / Status Board
 Written: 2026-10-06 (replaces stale April 10 handoff). Last updated: 2026-10-23 (evening).
 
+## WAITLIST ROUND 3 + BUILD 51 Oct 23 ~8:30-9pm (FIREFLYs)
+- Waitlist corrections: How-it-works progress .bar now var(--rule) (ruled-paper color, transparent track); .addq baby blue; floating .send-stamp = perforated edge + cream margin + blue face + oxblood SEND. LANDMINE: `.send-stamp span{}` styled the inner .ph holder too (the "white box" bug) — scope stamp-face rules with `>` and reset .ph.
+- $0 → $FREE on the Free Profile card; heart hands CTA emoji doubled (96→192px).
+- UNBOUNDED LIGHT (300) EVERYWHERE, her call: waitlist (13 rules + 2 implicit), app (30 files swept: any line with var(--font-display) and fontWeight 400/600 → 300; global h1-3 rule; Google Fonts link now wght@300 only). Shipped as BUILD 51 (FIREFLY) + website deploy. Wax letter images replaced initials so the 600 weight is retired.
+
 ## WAITLIST ROUND 2 Oct 23 ~8-9pm (FIREFLY) — website only
 Shipped: her sealed-envelope art replaces emoji-envelope.webp; pricing $8.95→$16.95/mo; FAQ reworked (new opener "So I get an actual postcard in my actual mailbox?" answered "Yes.", how-do-you-send now 2nd, not-on-QuteNote answer = "Invite them! They need a free profile to receive mail.", launch = "Valentine's Day 2027!", the Qute Note SEO question REMOVED on her ask — alternateName + footer SEO hooks remain); JSON-LD FAQPage mirrors it. Demo: ghosts are now ABSOLUTE slots (top 96/192/288/384, 80px, r18) and .notif matches exactly = lock-and-key; postmark-waves.webp TRIMMED (had transparent padding that broke positioning) and .ph squiggles sit on the heart's right third (left:9px of 26px heart, empirically tuned); QTs demo initials circles → her wax letter hearts (assets/wax-m/j/r.webp); "Right on time." on its own line; pen replaces star on the words-won't-come tile; her new party-face art in emoji-party-popper.webp; band floaties replaced by a MIRRORED megaphone (scaleX(-1), right of text); heart-hands art replaces bunnies at the CTA (emoji-heart-hands.webp).
 - NOTE: launch date Valentine's Day 2027 is her first stated launch target. Launch prep list: App Store review (not TestFlight), website login links restored, full-size artist files, Recoleta license.
