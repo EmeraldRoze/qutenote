@@ -155,16 +155,20 @@ body::before {
    card like Venmo's, pink drifting up and settling back. Pure CSS, silky
    smooth, off under reduced motion. Pair with a background-image whose
    SECOND layer is the gradient (first layer stays the paper grain). */
+/* Emerald, Oct 24 (take three): the colors drift DIAGONALLY, top-left corner
+   to bottom-right. The colors live on an oversized layer behind the card
+   (--qn-ombre, a repeating gradient on the 145deg axis) that slides by exactly
+   one color period — 320px along that axis, which is 184px across and 262px
+   down — so the loop is seamless and the card always shows both colors. The
+   paper grain rides on its own still layer on top, so only color moves. */
+.ombre-live{ position: relative; overflow: hidden; isolation: isolate; background-image: none; }
+.ombre-live::before{ content:''; position:absolute; inset:-100%; z-index:-1; background-image: var(--qn-ombre); }
+.ombre-live::after{ content:''; position:absolute; inset:0; z-index:-1; pointer-events:none; background-image:url('/brand/paper_texture.png'); }
 @media (prefers-reduced-motion: no-preference){
-  /* Emerald, Oct 24 (take two): the colors travel again, but TIGHT. The
-     gradient layer holds two full color cycles and is twice the card wide, so
-     the card always shows exactly one cycle — both colors on screen at every
-     moment, never a stretch of solid. Sliding one card width = exactly one
-     cycle, so the loop has no seam. */
-  .ombre-live{ background-size: auto, auto, 200% 100%; animation: qn-ombre 9s linear infinite; }
+  .ombre-live::before{ animation: qn-ombre 10s linear infinite; }
   @keyframes qn-ombre{
-    0%{ background-position: 0 0, 0 0, 0% 50%; }
-    100%{ background-position: 0 0, 0 0, 100% 50%; }
+    from{ transform: translate(0, 0); }
+    to{ transform: translate(184px, 262px); }
   }
 }
 

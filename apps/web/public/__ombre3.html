@@ -1,0 +1,27 @@
+<!doctype html>
+<meta charset="utf-8">
+<link rel="stylesheet" href="/src/index.css">
+<style>
+  body{margin:0;background:#F1EBE3;padding:14px;display:flex;gap:10px;flex-wrap:wrap}
+  .card{width:300px;height:200px;border-radius:26px;box-sizing:border-box;padding:14px;
+    display:flex;align-items:flex-end;font-family:ui-monospace,Menlo,monospace;font-size:14px;color:#4A2424}
+</style>
+<script>
+const SHEEN = 'linear-gradient(145deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.1) 28%, rgba(255,255,255,0.52) 50%, rgba(255,255,255,0.1) 72%, rgba(255,255,255,0) 100%)'
+const LEMON = SHEEN + ', repeating-linear-gradient(145deg, #EEFC4E 0px, #D9EDB3 80px, #BADAFF 160px, #D9EDB3 240px, #EEFC4E 320px)'
+const LAV = SHEEN + ', repeating-linear-gradient(145deg, #AE8FD1 0px, #D6C7DF 80px, #EFE7E0 160px, #D6C7DF 240px, #AE8FD1 320px)'
+const APR = SHEEN + ', repeating-linear-gradient(145deg, #D88F73 0px, #E6DBD3 80px, #BADAFF 160px, #E6DBD3 240px, #D88F73 320px)'
+const NOSHEEN = 'repeating-linear-gradient(145deg, #EEFC4E 0px, #D9EDB3 80px, #BADAFF 160px, #D9EDB3 240px, #EEFC4E 320px)'
+addEventListener('DOMContentLoaded', () => {
+  const rows = [['t=0s', LEMON, 0], ['t=2.5s', LEMON, -2.5], ['t=5s', LEMON, -5], ['t=7.5s', LEMON, -7.5],
+                ['lavender', LAV, -3], ['apricot', APR, -6], ['lemon, no sheen', NOSHEEN, -2.5]]
+  document.body.innerHTML = rows.map(([label, bg, d]) =>
+    `<div class="card rose-paper ombre-live" style="--qn-ombre:${bg}">${label}</div>`).join('')
+  document.querySelectorAll('.card').forEach((el, i) => {
+    el.style.setProperty('--d', rows[i][2] + 's')
+  })
+  const st = document.createElement('style')
+  st.textContent = '.ombre-live::before{animation-delay:var(--d)}'
+  document.head.appendChild(st)
+})
+</script>

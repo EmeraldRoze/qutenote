@@ -22,6 +22,8 @@ interface Connection {
   avatarUrl: string | null
   hasAddress: boolean
   connectedAt: string
+  birthdayMonth?: number | null
+  birthdayDay?: number | null
 }
 interface SearchResult { id: string; username: string; displayName: string; avatarUrl: string | null }
 interface PendingRequest { id: string; username: string; displayName: string; avatarUrl: string | null; requestId: string }
@@ -138,16 +140,19 @@ export default function ConnectionsPage() {
     return (name: string) => map.get(name.toLowerCase())
   }, [dates])
 
+  // A QT's countdown: their own birthday from their profile, otherwise an
+  // Important date saved under their name (Emerald, Oct 24).
+  const birthdayDays = (c: Connection): number => {
+    if (c.birthdayMonth && c.birthdayDay) return daysUntil(c.birthdayMonth, c.birthdayDay)
+    const d = dateFor(c.displayName)
+    return d ? daysUntil(d.month, d.day) : Infinity
+  }
+
   const shownConnections = useMemo(() => {
     const list = query.length >= 2
       ? connections.filter((c) => c.displayName.toLowerCase().includes(query.toLowerCase()) || c.username.toLowerCase().includes(query.toLowerCase()))
       : connections
-    return [...list].sort((a, b) => {
-      const da = dateFor(a.displayName), db = dateFor(b.displayName)
-      const ra = da ? daysUntil(da.month, da.day) : Infinity
-      const rb = db ? daysUntil(db.month, db.day) : Infinity
-      return ra - rb
-    })
+    return [...list].sort((a, b) => birthdayDays(a) - birthdayDays(b))
   }, [connections, query, dateFor])
 
   // Contact matches worth suggesting: on QuteNote, not me, not already a QT.
@@ -301,12 +306,8 @@ export default function ConnectionsPage() {
           </div>
         )}
 
-        {/* Friends, sorted by whose birthday is next */}
-        {query.length < 2 && shownConnections.length > 0 && (
-          <p style={{ margin: '20px 0 0', fontFamily: 'var(--font-body)', fontSize: '15px', color: 'var(--ink)' }}>
-            Sorted by whose birthday is next.
-          </p>
-        )}
+        {/* Friends, still sorted by whose birthday is next — the caption that
+            said so is gone (Emerald, Oct 24) */}
 
         {loading ? (
           <p style={{ fontFamily: 'var(--font-body)', fontSize: '14px', color: 'var(--ink-muted)', padding: '20px 0' }}>Fetching your people…</p>
@@ -318,7 +319,9 @@ export default function ConnectionsPage() {
           <div style={{ ...listCard, marginTop: '10px' }}>
             {shownConnections.map((c, i) => {
               const d = dateFor(c.displayName)
-              const days = d ? daysUntil(d.month, d.day) : null
+              const bMonth = c.birthdayMonth ?? d?.month ?? null
+              const bDay = c.birthdayDay ?? d?.day ?? null
+              const days = bMonth && bDay ? daysUntil(bMonth, bDay) : null
               return (
                 <button key={c.id} onClick={() => navigate(`/profile/${c.username}`)} style={{
                   ...row(i === shownConnections.length - 1), width: '100%',
@@ -329,15 +332,15 @@ export default function ConnectionsPage() {
                   {avatar()}
                   <span style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '2px' }}>
                     <span style={{ fontFamily: 'var(--font-body)', fontSize: '16px', fontWeight: 700, color: 'var(--ink)' }}>{c.displayName}</span>
-                    <span style={{ fontFamily: 'var(--font-body)', fontSize: '14px', color: d ? 'var(--ink)' : 'var(--ink-mid)' }}>
-                      {d ? `${MONTHS[d.month - 1]} ${d.day}` : `@${c.username}`}
+                    <span style={{ fontFamily: 'var(--font-body)', fontSize: '14px', color: bMonth ? 'var(--ink)' : 'var(--ink-mid)' }}>
+                      {bMonth && bDay ? `${MONTHS[bMonth - 1]} ${bDay}` : `@${c.username}`}
                     </span>
                   </span>
                   {days !== null && (
                     <span style={{
                       fontSize: '13px', fontWeight: 700, fontFamily: 'var(--font-body)', color: 'var(--ink)',
                       borderRadius: '10px', padding: '3px 9px', whiteSpace: 'nowrap', flexShrink: 0,
-                      background: days <= 7 ? 'var(--highlight)' : 'var(--light-blush)',
+                      background: days <= 7 ? 'var(--highlight)' : 'var(--btn)',
                     }}>{countdownLabel(days)}</span>
                   )}
                 </button>

@@ -32,20 +32,20 @@ interface OfferCard {
 // The band of light that travels through a card's ombre (.ombre-live animates
 // this layer's position). The ombre underneath never moves — Emerald, Oct 24:
 // the card must read as a full ombre at every moment, never one solid color.
-const SHEEN = 'linear-gradient(105deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.1) 28%, rgba(255,255,255,0.52) 50%, rgba(255,255,255,0.1) 72%, rgba(255,255,255,0) 100%)'
+const SHEEN = 'linear-gradient(145deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.1) 28%, rgba(255,255,255,0.52) 50%, rgba(255,255,255,0.1) 72%, rgba(255,255,255,0) 100%)'
 const ALL_OFFER_CARDS: (OfferCard & { key: string })[] = [
-  { key: 'invite', art: 'bff-live', artWidth: 309, artBoxH: 224, ombre: `url(/brand/paper_texture.png), ${SHEEN}, linear-gradient(90deg, #EEFC4E 0%, #D9EDB3 12.5%, #BADAFF 25%, #D9EDB3 37.5%, #EEFC4E 50%, #D9EDB3 62.5%, #BADAFF 75%, #D9EDB3 87.5%, #EEFC4E 100%)`, title: 'Invite friends…\nGet free cards', cta: 'INVITE', onClick: (nav) => nav('/invite') },
-  { key: 'first-card', art: 'gift', artWidth: 165, ombre: `url(/brand/paper_texture.png), ${SHEEN}, linear-gradient(90deg, #AE8FD1 0%, #D6C7DF 12.5%, #EFE7E0 25%, #D6C7DF 37.5%, #AE8FD1 50%, #D6C7DF 62.5%, #EFE7E0 75%, #D6C7DF 87.5%, #AE8FD1 100%)`, title: 'Your first card is on us', cta: 'SEND A CARD', onClick: (nav) => nav('/send') },
+  { key: 'invite', art: 'bff-live', artWidth: 525, artBoxH: 253, ombre: `${SHEEN}, repeating-linear-gradient(145deg, #EEFC4E 0px, #D9EDB3 80px, #BADAFF 160px, #D9EDB3 240px, #EEFC4E 320px)`, title: 'Invite friends,\nget free cards.', cta: 'INVITE', onClick: (nav) => nav('/invite') },
+  { key: 'first-card', art: 'gift', artWidth: 165, ombre: `${SHEEN}, repeating-linear-gradient(145deg, #AE8FD1 0px, #D6C7DF 80px, #EFE7E0 160px, #D6C7DF 240px, #AE8FD1 320px)`, title: 'Your first card is on us', cta: 'SEND A CARD', onClick: (nav) => nav('/send') },
   // Mailbox wears her Lavender paper, camera wears her Apricot sky (Emerald,
   // Oct 24; colors sampled from her gradient files), each the full diagonal
   // spread of the art — it stays put while the sheen passes through it.
-  { key: 'alerts', art: 'mailbox', artWidth: 165, ombre: `url(/brand/paper_texture.png), ${SHEEN}, linear-gradient(90deg, #AE8FD1 0%, #D6C7DF 12.5%, #EFE7E0 25%, #D6C7DF 37.5%, #AE8FD1 50%, #D6C7DF 62.5%, #EFE7E0 75%, #D6C7DF 87.5%, #AE8FD1 100%)`, title: 'Know when something is in the mail', cta: 'TURN ON ALERTS', onClick: (nav) => nav('/settings/notifications') },
+  { key: 'alerts', art: 'mailbox', artWidth: 165, ombre: `${SHEEN}, repeating-linear-gradient(145deg, #AE8FD1 0px, #D6C7DF 80px, #EFE7E0 160px, #D6C7DF 240px, #AE8FD1 320px)`, title: 'Know when something is in the mail', cta: 'TURN ON ALERTS', onClick: (nav) => nav('/settings/notifications') },
   { key: 'handwriting', art: 'pen', artWidth: 150, title: 'Make it look like YOU wrote it', cta: 'TEACH YOUR HANDWRITING', onClick: (nav) => nav('/handwriting') },
   // Her Lavender dusk card (qutenote-home-dates-card package, Oct 24): slate
   // into dusty lavender into baby blue, a glossy streak and a soft bottom
   // shadow, no paper grain, and it does not drift like the others.
   { key: 'dates', art: 'cake', artWidth: 160, live: false, ombre: 'linear-gradient(118deg, rgba(255,255,255,0) 32%, rgba(255,255,255,0.22) 46%, rgba(255,255,255,0.05) 56%, rgba(255,255,255,0) 64%), linear-gradient(160deg, rgba(0,0,0,0) 70%, rgba(74,36,36,0.10) 100%), linear-gradient(155deg, #495F68 0%, #495F68 14%, #AE8FD1 50%, #BADAFF 86%, #BADAFF 100%)', title: 'Remember the important things', cta: 'ADD A DATE', onClick: (nav) => nav('/dates/add') },
-  { key: 'photo', art: 'camera', artWidth: 190, ombre: `url(/brand/paper_texture.png), ${SHEEN}, linear-gradient(90deg, #D88F73 0%, #E6DBD3 12.5%, #BADAFF 25%, #E6DBD3 37.5%, #D88F73 50%, #E6DBD3 62.5%, #BADAFF 75%, #E6DBD3 87.5%, #D88F73 100%)`, title: 'Got a good photo? Mail it.', cta: 'UPLOAD A PHOTO', onClick: (nav) => nav('/send') },
+  { key: 'photo', art: 'camera', artWidth: 190, ombre: `${SHEEN}, repeating-linear-gradient(145deg, #D88F73 0px, #E6DBD3 80px, #BADAFF 160px, #E6DBD3 240px, #D88F73 320px)`, title: 'Got a good photo? Mail it.', cta: 'UPLOAD A PHOTO', onClick: (nav) => nav('/send') },
 ]
 
 function OfferCarousel({ hasSentCard, hasHandwriting }: { hasSentCard: boolean; hasHandwriting: boolean }) {
@@ -82,7 +82,9 @@ function OfferCarousel({ hasSentCard, hasHandwriting }: { hasSentCard: boolean; 
             aria-label={c.key === 'invite' ? 'Invite friends, get free cards' : undefined}
             style={{
             ...(c.key === 'invite' ? { cursor: 'pointer' } : {}),
-            ...(c.ombre ? { backgroundImage: c.ombre } : {}),
+            ...(c.ombre ? (c.live === false
+              ? { backgroundImage: c.ombre }
+              : { ['--qn-ombre' as string]: c.ombre }) : {}),
             flex: '0 0 calc(100% - 32px)', height: '370px', scrollSnapAlign: 'start',
             position: 'relative', borderRadius: '26px', boxSizing: 'border-box',
             padding: '26px 22px 22px', display: 'flex', flexDirection: 'column',

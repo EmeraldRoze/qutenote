@@ -13,7 +13,7 @@ connectionsRouter.get('/', async (req: AuthRequest, res: Response) => {
     include: {
       following: {
         select: {
-          id: true, username: true, displayName: true, avatarUrl: true,
+          id: true, username: true, displayName: true, avatarUrl: true, birthday: true,
           address: { select: { id: true } },
         },
       },
@@ -28,6 +28,11 @@ connectionsRouter.get('/', async (req: AuthRequest, res: Response) => {
     avatarUrl: c.following.avatarUrl,
     hasAddress: !!c.following.address,
     connectedAt: c.createdAt,
+    // Day and month only — the QTs list counts down to their birthday and the
+    // year is nobody's business (Emerald, Oct 24: the countdown went missing
+    // for QTs whose birthday lives on their profile, not in Important dates).
+    birthdayMonth: c.following.birthday ? c.following.birthday.getUTCMonth() + 1 : null,
+    birthdayDay: c.following.birthday ? c.following.birthday.getUTCDate() : null,
   }))
 
   return res.json({ data })
