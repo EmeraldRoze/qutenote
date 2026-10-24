@@ -5,7 +5,7 @@ import { api } from './api'
 export async function inviteByText(_firstName?: string) {
   const r = await api.post('/invites', {})
   const link: string = r.data.data.link
-  const body = `I saved you a free postcard on QuteNote 💌 Claim it with my personal link: ${link}`
+  const body = `You've been invited to join QuteNote, where birthdays are celebrated, hard times are acknowledged, and little surprises find their way to your mailbox. 💌 ${link}`
   window.location.href = `sms:?&body=${encodeURIComponent(body)}`
   return link
 }

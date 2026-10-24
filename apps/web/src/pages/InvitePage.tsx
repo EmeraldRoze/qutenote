@@ -98,9 +98,6 @@ export default function InvitePage() {
         {/* Message preview + actions */}
         <div style={{ marginTop: '22px', borderRadius: '22px', background: 'var(--card)', border: '1.5px solid var(--stone)', boxShadow: '0 -4px 24px rgba(74,36,36,0.08), 0 4px 18px rgba(74,36,36,0.06)', padding: '18px 20px 24px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
           <div style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--ink-mid)' }}>Your text will look like this</div>
-          <div style={{ fontFamily: 'var(--font-body)', fontSize: '15px', lineHeight: 1.4, color: 'var(--ink)' }}>
-            I saved you a free postcard on QuteNote 💌 Claim it with my personal link:
-          </div>
           <img src="/brand/postmark_heart_stamp.png" alt="" style={{ width: '170px', alignSelf: 'flex-start' }} />
           <div style={{ fontFamily: 'var(--font-body)', fontSize: '14px', fontWeight: 700, lineHeight: 1.45, color: 'var(--ink)' }}>
             You've been invited to join QuteNote, where birthdays are celebrated, hard times are acknowledged, and little surprises find their way to your mailbox.
