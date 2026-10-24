@@ -1,6 +1,14 @@
 # QuteNote — Handoff / Status Board
 Written: 2026-10-06 (replaces stale April 10 handoff). Last updated: 2026-10-23 (evening).
 
+## PUSH + SITE FIX Oct 24 ~1:50am (FIREFLY) — 23 commits deployed, NO new build yet
+- Everything from after build 52 went live: photoreal die-cut stamp boxes across the app, mailbox 10-frame story APNG, invite card living ombres (Venmo-style, Lemon sky then Lavender paper), invite page rewrite (every-10-friends copy, wax postmark), REFERRALS LIVE (a free card lands on every 10th friend who joins — apps/api/src/routes/invites.ts), invite SMS copy, new package emoji. No schema change, so no db push was needed.
+- HER "the website is messed up" (phone screenshot, whole site shrunk into the left two-thirds): the CTA `.send-stamp` parks at `translate(170px,-190px) scale(2.2)` before its drop-in animation. On a phone that parked spot sits past the right edge, nothing clipped it, so the document measured 589px on a 371px viewport and Safari shrank the page to fit. Fix: `.cta{ overflow-x:hidden }` inside the max-width:860px block (hidden not clip, for older Safari). VERIFIED LIVE: docW 371 on a 371 viewport.
+- DIAGNOSIS TECHNIQUE WORTH KEEPING: claude-in-chrome cannot resize her window below ~1000px, but you can embed the live site in a 390px iframe on itself (same origin) and measure `scrollWidth` vs `clientWidth` inside `contentDocument`, then walk the tree for `scrollWidth > clientWidth` with no clipping ancestor. Async IIFE results come back empty — stash the answer on `window.__probe` and read it in a second call.
+- PHONES ARE STILL ON BUILD 52: none of the above is in the native app until the next build.
+- Her open TestFlight items (all filed against build 48, three already fixed in 49): acorn needs to sit at the base of the bouquet; the card-preview stamp outline is still dashes (SendFlow.tsx StampSvg line 106) and should be the real stamp edge; ALL BUTTONS should wear the stamp outline and be only as wide as their text, no more full-width buttons (her new global rule).
+- Squiggle-lines question withdrawn by her: "you have it right in Qute Note dev we just haven't shipped it."
+
 ## ANIMATION BATCH 2 Oct 24 ~12-12:30am — BUILD 52 + site deploy (FIREFLY)
 - Watercolor mic (public/emoji/mic.png) on ADD A VOICE NOTE, the chip, and the voice sheet record button.
 - WELCOME WAX PRESS: her 10-frame 2x5 sheet (ChatGPT share links: curl the page, grep backend-api/estuary public_content URLs, download the non-unfurl one) → silhouette-locked APNG (/brand/wax_press.png) overlaid on postmark_stamp_heartless at wax.ts geometry; ALSO inside the website hero postmark SVG (<image href>). Smoothing recipe: align every frame to the FINAL frame by alpha-overlap, cross-fade tweens + melt-back for the loop. Headless-Chrome CANNOT verify APNG motion (virtual-time doesn't advance it) — test on a real device via the dev server URL (e.g. 10.0.0.92:5173/brand/wax_press.png).
