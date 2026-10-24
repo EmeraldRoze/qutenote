@@ -98,21 +98,33 @@ function Band({ height, children }: { height: number; children: React.ReactNode 
 }
 
 // The postage stamp that floats top-right on the note so the writing wraps
-// around it. Emerald, Oct 24: no more dashed outline — it wears the real
-// photorealistic stamp edge (.qn-stamp) with a light blue printed panel.
-function StampSvg({ width = 52, height = 62, style }: { width?: number; height?: number; style?: React.CSSProperties }) {
+// around it. Emerald, Oct 24: it IS the tab bar's SEND stamp, just without the
+// word and with the heart centered. Built at the tab bar's exact 84x94 and
+// scaled down as one piece, so the perforations keep the same proportions
+// instead of turning into chunky bites at small sizes.
+const NAV_STAMP_W = 84
+const NAV_STAMP_H = 94
+
+function StampSvg({ width = 56, style }: { width?: number; height?: number; style?: React.CSSProperties }) {
+  const k = width / NAV_STAMP_W
+  const { transform, ...boxStyle } = (style ?? {}) as React.CSSProperties
   return (
-    <span aria-hidden className="qn-stamp qn-stamp-tight" style={{
-      display: 'inline-block', position: 'relative', boxSizing: 'border-box',
-      width: `${width}px`, height: `${height}px`, flex: 'none',
-      ['--qn-panel' as string]: '#BADAFF',
-      ...style,
+    <span aria-hidden style={{
+      display: 'inline-block', width: `${width}px`, height: `${Math.round(NAV_STAMP_H * k)}px`,
+      flex: 'none', ...boxStyle,
     }}>
-      {/* the wax seal heart (all stamp hearts are wax now; Emerald, Oct 23) */}
-      <img src="/brand/wax_heart.png" alt="" style={{
-        position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)',
-        width: `${Math.round(width * 0.42)}px`, height: 'auto',
-      }} />
+      <span className="qn-stamp qn-stamp-tight" style={{
+        display: 'flex', position: 'relative', boxSizing: 'border-box',
+        width: `${NAV_STAMP_W}px`, height: `${NAV_STAMP_H}px`,
+        transform: `scale(${k})${transform ? ` ${transform}` : ''}`, transformOrigin: 'top left',
+        ['--qn-panel' as string]: '#BADAFF',
+      }}>
+        {/* the same wax heart and postmark waves the tab bar wears, centered */}
+        <svg aria-hidden width="48" height="33" viewBox="0 0 44 30" style={{ margin: 'auto' }}>
+          <image href="/brand/send_stamp_heart.png" x="-1" y="2.5" width="29" height="25.6" />
+          <path d="M23 9c3-2 5-2 8 0s5 2 8 0M23 15c3-2 5-2 8 0s5 2 8 0M23 21c3-2 5-2 8 0s5 2 8 0" fill="none" stroke="#4A2424" strokeWidth="1.8" strokeLinecap="round" />
+        </svg>
+      </span>
     </span>
   )
 }
