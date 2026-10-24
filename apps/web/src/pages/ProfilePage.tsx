@@ -235,6 +235,14 @@ export default function ProfilePage() {
         <div className="title-band" style={{ height: '360px', boxSizing: 'border-box' }}>
           <div style={{ maxWidth: '480px', width: '100%', margin: '0 auto', boxSizing: 'border-box', padding: '14px 20px 0', display: 'flex', flexDirection: 'column', gap: '14px' }}>
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
+              {/* QR sits with notifications and settings now (Emerald, Oct 24) */}
+              <button onClick={() => setShowQR(true)} aria-label="Show my QR code" style={{
+                width: '44px', height: '44px', borderRadius: '50%', background: 'var(--card)', color: 'var(--ink)',
+                boxSizing: 'border-box', border: '1.5px solid var(--stone)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', padding: 0,
+              }}>
+                <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3.5" y="3.5" width="6" height="6" rx="1" /><rect x="14.5" y="3.5" width="6" height="6" rx="1" /><rect x="3.5" y="14.5" width="6" height="6" rx="1" /><path d="M14.5 14.5h2v2h-2zM18.5 18.5h2v2h-2z" /></svg>
+              </button>
               <button onClick={() => navigate('/settings/notifications')} aria-label="Notifications" style={{
                 width: '44px', height: '44px', borderRadius: '50%', background: 'var(--card)', color: 'var(--ink)',
                 boxSizing: 'border-box', border: '1.5px solid var(--stone)',
@@ -262,19 +270,9 @@ export default function ProfilePage() {
                 {/* the + emoji-picker button is gone (Emerald, Oct 23);
                     picking an avatar emoji still lives on Account (Deets) */}
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <span aria-hidden style={{ width: '40px', flex: 'none' }} />
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px' }}>
-                  <span style={{ fontFamily: 'var(--font-display)', fontSize: '22px', letterSpacing: '-0.01em', color: 'var(--ink)' }}>{profile.displayName}</span>
-                  <span style={{ fontFamily: 'var(--font-body)', fontSize: '15px', color: 'var(--ink)' }}>@{profile.username}</span>
-                </div>
-                <button onClick={() => setShowQR(true)} aria-label="Show my QR code" style={{
-                  width: '40px', height: '40px', flex: 'none', borderRadius: '50%', border: '1.5px solid var(--stone)',
-                  background: 'var(--card)', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  color: 'var(--ink)', cursor: 'pointer', padding: 0,
-                }}>
-                  <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3.5" y="3.5" width="6" height="6" rx="1" /><rect x="14.5" y="3.5" width="6" height="6" rx="1" /><rect x="3.5" y="14.5" width="6" height="6" rx="1" /><path d="M14.5 14.5h2v2h-2zM18.5 18.5h2v2h-2z" /></svg>
-                </button>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px' }}>
+                <span style={{ fontFamily: 'var(--font-display)', fontSize: '22px', letterSpacing: '-0.01em', color: 'var(--ink)' }}>{profile.displayName}</span>
+                <span style={{ fontFamily: 'var(--font-body)', fontSize: '15px', color: 'var(--ink)' }}>@{profile.username}</span>
               </div>
             </div>
           </div>

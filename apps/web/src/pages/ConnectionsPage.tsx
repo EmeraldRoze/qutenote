@@ -199,10 +199,12 @@ export default function ConnectionsPage() {
 
         {/* Invite box first: a perforated postage-stamp box */}
         <div className="qn-stamp" style={{ marginTop: '16px', border: '10px solid transparent', background: 'transparent', padding: '12px 10px', display: 'flex', gap: '14px', alignItems: 'center' }}>
-          <QEmoji name="bff" size={64} style={{ flexShrink: 0 }} />
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+          {/* Hands 60% bigger, with the copy and button sliding right to give
+              them the room (Emerald, Oct 24) */}
+          <QEmoji name="bff" size={102} style={{ flexShrink: 0 }} />
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', minWidth: 0 }}>
             <p style={{ margin: 0, fontFamily: 'var(--font-body)', fontSize: '15px', lineHeight: 1.4, color: 'var(--ink)' }}>
-              Invite a friend. You both get a free card.
+              Invite friends, get free cards.
             </p>
             <button onClick={() => inviteByText(user?.displayName?.split(' ')[0]).catch(() => navigate('/invite'))} style={{
               alignSelf: 'flex-start', height: '44px', padding: '0 18px', borderRadius: '22px', border: '2px solid var(--outline)', cursor: 'pointer',
