@@ -34,7 +34,6 @@ const ALL_OFFER_CARDS: (OfferCard & { key: string })[] = [
 function OfferCarousel({ hasSentCard, hasHandwriting }: { hasSentCard: boolean; hasHandwriting: boolean }) {
   const navigate = useNavigate()
   const trackRef = useRef<HTMLDivElement>(null)
-  const [active, setActive] = useState(0)
   // A done nudge stops nudging; invite + photo never retire.
   const OFFER_CARDS = ALL_OFFER_CARDS.filter((c) => {
     if (c.key === 'first-card') return !hasSentCard
@@ -43,18 +42,17 @@ function OfferCarousel({ hasSentCard, hasHandwriting }: { hasSentCard: boolean; 
     return true
   })
 
-  function onScroll() {
+  function scrollToCard(i: number) {
     const el = trackRef.current
     if (!el) return
     const step = (el.firstElementChild?.clientWidth ?? el.clientWidth) + 12
-    setActive(Math.min(OFFER_CARDS.length - 1, Math.max(0, Math.round(el.scrollLeft / step))))
+    el.scrollTo({ left: i * step, behavior: 'smooth' })
   }
 
   return (
     <div style={{ marginTop: '18px' }}>
       <div
         ref={trackRef}
-        onScroll={onScroll}
         style={{
           display: 'flex', gap: '12px', overflowX: 'auto',
           scrollSnapType: 'x mandatory', scrollbarWidth: 'none',
@@ -64,7 +62,7 @@ function OfferCarousel({ hasSentCard, hasHandwriting }: { hasSentCard: boolean; 
           <div key={i} className="rose-paper" style={{
             ...(c.key === 'invite' ? { backgroundImage: 'url(/brand/paper_texture.png), linear-gradient(180deg, #A2ABBE 0%, #FF9DC9 100%)' } : {}),
             flex: '0 0 calc(100% - 32px)', height: '370px', scrollSnapAlign: 'start',
-            borderRadius: '26px', boxSizing: 'border-box',
+            position: 'relative', borderRadius: '26px', boxSizing: 'border-box',
             padding: '26px 22px 22px', display: 'flex', flexDirection: 'column',
             alignItems: 'center', textAlign: 'center',
           }}>
@@ -79,17 +77,26 @@ function OfferCarousel({ hasSentCard, hasHandwriting }: { hasSentCard: boolean; 
               background: 'var(--btn)', color: 'var(--ink)', fontFamily: 'var(--font-body)',
               fontSize: '15px', fontWeight: 700, letterSpacing: '0.08em', boxSizing: 'border-box',
             }}>{c.cta}</button>
+            {i > 0 && (
+              <button aria-label="Previous card" onClick={() => scrollToCard(i - 1)} style={{
+                position: 'absolute', left: '6px', top: '50%', transform: 'translateY(-50%)',
+                background: 'none', border: 'none', cursor: 'pointer', padding: '8px', opacity: 0.45, color: 'var(--ink)',
+              }}>
+                <svg aria-hidden width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round"><path d="M15 5l-7 7 7 7" /></svg>
+              </button>
+            )}
+            {i < OFFER_CARDS.length - 1 && (
+              <button aria-label="Next card" onClick={() => scrollToCard(i + 1)} style={{
+                position: 'absolute', right: '6px', top: '50%', transform: 'translateY(-50%)',
+                background: 'none', border: 'none', cursor: 'pointer', padding: '8px', opacity: 0.45, color: 'var(--ink)',
+              }}>
+                <svg aria-hidden width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round"><path d="M9 5l7 7-7 7" /></svg>
+              </button>
+            )}
           </div>
         ))}
       </div>
-      <div aria-hidden style={{ marginTop: '14px', display: 'flex', gap: '6px', justifyContent: 'center' }}>
-        {OFFER_CARDS.map((_, i) => (
-          <span key={i} style={{
-            width: i === active ? '22px' : '6px', height: '6px', borderRadius: '3px',
-            background: i === active ? 'var(--ink)' : '#D0C6BA', transition: 'width 0.2s',
-          }} />
-        ))}
-      </div>
+
     </div>
   )
 }
