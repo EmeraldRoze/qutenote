@@ -34,7 +34,8 @@ export function HappeningsRow() {
           </span>
         </span>
         <span style={{ color: 'var(--ink)', display: 'flex' }}>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M4 20l4-1 11-11-3-3L5 16z" /></svg>
+          {/* her pen art, never a drawn pencil icon (Emerald, Oct 24) */}
+          <img src="/emoji/pen.png" alt="" style={{ width: '26px', height: '26px', objectFit: 'contain' }} />
         </span>
       </button>
       {composing && <StatusComposer onDone={(s) => { if (s) setMyStatus(s); setComposing(false) }} />}

@@ -31,14 +31,14 @@ interface OfferCard {
 // the card must read as a full ombre at every moment, never one solid color.
 const SHEEN = 'linear-gradient(105deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.1) 28%, rgba(255,255,255,0.52) 50%, rgba(255,255,255,0.1) 72%, rgba(255,255,255,0) 100%)'
 const ALL_OFFER_CARDS: (OfferCard & { key: string })[] = [
-  { key: 'invite', art: 'bff-live', artWidth: 309, artBoxH: 224, ombre: `url(/brand/paper_texture.png), ${SHEEN}, linear-gradient(145deg, #EEFC4E 0%, #D9EDB3 52%, #BADAFF 100%)`, title: 'Invite friends…\nGet free cards', cta: 'INVITE', onClick: (nav) => nav('/invite') },
-  { key: 'first-card', art: 'gift', artWidth: 165, ombre: `url(/brand/paper_texture.png), ${SHEEN}, linear-gradient(145deg, #AE8FD1 0%, #D6C7DF 52%, #E6DCD6 100%)`, title: 'Your first card is on us', cta: 'SEND A CARD', onClick: (nav) => nav('/send') },
+  { key: 'invite', art: 'bff-live', artWidth: 309, artBoxH: 224, ombre: `url(/brand/paper_texture.png), ${SHEEN}, linear-gradient(90deg, #EEFC4E 0%, #D9EDB3 12.5%, #BADAFF 25%, #D9EDB3 37.5%, #EEFC4E 50%, #D9EDB3 62.5%, #BADAFF 75%, #D9EDB3 87.5%, #EEFC4E 100%)`, title: 'Invite friends…\nGet free cards', cta: 'INVITE', onClick: (nav) => nav('/invite') },
+  { key: 'first-card', art: 'gift', artWidth: 165, ombre: `url(/brand/paper_texture.png), ${SHEEN}, linear-gradient(90deg, #AE8FD1 0%, #D6C7DF 12.5%, #EFE7E0 25%, #D6C7DF 37.5%, #AE8FD1 50%, #D6C7DF 62.5%, #EFE7E0 75%, #D6C7DF 87.5%, #AE8FD1 100%)`, title: 'Your first card is on us', cta: 'SEND A CARD', onClick: (nav) => nav('/send') },
   // Mailbox wears her Lavender paper, camera wears her Apricot sky (Emerald,
   // Oct 24; colors sampled from her gradient files), each the full diagonal
   // spread of the art — it stays put while the sheen passes through it.
-  { key: 'alerts', art: 'mailbox', artWidth: 165, ombre: `url(/brand/paper_texture.png), ${SHEEN}, linear-gradient(145deg, #AE8FD1 0%, #D6C7DF 52%, #E6DCD6 100%)`, title: 'Know when something is in the mail', cta: 'TURN ON ALERTS', onClick: (nav) => nav('/settings/notifications') },
+  { key: 'alerts', art: 'mailbox', artWidth: 165, ombre: `url(/brand/paper_texture.png), ${SHEEN}, linear-gradient(90deg, #AE8FD1 0%, #D6C7DF 12.5%, #EFE7E0 25%, #D6C7DF 37.5%, #AE8FD1 50%, #D6C7DF 62.5%, #EFE7E0 75%, #D6C7DF 87.5%, #AE8FD1 100%)`, title: 'Know when something is in the mail', cta: 'TURN ON ALERTS', onClick: (nav) => nav('/settings/notifications') },
   { key: 'handwriting', art: 'pen', artWidth: 150, title: 'Make it look like YOU wrote it', cta: 'TEACH YOUR HANDWRITING', onClick: (nav) => nav('/handwriting') },
-  { key: 'photo', art: 'camera', artWidth: 190, ombre: `url(/brand/paper_texture.png), ${SHEEN}, linear-gradient(145deg, #D88F73 0%, #E6DBD3 52%, #BADAFF 100%)`, title: 'Got a good photo? Mail it.', cta: 'UPLOAD A PHOTO', onClick: (nav) => nav('/send') },
+  { key: 'photo', art: 'camera', artWidth: 190, ombre: `url(/brand/paper_texture.png), ${SHEEN}, linear-gradient(90deg, #D88F73 0%, #E6DBD3 12.5%, #BADAFF 25%, #E6DBD3 37.5%, #D88F73 50%, #E6DBD3 62.5%, #BADAFF 75%, #E6DBD3 87.5%, #D88F73 100%)`, title: 'Got a good photo? Mail it.', cta: 'UPLOAD A PHOTO', onClick: (nav) => nav('/send') },
 ]
 
 function OfferCarousel({ hasSentCard, hasHandwriting }: { hasSentCard: boolean; hasHandwriting: boolean }) {
