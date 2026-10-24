@@ -68,8 +68,17 @@ header{ position:sticky; top:env(safe-area-inset-top,0px); z-index:50; backgroun
 .front .msg span:last-child{ color:var(--uv); font-size:15px; }
 .front .divider{ width:1px; background:var(--lav-line); }
 .front .addr{ flex:.9; display:flex; flex-direction:column; align-items:flex-end; gap:6px; }
-.stamp{ width:58px; height:70px; padding:5px; background:radial-gradient(circle at 5px 5px, rgba(0,0,0,0) 3.3px, #9E625F 3.8px) -5px -5px / 10px 10px round; border:none; border-radius:0; box-sizing:border-box; }
-.stamp i{ display:grid; place-items:center; width:100%; height:100%; background:#BADAFF; border:3px solid #F4ECE6; border-radius:1px; box-sizing:border-box; font-style:normal; } .stamp i img{ width:62%; height:auto; }
+.stamp{ width:58px; height:70px; padding:0; border:none; border-radius:0; box-sizing:border-box;
+  background:
+    linear-gradient(#BADAFF,#BADAFF) 50% 50%/calc(100% - 13px) calc(100% - 13px) no-repeat,
+    linear-gradient(rgba(74,36,36,.3),rgba(74,36,36,.3)) 50% 50%/calc(100% - 11px) calc(100% - 11px) no-repeat,
+    url('../assets/paper_texture.png'),
+    linear-gradient(145deg, #F6EFE0 0%, #EFE5D0 55%, #E9DCC4 100%);
+  -webkit-mask:linear-gradient(#000 0 0) 50% 50%/calc(100% - 7px) calc(100% - 7px) no-repeat, radial-gradient(circle at 50% 50%, #0000 2.2px, #000 2.45px) -3.5px -3.5px/7px 7px round;
+  mask:linear-gradient(#000 0 0) 50% 50%/calc(100% - 7px) calc(100% - 7px) no-repeat, radial-gradient(circle at 50% 50%, #0000 2.2px, #000 2.45px) -3.5px -3.5px/7px 7px round;
+  -webkit-mask-composite:source-over; mask-composite:add;
+  filter:drop-shadow(0 0 1.2px rgba(74,36,36,.5)) drop-shadow(0 0 3px rgba(74,36,36,.28)) drop-shadow(0 0 8px rgba(74,36,36,.14)); }
+.stamp i{ display:grid; place-items:center; width:100%; height:100%; background:none; border:none; box-sizing:border-box; font-style:normal; } .stamp i img{ width:46%; height:auto; }
 .addr b{ margin-top:auto; font-size:13px; }
 .addr small{ font-size:11px; color:var(--ink-soft); }
 /* writing and address sit exactly on the card's ruled lines */
@@ -151,10 +160,8 @@ header{ position:sticky; top:env(safe-area-inset-top,0px); z-index:50; backgroun
 .scr .btn{ width:100%; margin-top:16px; height:46px; }
 /* 4: mail */
 .mail{ position:relative; height:400px; text-align:center; }
-/* the card flies down and slides into the mailbox's open door, behind the mailbox front */
-.mini-pc{ position:absolute; left:50%; top:4px; width:170px; margin-left:-85px; height:auto; filter:drop-shadow(0 10px 24px rgba(158,98,95,.3)); z-index:3;
-  transform:translate(calc(var(--mp,0) * -27px), calc(var(--mp,0) * 151px)) scale(calc(1 - var(--mp,0) * .8)) rotate(calc(-8deg + var(--mp,0) * 14deg));
-  opacity:calc(1 - max(0, var(--mp,0) - .8) * 5); }
+/* The flying postcard is gone (Emerald, Oct 24): her mailbox animation already
+   posts its own letter, so a second card was one card too many. */
 
 .mbox{ position:absolute; left:50%; top:150px; width:190px; margin-left:-95px; z-index:2; }
 .mail .done{ position:absolute; left:0; right:0; top:340px; }
