@@ -25,15 +25,20 @@ interface OfferCard {
 // Copy comes straight from 10-home.html, plus the handwriting card
 // (Emerald, Oct 18). Invite + photo live forever; the others retire once done.
 // Every card wears the same Rose paper ombre now (.rose-paper).
+
+// The band of light that travels through a card's ombre (.ombre-live animates
+// this layer's position). The ombre underneath never moves — Emerald, Oct 24:
+// the card must read as a full ombre at every moment, never one solid color.
+const SHEEN = 'linear-gradient(105deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.1) 28%, rgba(255,255,255,0.52) 50%, rgba(255,255,255,0.1) 72%, rgba(255,255,255,0) 100%)'
 const ALL_OFFER_CARDS: (OfferCard & { key: string })[] = [
-  { key: 'invite', art: 'bff-live', artWidth: 309, artBoxH: 224, ombre: 'url(/brand/paper_texture.png), linear-gradient(160deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 45%), linear-gradient(90deg, #EEFC4E 0%, #BADAFF 50%, #EEFC4E 100%)', title: 'Invite friends…\nGet free cards', cta: 'INVITE', onClick: (nav) => nav('/invite') },
-  { key: 'first-card', art: 'gift', artWidth: 165, ombre: 'url(/brand/paper_texture.png), linear-gradient(160deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0) 45%), linear-gradient(90deg, #F1EBE3 0%, #E7DCE6 30%, #AE8FD1 50%, #E7DCE6 70%, #F1EBE3 100%)', title: 'Your first card is on us', cta: 'SEND A CARD', onClick: (nav) => nav('/send') },
+  { key: 'invite', art: 'bff-live', artWidth: 309, artBoxH: 224, ombre: `url(/brand/paper_texture.png), ${SHEEN}, linear-gradient(145deg, #EEFC4E 0%, #D9EDB3 52%, #BADAFF 100%)`, title: 'Invite friends…\nGet free cards', cta: 'INVITE', onClick: (nav) => nav('/invite') },
+  { key: 'first-card', art: 'gift', artWidth: 165, ombre: `url(/brand/paper_texture.png), ${SHEEN}, linear-gradient(145deg, #AE8FD1 0%, #D6C7DF 52%, #E6DCD6 100%)`, title: 'Your first card is on us', cta: 'SEND A CARD', onClick: (nav) => nav('/send') },
   // Mailbox wears her Lavender paper, camera wears her Apricot sky (Emerald,
-  // Oct 24; colors sampled from her gradient files). Horizontal stops that end
-  // where they start, so the living sweep tiles with no crease.
-  { key: 'alerts', art: 'mailbox', artWidth: 165, ombre: 'url(/brand/paper_texture.png), linear-gradient(160deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0) 45%), linear-gradient(90deg, #F1EBE3 0%, #E7DCE6 30%, #AE8FD1 50%, #E7DCE6 70%, #F1EBE3 100%)', title: 'Know when something is in the mail', cta: 'TURN ON ALERTS', onClick: (nav) => nav('/settings/notifications') },
+  // Oct 24; colors sampled from her gradient files), each the full diagonal
+  // spread of the art — it stays put while the sheen passes through it.
+  { key: 'alerts', art: 'mailbox', artWidth: 165, ombre: `url(/brand/paper_texture.png), ${SHEEN}, linear-gradient(145deg, #AE8FD1 0%, #D6C7DF 52%, #E6DCD6 100%)`, title: 'Know when something is in the mail', cta: 'TURN ON ALERTS', onClick: (nav) => nav('/settings/notifications') },
   { key: 'handwriting', art: 'pen', artWidth: 150, title: 'Make it look like YOU wrote it', cta: 'TEACH YOUR HANDWRITING', onClick: (nav) => nav('/handwriting') },
-  { key: 'photo', art: 'camera', artWidth: 190, ombre: 'url(/brand/paper_texture.png), linear-gradient(160deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 45%), linear-gradient(90deg, #D88F73 0%, #E6DBD3 28%, #BADAFF 50%, #E6DBD3 72%, #D88F73 100%)', title: 'Got a good photo? Mail it.', cta: 'UPLOAD A PHOTO', onClick: (nav) => nav('/send') },
+  { key: 'photo', art: 'camera', artWidth: 190, ombre: `url(/brand/paper_texture.png), ${SHEEN}, linear-gradient(145deg, #D88F73 0%, #E6DBD3 52%, #BADAFF 100%)`, title: 'Got a good photo? Mail it.', cta: 'UPLOAD A PHOTO', onClick: (nav) => nav('/send') },
 ]
 
 function OfferCarousel({ hasSentCard, hasHandwriting }: { hasSentCard: boolean; hasHandwriting: boolean }) {
