@@ -323,7 +323,7 @@ export default function ProfilePage() {
           {/* 3-column photo grid of real cards */}
           {notes.length === 0 ? (
             <p style={{ fontFamily: 'var(--font-body)', fontSize: '14px', color: 'var(--ink-muted)', padding: '14px 0 4px' }}>
-              {tab === 'sent' ? 'Nothing sent yet. Someone came to mind, didn’t they?' : 'No postcards received yet.'}
+              {tab === 'sent' ? 'Make someone’s whole day.' : 'No postcards received yet.'}
             </p>
           ) : (
             <div style={{ marginTop: '12px', display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: '4px' }}>
