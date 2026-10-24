@@ -343,6 +343,12 @@ footer .fl{ height:30px; width:auto; display:block; }
   .bf.mega{ top:7%; right:7%; width:124px; transform:scaleX(-1) rotate(-5deg); }
   #artists .sec-head .in, #how .sec-head .in, #why .sec-head .in{ flex-direction:column; align-items:flex-start; gap:12px; }
   .send-stamp{ width:62px; top:14px; right:14px; padding:5px; } .send-stamp span{ padding:8px 0; font-size:10px; }
+  /* The SEND stamp waits off to the right (translate 170px, scale 2.2) before it
+     drops in. On a phone that parked position stuck out past the screen, so the
+     whole page got ~589px wide and Safari shrank everything to fit (Emerald's
+     "website is messed up", Oct 24). Clip the section so the flight can't widen
+     the page (hidden, not clip, so older Safari gets the fix too). */
+  .cta{ overflow-x: hidden; }
   .band .bf{ width:64px; } .bf.b{ display:none; } .bf.c{ width:52px; }
 
   .hero{ height:150vh; }
