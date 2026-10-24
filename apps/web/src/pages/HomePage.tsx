@@ -16,6 +16,7 @@ import { PENDING_SCAN_KEY } from './CardScanPage'
 interface OfferCard {
   art: string
   artWidth: number
+  artBoxH?: number
   title: string
   cta: string
   onClick: (navigate: ReturnType<typeof useNavigate>) => void
@@ -24,7 +25,7 @@ interface OfferCard {
 // (Emerald, Oct 18). Invite + photo live forever; the others retire once done.
 // Every card wears the same Rose paper ombre now (.rose-paper).
 const ALL_OFFER_CARDS: (OfferCard & { key: string })[] = [
-  { key: 'invite', art: 'bff-live', artWidth: 238, title: 'Invite a friend. You both get a free card.', cta: 'INVITE', onClick: (nav) => nav('/invite') },
+  { key: 'invite', art: 'bff-live', artWidth: 309, artBoxH: 224, title: 'Invite a friend. You both get a free card.', cta: 'INVITE', onClick: (nav) => nav('/invite') },
   { key: 'first-card', art: 'heart-sparkle', artWidth: 170, title: 'Your first card is on us', cta: 'SEND A CARD', onClick: (nav) => nav('/send') },
   { key: 'alerts', art: 'mailbox', artWidth: 165, title: 'Know when something is in the mail', cta: 'TURN ON ALERTS', onClick: (nav) => nav('/settings/notifications') },
   { key: 'handwriting', art: 'pen', artWidth: 150, title: 'Make it look like YOU wrote it', cta: 'TEACH YOUR HANDWRITING', onClick: (nav) => nav('/handwriting') },
@@ -66,8 +67,8 @@ function OfferCarousel({ hasSentCard, hasHandwriting }: { hasSentCard: boolean; 
             padding: '26px 22px 22px', display: 'flex', flexDirection: 'column',
             alignItems: 'center', textAlign: 'center',
           }}>
-            <div style={{ height: '170px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <QEmoji name={c.art} size={c.artWidth} style={{ maxHeight: '170px', transform: 'rotate(-4deg)' }} />
+            <div style={{ height: `${c.artBoxH ?? 170}px`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <QEmoji name={c.art} size={c.artWidth} style={{ maxHeight: `${c.artBoxH ?? 170}px`, transform: 'rotate(-4deg)' }} />
             </div>
             <p style={{ margin: '16px 0 0', fontFamily: 'var(--font-display)', fontSize: '22px', lineHeight: 1.2, letterSpacing: '-0.01em', color: 'var(--ink)', whiteSpace: 'pre-line' }}>
               {c.title}
