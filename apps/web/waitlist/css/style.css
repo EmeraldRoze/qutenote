@@ -243,9 +243,9 @@ header{ position:sticky; top:env(safe-area-inset-top,0px); z-index:50; backgroun
 .band{ position:relative; background:var(--uv); color:#fff; overflow:hidden; text-align:center; }
 .band .wrap{ padding:clamp(100px,13vw,170px) clamp(20px,4vw,48px); }
 .band h2{ margin:0 auto; font-family:var(--head); font-weight:300; letter-spacing:-.02em; font-size:clamp(36px,6vw,80px); line-height:1.02; max-width:900px; }
-.fill{ margin:26px auto 0; font-family:var(--head); font-size:clamp(20px,2.6vw,32px); line-height:1.25; max-width:760px; }
-.fill span{ color:rgba(255,255,255,.28); transition:color .25s; }
-.fill span.lit{ color:var(--lime); }
+.fill-sub{ margin:26px auto 0; font-family:var(--head); font-weight:300; font-size:clamp(20px,2.6vw,32px); line-height:1.25; max-width:760px; color:#fff; }
+#fill span{ color:rgba(255,255,255,.34); transition:color .25s; }
+#fill span.lit{ color:var(--lime); }
 .band p.small{ margin:22px auto 0; max-width:520px; font-size:17px; line-height:1.6; color:#F4ECE6; }
 .band .bf{ position:absolute; width:clamp(80px,11vw,150px); will-change:transform; }
 .bf.mega{ right:5%; top:50%; width:clamp(90px,13vw,170px); transform:translateY(calc(-50% + var(--bp,0) * -60px)) scaleX(-1) rotate(calc(-6deg + var(--bp,0) * 12deg)); }
@@ -328,7 +328,8 @@ footer .fl{ height:30px; width:auto; display:block; }
   .pc{ width:220px; }
   .mbr{ display:inline; }
   .sec-head .in{ padding:30px 20px; }
-  .sec .faq-think{ width:104px; } .sec .why-hands{ width:170px; }
+  .sec .faq-think{ width:104px; } .sec .why-hands{ width:340px; max-width:86%; margin:10px auto 0; align-self:center; }
+  .bf.mega{ top:7%; right:2%; width:124px; transform:scaleX(-1) rotate(-5deg); }
   #artists .sec-head .in, #how .sec-head .in, #why .sec-head .in{ flex-direction:column; align-items:flex-start; gap:12px; }
   .send-stamp{ width:62px; top:14px; right:14px; padding:5px; } .send-stamp span{ padding:8px 0; font-size:10px; }
   .band .bf{ width:64px; } .bf.b{ display:none; } .bf.c{ width:52px; }
@@ -357,7 +358,7 @@ footer .fl{ height:30px; width:auto; display:block; }
 @media (prefers-reduced-motion: reduce){
   *, *::before, *::after{ animation:none !important; transition:none !important; }
   .hero, .how{ height:auto; }
-  [data-drop]{ opacity:1; transform:none; } .rack{ transform:none; flex-wrap:wrap; width:auto; } .fill span{ color:var(--lime); } .send-stamp{ opacity:1; transform:rotate(9deg); }
+  [data-drop]{ opacity:1; transform:none; } .rack{ transform:none; flex-wrap:wrap; width:auto; } #fill span{ color:var(--lime); } .send-stamp{ opacity:1; transform:rotate(9deg); }
   .hero-pin, .how-pin{ position:relative; top:0; height:auto; padding:56px 0; }
   .pill{ transform:rotate(6deg); }
 }
