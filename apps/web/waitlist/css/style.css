@@ -253,7 +253,7 @@ header{ position:sticky; top:env(safe-area-inset-top,0px); z-index:50; backgroun
 #fill span.lit{ color:var(--lime); }
 .band p.small{ margin:22px auto 0; max-width:520px; font-size:17px; line-height:1.6; color:#F4ECE6; }
 .band .bf{ position:absolute; width:clamp(80px,11vw,150px); will-change:transform; }
-.bf.mega{ right:5%; top:50%; width:clamp(90px,13vw,170px); transform:translateY(calc(-50% + var(--bp,0) * -60px)) scaleX(-1) rotate(calc(-6deg + var(--bp,0) * 12deg)); }
+.bf.mega{ right:8%; top:50%; width:clamp(90px,13vw,170px); transform:translateY(calc(-50% + var(--bp,0) * -60px)) scaleX(-1) rotate(calc(-6deg + var(--bp,0) * 12deg)); }
 
 /* faq */
 .faq-wrap{ display:grid; grid-template-columns:1fr 1.3fr; gap:clamp(32px,6vw,96px); align-items:start; }
@@ -334,7 +334,7 @@ footer .fl{ height:30px; width:auto; display:block; }
   .mbr{ display:inline; }
   .sec-head .in{ padding:30px 20px; }
   .sec .faq-think{ width:104px; } .sec .why-hands{ width:340px; max-width:86%; margin:10px auto 0; align-self:center; }
-  .bf.mega{ top:7%; right:2%; width:124px; transform:scaleX(-1) rotate(-5deg); }
+  .bf.mega{ top:7%; right:7%; width:124px; transform:scaleX(-1) rotate(-5deg); }
   #artists .sec-head .in, #how .sec-head .in, #why .sec-head .in{ flex-direction:column; align-items:flex-start; gap:12px; }
   .send-stamp{ width:62px; top:14px; right:14px; padding:5px; } .send-stamp span{ padding:8px 0; font-size:10px; }
   .band .bf{ width:64px; } .bf.b{ display:none; } .bf.c{ width:52px; }
