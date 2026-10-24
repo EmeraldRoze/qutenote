@@ -79,7 +79,7 @@ export default function LoginPage() {
 
       <div style={{ ...col, flex: 1, display: 'flex', flexDirection: 'column', paddingBottom: '34px' }}>
         <p style={{ margin: '18px 0 0', fontSize: '15px', lineHeight: 1.45, color: 'var(--ink)' }}>
-          Your people are waiting on your mail.
+          Slide into their mailbox.
         </p>
 
         {error && (
