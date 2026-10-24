@@ -252,7 +252,18 @@ export default function ImportantDatesPage() {
             marginTop: '18px', borderRadius: '26px', padding: '26px 20px 22px',
             display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center',
           }}>
-            <QEmoji name="cake" size={110} style={{ height: 'auto', transform: 'rotate(-4deg)' }} />
+            {/* The candles actually twinkle here (her twinkling-cake package,
+                Oct 24): flame and glow layers sit on the candles by percentage
+                so they hold their spots at any size. */}
+            <div className="qn-cake" style={{ width: '110px', transform: 'rotate(-4deg)' }} role="img" aria-label="Birthday cake with three lit candles">
+              <QEmoji name="cake" size={110} style={{ height: 'auto', width: '100%' }} />
+              <span className="qn-glow" style={{ left: '30.8%', top: '11%', animationDelay: '-0.3s' }} />
+              <span className="qn-glow" style={{ left: '50%', top: '10.5%', animationDelay: '-1.1s' }} />
+              <span className="qn-glow" style={{ left: '67.6%', top: '10%', animationDelay: '-0.7s' }} />
+              <span className="qn-flame" style={{ left: '30.8%', top: '13.4%', animationDelay: '-0.2s', animationDuration: '0.85s' }} />
+              <span className="qn-flame" style={{ left: '50%', top: '12.8%', animationDelay: '-0.55s', animationDuration: '1s' }} />
+              <span className="qn-flame" style={{ left: '67.6%', top: '12.1%', animationDelay: '-0.35s', animationDuration: '0.92s' }} />
+            </div>
             <h2 style={{ margin: '14px 0 0', fontFamily: 'var(--font-display)', fontWeight: 300, fontSize: '22px', lineHeight: 1.2, color: 'var(--ink)' }}>
               Never miss a birthday again.
             </h2>
