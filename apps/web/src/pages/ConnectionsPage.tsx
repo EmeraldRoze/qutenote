@@ -199,9 +199,9 @@ export default function ConnectionsPage() {
 
         {/* Invite box first: a perforated postage-stamp box */}
         <div className="qn-stamp" style={{ marginTop: '16px', border: '10px solid transparent', background: 'transparent', padding: '12px 10px', display: 'flex', gap: '14px', alignItems: 'center' }}>
-          {/* Hands 60% bigger, with the copy and button sliding right to give
-              them the room (Emerald, Oct 24) */}
-          <QEmoji name="bff" size={102} style={{ flexShrink: 0 }} />
+          {/* Her new INVITE envelope replaces the heart hands here (Emerald,
+              Oct 25). Same 102px footprint the hands had. */}
+          <QEmoji name="invite" size={102} style={{ flexShrink: 0, height: 'auto' }} />
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', minWidth: 0 }}>
             <p style={{ margin: 0, fontFamily: 'var(--font-body)', fontSize: '15px', lineHeight: 1.4, color: 'var(--ink)' }}>
               Invite friends, get free cards.

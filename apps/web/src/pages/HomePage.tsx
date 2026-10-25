@@ -33,7 +33,12 @@ interface OfferCard {
 // The band of light that travels through a card's ombre (.ombre-live animates
 // this layer's position). The ombre underneath never moves — Emerald, Oct 24:
 // the card must read as a full ombre at every moment, never one solid color.
-const SHEEN = 'linear-gradient(145deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.1) 28%, rgba(255,255,255,0.52) 50%, rgba(255,255,255,0.1) 72%, rgba(255,255,255,0) 100%)'
+//
+// Emerald, Oct 25 (the glitch): this used to be a SINGLE band stretched across
+// the whole layer, so when the ten-second drift reached its end and started
+// over, the light jumped back across the card. The sheen now repeats on the
+// SAME 320px period as the colors underneath, so the loop closes invisibly.
+const SHEEN = 'repeating-linear-gradient(145deg, rgba(255,255,255,0) 0px, rgba(255,255,255,0.06) 72px, rgba(255,255,255,0.42) 160px, rgba(255,255,255,0.06) 248px, rgba(255,255,255,0) 320px)'
 const ALL_OFFER_CARDS: (OfferCard & { key: string })[] = [
   { key: 'invite', art: 'bff-live', artWidth: 525, artBoxH: 253, ombre: `${SHEEN}, repeating-linear-gradient(145deg, #EEFC4E 0px, #D9EDB3 80px, #BADAFF 160px, #D9EDB3 240px, #EEFC4E 320px)`, title: 'Invite friends,\nget free cards.', cta: 'INVITE', onClick: (nav) => nav('/invite') },
   { key: 'first-card', art: 'gift', artWidth: 165, ombre: `${SHEEN}, repeating-linear-gradient(145deg, #AE8FD1 0px, #D6C7DF 80px, #EFE7E0 160px, #D6C7DF 240px, #AE8FD1 320px)`, title: 'Your first card is on us', cta: 'SEND A CARD', onClick: (nav) => nav('/send') },

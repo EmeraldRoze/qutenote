@@ -166,9 +166,12 @@ body::before {
 .ombre-live::after{ content:''; position:absolute; inset:0; z-index:-1; pointer-events:none; background-image:url('/brand/paper_texture.png'); }
 @media (prefers-reduced-motion: no-preference){
   .ombre-live::before{ animation: qn-ombre 10s linear infinite; }
+  /* Exactly one 320px period along the 145deg axis: 320*sin(145°) across and
+     320*-cos(145°) down. The rounded 184/262 left half a pixel over at the end
+     of every loop, which read as a tiny hitch (Emerald, Oct 25). */
   @keyframes qn-ombre{
-    from{ transform: translate(0, 0); }
-    to{ transform: translate(184px, 262px); }
+    from{ transform: translate3d(0, 0, 0); }
+    to{ transform: translate3d(183.551px, 262.146px, 0); }
   }
 }
 
