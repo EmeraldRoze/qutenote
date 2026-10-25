@@ -19,10 +19,23 @@ export default function TabBar() {
     { label: 'Profile', path: `/profile/${user?.username ?? ''}`, emojiIcon: '/emoji/sunglasses.png' },
   ]
 
+  // Tapping the tab you are already on scrolls back to the top instead of
+  // doing nothing at all (Emerald, Oct 25 — the analytics caught people
+  // tapping Profile over and over on their own profile).
+  function go(path: string) {
+    if (pathname === path) {
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+      return
+    }
+    navigate(path)
+  }
+
   function tab(t: typeof tabs[number]) {
-    const active = pathname === t.path || (t.path.startsWith('/profile') && pathname.startsWith('/profile'))
+    // Only your OWN profile lights the Profile tab. On someone else's profile
+    // the tab stays dark, so it reads as somewhere you can still go.
+    const active = pathname === t.path
     return (
-      <button key={t.label} onClick={() => navigate(t.path)} style={{
+      <button key={t.label} onClick={() => go(t.path)} style={{
         display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '5px',
         color: active ? ACTIVE : INACTIVE, background: 'none', border: 'none', cursor: 'pointer',
         fontSize: '14px', fontWeight: 700, fontFamily: 'var(--font-body)',
@@ -48,7 +61,7 @@ export default function TabBar() {
       {/* The real photorealistic stamp edge now (Emerald, Oct 24): textured
           cardstock, punched perforations and the light blue printed panel are
           all drawn by .qn-stamp, so the button itself stays transparent. */}
-      <button onClick={() => navigate('/send')} aria-label="Send a card" className="qn-stamp qn-stamp-tight" style={{
+      <button onClick={() => go('/send')} aria-label="Send a card" className="qn-stamp qn-stamp-tight" style={{
         justifySelf: 'center', marginTop: '-36px', padding: 0,
         width: '84px', height: '94px', boxSizing: 'border-box',
         border: 'none', transform: 'rotate(-7deg)',

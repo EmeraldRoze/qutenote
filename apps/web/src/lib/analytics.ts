@@ -41,7 +41,14 @@ async function flush() {
 
 // Route changes: call with the new pathname. Also measures slow screens —
 // if the next paint after a navigation lags, that's worth knowing.
+let lastScreenAt = 0
 export function trackScreen(path: string) {
+  // One navigation must only ever leave one crumb. React can run this effect
+  // twice for the same screen (dev builds especially), and a doubled crumb
+  // doubles every number on the analytics dashboard.
+  const now = Date.now()
+  if (path === currentScreen && now - lastScreenAt < 1000) return
+  lastScreenAt = now
   const prev = currentScreen
   currentScreen = path
   crumb('screen_view', path, prev ? { from: prev } : undefined)
@@ -71,7 +78,12 @@ export function trackError(what: string, props?: Record<string, unknown>) {
 // Global tap listener: every button/link press becomes a breadcrumb with its
 // visible label — this is the generic "what did they tap right before it
 // broke" trail, and rage-tap detection feeds off it server-side.
+let tapTrackingInstalled = false
 export function installTapTracking() {
+  // Install once per page load. A second listener would log every tap twice
+  // and make honest tapping look like rage tapping.
+  if (tapTrackingInstalled) return
+  tapTrackingInstalled = true
   try {
     document.addEventListener('click', (e) => {
       try {
