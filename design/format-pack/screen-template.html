@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>QuteNote screen template</title>
+<!-- The format lives in this one file. When Claude builds a screen as an
+     artifact it should paste the whole stylesheet inside a <style> tag
+     instead of linking it, so the screen renders on its own. -->
+<link rel="stylesheet" href="qutenote-format.css">
+</head>
+<body>
+
+<!-- THE TITLE BAND. Height is always a multiple of 36 so the notebook lines
+     underneath keep their rhythm. -->
+<header class="title-band" style="height:186px">
+  <h1>Feelin' Qute?</h1>
+  <p class="sub">Here's who's been on your mind.</p>
+</header>
+
+<main class="qn-screen" style="padding-top:20px">
+
+  <!-- A FIELD -->
+  <label class="qn-field" style="margin-bottom:18px">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4A2424" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></svg>
+    <input placeholder="Find a QT">
+  </label>
+
+  <!-- A STAMP BOX. This is the signature shape: anything important sits in one. -->
+  <div class="qn-stamp" style="--qn-panel:#E9EDF1; margin:0 0 26px; padding:16px">
+    <div style="display:flex; align-items:center; gap:10px">
+      <!-- a still emoji here on purpose: the animated ones (thought-bubble,
+           party, camera, mailbox, heart-sparkle) start on a nearly empty
+           frame, so they look blank in a screenshot even though they play
+           perfectly in a real browser -->
+      <img class="qn-emoji" src="https://qutenote.com/emoji/coffee.png" style="width:34px;height:34px" alt="">
+      <span style="flex:1; min-width:0; display:flex; flex-direction:column">
+        <span style="font-size:13px">Your status</span>
+        <span style="font-size:16px">Drinking coffee, thinking of you.</span>
+      </span>
+      <img src="https://qutenote.com/emoji/pen.png" style="width:30px;height:30px" alt="">
+    </div>
+  </div>
+
+  <!-- A CARD -->
+  <div class="qn-card" style="margin-bottom:18px">
+    <h2 style="font-size:20px; margin-bottom:6px">Got a good photo?</h2>
+    <p style="font-size:15px; color:var(--ink-mid); margin-bottom:14px">Mail it.</p>
+    <span class="qn-pill">3 cards left</span>
+    <span class="qn-pill qn-pill-neon">New</span>
+  </div>
+
+  <!-- A CARD IN THE LIVING OMBRE -->
+  <div class="qn-card ombre-live" style="--qn-ombre:repeating-linear-gradient(145deg,#A2ABBE 0px,#FF9DC9 160px,#A2ABBE 320px); margin-bottom:26px; border:1.5px solid var(--outline)">
+    <h2 style="font-size:20px; margin-bottom:6px">Invite your people.</h2>
+    <p style="font-size:15px">Every 10th friend who joins gets you a free card.</p>
+  </div>
+
+  <!-- BUTTONS: the pill the app ships today -->
+  <button class="qn-btn" style="margin-bottom:14px">MAIL IT</button>
+  <button class="qn-btn qn-btn-ghost" style="margin-bottom:26px">SAVE DRAFT</button>
+
+  <!-- BUTTONS: the new rule, stamp outline and only as wide as the words -->
+  <div style="display:flex; gap:14px; align-items:center; flex-wrap:wrap">
+    <button class="qn-stamp qn-btn-stamp" style="--qn-panel:var(--btn)">MAIL IT</button>
+    <button class="qn-stamp qn-btn-stamp">SAVE DRAFT</button>
+  </div>
+
+</main>
+
+<!-- THE TAB BAR: four tabs around the SEND stamp -->
+<nav class="qn-tabbar">
+  <button class="qn-tab is-active"><img src="https://qutenote.com/emoji/house.png" alt="">Home</button>
+  <button class="qn-tab"><img src="https://qutenote.com/emoji/bff.png" alt="">QTs</button>
+  <button class="qn-stamp qn-stamp-tight qn-send">
+    <span>
+      <svg width="44" height="30" viewBox="0 0 44 30">
+        <image href="https://qutenote.com/brand/send_stamp_heart.png" x="-1" y="2.5" width="29" height="25.6"/>
+        <path d="M23 9c3-2 5-2 8 0s5 2 8 0M23 15c3-2 5-2 8 0s5 2 8 0M23 21c3-2 5-2 8 0s5 2 8 0" fill="none" stroke="#4A2424" stroke-width="1.8" stroke-linecap="round"/>
+      </svg>
+      SEND
+    </span>
+  </button>
+  <button class="qn-tab"><img src="https://qutenote.com/emoji/calendar.png" alt="">Dates</button>
+  <button class="qn-tab"><img src="https://qutenote.com/emoji/sunglasses.png" alt="">Profile</button>
+</nav>
+
+</body>
+</html>
