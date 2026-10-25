@@ -28,10 +28,10 @@ export default function QRCodeSheet({ username, onClose }: { username: string; o
         ) : (
           <div style={{ width: '220px', height: '220px', margin: '0 auto 16px', borderRadius: '16px', background: 'var(--selected-fill)' }} />
         )}
-        <button onClick={() => { navigator.clipboard?.writeText(link); onClose() }} style={{
-          width: '100%', height: '56px', borderRadius: '28px', border: '2px solid var(--outline)', cursor: 'pointer',
-          background: 'var(--btn)', color: 'var(--ink)', fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '15px', textTransform: 'uppercase', letterSpacing: '0.08em',
-        }}>Copy link instead</button>
+        <div className="qn-actions">
+          <button onClick={() => { navigator.clipboard?.writeText(link); onClose() }}
+            className="qn-stamp qn-action" style={{ ['--qn-panel' as string]: 'var(--btn)' }}>Copy link instead</button>
+        </div>
       </div>
     </div>
   )

@@ -144,19 +144,16 @@ export default function SignupAddressPage() {
         </div>
 
         <div style={{ marginTop: 'auto', paddingTop: '24px' }} />
-        <button
-          type="submit"
-          disabled={saving}
-          style={{
-            height: '56px', borderRadius: '28px', border: '2px solid #B4897A', boxSizing: 'border-box', flex: 'none',
-            cursor: saving ? 'not-allowed' : 'pointer',
-            background: saving ? 'var(--light-blush)' : 'var(--btn)', color: 'var(--ink)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontFamily: 'var(--font-body)', fontSize: '15px', fontWeight: 700, letterSpacing: '0.08em',
-          }}
-        >
-          {saving ? 'VERIFYING…' : 'VERIFY ADDRESS'}
-        </button>
+        <div className="qn-actions">
+          <button
+            type="submit"
+            disabled={saving}
+            className="qn-stamp qn-action"
+            style={{ flex: 'none', ['--qn-panel' as string]: saving ? 'var(--light-blush)' : 'var(--btn)' }}
+          >
+            {saving ? 'VERIFYING…' : 'VERIFY ADDRESS'}
+          </button>
+        </div>
       </form>
     </div>
   )

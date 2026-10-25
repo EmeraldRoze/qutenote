@@ -102,10 +102,8 @@ function OfferCarousel({ hasSentCard, hasHandwriting }: { hasSentCard: boolean; 
               {c.title}
             </p>
             {c.key !== 'invite' && (
-              <button onClick={() => c.onClick(navigate)} style={{
-                marginTop: 'auto', height: '50px', padding: '0 28px', borderRadius: '25px', border: '2px solid var(--outline)', cursor: 'pointer',
-                background: 'var(--btn)', color: 'var(--ink)', fontFamily: 'var(--font-body)',
-                fontSize: '15px', fontWeight: 700, letterSpacing: '0.08em', boxSizing: 'border-box',
+              <button onClick={() => c.onClick(navigate)} className="qn-stamp qn-action qn-action-sm" style={{
+                marginTop: 'auto', alignSelf: 'flex-start', ['--qn-panel' as string]: 'var(--btn)',
               }}>{c.cta}</button>
             )}
             {i > 0 && (
@@ -368,11 +366,9 @@ export default function HomePage() {
                     <button disabled={inviting} onClick={async () => {
                       setInviting(true)
                       try { await inviteByText() } finally { setInviting(false) }
-                    }} style={{
-                      height: '46px', borderRadius: '23px', border: '2px solid var(--outline)', background: 'var(--btn)',
-                      color: 'var(--ink)', fontFamily: 'var(--font-body)', fontSize: '14px', fontWeight: 700,
-                      letterSpacing: '0.08em', cursor: 'pointer', opacity: inviting ? 0.6 : 1,
-                    }}>INVITE THEM BY TEXT</button>
+                    }} className="qn-stamp qn-action qn-action-sm"
+                      style={{ alignSelf: 'center', ['--qn-panel' as string]: 'var(--btn)' }}
+                    >INVITE THEM BY TEXT</button>
                   </div>
                 )}
               </div>
@@ -419,11 +415,8 @@ export default function HomePage() {
             <div style={{ fontSize: '15px', lineHeight: 1.45, fontFamily: 'var(--font-body)', color: 'var(--ink)' }}>
               Write it now. We'll mail it so it lands on the day.
             </div>
-            <button onClick={() => navigate(`/send?toName=${encodeURIComponent(nudge.connectionName.split(' ')[0])}`)} style={{
-              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', height: '50px',
-              borderRadius: '25px', background: 'var(--btn)', color: 'var(--ink)', border: '2px solid var(--outline)', cursor: 'pointer',
-              fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '15px', letterSpacing: '0.08em',
-            }}>
+            <button onClick={() => navigate(`/send?toName=${encodeURIComponent(nudge.connectionName.split(' ')[0])}`)}
+              className="qn-stamp qn-action qn-action-sm" style={{ ['--qn-panel' as string]: 'var(--btn)' }}>
               Write to {nudge.connectionName.split(' ')[0]}
               <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14" /><path d="M13 6l6 6-6 6" /></svg>
             </button>
@@ -432,14 +425,11 @@ export default function HomePage() {
 
         {/* Address nudge: safety net once the checklist above is no longer showing it */}
         {setupDone && hasAddress === false && (
-          <button onClick={() => navigate('/address')} style={{
-            width: '100%', marginTop: '14px', padding: '12px 16px', borderRadius: '22px',
-            border: '2px dashed var(--outline)', background: 'var(--selected-fill)', cursor: 'pointer',
-            fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--ink)', fontWeight: 700,
-            textTransform: 'uppercase', letterSpacing: '0.12em',
-          }}>
-            Add your address so QTs can mail you back
-          </button>
+          <div className="qn-actions" style={{ marginTop: '16px' }}>
+            <button onClick={() => navigate('/address')} className="qn-stamp qn-action qn-action-sm">
+              Add your address
+            </button>
+          </div>
         )}
 
         {/* From your QTs */}
@@ -452,10 +442,8 @@ export default function HomePage() {
               <p style={{ margin: 0, fontFamily: 'var(--font-body)', fontSize: '15px', lineHeight: 1.45, color: 'var(--ink)' }}>
                 It's quiet in here. Once friends join, their birthdays, news and sends show up here.
               </p>
-              <button onClick={() => navigate('/connections?sync=1')} style={{
-                alignSelf: 'flex-start', height: '44px', padding: '0 18px', borderRadius: '22px', border: '2px solid var(--outline)', cursor: 'pointer',
-                background: 'var(--btn)', color: 'var(--ink)', fontFamily: 'var(--font-body)', fontSize: '14px', fontWeight: 700, letterSpacing: '0.08em', boxSizing: 'border-box',
-              }}>SYNC CONTACTS</button>
+              <button onClick={() => navigate('/connections?sync=1')} className="qn-stamp qn-action qn-action-sm"
+                style={{ alignSelf: 'flex-start', ['--qn-panel' as string]: 'var(--btn)' }}>SYNC CONTACTS</button>
             </div>
           </div>
         )}

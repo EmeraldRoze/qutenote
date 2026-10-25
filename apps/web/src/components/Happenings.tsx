@@ -91,18 +91,16 @@ export function StatusComposer({ onDone }: { onDone: (s: MyStatus | null) => voi
         />
         <p style={{ fontSize: '12px', fontFamily: 'var(--font-body)', color: 'var(--ink-muted)', textAlign: 'right', margin: '6px 0 14px' }}>{text.length}/60</p>
         {error && <p style={{ fontSize: '13px', fontFamily: 'var(--font-body)', color: 'var(--error)', marginBottom: '10px' }}>{error}</p>}
-        <button
-          disabled={!text.trim() || saving}
-          onClick={share}
-          style={{
-            display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', height: '56px',
-            borderRadius: '28px', border: '2px solid var(--outline)', cursor: 'pointer',
-            background: 'var(--btn)', color: 'var(--ink)', opacity: !text.trim() || saving ? 0.45 : 1,
-            fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '15px', textTransform: 'uppercase', letterSpacing: '0.08em',
-          }}
-        >
-          {saving ? 'Sharing…' : 'Share status'}
-        </button>
+        <div className="qn-actions">
+          <button
+            disabled={!text.trim() || saving}
+            onClick={share}
+            className="qn-stamp qn-action"
+            style={{ ['--qn-panel' as string]: 'var(--btn)' }}
+          >
+            {saving ? 'Sharing…' : 'Share status'}
+          </button>
+        </div>
       </div>
     </div>
   )

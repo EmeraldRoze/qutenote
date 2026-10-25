@@ -53,24 +53,12 @@ export default function WelcomePage() {
         </p>
       </div>
 
-      <div style={{
-        ...col, marginTop: 'auto', paddingBottom: '40px', flex: 'none',
-        display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: '12px',
-      }}>
-        <button onClick={() => navigate('/login')} style={{
-          height: '56px', borderRadius: '28px', border: '2px solid #B4897A', background: 'var(--card)',
-          color: 'var(--ink)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
-          fontFamily: 'var(--font-body)', fontSize: '16px', fontWeight: 700, letterSpacing: '0.08em',
-          boxSizing: 'border-box',
-        }}>
+      <div className="qn-actions-row" style={{ ...col, marginTop: 'auto', paddingBottom: '40px', flex: 'none' }}>
+        <button onClick={() => navigate('/login')} className="qn-stamp qn-action">
           LOG IN
         </button>
-        <button onClick={() => navigate('/signup')} style={{
-          height: '56px', borderRadius: '28px', border: '2px solid #B4897A', background: 'var(--btn)',
-          color: 'var(--ink)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
-          fontFamily: 'var(--font-body)', fontSize: '16px', fontWeight: 700, letterSpacing: '0.08em',
-          boxSizing: 'border-box',
-        }}>
+        <button onClick={() => navigate('/signup')} className="qn-stamp qn-action"
+          style={{ ['--qn-panel' as string]: 'var(--btn)' }}>
           SIGN UP
         </button>
       </div>

@@ -328,12 +328,8 @@ export default function AddDatePage() {
         )}
 
         <div aria-hidden style={{ flex: 1, minHeight: '24px' }} />
-        <button onClick={handleSave} disabled={saving} style={{
-          height: '56px', flex: 'none', borderRadius: '28px', border: '2px solid var(--stone)',
-          background: 'var(--btn)', color: 'var(--ink)', fontFamily: 'var(--font-body)', fontSize: '15px',
-          fontWeight: 700, letterSpacing: '0.08em', cursor: saving ? 'default' : 'pointer',
-          boxSizing: 'border-box', opacity: saving ? 0.7 : 1,
-        }}>
+        <button onClick={handleSave} disabled={saving} className="qn-stamp qn-action"
+          style={{ ['--qn-panel' as string]: 'var(--btn)' }}>
           {saving ? 'SAVING…' : 'SAVE DATE'}
         </button>
       </div>

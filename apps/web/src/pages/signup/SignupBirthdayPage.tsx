@@ -166,24 +166,19 @@ export default function SignupBirthdayPage() {
           </div>
         )}
 
-        <div style={{ marginTop: 'auto', paddingTop: '24px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+        <div className="qn-actions" style={{ marginTop: 'auto', paddingTop: '24px', gap: '6px' }}>
           <button
             onClick={save}
             disabled={saving}
-            style={{
-              height: '56px', borderRadius: '28px', border: '2px solid #B4897A', boxSizing: 'border-box',
-              cursor: saving ? 'not-allowed' : 'pointer',
-              background: saving ? 'var(--light-blush)' : 'var(--btn)', color: 'var(--ink)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontFamily: 'var(--font-body)', fontSize: '15px', fontWeight: 700, letterSpacing: '0.08em',
-            }}
+            className="qn-stamp qn-action"
+            style={{ ['--qn-panel' as string]: saving ? 'var(--light-blush)' : 'var(--btn)' }}
           >
             {saving ? 'SAVING…' : 'SAVE MY BIRTHDAY'}
           </button>
           <button
             onClick={() => navigate('/home')}
             style={{
-              minHeight: '44px', border: 'none', background: 'transparent', cursor: 'pointer',
+              minHeight: '44px', padding: '0 12px', border: 'none', background: 'transparent', cursor: 'pointer',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               fontFamily: 'var(--font-body)', fontSize: '15px', color: 'var(--ink)',
               fontWeight: 400, textTransform: 'none', letterSpacing: 0,

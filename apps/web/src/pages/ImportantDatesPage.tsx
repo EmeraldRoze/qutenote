@@ -260,12 +260,10 @@ export default function ImportantDatesPage() {
             <p style={{ margin: '8px 0 0', fontSize: '15px', lineHeight: 1.45, color: 'var(--ink)', maxWidth: '280px', fontFamily: 'var(--font-body)' }}>
               Add the days that matter and we'll give you a little nudge.
             </p>
-            <button onClick={() => navigate('/dates/add')} style={{
-              marginTop: '18px', width: '100%', height: '56px', border: '2px solid var(--stone)', borderRadius: '28px',
-              background: 'var(--btn)', color: 'var(--ink)', fontFamily: 'var(--font-body)', fontSize: '16px',
-              fontWeight: 700, letterSpacing: '0.08em', cursor: 'pointer', boxSizing: 'border-box',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-            }}>+ ADD A DATE</button>
+            <div className="qn-actions" style={{ marginTop: '18px' }}>
+              <button onClick={() => navigate('/dates/add')} className="qn-stamp qn-action"
+                style={{ ['--qn-panel' as string]: 'var(--btn)' }}>+ ADD A DATE</button>
+            </div>
           </div>
         ) : (
           <div style={{ marginTop: '18px', display: 'flex', flexDirection: 'column', gap: '10px' }}>

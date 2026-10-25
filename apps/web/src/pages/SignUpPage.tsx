@@ -184,18 +184,16 @@ export default function SignUpPage() {
           </div>
 
           <div style={{ marginTop: 'auto', display: 'flex', flexDirection: 'column', gap: '6px', paddingTop: '24px' }}>
-            <button
-              type="submit"
-              disabled={loading}
-              style={{
-                height: '56px', borderRadius: '28px', border: '2px solid #B4897A', boxSizing: 'border-box',
-                cursor: loading ? 'not-allowed' : 'pointer',
-                background: loading ? 'var(--light-blush)' : 'var(--btn)', color: 'var(--ink)',
-                fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '15px', letterSpacing: '0.08em',
-              }}
-            >
-              {loading ? 'CREATING…' : 'CREATE ACCOUNT'}
-            </button>
+            <div className="qn-actions">
+              <button
+                type="submit"
+                disabled={loading}
+                className="qn-stamp qn-action"
+                style={{ ['--qn-panel' as string]: loading ? 'var(--light-blush)' : 'var(--btn)' }}
+              >
+                {loading ? 'CREATING…' : 'CREATE ACCOUNT'}
+              </button>
+            </div>
             <p style={{ margin: 0, minHeight: '44px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', fontSize: '15px', color: 'var(--ink)' }}>
               Already a QT?{' '}
               <button type="button" onClick={() => navigate('/login')} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', fontWeight: 700, color: 'var(--stamp-center)', fontFamily: 'var(--font-body)', fontSize: '15px', textTransform: 'none', letterSpacing: 0 }}>

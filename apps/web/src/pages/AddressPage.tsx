@@ -143,15 +143,12 @@ export default function AddressPage() {
             )}
 
             {/* Save */}
-            <div style={{ marginTop: 'auto', paddingTop: '26px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <div className="qn-actions" style={{ marginTop: 'auto', paddingTop: '26px', gap: '12px' }}>
               <button
                 type="submit"
                 disabled={saving}
-                style={{
-                  height: '56px', border: '2px solid var(--stone)', borderRadius: '28px', background: 'var(--btn)', color: 'var(--ink)', boxSizing: 'border-box',
-                  fontFamily: 'var(--font-body)', fontSize: '16px', fontWeight: 700, letterSpacing: '0.08em',
-                  cursor: saving ? 'default' : 'pointer', opacity: saving ? 0.6 : 1,
-                }}
+                className="qn-stamp qn-action"
+                style={{ ['--qn-panel' as string]: 'var(--btn)' }}
               >
                 {saving ? 'SAVING…' : 'SAVE ADDRESS'}
               </button>

@@ -32,13 +32,13 @@ interface ScannedCard {
   isOwn: boolean
 }
 
+// Buttons are stamps sized to their words (Emerald, Oct 25: no long buttons).
+// The shape comes from .qn-stamp + .qn-action; this only picks the panel colour.
 const bigButton = (active: boolean, filled: boolean): React.CSSProperties => ({
-  width: '100%', minHeight: '56px', borderRadius: '999px', cursor: active ? 'pointer' : 'default',
-  border: '2px solid #B4897A',
-  background: filled ? '#BADAFF' : '#FBF8F3',
+  cursor: active ? 'pointer' : 'default',
   color: active ? '#4A2424' : '#A07D7D',
   opacity: active ? 1 : 0.55,
-  fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '14px', letterSpacing: '0.08em',
+  ['--qn-panel' as string]: filled ? 'var(--btn)' : 'var(--card)',
 })
 
 export default function CardScanPage() {
@@ -75,10 +75,10 @@ export default function CardScanPage() {
           </p>
           {!isNativeApp && (
             <>
-              <a href={`qutenote://card/${code}`} style={{ ...bigButton(true, true), display: 'flex', alignItems: 'center', justifyContent: 'center', textDecoration: 'none', marginBottom: '12px' }}>
+              <a href={`qutenote://card/${code}`} className="qn-stamp qn-action" style={{ ...bigButton(true, true), textDecoration: 'none', marginBottom: '12px' }}>
                 OPEN IN THE APP
               </a>
-              <a href={TESTFLIGHT_LINK} style={{ ...bigButton(true, false), display: 'flex', alignItems: 'center', justifyContent: 'center', textDecoration: 'none', marginBottom: '12px' }}>
+              <a href={TESTFLIGHT_LINK} className="qn-stamp qn-action" style={{ ...bigButton(true, false), textDecoration: 'none', marginBottom: '12px' }}>
                 GET THE APP
               </a>
             </>
@@ -88,6 +88,7 @@ export default function CardScanPage() {
               if (code) localStorage.setItem(PENDING_SCAN_KEY, JSON.stringify({ code, at: Date.now() }))
               navigate(isNativeApp ? '/welcome' : '/login')
             }}
+            className="qn-stamp qn-action"
             style={{ ...bigButton(true, isNativeApp), marginBottom: '4px' }}
           >
             {isNativeApp ? 'SIGN IN TO OPEN IT' : 'I HAVE AN ACCOUNT'}
@@ -173,8 +174,9 @@ export default function CardScanPage() {
           </p>
         )}
 
-        <div style={{ marginTop: '20px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+        <div className="qn-actions" style={{ marginTop: '20px', gap: '12px' }}>
           <button
+            className="qn-stamp qn-action"
             style={bigButton(true, true)}
             onClick={() => {
               trackFeature('reply-from-scan')
@@ -185,6 +187,7 @@ export default function CardScanPage() {
           </button>
 
           <button
+            className="qn-stamp qn-action"
             style={bigButton(hasSecret, false)}
             disabled={!hasSecret}
             onClick={() => { if (!decoded) trackFeature('decode'); setDecoded((d) => !d) }}
@@ -192,7 +195,7 @@ export default function CardScanPage() {
             {decoded ? 'HIDE IT AGAIN 🤫' : 'DECODE MY SECRET MESSAGE'}
           </button>
 
-          <button style={bigButton(hasVoice, false)} disabled={!hasVoice} onClick={toggleVoice}>
+          <button className="qn-stamp qn-action" style={bigButton(hasVoice, false)} disabled={!hasVoice} onClick={toggleVoice}>
             {playing ? '❚❚ PAUSE' : 'LISTEN TO VOICE NOTE'}
           </button>
         </div>

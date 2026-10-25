@@ -39,19 +39,9 @@ export interface NoteData {
   voiceDuration?: number
 }
 
-const primaryPill: React.CSSProperties = {
-  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px',
-  width: '100%', height: '56px', borderRadius: '28px', border: '2px solid var(--outline)',
-  boxSizing: 'border-box', cursor: 'pointer',
-  background: 'var(--btn)', color: 'var(--ink)', fontFamily: 'var(--font-body)', fontWeight: 700,
-  fontSize: '15px', letterSpacing: '0.08em', textTransform: 'uppercase',
-}
-
-// Secondary actions (SAVE DRAFT, Edit this note): card-white fill, same outline
-const secondaryPill: React.CSSProperties = {
-  ...primaryPill,
-  background: 'var(--card)',
-}
+// Buttons are stamps now (Emerald, Oct 25: no long buttons anywhere) — the
+// shape lives in index.css as .qn-stamp + .qn-action, so there are no pill
+// style objects here any more.
 
 const KNOWN_PENS = [HANDWRITING_PEN.value, ...PENS.map((p) => p.value)]
 
@@ -369,21 +359,17 @@ export default function SendFlow() {
           <p style={{ fontSize: '13px', fontFamily: 'var(--font-body)', color: 'var(--ink-muted)', marginBottom: '26px' }}>
             Changed your mind about a word? You can edit this note for the next 2 hours.
           </p>
-          <button
-            style={{ ...secondaryPill, marginBottom: '12px' }}
-            onClick={() => setStep('write')}
-          >
-            Edit this note
-          </button>
-          <button style={primaryPill} onClick={() => { setNote({ occasionType: 'JUST_BECAUSE', fontChoice: DEFAULT_PEN, toneUsed: 'HEARTFELT' }); setSentNoteId(null); setSkipRecipient(false); setStep('card') }}>
-            Send another
-          </button>
-          <button
-            style={{ ...primaryPill, background: 'var(--light-blush)', marginTop: '12px' }}
-            onClick={() => navigate('/home')}
-          >
-            Back home
-          </button>
+          <div className="qn-actions">
+            <button className="qn-stamp qn-action" onClick={() => setStep('write')}>
+              Edit this note
+            </button>
+            <button className="qn-stamp qn-action" style={{ ['--qn-panel' as string]: 'var(--btn)' }} onClick={() => { setNote({ occasionType: 'JUST_BECAUSE', fontChoice: DEFAULT_PEN, toneUsed: 'HEARTFELT' }); setSentNoteId(null); setSkipRecipient(false); setStep('card') }}>
+              Send another
+            </button>
+            <button className="qn-stamp qn-action" style={{ ['--qn-panel' as string]: 'var(--light-blush)' }} onClick={() => navigate('/home')}>
+              Back home
+            </button>
+          </div>
         </div>
       )}
     </div>
@@ -497,13 +483,8 @@ function CardPicker({ note, update, onWrite }: {
             update({ cardDesignType: 'ARTIST', cardDesignId: artist.cards[cardIdx].id, cardImageUrl: undefined })
             onWrite()
           }}
-          style={{
-            position: 'absolute', right: '16px', bottom: '16px', height: '44px', padding: '0 18px',
-            borderRadius: '22px', background: 'var(--btn)', color: 'var(--ink)',
-            border: '2px solid var(--outline)', boxSizing: 'border-box', cursor: 'pointer',
-            display: 'flex', alignItems: 'center', fontFamily: 'var(--font-body)',
-            fontSize: '14px', fontWeight: 700, letterSpacing: '0.08em',
-          }}
+          className="qn-stamp qn-action qn-action-sm"
+          style={{ position: 'absolute', right: '16px', bottom: '16px', ['--qn-panel' as string]: 'var(--btn)' }}
         >WRITE ON IT</button>
       </div>
 
@@ -522,24 +503,17 @@ function CardPicker({ note, update, onWrite }: {
           }}>
             {uploading ? 'Uploading…' : 'Your photo is on it. Tap to swap.'}
           </button>
-          <button onClick={onWrite} style={{
-            height: '44px', padding: '0 16px', borderRadius: '22px', background: 'var(--btn)', color: 'var(--ink)',
-            border: '2px solid var(--outline)', boxSizing: 'border-box', cursor: 'pointer',
-            fontFamily: 'var(--font-body)', fontSize: '13px',
-            fontWeight: 700, letterSpacing: '0.08em', flex: 'none',
-          }}>WRITE ON IT</button>
+          <button onClick={onWrite} className="qn-stamp qn-action qn-action-sm"
+            style={{ flex: 'none', ['--qn-panel' as string]: 'var(--btn)' }}>WRITE ON IT</button>
         </div>
       ) : (
-        <button className="qn-stamp" onClick={() => fileRef.current?.click()} style={{
-          marginTop: '24px', width: '100%', minHeight: '84px', borderRadius: '18px', boxSizing: 'border-box',
-          border: '10px solid transparent', background: 'transparent',
-          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '14px',
-          fontFamily: 'var(--font-body)', fontSize: '15px', fontWeight: 700, letterSpacing: '0.08em',
-          color: 'var(--stamp-center)', cursor: 'pointer',
-        }}>
-          <QEmoji name="camera" size={54} style={{ height: '54px', width: 'auto', objectFit: 'contain', transform: 'translateY(-7px)' }} />
-          {uploading ? 'UPLOADING…' : 'UPLOAD YOUR OWN PHOTO'}
-        </button>
+        <div className="qn-actions" style={{ marginTop: '28px' }}>
+          <button className="qn-stamp qn-action" onClick={() => fileRef.current?.click()}
+            style={{ minHeight: '72px', color: 'var(--stamp-center)' }}>
+            <QEmoji name="camera" size={54} style={{ height: '54px', width: 'auto', objectFit: 'contain', transform: 'translateY(-7px)' }} />
+            {uploading ? 'UPLOADING…' : 'UPLOAD YOUR OWN PHOTO'}
+          </button>
+        </div>
       )}
       {uploadError && (
         <p style={{ fontSize: '13px', fontFamily: 'var(--font-body)', color: 'var(--error)', margin: '8px 0 0' }}>{uploadError}</p>
@@ -838,26 +812,25 @@ function WriteStep({ note, update, onNext }: {
           }}>✕</button>
         </div>
       ) : (
-        <button onClick={() => { trackFeature('voice-note'); setRecording(true) }} style={{
-          marginTop: '20px', width: '100%', minHeight: '56px', borderRadius: '16px', boxSizing: 'border-box',
-          border: '2px solid var(--outline)', background: 'var(--card)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px',
-          fontFamily: 'var(--font-body)', fontSize: '14px', fontWeight: 700, letterSpacing: '0.08em',
-          color: 'var(--ink)', cursor: 'pointer',
-        }}>
-          <QEmoji name="mic" size={32} />
-          ADD A VOICE NOTE
-        </button>
+        <div className="qn-actions" style={{ marginTop: '22px' }}>
+          <button onClick={() => { trackFeature('voice-note'); setRecording(true) }} className="qn-stamp qn-action qn-action-sm">
+            <QEmoji name="mic" size={32} />
+            ADD A VOICE NOTE
+          </button>
+        </div>
       )}
 
-      <button
-        style={{ ...primaryPill, marginTop: '24px', opacity: (note.noteText ?? '').trim().length >= 3 ? 1 : 0.45 }}
-        disabled={(note.noteText ?? '').trim().length < 3}
-        onClick={onNext}
-      >
-        PREVIEW MY CARD
-        <svg aria-hidden width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
-      </button>
+      <div className="qn-actions" style={{ marginTop: '26px' }}>
+        <button
+          className="qn-stamp qn-action"
+          style={{ ['--qn-panel' as string]: 'var(--btn)' }}
+          disabled={(note.noteText ?? '').trim().length < 3}
+          onClick={onNext}
+        >
+          PREVIEW MY CARD
+          <svg aria-hidden width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+        </button>
+      </div>
 
       {recording && (
         <VoiceNoteSheet
@@ -1132,16 +1105,15 @@ function ReviewStep({ note, onSent, onEditNote, onEditRecipient, onSaveDraft, ed
           {error}
           {/* No address? Don't dead-end — text them for it (Emerald, Oct 18) */}
           {/address/i.test(error) && (
-            <button
-              onClick={() => askForAddressByText(note.recipientName?.split(' ')[0])}
-              style={{
-                display: 'block', width: '100%', marginTop: '10px', height: '46px', borderRadius: '23px', boxSizing: 'border-box',
-                border: '2px solid var(--outline)', background: 'var(--btn)', color: 'var(--ink)', cursor: 'pointer',
-                fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '13px', letterSpacing: '0.08em',
-              }}
-            >
-              TEXT THEM FOR THEIR ADDRESS
-            </button>
+            <div className="qn-actions" style={{ marginTop: '12px' }}>
+              <button
+                onClick={() => askForAddressByText(note.recipientName?.split(' ')[0])}
+                className="qn-stamp qn-action qn-action-sm"
+                style={{ ['--qn-panel' as string]: 'var(--btn)' }}
+              >
+                TEXT THEM FOR THEIR ADDRESS
+              </button>
+            </div>
           )}
         </div>
       )}
@@ -1149,28 +1121,25 @@ function ReviewStep({ note, onSent, onEditNote, onEditRecipient, onSaveDraft, ed
       {outOfCards && (
         <div style={{ background: 'var(--error-pale)', borderRadius: '12px', padding: '12px 16px', marginTop: '14px', fontSize: '14px', fontFamily: 'var(--font-body)', color: 'var(--error)' }}>
           You've sent all your cards for this month. More unlock on the 1st, or add one now.
-          <button onClick={buyExtraCard} disabled={buying} style={{
-            display: 'block', width: '100%', marginTop: '10px', height: '46px', borderRadius: '23px', boxSizing: 'border-box',
-            border: '2px solid var(--outline)', background: 'var(--btn)', color: 'var(--ink)', cursor: 'pointer', opacity: buying ? 0.7 : 1,
-            fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '13px', letterSpacing: '0.08em',
-          }}>
-            {buying ? 'OPENING…' : 'ADD AN INDIVIDUAL CARD · $7.95'}
-          </button>
+          <div className="qn-actions" style={{ marginTop: '12px' }}>
+            <button onClick={buyExtraCard} disabled={buying} className="qn-stamp qn-action qn-action-sm"
+              style={{ ['--qn-panel' as string]: 'var(--btn)' }}>
+              {buying ? 'OPENING…' : 'ADD AN INDIVIDUAL CARD · $7.95'}
+            </button>
+          </div>
         </div>
       )}
 
-      <button style={{ ...primaryPill, marginTop: '18px', opacity: sending || outOfCards ? 0.7 : 1 }} disabled={sending || outOfCards} onClick={handleSend}>
-        {sending ? 'SENDING…' : editingNoteId ? 'SAVE CHANGES' : 'MAIL IT'}
-      </button>
-      {!editingNoteId && (
-        <button onClick={onSaveDraft} style={{
-          display: 'block', width: '100%', marginTop: '10px', height: '48px', borderRadius: '24px', boxSizing: 'border-box',
-          background: 'var(--card)', border: '2px solid var(--outline)', cursor: 'pointer',
-          fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '13px', letterSpacing: '0.08em', color: 'var(--ink)',
-        }}>
-          SAVE DRAFT
+      <div className="qn-actions" style={{ marginTop: '22px' }}>
+        <button className="qn-stamp qn-action" style={{ ['--qn-panel' as string]: 'var(--btn)' }} disabled={sending || outOfCards} onClick={handleSend}>
+          {sending ? 'SENDING…' : editingNoteId ? 'SAVE CHANGES' : 'MAIL IT'}
         </button>
-      )}
+        {!editingNoteId && (
+          <button onClick={onSaveDraft} className="qn-stamp qn-action qn-action-sm">
+            SAVE DRAFT
+          </button>
+        )}
+      </div>
     </>
   )
 }

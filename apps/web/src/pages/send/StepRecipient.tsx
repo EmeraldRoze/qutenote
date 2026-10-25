@@ -231,19 +231,16 @@ export default function StepRecipient({ note, onChangeCard, onNext, initialQuery
         </p>
       )}
 
-      <button
-        disabled={!selected}
-        onClick={() => selected && onNext({ recipientId: selected.id, recipientName: selected.displayName })}
-        style={{
-          marginTop: '24px', height: '56px', borderRadius: '28px', border: '2px solid var(--outline)',
-          boxSizing: 'border-box', cursor: selected ? 'pointer' : 'not-allowed',
-          background: 'var(--btn)', opacity: selected ? 1 : 0.45, color: 'var(--ink)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          fontFamily: 'var(--font-body)', fontSize: '15px', fontWeight: 700, letterSpacing: '0.08em',
-        }}
-      >
-        CONTINUE
-      </button>
+      <div className="qn-actions" style={{ marginTop: '26px' }}>
+        <button
+          disabled={!selected}
+          onClick={() => selected && onNext({ recipientId: selected.id, recipientName: selected.displayName })}
+          className="qn-stamp qn-action"
+          style={{ ['--qn-panel' as string]: 'var(--btn)' }}
+        >
+          CONTINUE
+        </button>
+      </div>
     </div>
   )
 }

@@ -156,20 +156,16 @@ export default function PickHandlePage() {
           ))}
         </div>
 
-        <button
-          onClick={save}
-          disabled={saving || status === 'taken' || !/^[a-z0-9_]{3,20}$/.test(handle)}
-          style={{
-            marginTop: 'auto', height: '56px', borderRadius: '28px', border: '2px solid #B4897A', boxSizing: 'border-box',
-            cursor: saving ? 'not-allowed' : 'pointer',
-            background: saving ? 'var(--light-blush)' : 'var(--btn)', color: 'var(--ink)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontFamily: 'var(--font-body)', fontSize: '15px', fontWeight: 700, letterSpacing: '0.08em',
-            opacity: status === 'taken' || !/^[a-z0-9_]{3,20}$/.test(handle) ? 0.5 : 1,
-          }}
-        >
-          {saving ? 'SAVING…' : 'CONTINUE'}
-        </button>
+        <div className="qn-actions" style={{ marginTop: 'auto' }}>
+          <button
+            onClick={save}
+            disabled={saving || status === 'taken' || !/^[a-z0-9_]{3,20}$/.test(handle)}
+            className="qn-stamp qn-action"
+            style={{ ['--qn-panel' as string]: saving ? 'var(--light-blush)' : 'var(--btn)' }}
+          >
+            {saving ? 'SAVING…' : 'CONTINUE'}
+          </button>
+        </div>
       </div>
     </div>
   )

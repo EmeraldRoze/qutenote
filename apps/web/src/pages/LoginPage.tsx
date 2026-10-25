@@ -124,18 +124,16 @@ export default function LoginPage() {
             Forgot password?
           </Link>
 
-          <button
-            type="submit"
-            disabled={loading}
-            style={{
-              marginTop: '8px', height: '56px', borderRadius: '28px', border: '2px solid #B4897A', boxSizing: 'border-box',
-              cursor: loading ? 'not-allowed' : 'pointer',
-              background: loading ? 'var(--light-blush)' : 'var(--btn)', color: 'var(--ink)',
-              fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '15px', letterSpacing: '0.08em',
-            }}
-          >
-            {loading ? 'LOGGING IN…' : 'LOG IN'}
-          </button>
+          <div className="qn-actions" style={{ marginTop: '10px' }}>
+            <button
+              type="submit"
+              disabled={loading}
+              className="qn-stamp qn-action"
+              style={{ ['--qn-panel' as string]: loading ? 'var(--light-blush)' : 'var(--btn)' }}
+            >
+              {loading ? 'LOGGING IN…' : 'LOG IN'}
+            </button>
+          </div>
 
           <div style={{ margin: '24px 0 18px', display: 'flex', alignItems: 'center', gap: '12px', fontSize: '14px', color: 'var(--ink)' }}>
             <span style={{ flex: 1, height: '1.5px', background: '#D9CFC2' }} />

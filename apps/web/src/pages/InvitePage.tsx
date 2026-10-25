@@ -117,25 +117,15 @@ export default function InvitePage() {
               }} />
               {error && <p style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--error)' }}>{error}</p>}
               <div style={{ display: 'flex', gap: '10px' }}>
-                <button type="submit" disabled={loading} style={{
-                  flex: 1, height: '52px', border: '2px solid #B4897A', borderRadius: '999px', background: '#BADAFF', color: '#4A2424',
-                  fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '13px', textTransform: 'uppercase',
-                  letterSpacing: '0.12em', cursor: 'pointer', opacity: loading ? 0.7 : 1,
-                }}>{loading ? 'Sending…' : 'Send the text'}</button>
-                <button type="button" onClick={() => setComposing(false)} style={{
-                  height: '52px', padding: '0 16px', borderRadius: '999px', border: '2px solid #B4897A', background: '#FBF8F3',
-                  color: '#4A2424', fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '13px',
-                  textTransform: 'uppercase', letterSpacing: '0.12em', cursor: 'pointer',
-                }}>Back</button>
+                <button type="submit" disabled={loading} className="qn-stamp qn-action qn-action-sm"
+                  style={{ ['--qn-panel' as string]: 'var(--btn)' }}>{loading ? 'Sending…' : 'Send the text'}</button>
+                <button type="button" onClick={() => setComposing(false)} className="qn-stamp qn-action qn-action-sm">Back</button>
               </div>
             </form>
           ) : (
             <div style={{ display: 'flex', gap: '10px' }}>
-              <button onClick={async () => { try { await inviteByText(user?.displayName?.split(' ')[0]); api.get('/invites').then((r) => setInvites(r.data.data)).catch(() => {}) } catch { setComposing(true) } }} style={{
-                flex: 1, height: '52px', border: '2px solid #B4897A', borderRadius: '999px', background: '#BADAFF', color: '#4A2424',
-                fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '13px', textTransform: 'uppercase',
-                letterSpacing: '0.12em', cursor: 'pointer',
-              }}>Invite by text</button>
+              <button onClick={async () => { try { await inviteByText(user?.displayName?.split(' ')[0]); api.get('/invites').then((r) => setInvites(r.data.data)).catch(() => {}) } catch { setComposing(true) } }}
+                className="qn-stamp qn-action qn-action-sm" style={{ ['--qn-panel' as string]: 'var(--btn)' }}>Invite by text</button>
               <button onClick={async () => {
                 try {
                   const r = await api.post('/invites', {})
@@ -143,11 +133,7 @@ export default function InvitePage() {
                   setCopied(true); setTimeout(() => setCopied(false), 2000)
                   api.get('/invites').then((res) => setInvites(res.data.data)).catch(() => {})
                 } catch { /* clipboard or network said no — button just stays */ }
-              }} style={{
-                height: '52px', padding: '0 16px', borderRadius: '999px', border: '2px solid #B4897A', background: '#FBF8F3',
-                color: '#4A2424', fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '13px',
-                textTransform: 'uppercase', letterSpacing: '0.12em', cursor: 'pointer',
-              }}>{copied ? 'Copied' : 'Copy link'}</button>
+              }} className="qn-stamp qn-action qn-action-sm">{copied ? 'Copied' : 'Copy link'}</button>
             </div>
           )}
         </div>
