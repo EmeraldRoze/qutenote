@@ -1,5 +1,17 @@
 # QuteNote — Handoff / Status Board
-Written: 2026-10-06 (replaces stale April 10 handoff). Last updated: 2026-10-23 (evening).
+Written: 2026-10-06 (replaces stale April 10 handoff). Last updated: 2026-10-25.
+
+## OCT 25 — ANALYTICS BRIEFING, SPEED FIX, NO-LONG-BUTTONS SWEEP (committed locally, NOT pushed, no build)
+- ANALYTICS (standing duty, briefed her): 21 accounts, 1219 events, 135 sessions. Send funnel 72 card → 19 recipient → 13 write → 4 review. Features: handwriting 7, voice 3, flower 2, secret 1. Screens: /home 181, /connections 57, /send 52, /dates 52. Dashboard exists at /admin/analytics (AdminAnalyticsPage) — she answered "both" (dashboard + briefings), which matches the Oct 22 interview.
+- WALL FLAGS WERE HALF-FAKE: tap/screen crumbs were logged TWICE in dev-build sessions (14 of 135 sessions, 150 events). Cause: analytics effects re-running (StrictMode in the dev webview) adding a second document click listener. Fixed in lib/analytics.ts: `tapTrackingInstalled` guard + trackScreen ignores the same path within 1s. Her dashboard numbers were ~12% inflated.
+- REAL DEAD BUTTON: tapping the tab you are already on did nothing (she rage-tapped Profile 4x on her own profile). TabBar now scrolls to top on the active tab, and ONLY your own profile lights the Profile tab (another person's profile used to light it too).
+- SLOW /home (4042ms) was a dev-build artifact, BUT the real cause underneath was art weight: emoji were ~1000px, 1-2MB each, drawn at 32-64px. Rebuilt at 3x display size: emoji 17.8MB → 6.1MB, brand 6.5MB → 4.8MB. scratchpad scripts shrink_emoji.py / shrink_apng.py. APNG rule honored: optimize=False, durations copied, PIL may merge identical neighbour frames (party 6→5 frames, same 900ms total — fine). bff-live.png left alone (invite card renders it at 238px).
+- API IS FAST: prod /statuses/home-feed, /connections, /important-dates all 170-600ms with her real data. Not a server problem.
+- NO LONG BUTTONS (her rule, verbatim: "no long buttons anywhere. you dont need to create any other rules"): new `.qn-action` / `.qn-actions` / `.qn-actions-row` in index.css = die-cut stamp edge, width of the words, `--qn-panel` picks the face colour (var(--btn) for the main action). Swept 25 files; SendFlow's primaryPill/secondaryPill constants deleted; CardScanPage's bigButton() now only returns colours.
+- DELIBERATELY NOT CONVERTED (told her): Settings list rows, QT person rows, Home carousel cards, handwriting section rows (lists, not buttons) and the tiny 34px Yes/No request chips (stamp perforations go chunky that small). Admin screens skipped.
+- AUDIT TECHNIQUE: public/__audit.html (temp, deleted) walked every route in a same-origin iframe and reported any button ≥62% of a 390px viewport; public/__preview.html (temp, deleted) injected a signed token then redirected, for headless screenshots. Mint a token with jsonwebtoken + JWT_SECRET from root .env.
+- FORMAT PACK for her Claude mockups: ~/Desktop/QuteNote-Format/ (READ-ME-FIRST.md, qutenote-format.css, screen-template.html, design-rules.md, screen-inventory.md), copy committed at design/format-pack/. Art is referenced by live qutenote.com URLs.
+- STILL OPEN: acorn needs to move DOWN to the base of the bouquet; printed-card PDF stamp is still the old design; taller invite card?; tab icons in full colour?; dusk card drift?; stamp-collection empty-state copy.
 
 ## OVERNIGHT ROUND Oct 24 ~3-4am (FIREFLYs) — BUILDS 53 + 54 UPLOADED, website deployed twice more
 - BUILD 53 then BUILD 54 (she went to sleep after 54). Both verified before upload: entitlements present, build number + prod API baked, capacitor.config has no server.url.
