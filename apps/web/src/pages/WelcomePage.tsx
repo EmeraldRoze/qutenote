@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import { WEB_BUILD } from '../lib/buildGuard'
 import { WAX_CENTER_X, WAX_CENTER_Y, WAX_WIDTH } from '../lib/wax'
+import Logo from '../components/Logo'
 
 // Welcome — screen 01 of the Oct 15 2026 redesign. The app's front door:
 // logo in the title band, headline + floating postmark stamp mid-screen on
@@ -24,7 +25,7 @@ export default function WelcomePage() {
         paddingTop: 'max(calc(54px - env(safe-area-inset-top)), 0px)',
       }}>
         <div style={{ ...col, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <img src="/brand/qutenote_logo.png" alt="QuteNote" style={{ height: '32px', width: 'auto' }} />
+          <Logo height={26} />
         </div>
       </header>
 
@@ -53,6 +54,7 @@ export default function WelcomePage() {
         </p>
       </div>
 
+      {/* Log in / Sign up: her square stamps (Emerald, Oct 25) */}
       <div className="qn-actions-row" style={{ ...col, marginTop: 'auto', paddingBottom: '40px', flex: 'none' }}>
         <button onClick={() => navigate('/login')} className="qn-action qn-action-square">
           LOG IN

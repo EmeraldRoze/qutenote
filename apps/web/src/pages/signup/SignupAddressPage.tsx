@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { trackFunnel } from '../../lib/analytics'
 import { useNavigate } from 'react-router-dom'
 import { api } from '../../lib/api'
+import { setSetupNext } from '../../lib/postAuthRoute'
 import QEmoji from '../../components/QEmoji'
 
 // Sign-up: address — screen 04 of the Oct 15 2026 redesign. Same endpoints as
@@ -42,6 +43,7 @@ export default function SignupAddressPage() {
     try {
       await api.post('/address', form)
       trackFunnel('setup', 'address-saved')
+      setSetupNext('/signup/birthday')
       navigate('/signup/birthday')
     } catch (err: any) {
       setError(err.response?.data?.error ?? 'Something went wrong. Try again.')
@@ -144,16 +146,19 @@ export default function SignupAddressPage() {
         </div>
 
         <div style={{ marginTop: 'auto', paddingTop: '24px' }} />
-        <div className="qn-actions">
-          <button
-            type="submit"
-            disabled={saving}
-            className="qn-stamp qn-action"
-            style={{ flex: 'none', ['--qn-panel' as string]: saving ? 'var(--light-blush)' : 'var(--btn)' }}
-          >
-            {saving ? 'VERIFYING…' : 'VERIFY ADDRESS'}
-          </button>
-        </div>
+        <button
+          type="submit"
+          disabled={saving}
+          style={{
+            height: '56px', borderRadius: '28px', border: '2px solid #B4897A', boxSizing: 'border-box', flex: 'none',
+            cursor: saving ? 'not-allowed' : 'pointer',
+            background: saving ? 'var(--light-blush)' : 'var(--btn)', color: 'var(--ink)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontFamily: 'var(--font-body)', fontSize: '15px', fontWeight: 700, letterSpacing: '0.08em',
+          }}
+        >
+          {saving ? 'VERIFYING…' : 'VERIFY ADDRESS'}
+        </button>
       </form>
     </div>
   )

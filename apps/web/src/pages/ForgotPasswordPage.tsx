@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { api } from '../lib/api'
 import QEmoji from '../components/QEmoji'
+import Logo from '../components/Logo'
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState('')
@@ -28,7 +29,7 @@ export default function ForgotPasswordPage() {
       <div className="w-full max-w-md">
 
         <div className="text-center mb-8">
-          <img src="/brand/qutenote_logo.png" alt="QuteNote" style={{ height: '32px', width: 'auto' }} />
+          <Logo height={32} />
         </div>
 
         <div style={{
@@ -94,8 +95,15 @@ export default function ForgotPasswordPage() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="qn-stamp qn-action"
-                  style={{ marginTop: '8px', ['--qn-panel' as string]: loading ? 'var(--light-blush)' : 'var(--btn)' }}
+                  style={{
+                    width: '100%', height: '56px', fontSize: '15px', fontWeight: 700, letterSpacing: '0.08em',
+                    borderRadius: '28px', border: '2px solid #B4897A', boxSizing: 'border-box',
+                    cursor: loading ? 'not-allowed' : 'pointer',
+                    background: loading ? 'var(--light-blush)' : 'var(--btn)',
+                    color: 'var(--ink)', boxShadow: loading ? 'none' : 'var(--shadow-button)',
+                    fontFamily: 'var(--font-body)', marginTop: '4px',
+                    transition: 'background 0.15s',
+                  }}
                 >
                   {loading ? 'SENDING...' : 'SEND RESET LINK'}
                 </button>

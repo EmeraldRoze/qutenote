@@ -124,16 +124,14 @@ export default function LoginPage() {
             Forgot password?
           </Link>
 
-          <div className="qn-actions" style={{ marginTop: '10px' }}>
-            <button
-              type="submit"
-              disabled={loading}
-              className="qn-action qn-action-square"
-              style={{ ['--qn-panel' as string]: loading ? 'var(--light-blush)' : 'var(--btn)' }}
-            >
-              {loading ? 'LOGGING IN…' : 'LOG IN'}
-            </button>
-          </div>
+          <button
+            type="submit"
+            disabled={loading}
+            className="qn-action qn-action-square"
+            style={{ marginTop: '10px', ['--qn-panel' as string]: loading ? 'var(--light-blush)' : 'var(--btn)' }}
+          >
+            {loading ? 'LOGGING IN…' : 'LOG IN'}
+          </button>
 
           <div style={{ margin: '24px 0 18px', display: 'flex', alignItems: 'center', gap: '12px', fontSize: '14px', color: 'var(--ink)' }}>
             <span style={{ flex: 1, height: '1.5px', background: '#D9CFC2' }} />

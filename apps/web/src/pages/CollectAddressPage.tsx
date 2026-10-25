@@ -225,8 +225,15 @@ export default function CollectAddressPage() {
             <button
               type="submit"
               disabled={submitting || !line1.trim() || !city.trim() || !state.trim() || !zip.trim()}
-              className="qn-stamp qn-action"
-              style={{ marginTop: '8px', ['--qn-panel' as string]: 'var(--btn)' }}
+              style={{
+                padding: '16px 24px', fontSize: '15px', fontWeight: 700,
+                borderRadius: '999px', border: '2px solid #B4897A',
+                cursor: submitting ? 'default' : 'pointer',
+                background: '#BADAFF', opacity: submitting ? 0.7 : 1,
+                color: '#4A2424', fontFamily: 'var(--font-body)',
+                textTransform: 'uppercase', letterSpacing: '0.08em',
+                marginTop: '4px', transition: 'opacity 0.15s',
+              }}
             >
               {submitting ? 'Saving...' : 'Share my address'}
             </button>

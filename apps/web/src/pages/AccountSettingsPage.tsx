@@ -155,23 +155,24 @@ export default function AccountSettingsPage() {
               Saved
             </p>
           )}
-          <div className="qn-actions">
-            <button
-              onClick={save}
-              disabled={saving || !displayName.trim()}
-              className="qn-stamp qn-action"
-              style={{ ['--qn-panel' as string]: 'var(--btn)' }}
-            >
-              {saving ? 'SAVING…' : 'SAVE CHANGES'}
-            </button>
-            <button onClick={() => { setConfirmingDelete(true); setDeleteText(''); setDeleteError('') }} style={{
-              minHeight: '44px', padding: '0 12px', border: 0, background: 'transparent', cursor: 'pointer',
-              fontFamily: 'var(--font-body)', fontSize: '14px', color: 'var(--ink)', textDecoration: 'underline',
-              textTransform: 'none', letterSpacing: 0, fontWeight: 400,
-            }}>
-              Delete account
-            </button>
-          </div>
+          <button
+            onClick={save}
+            disabled={saving || !displayName.trim()}
+            style={{
+              height: '56px', border: '2px solid var(--stone)', borderRadius: '28px', background: 'var(--btn)', color: 'var(--ink)', boxSizing: 'border-box',
+              fontFamily: 'var(--font-body)', fontSize: '16px', fontWeight: 700, letterSpacing: '0.08em',
+              cursor: saving ? 'default' : 'pointer', opacity: saving || !displayName.trim() ? 0.6 : 1,
+            }}
+          >
+            {saving ? 'SAVING…' : 'SAVE CHANGES'}
+          </button>
+          <button onClick={() => { setConfirmingDelete(true); setDeleteText(''); setDeleteError('') }} style={{
+            minHeight: '44px', border: 0, background: 'transparent', cursor: 'pointer',
+            fontFamily: 'var(--font-body)', fontSize: '14px', color: 'var(--ink)', textDecoration: 'underline',
+            textTransform: 'none', letterSpacing: 0, fontWeight: 400,
+          }}>
+            Delete account
+          </button>
         </div>
       </div>
 
@@ -223,10 +224,12 @@ export default function AccountSettingsPage() {
             <button
               onClick={deleteAccount}
               disabled={deleting || deleteText.trim().toUpperCase() !== 'DELETE'}
-              className="qn-stamp qn-action"
               style={{
-                color: 'var(--error)', marginBottom: '10px',
-                ['--qn-panel' as string]: 'var(--error-pale)',
+                width: '100%', height: '56px', borderRadius: '28px', border: 'none',
+                background: 'var(--error)', color: 'var(--card)',
+                fontFamily: 'var(--font-body)', fontSize: '16px', fontWeight: 700, letterSpacing: '0.08em',
+                cursor: 'pointer', opacity: deleting || deleteText.trim().toUpperCase() !== 'DELETE' ? 0.5 : 1,
+                marginBottom: '10px',
               }}
             >
               {deleting ? 'DELETING…' : 'DELETE MY ACCOUNT'}

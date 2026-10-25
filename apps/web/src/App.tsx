@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-route
 import { AuthProvider, useAuth } from './context/AuthContext'
 import { isNativeApp } from './lib/native'
 import { trackScreen, installTapTracking } from './lib/analytics'
+import { getSetupNext } from './lib/postAuthRoute'
 import AdminAnalyticsPage from './pages/AdminAnalyticsPage'
 import SignUpPage from './pages/SignUpPage'
 import LoginPage from './pages/LoginPage'
@@ -57,7 +58,10 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 function PublicRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth()
   if (loading) return null
-  return user ? <Navigate to="/home" replace /> : <>{children}</>
+  // A signup that is still walking through address/birthday resumes there
+  // instead of being sent Home (Emerald, Oct 25 — see lib/postAuthRoute).
+  if (user) return <Navigate to={getSetupNext() ?? '/home'} replace />
+  return <>{children}</>
 }
 
 function AppRoutes() {

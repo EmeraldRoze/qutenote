@@ -2,11 +2,12 @@ import { useState } from 'react'
 import { trackFunnel } from '../lib/analytics'
 import { useNavigate } from 'react-router-dom'
 import { api } from '../lib/api'
-import { postSocialAuthRoute } from '../lib/postAuthRoute'
+import { postSocialAuthRoute, setSetupNext } from '../lib/postAuthRoute'
 import { useAuth } from '../context/AuthContext'
 import { isNativeApp } from '../lib/native'
 import { appleSignIn, openGoogleSignIn } from '../lib/nativeAuth'
 import QEmoji from '../components/QEmoji'
+import Logo from '../components/Logo'
 
 // Create account — screen 02 of the Oct 15 2026 redesign. Apple and Google as
 // round buttons up top, email form below. Birthday is NOT collected here; it
@@ -43,6 +44,9 @@ export default function SignUpPage() {
     try {
       const res = await api.post('/auth/register', form)
       trackFunnel('setup', 'account-created')
+      // tell the public-route guard where this new account is headed before
+      // signing them in, or it redirects them Home mid-signup
+      setSetupNext('/signup/address')
       login(res.data.data.token, res.data.data.user)
       navigate('/signup/address')
     } catch (err: any) {
@@ -67,7 +71,7 @@ export default function SignUpPage() {
             }}>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 5l-7 7 7 7" /></svg>
             </button>
-            <img src="/brand/qutenote_logo.png" alt="QuteNote" style={{ height: '26px', width: 'auto' }} />
+            <Logo height={26} />
           </div>
           <div style={{ marginTop: '14px', display: 'flex', alignItems: 'center', gap: '12px' }}>
             <h1 style={{
@@ -184,16 +188,14 @@ export default function SignUpPage() {
           </div>
 
           <div style={{ marginTop: 'auto', display: 'flex', flexDirection: 'column', gap: '6px', paddingTop: '24px' }}>
-            <div className="qn-actions">
-              <button
-                type="submit"
-                disabled={loading}
-                className="qn-action qn-action-square"
-                style={{ ['--qn-panel' as string]: loading ? 'var(--light-blush)' : 'var(--btn)' }}
-              >
-                {loading ? 'CREATING…' : 'CREATE ACCOUNT'}
-              </button>
-            </div>
+            <button
+              type="submit"
+              disabled={loading}
+              className="qn-action qn-action-square"
+              style={{ alignSelf: 'center', ['--qn-panel' as string]: loading ? 'var(--light-blush)' : 'var(--btn)' }}
+            >
+              {loading ? 'CREATING…' : 'CREATE ACCOUNT'}
+            </button>
             <p style={{ margin: 0, minHeight: '44px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', fontSize: '15px', color: 'var(--ink)' }}>
               Already a QT?{' '}
               <button type="button" onClick={() => navigate('/login')} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', fontWeight: 700, color: 'var(--stamp-center)', fontFamily: 'var(--font-body)', fontSize: '15px', textTransform: 'none', letterSpacing: 0 }}>

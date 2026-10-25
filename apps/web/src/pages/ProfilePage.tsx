@@ -118,13 +118,20 @@ function CardSheet({ note, onClose }: { note: NoteThumb; onClose: () => void }) 
             )}
           </div>
           {(isSecret || isFlower) && (
-            <button onClick={() => { if (!decoded) trackFeature('decode'); setDecoded((d) => !d) }}
-              className="qn-stamp qn-action" style={{ marginTop: '14px', ['--qn-panel' as string]: 'var(--btn)' }}>
+            <button onClick={() => { if (!decoded) trackFeature('decode'); setDecoded((d) => !d) }} style={{
+              width: '100%', marginTop: '12px', height: '56px', borderRadius: '28px', border: '2px solid var(--stone)',
+              background: 'var(--btn)', color: 'var(--ink)', cursor: 'pointer', boxSizing: 'border-box',
+              fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '15px', letterSpacing: '0.08em',
+            }}>
               {decoded ? 'HIDE IT AGAIN 🤫' : 'DECODE THE SECRET'}
             </button>
           )}
           {note.voiceUploadId && (
-            <button onClick={toggleVoice} className="qn-stamp qn-action" style={{ marginTop: '14px' }}>
+            <button onClick={toggleVoice} style={{
+              width: '100%', marginTop: '12px', height: '56px', borderRadius: '28px',
+              border: '2px solid var(--stone)', background: 'var(--card)', color: 'var(--ink)', cursor: 'pointer', boxSizing: 'border-box',
+              fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '15px', letterSpacing: '0.08em',
+            }}>
               {playing ? '❚❚ PAUSE' : '🎤 LISTEN TO VOICE NOTE'}
             </button>
           )}
@@ -342,10 +349,11 @@ export default function ProfilePage() {
               <span style={{ fontFamily: 'var(--font-display)', fontSize: '34px', lineHeight: 1, color: 'var(--ink)' }}>{cardsLeft}</span>
               <span style={{ fontFamily: 'var(--font-body)', fontSize: '18px', fontWeight: 700, color: 'var(--ink)' }}>cards</span>
             </div>
-            <div className="qn-actions" style={{ marginTop: '18px' }}>
-              <button onClick={() => navigate('/send')} className="qn-stamp qn-action"
-                style={{ ['--qn-panel' as string]: 'var(--btn)' }}>SEND A CARD</button>
-            </div>
+            <button onClick={() => navigate('/send')} style={{
+              marginTop: '18px', width: '100%', height: '56px', borderRadius: '28px', border: '2px solid var(--stone)',
+              background: 'var(--btn)', color: 'var(--ink)', cursor: 'pointer', boxSizing: 'border-box',
+              fontFamily: 'var(--font-body)', fontSize: '16px', fontWeight: 700, letterSpacing: '0.08em',
+            }}>SEND A CARD</button>
           </div>
 
           {/* Stamp collection, one stamp per postcard sent */}
@@ -394,7 +402,7 @@ export default function ProfilePage() {
           <button
             onClick={() => { logout(); navigate('/') }}
             style={{
-              display: 'block', margin: '22px auto 0', padding: '0 14px', minHeight: '48px', border: 'none', background: 'none',
+              width: '100%', marginTop: '22px', minHeight: '48px', border: 'none', background: 'none',
               cursor: 'pointer', fontFamily: 'var(--font-body)', fontSize: '15px', fontWeight: 700,
               color: 'var(--ink)', textDecoration: 'underline', textUnderlineOffset: '3px',
               textTransform: 'none', letterSpacing: 0,
@@ -465,18 +473,24 @@ export default function ProfilePage() {
             <button
               onClick={addQT}
               disabled={requested || profile.connectionStatus === 'ACCEPTED' || profile.connectionStatus === 'PENDING'}
-              className="qn-stamp qn-action qn-action-sm"
-              style={{ ['--qn-panel' as string]: profile.connectionStatus === 'ACCEPTED' ? 'var(--selected-fill)' : 'var(--btn)' }}
+              style={{
+                height: '44px', padding: '0 20px', borderRadius: '999px', cursor: 'pointer',
+                border: '2px solid var(--stone)', boxSizing: 'border-box',
+                background: profile.connectionStatus === 'ACCEPTED' ? 'var(--selected-fill)' : 'var(--btn)',
+                color: 'var(--ink)', fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '13px', letterSpacing: '0.08em',
+              }}
             >
               {profile.connectionStatus === 'ACCEPTED' ? 'Your QT ✓' : requested || profile.connectionStatus === 'PENDING' ? 'Requested' : 'Add QT'}
             </button>
             {profile.connectionStatus === 'ACCEPTED' && (
               <button
                 onClick={removeQT}
-                className="qn-stamp qn-action qn-action-sm"
                 style={{
+                  height: '44px', padding: '0 16px', borderRadius: '999px', cursor: 'pointer',
+                  border: `2px solid ${removeArmed ? 'var(--error)' : 'var(--stone)'}`, boxSizing: 'border-box',
+                  background: removeArmed ? 'var(--error-pale)' : 'var(--card)',
                   color: removeArmed ? 'var(--error)' : 'var(--ink)',
-                  ['--qn-panel' as string]: removeArmed ? 'var(--error-pale)' : 'var(--card)',
+                  fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '13px', letterSpacing: '0.08em',
                 }}
               >
                 {removeArmed ? 'Tap again to remove' : 'Remove QT'}

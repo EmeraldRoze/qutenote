@@ -243,7 +243,11 @@ function WordFlow({ session, onSaved, glyphs }: {
 
       <div style={{ display: 'flex', gap: '10px', marginTop: '18px', justifyContent: 'center' }}>
         <button onClick={() => { disarm(); setStrokes([]) }} disabled={!strokes.length || saving}
-          className="qn-stamp qn-action qn-action-sm">
+          style={{
+            height: '48px', borderRadius: '24px', border: '2px solid #B4897A', cursor: 'pointer', padding: '0 26px',
+            background: '#FBF8F3', color: '#4A2424', fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '13px',
+            letterSpacing: '0.08em', opacity: strokes.length && !saving ? 1 : 0.5,
+          }}>
           Clear & rewrite
         </button>
       </div>
@@ -314,7 +318,10 @@ function FixLetter({ char, glyphs, onSaved, onClose }: {
           onPointerLeave={() => { if (!drawingRef.current) return; drawingRef.current = false; if (currentRef.current.length >= 1) setStrokes([...strokes, currentRef.current]); currentRef.current = [] }}
         />
         <div style={{ display: 'flex', gap: '10px', marginTop: '14px' }}>
-          <button onClick={() => setStrokes([])} disabled={!strokes.length} className="qn-stamp qn-action qn-action-sm">
+          <button onClick={() => setStrokes([])} disabled={!strokes.length} style={{
+            flex: 1, height: '48px', borderRadius: '24px', border: '2px solid #B4897A', background: '#FBF8F3',
+            color: '#4A2424', cursor: 'pointer', fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '13px', opacity: strokes.length ? 1 : 0.5,
+          }}>
             Clear
           </button>
           <button
@@ -330,8 +337,11 @@ function FixLetter({ char, glyphs, onSaved, onClose }: {
               }
             }}
             disabled={!strokes.length || saving}
-            className="qn-stamp qn-action qn-action-sm"
-            style={{ ['--qn-panel' as string]: 'var(--btn)' }}
+            style={{
+              flex: 2, height: '48px', borderRadius: '24px', border: '2px solid #B4897A', background: '#BADAFF', color: '#4A2424',
+              cursor: 'pointer', fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '13px',
+              opacity: !strokes.length || saving ? 0.5 : 1,
+            }}
           >
             {saving ? 'Saving…' : 'Save letter'}
           </button>

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { api } from '../../lib/api'
 import { useAuth } from '../../context/AuthContext'
 import QEmoji from '../../components/QEmoji'
+import Logo from '../../components/Logo'
 
 // Pick your handle — screen 03 of the Oct 15 2026 redesign. Shown only after
 // Apple or Google just created a NEW account (they don't give us a username).
@@ -76,7 +77,7 @@ export default function PickHandlePage() {
             }}>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 5l-7 7 7 7" /></svg>
             </button>
-            <img src="/brand/qutenote_logo.png" alt="QuteNote" style={{ height: '26px', width: 'auto' }} />
+            <Logo height={26} />
           </div>
           <div style={{ marginTop: '14px', display: 'flex', alignItems: 'center', gap: '12px' }}>
             <h1 style={{
@@ -156,16 +157,20 @@ export default function PickHandlePage() {
           ))}
         </div>
 
-        <div className="qn-actions" style={{ marginTop: 'auto' }}>
-          <button
-            onClick={save}
-            disabled={saving || status === 'taken' || !/^[a-z0-9_]{3,20}$/.test(handle)}
-            className="qn-stamp qn-action"
-            style={{ ['--qn-panel' as string]: saving ? 'var(--light-blush)' : 'var(--btn)' }}
-          >
-            {saving ? 'SAVING…' : 'CONTINUE'}
-          </button>
-        </div>
+        <button
+          onClick={save}
+          disabled={saving || status === 'taken' || !/^[a-z0-9_]{3,20}$/.test(handle)}
+          style={{
+            marginTop: 'auto', height: '56px', borderRadius: '28px', border: '2px solid #B4897A', boxSizing: 'border-box',
+            cursor: saving ? 'not-allowed' : 'pointer',
+            background: saving ? 'var(--light-blush)' : 'var(--btn)', color: 'var(--ink)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontFamily: 'var(--font-body)', fontSize: '15px', fontWeight: 700, letterSpacing: '0.08em',
+            opacity: status === 'taken' || !/^[a-z0-9_]{3,20}$/.test(handle) ? 0.5 : 1,
+          }}
+        >
+          {saving ? 'SAVING…' : 'CONTINUE'}
+        </button>
       </div>
     </div>
   )

@@ -206,9 +206,10 @@ export default function ConnectionsPage() {
             <p style={{ margin: 0, fontFamily: 'var(--font-body)', fontSize: '15px', lineHeight: 1.4, color: 'var(--ink)' }}>
               Invite friends, get free cards.
             </p>
-            <button onClick={() => inviteByText(user?.displayName?.split(' ')[0]).catch(() => navigate('/invite'))}
-              className="qn-stamp qn-action qn-action-sm"
-              style={{ alignSelf: 'flex-start', ['--qn-panel' as string]: 'var(--btn)' }}>INVITE</button>
+            <button onClick={() => inviteByText(user?.displayName?.split(' ')[0]).catch(() => navigate('/invite'))} style={{
+              alignSelf: 'flex-start', height: '44px', padding: '0 18px', borderRadius: '22px', border: '2px solid var(--outline)', cursor: 'pointer',
+              background: 'var(--btn)', color: 'var(--ink)', fontFamily: 'var(--font-body)', fontSize: '14px', fontWeight: 700, letterSpacing: '0.08em', boxSizing: 'border-box',
+            }}>INVITE</button>
           </div>
         </div>
 
@@ -226,11 +227,13 @@ export default function ConnectionsPage() {
 
         {/* Contacts sync (native app only) */}
         {contactsAvailable && syncState !== 'done' && (
-          <div className="qn-actions" style={{ marginTop: '18px' }}>
-            <button onClick={syncContacts} disabled={syncState === 'syncing'} className="qn-stamp qn-action qn-action-sm">
-              {syncState === 'syncing' ? 'CHECKING YOUR CONTACTS…' : 'SYNC CONTACTS'}
-            </button>
-          </div>
+          <button onClick={syncContacts} disabled={syncState === 'syncing'} style={{
+            width: '100%', marginTop: '12px', height: '44px', borderRadius: '22px', cursor: 'pointer',
+            border: '2px dashed var(--outline)', background: 'var(--selected-fill)', color: 'var(--ink)',
+            fontFamily: 'var(--font-body)', fontSize: '14px', fontWeight: 700, letterSpacing: '0.08em',
+          }}>
+            {syncState === 'syncing' ? 'CHECKING YOUR CONTACTS…' : 'SYNC CONTACTS'}
+          </button>
         )}
         {syncState === 'failed' && (
           <p style={{ margin: '10px 0 0', fontFamily: 'var(--font-body)', fontSize: '14px', color: 'var(--ink-mid)' }}>

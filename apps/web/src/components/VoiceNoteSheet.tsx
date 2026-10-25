@@ -157,16 +157,21 @@ export default function VoiceNoteSheet({ onDone, onClose }: {
               <p style={{ fontFamily: 'var(--font-body)', fontSize: '15px', color: 'var(--ink-mid)', margin: '12px 0 0' }}>
                 {formatSeconds(takeRef.current?.duration ?? 0)} recorded
               </p>
-              <div className="qn-actions" style={{ marginTop: '18px' }}>
-                <button onClick={() => { if (takeRef.current) { cleanup(); onDone(takeRef.current) } }}
-                  className="qn-stamp qn-action" style={{ ['--qn-panel' as string]: 'var(--btn)' }}>
-                  PUT IT ON THE CARD
-                </button>
-                <button onClick={() => { takeRef.current = null; setPhase('idle'); setSeconds(0) }}
-                  className="qn-stamp qn-action qn-action-sm">
-                  RECORD IT AGAIN
-                </button>
-              </div>
+              <button onClick={() => { if (takeRef.current) { cleanup(); onDone(takeRef.current) } }} style={{
+                width: '100%', marginTop: '18px', height: '54px', borderRadius: '27px',
+                border: '2px solid var(--outline)', boxSizing: 'border-box',
+                background: 'var(--btn)', color: 'var(--ink)', cursor: 'pointer',
+                fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '15px', letterSpacing: '0.08em',
+              }}>
+                PUT IT ON THE CARD
+              </button>
+              <button onClick={() => { takeRef.current = null; setPhase('idle'); setSeconds(0) }} style={{
+                width: '100%', marginTop: '10px', height: '48px', borderRadius: '24px', background: 'var(--card)',
+                border: '2px solid var(--outline)', boxSizing: 'border-box', cursor: 'pointer',
+                fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '13px', letterSpacing: '0.08em', color: 'var(--ink)',
+              }}>
+                RECORD IT AGAIN
+              </button>
             </>
           )}
 

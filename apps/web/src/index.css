@@ -162,7 +162,13 @@ body::before {
    down — so the loop is seamless and the card always shows both colors. The
    paper grain rides on its own still layer on top, so only color moves. */
 .ombre-live{ position: relative; overflow: hidden; isolation: isolate; background-image: none; }
-.ombre-live::before{ content:''; position:absolute; inset:-100%; z-index:-1; background-image: var(--qn-ombre); }
+/* The drifting layer only has to cover the card plus the distance it travels
+   (184px right, 262px down), so it overhangs top and left and nothing more —
+   a layer three times the card's size made iPhones stutter as they redrew it
+   (Emerald, Oct 25). will-change keeps it on the GPU for the whole loop. */
+.ombre-live::before{ content:''; position:absolute; inset:-272px -6px -6px -194px; z-index:-1;
+  background-image: var(--qn-ombre);
+  will-change: transform; backface-visibility: hidden; }
 .ombre-live::after{ content:''; position:absolute; inset:0; z-index:-1; pointer-events:none; background-image:url('/brand/paper_texture.png'); }
 @media (prefers-reduced-motion: no-preference){
   .ombre-live::before{ animation: qn-ombre 10s linear infinite; }
@@ -181,11 +187,11 @@ body::before {
   opacity: 0.45;
 }
 
-/* NO LONG BUTTONS (Emerald, Oct 25): every action button wears the die-cut
-   stamp edge and is only as wide as its words. Nothing stretches across the
-   screen any more. Use `className="qn-stamp qn-action"`, and add
-   style={{ ['--qn-panel']: 'var(--btn)' }} for the main action on a screen.
-   .qn-actions is the centered column they stack in. */
+/* Emerald, Oct 25: the perforated stamp on every button in the app was too
+   much — the app's buttons are back to their pills. The ONLY buttons wearing
+   a stamp are Log in and Sign up, and theirs is SQUARE: her realistic
+   cardstock border with the printed panel inside, no punched edge.
+   Use `className="qn-action qn-action-square"` (never with .qn-stamp). */
 .qn-action{
   display:inline-flex; align-items:center; justify-content:center; gap:8px;
   width:auto; align-self:center; max-width:100%;
@@ -195,16 +201,21 @@ body::before {
   cursor:pointer; text-align:center;
 }
 .qn-action:disabled{ opacity:0.5; cursor:not-allowed; }
-/* Square stamp (Emerald, Oct 25): Log in and Sign up wear a plain square-cornered
-   stamp — printed panel, paper grain, a crisp outline and the ink rule just
-   inside it — but NO punched perforations. Use WITHOUT .qn-stamp. */
+/* The SQUARE stamp: exactly the photoreal cardstock, ink rule and printed
+   panel of .qn-stamp, with straight edges instead of punched perforations. */
 .qn-action-square{
-  border:2px solid var(--outline); border-radius:0;
-  background-color: var(--qn-panel, var(--card));
-  background-image: url('/brand/paper_texture.png');
-  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.45), inset 0 0 0 4px var(--qn-panel, var(--card)),
-              inset 0 0 0 5px rgba(74,36,36,0.3), 0 4px 10px rgba(74,36,36,0.12);
-  padding:0 26px;
+  position:relative; isolation:isolate;
+  border:10px solid transparent; border-radius:0;
+  background:transparent; padding:0 16px; min-height:56px;
+  filter:drop-shadow(0 0 1.5px rgba(74,36,36,.5)) drop-shadow(0 0 4px rgba(74,36,36,.28)) drop-shadow(0 0 10px rgba(74,36,36,.14));
+}
+.qn-action-square::after{
+  content:''; position:absolute; inset:-2px; z-index:-1; pointer-events:none;
+  background:
+    linear-gradient(var(--qn-panel,#E9EDF1),var(--qn-panel,#E9EDF1)) 50% 50%/calc(100% - 24px) calc(100% - 24px) no-repeat,
+    linear-gradient(rgba(74,36,36,.3),rgba(74,36,36,.3)) 50% 50%/calc(100% - 22px) calc(100% - 22px) no-repeat,
+    url('/brand/paper_texture.png'),
+    linear-gradient(145deg, #F6EFE0 0%, #EFE5D0 55%, #E9DCC4 100%);
 }
 .qn-action-sm{ min-height:42px; padding:0 16px; font-size:13px; }
 .qn-actions{ display:flex; flex-direction:column; align-items:center; gap:14px; }
