@@ -128,7 +128,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="qn-stamp qn-action"
+              className="qn-action qn-action-square"
               style={{ ['--qn-panel' as string]: loading ? 'var(--light-blush)' : 'var(--btn)' }}
             >
               {loading ? 'LOGGING IN…' : 'LOG IN'}

@@ -195,6 +195,17 @@ body::before {
   cursor:pointer; text-align:center;
 }
 .qn-action:disabled{ opacity:0.5; cursor:not-allowed; }
+/* Square stamp (Emerald, Oct 25): Log in and Sign up wear a plain square-cornered
+   stamp — printed panel, paper grain, a crisp outline and the ink rule just
+   inside it — but NO punched perforations. Use WITHOUT .qn-stamp. */
+.qn-action-square{
+  border:2px solid var(--outline); border-radius:0;
+  background-color: var(--qn-panel, var(--card));
+  background-image: url('/brand/paper_texture.png');
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.45), inset 0 0 0 4px var(--qn-panel, var(--card)),
+              inset 0 0 0 5px rgba(74,36,36,0.3), 0 4px 10px rgba(74,36,36,0.12);
+  padding:0 26px;
+}
 .qn-action-sm{ min-height:42px; padding:0 16px; font-size:13px; }
 .qn-actions{ display:flex; flex-direction:column; align-items:center; gap:14px; }
 .qn-actions-row{ display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:14px; }

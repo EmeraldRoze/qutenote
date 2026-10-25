@@ -54,10 +54,10 @@ export default function WelcomePage() {
       </div>
 
       <div className="qn-actions-row" style={{ ...col, marginTop: 'auto', paddingBottom: '40px', flex: 'none' }}>
-        <button onClick={() => navigate('/login')} className="qn-stamp qn-action">
+        <button onClick={() => navigate('/login')} className="qn-action qn-action-square">
           LOG IN
         </button>
-        <button onClick={() => navigate('/signup')} className="qn-stamp qn-action"
+        <button onClick={() => navigate('/signup')} className="qn-action qn-action-square"
           style={{ ['--qn-panel' as string]: 'var(--btn)' }}>
           SIGN UP
         </button>
