@@ -1,5 +1,9 @@
 # QuteNote — Handoff / Status Board
-Written: 2026-10-06 (replaces stale April 10 handoff). Last updated: 2026-10-25 (evening).
+Written: 2026-10-06 (replaces stale April 10 handoff). Last updated: 2026-10-25 (late evening).
+
+## OPEN WITH EMERALD (Oct 25, late)
+- FACEBOOK DEVELOPER APP created by her: **App ID 1617450783187207** (name "QuteNote"). Nothing is wired to it yet — ASK what she wants it for before touching it (Facebook/Instagram login? share sheets? ads conversion tracking?). Each one is a different setup.
+- SHE PUT qutenote.com IN HER INSTAGRAM BIO and wants to know when someone signs up from it. Today nothing notifies her: launch-list signups land in EarlySignup and only show on /admin. Proposed (await her pick): (1) push to admins the moment someone joins, (2) a morning digest, (3) a signups card on /admin + the analytics dashboard, (4) ?ref=ig on the bio link captured into EarlySignup.source so Instagram traffic is attributable.
 
 ## OCT 25 EVENING — LIVE PUSH (FIREFLY: "do all the things"): 15 commits deployed, site + API ACTIVE, NO new build yet
 - DEPLOYED: everything below from today. DO deployment 43544382 ACTIVE 03:42Z, /api/health ok, site 200.
