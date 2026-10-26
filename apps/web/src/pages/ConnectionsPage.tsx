@@ -215,10 +215,16 @@ export default function ConnectionsPage() {
               width: '44px', height: '44px', flex: 'none', borderRadius: '50%',
               border: '2px solid var(--outline)', background: 'var(--btn)', color: 'var(--ink)',
               display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
-              fontFamily: 'var(--font-body)', fontSize: '26px', fontWeight: 700, lineHeight: 1,
-              letterSpacing: 0, textIndent: 0, padding: 0, boxSizing: 'border-box',
+              padding: 0, boxSizing: 'border-box',
             }}
-          >+</button>
+          >
+            {/* the plus is drawn, not typed: a text glyph never sits dead
+                centre in a circle (Emerald, Oct 25) */}
+            <svg aria-hidden width="18" height="18" viewBox="0 0 18 18">
+              <rect x="7.6" y="1.6" width="2.8" height="14.8" rx="1.4" fill="currentColor" />
+              <rect x="1.6" y="7.6" width="14.8" height="2.8" rx="1.4" fill="currentColor" />
+            </svg>
+          </button>
         </div>
 
         {/* Search */}
