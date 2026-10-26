@@ -1,6 +1,16 @@
 # QuteNote — Handoff / Status Board
 Written: 2026-10-06 (replaces stale April 10 handoff). Last updated: 2026-10-25 (late evening).
 
+## ARTIST PROGRAM — PHASES 1 + 2 BUILT AND PROVEN LIVE (Oct 26)
+Her package: ~/Downloads/qutenote-artists.zip (10 screens + README). Her decisions: PayPal collected but paid BY HAND (no API), no SMS/ID verification (she vets portfolios), review desk in BOTH places + push, ask for location AND let people type a city, public profiles show ART ONLY (message stays private), feed is QTs only and a send never names the recipient, Send page keeps ONLY the featured 15 (local artists are found through the map), US only for now with a decorative map, $1.50 per card sent (PRICES WILL CHANGE — it lives in src/lib/artistPay.ts + ARTIST_EARNING_CENTS env).
+- SCHEMA PUSHED TO PROD (FIREFLY): ArtistProfile, ArtistCard, ArtistEarning (one row per card sent, provable payouts), SavedItem, User.savedVisibility, 4 new NotificationTypes. Additive only — verified 22 users / 15 statuses untouched after the push.
+- API: /artists apply, me, me/cards (3 cards, rejects under 1800x1200), me/paypal, cities, ?city=, featured, :username (public), cards/:id/heart, save, saved/mine. Admin: applications, :id/decision, cards, cards/:id/decision, featured (month's five), earnings + earnings/paid.
+- Artists are credited in submitNote the moment a card actually mails (sentCount + ArtistEarning + a notification). Unique on noteId so nobody is ever paid twice.
+- SCREENS: Settings row, apply form (3 samples, rights checkbox; her "verify phone or ID" row is a PHONE FIELD until there's a service), application sent, three-card upload with a REAL browser-side size check, PayPal step, and the review desk (in-app /admin/artists + a button on the web /admin).
+- PROVEN ON THE LIVE SERVER end to end: apply → shows for admin → approve → dashboard → 3 uploads → small file refused with the friendly line → 3 cards in review → approved → PayPal saved → city list → by-city → public profile → heart → save → saved tab. All 15 steps pass.
+- ⚠️ TEST DATA ON PROD: the demo account `applereview` is now an APPROVED artist in "Santa Fe, NM" with 3 flat-colour test cards, plus one heart and one save from the admin account. Tell her; remove on her word.
+- NOT BUILT YET (phases 3-4): the Personal/Artist switch on Profile, the public artist profile screen, the map + city search on Send, hearts/saves in the UI, the Saved tab, the privacy screen, and the two privacy changes (art-only card sheet, feed hides the recipient).
+
 ## BUILD 55 SHIPPED TO ALL TESTERS Oct 26 ~12:30am (FIREFLY) — beta review APPROVED, in the Public Beta group
 Pipeline ran clean: CURRENT_PROJECT_VERSION 54→55, web built with VITE_API_BASE=prod + VITE_BUILD=55, cap sync, archive with manual signing. VERIFIED BEFORE UPLOAD: no server.url in capacitor.config, display name QuteNote (not Qute Dev), scheme qutenote only, entitlements present (applesignin + aps-environment production), bundle 55 baked, new art bundled (lock/invite/gear/search/chevrons/writing-hand/ink_grain). Upload succeeded first try; processing VALID in ~2 min; beta review APPROVED immediately; build shows in the Public Beta group (check it with filter[betaGroups], the group→builds endpoint reads empty even when it is attached — not a bug).
 Public link unchanged: https://testflight.apple.com/join/BRW6MMEJ
