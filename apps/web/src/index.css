@@ -161,7 +161,12 @@ body::before {
    one color period — 320px along that axis, which is 184px across and 262px
    down — so the loop is seamless and the card always shows both colors. The
    paper grain rides on its own still layer on top, so only color moves. */
-.ombre-live{ position: relative; overflow: hidden; isolation: isolate; background-image: none; }
+/* The card gets its own layer so its rounded clip is cut ONCE on the graphics
+   chip instead of being re-cut every frame while the color drifts underneath
+   — that per-frame re-cut is what made the drift hitch on her phone even
+   after the loop itself was made seamless (Emerald, Oct 25). */
+.ombre-live{ position: relative; overflow: hidden; isolation: isolate; background-image: none;
+  transform: translateZ(0); contain: paint; }
 /* The drifting layer only has to cover the card plus the distance it travels
    (184px right, 262px down), so it overhangs top and left and nothing more —
    a layer three times the card's size made iPhones stutter as they redrew it
@@ -209,6 +214,11 @@ body::before {
   background:transparent; padding:0 16px; min-height:56px;
   filter:drop-shadow(0 0 1.5px rgba(74,36,36,.5)) drop-shadow(0 0 4px rgba(74,36,36,.28)) drop-shadow(0 0 10px rgba(74,36,36,.14));
 }
+.qn-action-square{
+  /* a cut piece of cardstock lifting off the page: hairline rim, light
+     catching the top edge, shadow under the bottom one (option B) */
+  filter:drop-shadow(0 1px 0 rgba(74,36,36,.35)) drop-shadow(0 4px 7px rgba(74,36,36,.3));
+}
 .qn-action-square::after{
   content:''; position:absolute; inset:-2px; z-index:-1; pointer-events:none;
   background:
@@ -216,6 +226,12 @@ body::before {
     linear-gradient(rgba(74,36,36,.3),rgba(74,36,36,.3)) 50% 50%/calc(100% - 22px) calc(100% - 22px) no-repeat,
     url('/brand/paper_texture.png'),
     linear-gradient(145deg, #F6EFE0 0%, #EFE5D0 55%, #E9DCC4 100%);
+  box-shadow:
+    inset 0 0 0 1px rgba(74,36,36,.45),
+    inset 0 2px 0 rgba(255,255,255,.75),
+    inset 0 -2px 0 rgba(74,36,36,.14),
+    inset 3px 0 0 rgba(255,255,255,.4),
+    inset -3px 0 0 rgba(74,36,36,.1);
 }
 .qn-action-sm{ min-height:42px; padding:0 16px; font-size:13px; }
 .qn-actions{ display:flex; flex-direction:column; align-items:center; gap:14px; }
