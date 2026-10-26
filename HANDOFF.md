@@ -1,6 +1,10 @@
 # QuteNote — Handoff / Status Board
 Written: 2026-10-06 (replaces stale April 10 handoff). Last updated: 2026-10-25 (late evening).
 
+## DEPLOY #2 Oct 25 ~11:56pm (FIREFLY "deploy everything") — 13 commits live, site + API ACTIVE, STILL NO NEW BUILD
+Verified live: /api/health ok, site 200, uploads still send cross-origin, every new art file 200s (lock, invite, gear, search, chevrons, writing-hand, ink_grain), and the feed now returns ONE status per person (was her "why is his status showing so many times").
+In this deploy: her painted icons everywhere (chevrons/search/QR/gear/bell/shush/writing-hand/lock/invite), all text oxblood #4A2424 (she confirmed "keep it as is" after seeing five lighter options), 18px text rhythm + .on-paper backdrop so rules never strike words, ruled paper PINNED again (she asked), QTs search above the invite stamp, invite stamp = envelope + two centred lines + a DRAWN plus (a typed + never centres), privacy switch in Settings, Log out stamp in Settings only, photo at the front of the card deck, Flower key on the Secret page, lavender dusk on the Dates empty card, add-a-date + upload buttons sized to their words.
+
 ## NEXT ROUND, HER SPEC SO FAR: "send it now, mail it when they add an address" (Oct 25, late)
 Her ask, verbatim intent: finish writing and sending a card even when you don't have the person's address, so you never have to write it twice; the moment they add an address it mails itself. Plus the alerts live IN the app (feed + QTs page + an inbox), not just as a push that vanishes.
 - Q1 ANSWERED: the card is **deducted from her monthly allowance immediately**. If the person doesn't add an address within **14 days**, the sender gets a notification and the card is **returned** (credit back).
