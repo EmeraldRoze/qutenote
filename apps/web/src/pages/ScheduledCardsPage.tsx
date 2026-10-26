@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { api } from '../lib/api'
 import QEmoji from '../components/QEmoji'
+import QIcon from '../components/QIcon'
 
 // Scheduled cards (Settings → Scheduled cards): everything waiting to mail,
 // editable or cancelable until the day it goes to print.
@@ -51,13 +52,13 @@ export default function ScheduledCardsPage() {
           width: '44px', height: '44px', borderRadius: '50%', background: '#E3D5CC',
           border: 'none', cursor: 'pointer', color: '#4A2424', display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M15 6l-6 6 6 6" /></svg>
+          <QIcon name="chevron-left" size={18} />
         </button>
         <span style={{ fontFamily: 'var(--font-display)', fontSize: '18px', fontWeight: 300, color: 'var(--ink)' }}>Scheduled cards</span>
       </nav>
 
       <div style={{ maxWidth: '480px', margin: '0 auto', padding: '24px 20px' }}>
-        <p style={{ fontFamily: 'var(--font-body)', fontSize: '14px', color: 'var(--ink-mid)', margin: '0 0 18px', lineHeight: 1.5 }}>
+        <p style={{ fontFamily: 'var(--font-body)', fontSize: '14px', color: 'var(--ink-mid)', margin: '0 0 18px', lineHeight: '18px' }}>
           Cards waiting for their moment. We mail each one a few days ahead so it lands close to the date — editable until it goes to print.
         </p>
 
@@ -68,7 +69,7 @@ export default function ScheduledCardsPage() {
         ) : notes.length === 0 ? (
           <div style={{ padding: '26px 20px', borderRadius: '20px', background: '#F4ECE6', border: '2px dashed #B4897A', display: 'flex', alignItems: 'center', gap: '16px' }}>
             <QEmoji name="calendar" size={52} />
-            <p style={{ fontFamily: 'var(--font-body)', fontSize: '14px', color: 'var(--ink)', lineHeight: 1.45, margin: 0 }}>
+            <p style={{ fontFamily: 'var(--font-body)', fontSize: '14px', color: 'var(--ink)', lineHeight: '18px', margin: 0 }}>
               Nothing scheduled yet. When you send a card, pick "Schedule it" and we'll hold it for the big day.
             </p>
           </div>

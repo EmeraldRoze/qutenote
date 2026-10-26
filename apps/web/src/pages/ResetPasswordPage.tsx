@@ -72,7 +72,7 @@ export default function ResetPasswordPage() {
               <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '22px', fontWeight: 300, color: 'var(--ink)', marginBottom: '12px', textAlign: 'center' }}>
                 Password updated!
               </h2>
-              <p style={{ fontSize: '14px', color: 'var(--ink-mid)', lineHeight: 1.6, textAlign: 'center', marginBottom: '24px' }}>
+              <p style={{ fontSize: '14px', color: 'var(--ink-mid)', lineHeight: '18px', textAlign: 'center', marginBottom: '24px' }}>
                 You're all set. Log in with your new password.
               </p>
               <Link
@@ -93,7 +93,7 @@ export default function ResetPasswordPage() {
               <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '22px', fontWeight: 300, color: 'var(--ink)', marginBottom: '8px' }}>
                 Set a new password
               </h2>
-              <p style={{ fontSize: '14px', color: 'var(--ink-mid)', lineHeight: 1.6, marginBottom: '24px' }}>
+              <p style={{ fontSize: '14px', color: 'var(--ink-mid)', lineHeight: '18px', marginBottom: '24px' }}>
                 Choose something you'll remember (at least 8 characters).
               </p>
 

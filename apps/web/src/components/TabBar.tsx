@@ -4,8 +4,6 @@ import { useAuth } from '../context/AuthContext'
 // The five-tab bar, palette 4: paper grain behind it, no top divider,
 // warm-tinted inactive tabs, and the perforated dusty rose SEND stamp.
 
-const ACTIVE = '#9E625F'
-const INACTIVE = 'var(--nav-inactive)'
 
 export default function TabBar() {
   const navigate = useNavigate()
@@ -37,7 +35,7 @@ export default function TabBar() {
     return (
       <button key={t.label} onClick={() => go(t.path)} style={{
         display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '5px',
-        color: active ? ACTIVE : INACTIVE, opacity: active ? 1 : 0.6,
+        color: 'var(--ink)',  // every label is full oxblood; the ICON carries the active state
         background: 'none', border: 'none', cursor: 'pointer',
         fontSize: '14px', fontWeight: 700, fontFamily: 'var(--font-body)',
         textTransform: 'none', letterSpacing: 0, padding: 0,

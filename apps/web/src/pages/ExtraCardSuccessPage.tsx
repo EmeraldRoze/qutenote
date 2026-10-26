@@ -9,7 +9,7 @@ export default function ExtraCardSuccessPage() {
         <h1 style={{ fontFamily: 'var(--font-display)', fontWeight: 300, fontSize: '28px', color: 'var(--ink)', margin: '18px 0 10px' }}>
           {cancelled ? 'No worries.' : 'Extra card added!'}
         </h1>
-        <p style={{ fontFamily: 'var(--font-body)', fontSize: '15px', color: 'var(--ink-mid)', lineHeight: 1.5, margin: 0 }}>
+        <p style={{ fontFamily: 'var(--font-body)', fontSize: '15px', color: 'var(--ink-mid)', lineHeight: '18px', margin: 0 }}>
           {cancelled
             ? 'Nothing was charged. Head back to the QuteNote app whenever you like.'
             : 'Head back to the QuteNote app — your card is ready to mail.'}

@@ -8,6 +8,7 @@ import { HANDWRITING_CANVAS_SIZE, HANDWRITING_BASELINE_Y, FONT_COMPILER_VERSION,
 import { segmentWord, toGlyphSpace } from '../lib/handwriting/segment'
 import { WEB_BUILD } from '../lib/buildGuard'
 import { fetchHandwritingProgress, saveHandwritingProgress } from '../lib/handwriting/api'
+import QIcon from '../components/QIcon'
 
 // Teach-your-handwriting, word edition (Emerald's Oct 17 idea): people write
 // whole little words so their letters come out of real flow instead of stiff
@@ -220,7 +221,7 @@ function WordFlow({ session, onSaved, glyphs }: {
       <h1 style={{ fontFamily: 'var(--font-display)', fontSize: isSingleMark ? '56px' : '44px', fontWeight: 300, color: 'var(--ink)', margin: '6px 0 2px' }}>
         {word}
       </h1>
-      <p style={{ fontFamily: 'var(--font-body)', fontSize: '14px', color: 'var(--ink-mid)', margin: '0 0 14px' }}>
+      <p className="on-paper" style={{ fontFamily: 'var(--font-body)', fontSize: '14px', color: 'var(--ink-mid)', margin: '0 0 14px' }}>
         {isSingleMark ? charName(session.key, word) : 'Write the whole word in one go, like you normally would.'}
       </p>
 
@@ -308,7 +309,7 @@ function FixLetter({ char, glyphs, onSaved, onClose }: {
     <div style={{ position: 'fixed', inset: 0, zIndex: 100, background: 'rgba(74,36,36,0.45)', display: 'flex', alignItems: 'flex-end' }} onClick={onClose}>
       <div style={{ width: '100%', background: 'var(--cream)', borderRadius: '16px 16px 0 0', padding: '22px 22px calc(26px + env(safe-area-inset-bottom))', textAlign: 'center' }} onClick={(e) => e.stopPropagation()}>
         <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '40px', fontWeight: 300, margin: 0 }}>{char}</h2>
-        <p style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--ink-mid)', margin: '0 0 12px' }}>{charName(sessionKey, char)} — redo just this one</p>
+        <p className="on-paper" style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--ink-mid)', margin: '0 0 12px' }}>{charName(sessionKey, char)} — redo just this one</p>
         <canvas
           ref={canvasRef}
           style={{ width: 'min(280px, 100%)', aspectRatio: '1', borderRadius: '20px', background: '#FBF8F3', border: '1.5px solid #B4897A', touchAction: 'none', display: 'block', margin: '0 auto' }}
@@ -386,7 +387,7 @@ export default function HandwritingPage() {
         width: '44px', height: '44px', borderRadius: '50%', background: '#E3D5CC',
         border: 'none', cursor: 'pointer', color: '#4A2424', display: 'flex', alignItems: 'center', justifyContent: 'center',
       }}>
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M15 6l-6 6 6 6" /></svg>
+        <QIcon name="chevron-left" size={18} />
       </button>
       <span style={{ fontFamily: 'var(--font-display)', fontSize: '18px', fontWeight: 300, color: 'var(--ink)' }}>Your handwriting</span>
     </nav>
@@ -411,7 +412,7 @@ export default function HandwritingPage() {
             width: '44px', height: '44px', borderRadius: '50%', background: '#E3D5CC',
             border: 'none', cursor: 'pointer', color: '#4A2424', display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M15 6l-6 6 6 6" /></svg>
+            <QIcon name="chevron-left" size={18} />
           </button>
           <span style={{ fontFamily: 'var(--font-display)', fontSize: '18px', fontWeight: 300, color: 'var(--ink)' }}>Rewrite "{redoWord}"</span>
         </nav>
@@ -433,12 +434,12 @@ export default function HandwritingPage() {
       {nav}
 
       <div style={{ maxWidth: '480px', margin: '0 auto', padding: '24px 20px' }}>
-        <p style={{ fontFamily: 'var(--font-body)', fontSize: '15px', color: 'var(--ink-mid)', lineHeight: 1.5, marginBottom: '8px' }}>
+        <p className="on-paper" style={{ fontFamily: 'var(--font-body)', fontSize: '15px', color: 'var(--ink-mid)', lineHeight: '18px', marginBottom: '8px' }}>
           {doneCount >= TOTAL_CHARS
             ? 'Yay — your handwriting is all learned! Go write a bunch of Qute Notes in it. 🖋️'
             : 'Write a few little words and QuteNote learns your real handwriting — flow and all — then turns it into your own font.'}
         </p>
-        <p style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--ink-muted)', marginBottom: '22px' }}>
+        <p className="on-paper" style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--ink-muted)', marginBottom: '22px' }}>
           {doneCount} of {TOTAL_CHARS} letters learned.{doneCount >= TOTAL_CHARS ? ' Rewrite any word anytime to freshen it up.' : ' Do it all now, or come back anytime.'} <span style={{ fontSize: '10px' }}>· build {WEB_BUILD || 'dev'}</span>
         </p>
 
@@ -473,8 +474,8 @@ export default function HandwritingPage() {
         {/* See every captured word in the real font; tap one to rewrite it */}
         {writtenChars.length > 0 && (
           <div style={{ marginTop: '26px' }}>
-            <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '18px', fontWeight: 300, color: 'var(--ink)', margin: '0 0 4px' }}>Your words</h2>
-            <p style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--ink-mid)', margin: '0 0 12px' }}>
+            <h2 className="on-paper" style={{ fontFamily: 'var(--font-display)', fontSize: '18px', fontWeight: 300, color: 'var(--ink)', margin: '0 0 4px' }}>Your words</h2>
+            <p className="on-paper" style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--ink-mid)', margin: '0 0 12px' }}>
               This is how each word came out. Tap one to rewrite it.
             </p>
             <div key={String(fontReady)} style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
@@ -494,8 +495,8 @@ export default function HandwritingPage() {
         {/* Touch-up: redo any single letter */}
         {writtenChars.length > 0 && (
           <div style={{ marginTop: '26px' }}>
-            <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '18px', fontWeight: 300, color: 'var(--ink)', margin: '0 0 4px' }}>Fix one letter</h2>
-            <p style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--ink-mid)', margin: '0 0 12px' }}>
+            <h2 className="on-paper" style={{ fontFamily: 'var(--font-display)', fontSize: '18px', fontWeight: 300, color: 'var(--ink)', margin: '0 0 4px' }}>Fix one letter</h2>
+            <p className="on-paper" style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--ink-mid)', margin: '0 0 12px' }}>
               One came out funky? Tap it and redo just that one.
             </p>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>

@@ -199,7 +199,7 @@ export default function CardScanPage() {
 
         {decoded && hasSecret && (
           <div style={{ marginTop: '16px', background: 'var(--card)', border: '1.5px solid var(--stone)', borderRadius: '14px', padding: '16px' }}>
-            <p style={{ margin: 0, fontFamily: "'Fraunces', serif", fontStyle: 'italic', fontSize: '18px', lineHeight: 1.7, color: 'var(--note-ink)', whiteSpace: 'pre-wrap', overflowWrap: 'break-word' }}>
+            <p style={{ margin: 0, fontFamily: "'Fraunces', serif", fontStyle: 'italic', fontSize: '18px', lineHeight: '36px', color: 'var(--note-ink)', whiteSpace: 'pre-wrap', overflowWrap: 'break-word' }}>
               {card.noteText}
             </p>
           </div>

@@ -6,6 +6,7 @@ import { useAuth } from '../context/AuthContext'
 import { isNativeApp } from '../lib/native'
 import { appleSignIn, openGoogleSignIn } from '../lib/nativeAuth'
 import QEmoji from '../components/QEmoji'
+import QIcon from '../components/QIcon'
 
 // Log in — screen 06 of the Oct 15 2026 redesign. Email-or-username +
 // password with autofill-friendly attributes, then Apple/Google below.
@@ -62,13 +63,13 @@ export default function LoginPage() {
               width: '44px', height: '44px', borderRadius: '50%', background: 'var(--light-blush)',
               border: 'none', cursor: 'pointer', color: 'var(--ink)', display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 5l-7 7 7 7" /></svg>
+              <QIcon name="chevron-left" size={18} />
             </button>
           </div>
           <div style={{ marginTop: '14px', display: 'flex', alignItems: 'center', gap: '12px' }}>
             <h1 style={{
               margin: 0, flex: 1, minWidth: 0, fontFamily: 'var(--font-display)', fontWeight: 300,
-              fontSize: '26px', lineHeight: 1.12, letterSpacing: '-0.02em',
+              fontSize: '26px', lineHeight: '36px', letterSpacing: '-0.02em',
             }}>
               Welcome back, QT.
             </h1>
@@ -78,7 +79,7 @@ export default function LoginPage() {
       </header>
 
       <div style={{ ...col, flex: 1, display: 'flex', flexDirection: 'column', paddingBottom: '34px' }}>
-        <p style={{ margin: '18px 0 0', fontSize: '15px', lineHeight: 1.45, color: 'var(--ink)' }}>
+        <p style={{ margin: '18px 0 0', fontSize: '15px', lineHeight: '18px', color: 'var(--ink)' }}>
           Slide into their mailbox.
         </p>
 

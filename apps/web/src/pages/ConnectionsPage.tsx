@@ -7,6 +7,7 @@ import TabBar from '../components/TabBar'
 import QEmoji from '../components/QEmoji'
 import { inviteByText } from '../lib/inviteText'
 import { contactsAvailable, readContacts, matchContactsToMembers, type MatchedMember } from '../lib/contacts'
+import QIcon from '../components/QIcon'
 
 // QTs tab, restyled to palette 4 (qutenote-app-palette4, 12-qts):
 // invite box first, then search, then friends sorted by whose birthday is next.
@@ -202,20 +203,27 @@ export default function ConnectionsPage() {
           {/* Her new INVITE envelope replaces the heart hands here (Emerald,
               Oct 25). Same 102px footprint the hands had. */}
           <QEmoji name="invite" size={102} style={{ flexShrink: 0, height: 'auto' }} />
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', minWidth: 0 }}>
-            <p style={{ margin: 0, fontFamily: 'var(--font-body)', fontSize: '15px', lineHeight: 1.4, color: 'var(--ink)' }}>
-              Invite friends, get free cards.
-            </p>
-            <button onClick={() => inviteByText(user?.displayName?.split(' ')[0]).catch(() => navigate('/invite'))} style={{
-              alignSelf: 'flex-start', height: '44px', padding: '0 18px', borderRadius: '22px', border: '2px solid var(--outline)', cursor: 'pointer',
-              background: 'var(--btn)', color: 'var(--ink)', fontFamily: 'var(--font-body)', fontSize: '14px', fontWeight: 700, letterSpacing: '0.08em', boxSizing: 'border-box',
-            }}>INVITE</button>
-          </div>
+          {/* Two lines of copy and a round + on the far right — no button
+              (Emerald, Oct 25) */}
+          <p style={{ flex: 1, minWidth: 0, margin: 0, textAlign: 'center', fontFamily: 'var(--font-body)', fontSize: '15px', lineHeight: '18px', color: 'var(--ink)', whiteSpace: 'pre-line' }}>
+            {'Invite friends,\nget free cards.'}
+          </p>
+          <button
+            onClick={() => inviteByText(user?.displayName?.split(' ')[0]).catch(() => navigate('/invite'))}
+            aria-label="Invite friends"
+            style={{
+              width: '44px', height: '44px', flex: 'none', borderRadius: '50%',
+              border: '2px solid var(--outline)', background: 'var(--btn)', color: 'var(--ink)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
+              fontFamily: 'var(--font-body)', fontSize: '26px', fontWeight: 700, lineHeight: 1,
+              paddingBottom: '3px', boxSizing: 'border-box',
+            }}
+          >+</button>
         </div>
 
         {/* Search */}
         <label style={{ marginTop: '16px', height: '48px', borderRadius: '24px', background: 'var(--card)', border: '1.5px solid var(--outline)', display: 'flex', alignItems: 'center', gap: '10px', padding: '0 16px' }}>
-          <svg aria-hidden width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" strokeWidth="2" strokeLinecap="round"><circle cx="11" cy="11" r="6.5" /><path d="M16 16l4.5 4.5" /></svg>
+          <QIcon name="search" size={22} />
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}

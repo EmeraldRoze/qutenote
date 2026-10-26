@@ -8,6 +8,7 @@ import { enableReminders, remindersEnabled, lastReminderFailure } from '../lib/p
 import { isNativeApp } from '../lib/native'
 import { contactsAvailable, readContacts, contactsWithBirthdays } from '../lib/contacts'
 import type { DeviceContact } from '../lib/contacts'
+import QIcon from '../components/QIcon'
 
 // Dates tab, palette 4 restyle (screens/13-dates.html)
 
@@ -202,7 +203,7 @@ export default function ImportantDatesPage() {
             background: 'var(--lime)', border: '1.5px solid var(--stone)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15z" /><path d="M10 20.5a2 2 0 0 0 4 0" /></svg>
+            <QIcon name="bell" size={24} />
           </span>
           <span style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '2px' }}>
             <span style={{ fontSize: '16px', fontWeight: 700, fontFamily: 'var(--font-body)', color: 'var(--ink)' }}>Reminders</span>
@@ -254,10 +255,10 @@ export default function ImportantDatesPage() {
             display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center',
           }}>
             <TwinklingCake size={110} style={{ transform: 'rotate(-4deg)' }} />
-            <h2 style={{ margin: '14px 0 0', fontFamily: 'var(--font-display)', fontWeight: 300, fontSize: '22px', lineHeight: 1.2, color: 'var(--ink)' }}>
+            <h2 style={{ margin: '14px 0 0', fontFamily: 'var(--font-display)', fontWeight: 300, fontSize: '22px', lineHeight: '36px', color: 'var(--ink)' }}>
               Never miss a birthday again.
             </h2>
-            <p style={{ margin: '8px 0 0', fontSize: '15px', lineHeight: 1.45, color: 'var(--ink)', maxWidth: '280px', fontFamily: 'var(--font-body)' }}>
+            <p style={{ margin: '8px 0 0', fontSize: '15px', lineHeight: '18px', color: 'var(--ink)', maxWidth: '280px', fontFamily: 'var(--font-body)' }}>
               Add the days that matter and we'll give you a little nudge.
             </p>
             <button onClick={() => navigate('/dates/add')} style={{
@@ -300,7 +301,7 @@ export default function ImportantDatesPage() {
         )}
 
         {/* Quick add */}
-        <h2 style={{ margin: '26px 0 10px', fontFamily: 'var(--font-display)', fontWeight: 300, fontSize: '18px', color: 'var(--ink)' }}>Quick add</h2>
+        <h2 className="on-paper" style={{ margin: '26px 0 10px', fontFamily: 'var(--font-display)', fontWeight: 300, fontSize: '18px', color: 'var(--ink)' }}>Quick add</h2>
         <div className="qn-chips" style={{ display: 'flex', gap: '8px', overflowX: 'auto', scrollbarWidth: 'none', margin: '0 -20px', padding: '0 20px' }}>
           {quickAdd.map((q) => (
             <button key={q.chip} onClick={() => navigate(q.to)} style={{
@@ -329,7 +330,7 @@ export default function ImportantDatesPage() {
               </span>
               <span style={{ fontSize: '13px', color: 'var(--ink)', fontWeight: 400 }}>Fill this page in one tap</span>
             </span>
-            <svg aria-hidden width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 5l7 7-7 7" /></svg>
+            <QIcon name="chevron-right" size={14} />
           </button>
         )}
         {contactsState === 'denied' && (

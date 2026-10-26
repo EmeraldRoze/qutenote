@@ -8,6 +8,7 @@ import { isNativeApp } from '../lib/native'
 import { appleSignIn, openGoogleSignIn } from '../lib/nativeAuth'
 import QEmoji from '../components/QEmoji'
 import Logo from '../components/Logo'
+import QIcon from '../components/QIcon'
 
 // Create account — screen 02 of the Oct 15 2026 redesign. Apple and Google as
 // round buttons up top, email form below. Birthday is NOT collected here; it
@@ -69,14 +70,14 @@ export default function SignUpPage() {
               width: '44px', height: '44px', borderRadius: '50%', background: 'var(--light-blush)',
               border: 'none', cursor: 'pointer', color: 'var(--ink)', display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 5l-7 7 7 7" /></svg>
+              <QIcon name="chevron-left" size={18} />
             </button>
             <Logo height={26} />
           </div>
           <div style={{ marginTop: '14px', display: 'flex', alignItems: 'center', gap: '12px' }}>
             <h1 style={{
               margin: 0, flex: 1, minWidth: 0, fontFamily: 'var(--font-display)', fontWeight: 300,
-              fontSize: '26px', lineHeight: 1.12, letterSpacing: '-0.02em',
+              fontSize: '26px', lineHeight: '36px', letterSpacing: '-0.02em',
             }}>
               Make mail qute again.{' '}
             </h1>

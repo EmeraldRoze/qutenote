@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom'
 import { encodeSecret, SECRET_FONT_FAMILY } from '../lib/secret'
 import FlowerText from '../components/FlowerText'
 import flowerGlyphs from '../lib/flowerGlyphs.json'
+import QIcon from '../components/QIcon'
 
 // The decoder key for Emerald's Secret Language: the full alphabet, the
 // vowel rules, and the standalone words — pretty enough to screenshot and
@@ -54,13 +55,13 @@ export default function SecretKeyPage() {
           width: '44px', height: '44px', borderRadius: '50%', background: '#E3D5CC',
           border: 'none', cursor: 'pointer', color: '#4A2424', display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M15 6l-6 6 6 6" /></svg>
+          <QIcon name="chevron-left" size={18} />
         </button>
         <span style={{ fontFamily: 'var(--font-display)', fontSize: '18px', fontWeight: 300, color: 'var(--ink)' }}>The Secret Language</span>
       </nav>
 
       <div style={{ maxWidth: '480px', margin: '0 auto', padding: '24px 20px' }}>
-        <p style={{ fontFamily: 'var(--font-body)', fontSize: '15px', color: 'var(--ink-mid)', lineHeight: 1.5, margin: '0 0 18px' }}>
+        <p className="on-paper" style={{ fontFamily: 'var(--font-body)', fontSize: '15px', color: 'var(--ink-mid)', lineHeight: '18px', margin: '0 0 18px' }}>
           Cards written with the Secret 🤫 pen use this alphabet. Decode by hand with the key below — or just reply in it and start a very qute conspiracy.
         </p>
 
@@ -71,7 +72,7 @@ export default function SecretKeyPage() {
 
         <div style={{ marginTop: '22px', background: '#F4ECE6', border: '2px dashed #B4897A', borderRadius: '16px', padding: '14px 16px' }}>
           <p style={{ margin: 0, fontFamily: 'var(--font-body)', fontSize: '14px', fontWeight: 700, color: 'var(--ink)' }}>The vowel rules</p>
-          <ul style={{ margin: '8px 0 0', paddingLeft: '18px', fontFamily: 'var(--font-body)', fontSize: '14px', color: 'var(--ink)', lineHeight: 1.55 }}>
+          <ul style={{ margin: '8px 0 0', paddingLeft: '18px', fontFamily: 'var(--font-body)', fontSize: '14px', color: 'var(--ink)', lineHeight: '18px' }}>
             <li>a, e, i and u tuck <strong>under</strong> the letter before them</li>
             <li>o floats <strong>over</strong> the letter before it</li>
             <li>a word that starts with a vowel tucks it under the <strong>next</strong> letter</li>
@@ -85,10 +86,10 @@ export default function SecretKeyPage() {
         </div>
 
         {/* The Flower Language, same page */}
-        <h2 style={{ margin: '34px 0 0', fontFamily: 'var(--font-display)', fontWeight: 300, fontSize: '20px', color: 'var(--ink)' }}>
+        <h2 className="on-paper" style={{ margin: '34px 0 0', fontFamily: 'var(--font-display)', fontWeight: 300, fontSize: '20px', color: 'var(--ink)' }}>
           The Flower Language
         </h2>
-        <p style={{ fontFamily: 'var(--font-body)', fontSize: '15px', color: 'var(--ink-mid)', lineHeight: 1.5, margin: '8px 0 18px' }}>
+        <p className="on-paper" style={{ fontFamily: 'var(--font-body)', fontSize: '15px', color: 'var(--ink-mid)', lineHeight: '18px', margin: '8px 0 18px' }}>
           Cards written with the Flowers 🌷 pen say it in blooms. Every letter is a flower, and a word gathers into one tied bouquet you read left to right.
         </p>
 

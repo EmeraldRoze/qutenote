@@ -45,7 +45,7 @@ export default function ForgotPasswordPage() {
               <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '22px', fontWeight: 300, color: 'var(--ink)', marginBottom: '12px', textAlign: 'center' }}>
                 Check your email
               </h2>
-              <p style={{ fontSize: '14px', color: 'var(--ink-mid)', lineHeight: 1.6, textAlign: 'center', marginBottom: '24px' }}>
+              <p style={{ fontSize: '14px', color: 'var(--ink-mid)', lineHeight: '18px', textAlign: 'center', marginBottom: '24px' }}>
                 If that email is in our system, we sent you a link to reset your password. It expires in 1 hour.
               </p>
               <Link
@@ -63,7 +63,7 @@ export default function ForgotPasswordPage() {
               <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '22px', fontWeight: 300, color: 'var(--ink)', marginBottom: '8px' }}>
                 Forgot your password?
               </h2>
-              <p style={{ fontSize: '14px', color: 'var(--ink-mid)', lineHeight: 1.6, marginBottom: '24px' }}>
+              <p style={{ fontSize: '14px', color: 'var(--ink-mid)', lineHeight: '18px', marginBottom: '24px' }}>
                 Enter your email and we'll send you a link to reset it.
               </p>
 

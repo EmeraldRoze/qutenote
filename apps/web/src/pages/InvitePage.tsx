@@ -70,10 +70,10 @@ export default function InvitePage() {
           <div style={{ display: 'flex', gap: '6px' }}>
             <QEmoji name="gift" size={110} style={{ transform: 'rotate(-6deg)' }} />
           </div>
-          <h1 style={{ fontFamily: 'var(--font-display)', fontWeight: 300, fontSize: '26px', lineHeight: 1.18, color: 'var(--ink)', margin: '14px 0 0', letterSpacing: '-0.01em' }}>
+          <h1 className="on-paper" style={{ fontFamily: 'var(--font-display)', fontWeight: 300, fontSize: '26px', lineHeight: '36px', color: 'var(--ink)', margin: '14px 0 0', letterSpacing: '-0.01em' }}>
             Every 10 friends who join = a free card.
           </h1>
-          <p style={{ fontFamily: 'var(--font-body)', fontSize: '15px', lineHeight: 1.45, color: 'var(--ink-mid)', margin: '8px 0 18px' }}>
+          <p className="on-paper" style={{ fontFamily: 'var(--font-body)', fontSize: '15px', lineHeight: '18px', color: 'var(--ink-mid)', margin: '8px 0 18px' }}>
             They each get one too. No catch.
           </p>
           <div style={{ display: 'flex', gap: '8px', width: '100%' }}>
@@ -96,11 +96,11 @@ export default function InvitePage() {
 
         {/* Message preview + actions */}
         <div style={{ marginTop: '22px', borderRadius: '22px', background: 'var(--card)', border: '1.5px solid var(--stone)', boxShadow: '0 -4px 24px rgba(74,36,36,0.08), 0 4px 18px rgba(74,36,36,0.06)', padding: '18px 20px 24px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
-          <div style={{ fontFamily: 'var(--font-display)', fontSize: '20px', fontWeight: 300, lineHeight: 1.2, letterSpacing: '-0.01em', color: 'var(--ink)', textAlign: 'center' }}>
+          <div style={{ fontFamily: 'var(--font-display)', fontSize: '20px', fontWeight: 300, lineHeight: '36px', letterSpacing: '-0.01em', color: 'var(--ink)', textAlign: 'center' }}>
             You've been invited to join QuteNote
           </div>
           <img src="/brand/postmark_heart_stamp.png" alt="" style={{ width: '170px', alignSelf: 'center' }} />
-          <div style={{ fontFamily: 'var(--font-body)', fontSize: '14px', fontWeight: 700, lineHeight: 1.45, color: 'var(--ink)', textAlign: 'center' }}>
+          <div style={{ fontFamily: 'var(--font-body)', fontSize: '14px', fontWeight: 700, lineHeight: '18px', color: 'var(--ink)', textAlign: 'center' }}>
             Where birthdays are celebrated, hard times are acknowledged, and little surprises find their way to your mailbox.
           </div>
           <div style={{ fontFamily: 'var(--font-body)', fontSize: '12px', color: 'var(--ink-mid)', marginTop: '-8px', textAlign: 'center' }}>qutenote.com/i/{user?.username ?? 'you'}-…</div>

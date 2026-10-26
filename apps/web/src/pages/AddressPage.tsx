@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { api } from '../lib/api'
 import QEmoji from '../components/QEmoji'
+import QIcon from '../components/QIcon'
 
 // Your address ("Where you at?"), palette 4 restyle of screen 18-your-address.html.
 // No tab bar. Serves both /address and /settings/address. Save goes through the
@@ -74,7 +75,7 @@ export default function AddressPage() {
             border: 'none', cursor: 'pointer', color: 'var(--ink)', padding: 0,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>
-            <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 5l-7 7 7 7" /></svg>
+            <QIcon name="chevron-left" size={18} />
           </button>
           <h1 style={{ margin: 0, fontFamily: 'var(--font-display)', fontWeight: 300, fontSize: '28px', letterSpacing: '-0.02em', color: 'var(--ink)' }}>Where you at?</h1>
         </div>
@@ -85,7 +86,7 @@ export default function AddressPage() {
         {/* Privacy note */}
         <div style={{ marginTop: '24px', background: 'var(--light-blush)', borderRadius: '14px', padding: '14px 16px', display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
           <QEmoji name="lock" size={34} style={{ flex: 'none', height: 'auto', marginTop: '1px' }} />
-          <p style={{ margin: 0, fontFamily: 'var(--font-body)', fontSize: '15px', lineHeight: 1.45, color: 'var(--ink)' }}>
+          <p style={{ margin: 0, fontFamily: 'var(--font-body)', fontSize: '15px', lineHeight: '18px', color: 'var(--ink)' }}>
             Your address is private. It stays between us and the post office.
           </p>
         </div>

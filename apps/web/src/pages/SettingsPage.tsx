@@ -6,6 +6,7 @@ import { api } from '../lib/api'
 import { enableReminders, remindersEnabled, lastReminderFailure, type ReminderResult } from '../lib/push'
 import { isNativeApp } from '../lib/native'
 import { fetchHandwritingProgress } from '../lib/handwriting/api'
+import QIcon from '../components/QIcon'
 
 // Settings, palette 4 restyle of screen 16-settings.html. No tab bar.
 // Free mode: no Membership or Payment methods rows.
@@ -19,7 +20,7 @@ const rowStyle: React.CSSProperties = {
 const rowLabel: React.CSSProperties = { flex: 1, fontFamily: 'var(--font-body)', fontSize: '16px', color: 'var(--ink)' }
 const rowValue: React.CSSProperties = { fontFamily: 'var(--font-body)', fontSize: '14px', color: 'var(--ink)', marginRight: '8px' }
 const chevron = (
-  <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--ink)', flex: 'none' }}><path d="M9 5l7 7-7 7" /></svg>
+  <QIcon name="chevron-right" size={14} />
 )
 
 export default function SettingsPage() {
@@ -66,14 +67,14 @@ export default function SettingsPage() {
             border: 'none', cursor: 'pointer', color: 'var(--ink)', padding: 0,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>
-            <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 5l-7 7 7 7" /></svg>
+            <QIcon name="chevron-left" size={18} />
           </button>
           <h1 style={{ margin: 0, fontFamily: 'var(--font-display)', fontWeight: 300, fontSize: '26px', letterSpacing: '-0.02em', color: 'var(--ink)' }}>Settings</h1>
         </div>
       </div>
 
       <div style={{ maxWidth: '480px', margin: '0 auto' }}>
-        <h2 style={{ margin: '24px 20px 8px', fontFamily: 'var(--font-body)', fontSize: '14px', fontWeight: 700, color: 'var(--ink)' }}>Your account</h2>
+        <h2 className="on-paper" style={{ margin: '24px 20px 8px', fontFamily: 'var(--font-body)', fontSize: '14px', fontWeight: 700, color: 'var(--ink)' }}>Your account</h2>
 
         <div style={{ background: 'var(--card)', borderTop: '1.5px solid var(--stone)', borderBottom: '1.5px solid var(--stone)' }}>
           <button style={rowStyle} onClick={() => navigate('/settings/account')}>
@@ -154,7 +155,7 @@ export default function SettingsPage() {
 
           <button style={rowStyle} onClick={() => navigate('/secret-key')}>
             <span style={rowLabel}>Secret language</span>
-            <span style={rowValue}>🤫</span>
+            <QIcon name="shush" size={22} style={{ marginRight: '8px' }} />
             {chevron}
           </button>
 

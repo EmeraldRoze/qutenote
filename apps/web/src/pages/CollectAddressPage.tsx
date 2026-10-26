@@ -88,7 +88,7 @@ export default function CollectAddressPage() {
           <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '24px', fontWeight: 500, color: 'var(--ink)', marginBottom: '8px' }}>
             You're all set!
           </h2>
-          <p style={{ fontSize: '14px', color: 'var(--ink-muted)', lineHeight: 1.6 }}>
+          <p style={{ fontSize: '14px', color: 'var(--ink-muted)', lineHeight: '18px' }}>
             Your address has been saved. {invite?.sender.displayName} can now send you a surprise in the mail!
           </p>
           <p style={{ fontSize: '13px', color: 'var(--lavender-dark)', marginTop: '20px', fontWeight: 500 }}>
@@ -122,7 +122,7 @@ export default function CollectAddressPage() {
           <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '22px', fontWeight: 500, color: 'var(--ink)', marginBottom: '8px' }}>
             {invite?.sender.displayName} wants to send you something!
           </h2>
-          <p style={{ fontSize: '14px', color: 'var(--ink-muted)', lineHeight: 1.6 }}>
+          <p style={{ fontSize: '14px', color: 'var(--ink-muted)', lineHeight: '18px' }}>
             Share your mailing address below so they can send you a real, physical card in the mail. Your address will only be used for this purpose.
           </p>
         </div>
@@ -238,7 +238,7 @@ export default function CollectAddressPage() {
               {submitting ? 'Saving...' : 'Share my address'}
             </button>
 
-            <p style={{ fontSize: '11px', color: 'var(--ink-muted)', textAlign: 'center', lineHeight: 1.5 }}>
+            <p style={{ fontSize: '11px', color: 'var(--ink-muted)', textAlign: 'center', lineHeight: '18px' }}>
               Your address is only shared with {invite?.sender.displayName} for sending you mail. We never share it with anyone else.
             </p>
           </form>

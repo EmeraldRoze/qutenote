@@ -4,6 +4,7 @@ import { inviteRecipientByText } from '../../lib/inviteText'
 import { CARD_LOOKUP } from '../../lib/cards'
 import QEmoji from '../../components/QEmoji'
 import type { NoteData } from './SendFlow'
+import QIcon from '../../components/QIcon'
 
 // Send step 2 ("Who's it for?"), rebuilt to the Oct 15 2026 design:
 // the chosen card up top with a CHANGE link, a search field, the QT list
@@ -163,7 +164,7 @@ export default function StepRecipient({ note, onChangeCard, onNext, initialQuery
 
       {/* Search */}
       <label style={{ marginTop: '14px', height: '48px', borderRadius: '24px', background: 'var(--card)', border: '1.5px solid var(--outline)', display: 'flex', alignItems: 'center', gap: '10px', padding: '0 16px' }}>
-        <svg aria-hidden width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" strokeWidth="2" strokeLinecap="round"><circle cx="11" cy="11" r="6.5" /><path d="M16 16l4.5 4.5" /></svg>
+        <QIcon name="search" size={22} />
         <input
           value={query}
           onChange={(e) => setQuery(e.target.value)}

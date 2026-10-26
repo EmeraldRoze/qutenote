@@ -5,6 +5,7 @@ import { useAuth } from '../../context/AuthContext'
 import QEmoji from '../../components/QEmoji'
 import Logo from '../../components/Logo'
 import { setSetupNext } from '../../lib/postAuthRoute'
+import QIcon from '../../components/QIcon'
 
 // Pick your handle — screen 03 of the Oct 15 2026 redesign. Shown only after
 // Apple or Google just created a NEW account (they don't give us a username).
@@ -77,14 +78,14 @@ export default function PickHandlePage() {
               width: '44px', height: '44px', borderRadius: '50%', background: 'var(--light-blush)',
               border: 'none', cursor: 'pointer', color: 'var(--ink)', display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 5l-7 7 7 7" /></svg>
+              <QIcon name="chevron-left" size={18} />
             </button>
             <Logo height={26} />
           </div>
           <div style={{ marginTop: '14px', display: 'flex', alignItems: 'center', gap: '12px' }}>
             <h1 style={{
               margin: 0, flex: 1, minWidth: 0, fontFamily: 'var(--font-display)', fontWeight: 300,
-              fontSize: '26px', lineHeight: 1.12, letterSpacing: '-0.02em',
+              fontSize: '26px', lineHeight: '36px', letterSpacing: '-0.02em',
             }}>
               Pick your handle.
             </h1>
@@ -94,7 +95,7 @@ export default function PickHandlePage() {
       </header>
 
       <div style={{ ...col, flex: 1, display: 'flex', flexDirection: 'column', paddingBottom: '34px' }}>
-        <p style={{ margin: '18px 0 0', fontSize: '15px', lineHeight: 1.45, color: 'var(--ink)' }}>
+        <p style={{ margin: '18px 0 0', fontSize: '15px', lineHeight: '18px', color: 'var(--ink)' }}>
           Choose the name your QTs will search for.
         </p>
 

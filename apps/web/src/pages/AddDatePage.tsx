@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { api } from '../lib/api'
 import QEmoji from '../components/QEmoji'
+import QIcon from '../components/QIcon'
 
 // Add a date, palette 4 restyle (screens/14-add-a-date.html). No tab bar here.
 
@@ -197,11 +198,11 @@ export default function AddDatePage() {
               background: '#E3D5CC', color: 'var(--ink)', cursor: 'pointer',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}>
-              <svg aria-hidden width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 5l-7 7 7 7" /></svg>
+              <QIcon name="chevron-left" size={18} />
             </button>
           </div>
           <div style={{ marginTop: '14px', display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <h1 style={{ margin: 0, flex: 1, minWidth: 0, fontFamily: 'var(--font-display)', fontWeight: 300, fontSize: '26px', lineHeight: 1.12, letterSpacing: '-0.02em', color: 'var(--ink)' }}>
+            <h1 style={{ margin: 0, flex: 1, minWidth: 0, fontFamily: 'var(--font-display)', fontWeight: 300, fontSize: '26px', lineHeight: '36px', letterSpacing: '-0.02em', color: 'var(--ink)' }}>
               Add a date worth celebrating.
             </h1>
             <QEmoji name="calendar" size={58} style={{ height: 'auto', flex: 'none', transform: 'rotate(5deg)' }} />
@@ -213,7 +214,7 @@ export default function AddDatePage() {
 
         {/* Who's it for */}
         <label style={{ ...whiteCard, marginTop: '18px', padding: '12px 16px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <svg aria-hidden width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" strokeWidth="2" strokeLinecap="round"><circle cx="11" cy="11" r="6.5" /><path d="M16 16l4.5 4.5" /></svg>
+          <QIcon name="search" size={22} />
           <span style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '4px', minWidth: 0 }}>
             <span style={{ fontSize: '13px', color: 'var(--ink)', fontFamily: 'var(--font-body)' }}>Who's it for?</span>
             <input

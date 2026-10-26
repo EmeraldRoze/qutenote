@@ -13,6 +13,7 @@ import { penStyle } from '../lib/pens'
 import { encodeSecret, SECRET_FONT_FAMILY } from '../lib/secret'
 import FlowerText from '../components/FlowerText'
 import { trackFeature } from '../lib/analytics'
+import QIcon from '../components/QIcon'
 
 // Profile tab, palette 4 restyle of screen 15-profile.html.
 // Postmark-heart header with initials, status box, Sent/Received photo grid,
@@ -112,7 +113,7 @@ function CardSheet({ note, onClose }: { note: NoteThumb; onClose: () => void }) 
             {isFlower && !decoded ? (
               <FlowerText text={text} size={54} />
             ) : (
-              <p style={{ margin: 0, ...penFont, lineHeight: 1.7, color: 'var(--note-ink)', whiteSpace: 'pre-wrap', overflowWrap: 'break-word', filter: 'grayscale(1)' }}>
+              <p style={{ margin: 0, ...penFont, lineHeight: '18px', color: 'var(--note-ink)', whiteSpace: 'pre-wrap', overflowWrap: 'break-word', filter: 'grayscale(1)' }}>
                 {shown}
               </p>
             )}
@@ -241,21 +242,21 @@ export default function ProfilePage() {
                 boxSizing: 'border-box', border: '1.5px solid var(--stone)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', padding: 0,
               }}>
-                <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3.5" y="3.5" width="6" height="6" rx="1" /><rect x="14.5" y="3.5" width="6" height="6" rx="1" /><rect x="3.5" y="14.5" width="6" height="6" rx="1" /><path d="M14.5 14.5h2v2h-2zM18.5 18.5h2v2h-2z" /></svg>
+                <QIcon name="qr" size={22} />
               </button>
               <button onClick={() => navigate('/settings/notifications')} aria-label="Notifications" style={{
                 width: '44px', height: '44px', borderRadius: '50%', background: 'var(--card)', color: 'var(--ink)',
                 boxSizing: 'border-box', border: '1.5px solid var(--stone)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', padding: 0,
               }}>
-                <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15z" /><path d="M10 20.5a2 2 0 0 0 4 0" /></svg>
+                <QIcon name="bell" size={24} />
               </button>
               <button onClick={() => navigate('/settings')} aria-label="Settings" style={{
                 width: '44px', height: '44px', borderRadius: '50%', background: 'var(--card)', color: 'var(--ink)',
                 boxSizing: 'border-box', border: '1.5px solid var(--stone)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', padding: 0,
               }}>
-                <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" /></svg>
+                <QIcon name="gear" size={24} />
               </button>
             </div>
 
@@ -400,14 +401,17 @@ export default function ProfilePage() {
 
           {/* Log out, at the end of your own profile, on the same square
               stamp as LOGIN (Emerald, Oct 25) */}
-          <div className="qn-actions" style={{ marginTop: '26px' }}>
-            <button
-              onClick={() => { logout(); navigate('/') }}
-              className="qn-stamp qn-action qn-action-square"
-            >
-              LOG OUT
-            </button>
-          </div>
+          <button
+            onClick={() => { logout(); navigate('/') }}
+            style={{
+              display: 'block', margin: '22px auto 0', padding: '0 14px', minHeight: '48px', border: 'none', background: 'none',
+              cursor: 'pointer', fontFamily: 'var(--font-body)', fontSize: '15px', fontWeight: 700,
+              color: 'var(--ink)', textDecoration: 'underline', textUnderlineOffset: '3px',
+              textTransform: 'none', letterSpacing: 0,
+            }}
+          >
+            Log out
+          </button>
         </div>
 
         {showQR && <QRCodeSheet username={profile.username} onClose={() => setShowQR(false)} />}

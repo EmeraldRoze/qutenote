@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { api } from '../lib/api'
 import { enableReminders, remindersEnabled } from '../lib/push'
 import { isNativeApp } from '../lib/native'
+import QIcon from '../components/QIcon'
 
 interface Prefs {
   notifyBirthdays: boolean
@@ -70,7 +71,7 @@ export default function NotificationPreferencesPage() {
           width: '44px', height: '44px', borderRadius: '50%', background: '#E3D5CC',
           border: 'none', cursor: 'pointer', color: '#4A2424', display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M15 6l-6 6 6 6" /></svg>
+          <QIcon name="chevron-left" size={18} />
         </button>
         <span style={{ fontFamily: 'var(--font-display)', fontSize: '18px', fontWeight: 300, color: 'var(--ink)' }}>Notifications</span>
       </nav>

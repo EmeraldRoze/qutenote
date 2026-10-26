@@ -32,7 +32,7 @@ export default function WelcomePage() {
       <div style={{ ...col, flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
         <h1 style={{
           margin: 0, fontFamily: 'var(--font-display)', fontWeight: 300, fontSize: '50px',
-          lineHeight: 1.04, letterSpacing: '-0.03em', color: 'var(--ink)',
+          lineHeight: '54px', letterSpacing: '-0.03em', color: 'var(--ink)',
           display: 'flex', flexDirection: 'column', gap: '6px',
         }}>
           <span style={{ position: 'relative' }}>
@@ -49,7 +49,7 @@ export default function WelcomePage() {
           <span>something</span>
           <span>real.</span>
         </h1>
-        <p style={{ margin: '22px 0 0', fontSize: '17px', lineHeight: 1.5, color: 'var(--ink)', maxWidth: '300px' }}>
+        <p style={{ margin: '22px 0 0', fontSize: '17px', lineHeight: '18px', color: 'var(--ink)', maxWidth: '300px' }}>
           Because sometimes a text isn't enough.
         </p>
       </div>

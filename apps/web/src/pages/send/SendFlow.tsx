@@ -18,6 +18,7 @@ import VoiceNoteSheet, { formatSeconds } from '../../components/VoiceNoteSheet'
 import FlowerText from '../../components/FlowerText'
 import { trackFunnel, trackFeature, trackError } from '../../lib/analytics'
 import { encodeSecret } from '../../lib/secret'
+import QIcon from '../../components/QIcon'
 
 // The four-step send flow, rebuilt to the Oct 15 2026 redesign:
 // pick a card → who's it for → write your note → preview and mail.
@@ -64,7 +65,7 @@ function BackCircle({ onClick }: { onClick: () => void }) {
       border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
       color: 'var(--ink)', padding: 0,
     }}>
-      <svg aria-hidden width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 5l-7 7 7 7" /></svg>
+      <QIcon name="chevron-left" size={18} />
     </button>
   )
 }
@@ -286,7 +287,7 @@ export default function SendFlow() {
           <Band height={180}>
             <StepRow onBack={() => backFrom('recipient')} stepIndex={stepIndex} stepCount={STEP_COUNT} />
             <div style={{ marginTop: '14px', display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <h1 style={{ margin: 0, flex: 1, minWidth: 0, fontFamily: 'var(--font-display)', fontWeight: 300, fontSize: '26px', lineHeight: 1.12, letterSpacing: '-0.02em', color: 'var(--ink)' }}>Who's it for?</h1>
+              <h1 style={{ margin: 0, flex: 1, minWidth: 0, fontFamily: 'var(--font-display)', fontWeight: 300, fontSize: '26px', lineHeight: '36px', letterSpacing: '-0.02em', color: 'var(--ink)' }}>Who's it for?</h1>
               <QEmoji name="bff" size={56} style={{ flex: 'none', transform: 'rotate(4deg)', height: 'auto' }} />
             </div>
           </Band>
@@ -311,7 +312,7 @@ export default function SendFlow() {
                 <QEmoji name="heart-sparkle" size={42} style={{ flex: 'none' }} />
                 <span style={{ fontSize: '13px', fontFamily: 'var(--font-body)', color: 'var(--ink)' }}>To:&nbsp;<span style={{ fontSize: '16px', fontWeight: 700, color: 'var(--ink)' }}>{note.recipientName}</span></span>
               </div>
-              <h1 style={{ margin: '14px 0 0', paddingRight: '90px', fontFamily: 'var(--font-display)', fontWeight: 300, fontSize: '28px', lineHeight: 1.1, letterSpacing: '-0.02em', color: 'var(--ink)' }}>Say the thing.</h1>
+              <h1 style={{ margin: '14px 0 0', paddingRight: '90px', fontFamily: 'var(--font-display)', fontWeight: 300, fontSize: '28px', lineHeight: '18px', letterSpacing: '-0.02em', color: 'var(--ink)' }}>Say the thing.</h1>
               <p style={{ margin: '6px 0 0', paddingRight: '90px', fontSize: '15px', fontFamily: 'var(--font-body)', color: 'var(--ink)' }}>Put it in writing, QT</p>
               <QEmoji name="pen" size={92} style={{ position: 'absolute', right: 0, top: '8px', height: 'auto' }} />
             </div>
@@ -328,7 +329,7 @@ export default function SendFlow() {
           <Band height={180}>
             <StepRow onBack={() => backFrom('review')} stepIndex={stepIndex} stepCount={STEP_COUNT} />
             <div style={{ marginTop: '14px', display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <h1 style={{ margin: 0, flex: 1, minWidth: 0, fontFamily: 'var(--font-display)', fontWeight: 300, fontSize: '26px', lineHeight: 1.12, letterSpacing: '-0.02em', color: 'var(--ink)' }}>Looking good, QT.</h1>
+              <h1 style={{ margin: 0, flex: 1, minWidth: 0, fontFamily: 'var(--font-display)', fontWeight: 300, fontSize: '26px', lineHeight: '36px', letterSpacing: '-0.02em', color: 'var(--ink)' }}>Looking good, QT.</h1>
               <QEmoji name="mailbox" size={60} style={{ flex: 'none', transform: 'rotate(5deg)', height: 'auto' }} />
             </div>
           </Band>
@@ -576,8 +577,8 @@ function CardPicker({ note, update, onWrite }: {
       )}
 
       {/* Artist list */}
-      <h2 style={{ margin: '30px 0 4px', fontFamily: 'var(--font-display)', fontWeight: 300, fontSize: '20px', color: 'var(--ink)' }}>October artists</h2>
-      <p style={{ margin: '0 0 14px', fontSize: '15px', fontFamily: 'var(--font-body)', color: 'var(--ink)' }}>5 artists, 3 cards each.<br /><br />New ones every month :)</p>
+      <h2 className="on-paper" style={{ margin: '30px 0 4px', fontFamily: 'var(--font-display)', fontWeight: 300, fontSize: '20px', color: 'var(--ink)' }}>October artists</h2>
+      <p className="on-paper" style={{ margin: '0 0 14px', fontSize: '15px', fontFamily: 'var(--font-body)', color: 'var(--ink)' }}>5 artists, 3 cards each.<br /><br />New ones every month :)</p>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
         {ARTISTS.map((a, i) => {
@@ -713,7 +714,7 @@ function WriteStep({ note, update, onNext }: {
     flex: 'none', minHeight: '52px', padding: '6px 18px', borderRadius: '26px', cursor: 'pointer',
     border: selected ? '2px dashed var(--outline)' : '1.5px solid var(--outline)',
     background: selected ? 'var(--selected-fill)' : 'var(--card)',
-    color: 'var(--ink)', textTransform: 'none', letterSpacing: 0, fontWeight: 400, lineHeight: 1.2,
+    color: 'var(--ink)', textTransform: 'none', letterSpacing: 0, fontWeight: 400, lineHeight: '18px',
   })
 
   return (

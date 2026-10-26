@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { api } from '../../lib/api'
 import { setSetupNext } from '../../lib/postAuthRoute'
 import QEmoji from '../../components/QEmoji'
+import QIcon from '../../components/QIcon'
 
 // Sign-up: address — screen 04 of the Oct 15 2026 redesign. Same endpoints as
 // the settings AddressPage (POST /address runs Lob verification server-side),
@@ -64,13 +65,13 @@ export default function SignupAddressPage() {
               width: '44px', height: '44px', borderRadius: '50%', background: 'var(--light-blush)',
               border: 'none', cursor: 'pointer', color: 'var(--ink)', display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 5l-7 7 7 7" /></svg>
+              <QIcon name="chevron-left" size={18} />
             </button>
           </div>
           <div style={{ marginTop: '14px', display: 'flex', alignItems: 'center', gap: '12px' }}>
             <h1 style={{
               margin: 0, flex: 1, minWidth: 0, fontFamily: 'var(--font-display)', fontWeight: 300,
-              fontSize: '26px', lineHeight: 1.12, letterSpacing: '-0.02em',
+              fontSize: '26px', lineHeight: '36px', letterSpacing: '-0.02em',
             }}>
               Where do <br />they go?
             </h1>
@@ -87,7 +88,7 @@ export default function SignupAddressPage() {
         }}>
           {/* her painted padlock, never a drawn icon (Emerald, Oct 25) */}
           <QEmoji name="lock" size={34} style={{ flex: 'none', height: 'auto', marginTop: '1px' }} />
-          <p style={{ margin: 0, fontSize: '15px', lineHeight: 1.45 }}>
+          <p style={{ margin: 0, fontSize: '15px', lineHeight: '18px' }}>
             Your address is private. It stays between us and the post office.{' '}
           </p>
         </div>

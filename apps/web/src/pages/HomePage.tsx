@@ -12,6 +12,7 @@ import { fetchHandwritingProgress } from '../lib/handwriting/api'
 import { remindersEnabled } from '../lib/push'
 import QRCodeSheet from '../components/QRCodeSheet'
 import { PENDING_SCAN_KEY } from './CardScanPage'
+import QIcon from '../components/QIcon'
 
 // Home tab, restyled to palette 4 (qutenote-app-palette4, 10-home).
 
@@ -102,7 +103,7 @@ function OfferCarousel({ hasSentCard, hasHandwriting }: { hasSentCard: boolean; 
                 <QEmoji name={c.art} size={c.artWidth} style={{ maxHeight: `${c.artBoxH ?? 170}px`, transform: 'rotate(-4deg)' }} />
               )}
             </div>
-            <p style={{ margin: '16px 0 0', fontFamily: 'var(--font-display)', fontSize: '22px', lineHeight: 1.2, letterSpacing: '-0.01em', color: 'var(--ink)', whiteSpace: 'pre-line' }}>
+            <p style={{ margin: '16px 0 0', fontFamily: 'var(--font-display)', fontSize: '22px', lineHeight: '36px', letterSpacing: '-0.01em', color: 'var(--ink)', whiteSpace: 'pre-line' }}>
               {c.title}
             </p>
             {c.key !== 'invite' && (
@@ -120,7 +121,7 @@ function OfferCarousel({ hasSentCard, hasHandwriting }: { hasSentCard: boolean; 
                 position: 'absolute', left: '6px', top: '50%', transform: 'translateY(-50%)',
                 background: 'none', border: 'none', cursor: 'pointer', padding: '8px', opacity: 0.45, color: 'var(--ink)',
               }}>
-                <svg aria-hidden width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round"><path d="M15 5l-7 7 7 7" /></svg>
+                <QIcon name="chevron-left" size={18} />
               </button>
             )}
             {i < OFFER_CARDS.length - 1 && (
@@ -128,7 +129,7 @@ function OfferCarousel({ hasSentCard, hasHandwriting }: { hasSentCard: boolean; 
                 position: 'absolute', right: '6px', top: '50%', transform: 'translateY(-50%)',
                 background: 'none', border: 'none', cursor: 'pointer', padding: '8px', opacity: 0.45, color: 'var(--ink)',
               }}>
-                <svg aria-hidden width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round"><path d="M9 5l7 7-7 7" /></svg>
+                <QIcon name="chevron-right" size={14} />
               </button>
             )}
           </div>
@@ -165,7 +166,7 @@ function SetupChecklist({ tasks }: { tasks: SetupTask[] }) {
             textTransform: 'none', letterSpacing: 0,
           }}>
             <QEmoji name={t.art} size={t.artSize ?? 72} />
-            <span style={{ fontSize: '16px', fontWeight: 700, lineHeight: 1.3, fontFamily: 'var(--font-body)', color: 'var(--ink)' }}>{t.label}</span>
+            <span style={{ fontSize: '16px', fontWeight: 700, lineHeight: '18px', fontFamily: 'var(--font-body)', color: 'var(--ink)' }}>{t.label}</span>
           </button>
         ))}
       </div>
@@ -325,7 +326,7 @@ export default function HomePage() {
           {/* Search + QR row */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', position: 'relative' }}>
             <label style={{ flex: 1, height: '48px', borderRadius: '24px', background: 'var(--card)', border: '1.5px solid var(--outline)', display: 'flex', alignItems: 'center', gap: '10px', padding: '0 16px' }}>
-              <svg aria-hidden width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" strokeWidth="2" strokeLinecap="round"><circle cx="11" cy="11" r="6.5" /><path d="M16 16l4.5 4.5" /></svg>
+              <QIcon name="search" size={22} />
               <input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
@@ -339,7 +340,7 @@ export default function HomePage() {
               width: '48px', height: '48px', borderRadius: '50%', border: '1.5px solid var(--outline)', background: 'var(--card)',
               display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--ink)', cursor: 'pointer', flexShrink: 0,
             }}>
-              <svg aria-hidden width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3.5" y="3.5" width="6" height="6" rx="1" /><rect x="14.5" y="3.5" width="6" height="6" rx="1" /><rect x="3.5" y="14.5" width="6" height="6" rx="1" /><path d="M14.5 14.5h2v2h-2zM18.5 18.5h2v2h-2zM14.5 18.5h2" /></svg>
+              <QIcon name="qr" size={22} />
             </button>
             {/* Matches drop in under the bar as you type */}
             {search.trim().length >= 2 && (
@@ -423,7 +424,7 @@ export default function HomePage() {
                 </div>
               </div>
             </div>
-            <div style={{ fontSize: '15px', lineHeight: 1.45, fontFamily: 'var(--font-body)', color: 'var(--ink)' }}>
+            <div style={{ fontSize: '15px', lineHeight: '18px', fontFamily: 'var(--font-body)', color: 'var(--ink)' }}>
               Write it now. We'll mail it so it lands on the day.
             </div>
             <button onClick={() => navigate(`/send?toName=${encodeURIComponent(nudge.connectionName.split(' ')[0])}`)} style={{
@@ -450,13 +451,13 @@ export default function HomePage() {
         )}
 
         {/* From your QTs */}
-        <h2 style={{ margin: '30px 0 12px', fontFamily: 'var(--font-display)', fontWeight: 300, fontSize: '20px' }}>From your QTs</h2>
+        <h2 className="on-paper" style={{ margin: '30px 0 12px', fontFamily: 'var(--font-display)', fontWeight: 300, fontSize: '20px' }}>From your QTs</h2>
 
         {feed.length === 0 && (
           <div className="qn-stamp" style={{ border: '10px solid transparent', background: 'transparent', padding: '14px 12px', display: 'flex', gap: '16px', alignItems: 'center' }}>
             <QEmoji name="mailbox" size={84} style={{ flexShrink: 0 }} />
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              <p style={{ margin: 0, fontFamily: 'var(--font-body)', fontSize: '15px', lineHeight: 1.45, color: 'var(--ink)' }}>
+              <p style={{ margin: 0, fontFamily: 'var(--font-body)', fontSize: '15px', lineHeight: '18px', color: 'var(--ink)' }}>
                 It's quiet in here. Once friends join, their birthdays, news and sends show up here.
               </p>
               <button onClick={() => navigate('/connections?sync=1')} style={{
@@ -493,7 +494,7 @@ export default function HomePage() {
                   {/* the send-them-somethin' heart lives inside the status bar:
                       wax heart + oxblood squiggles (Emerald, Oct 23) */}
                   <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 12px', borderRadius: '14px', background: 'var(--card)', border: '1.5px solid var(--outline)' }}>
-                    <span style={{ flex: 1, fontSize: '15px', lineHeight: 1.4, fontFamily: 'var(--font-body)' }}>{item.text}</span>
+                    <span style={{ flex: 1, fontSize: '15px', lineHeight: '18px', fontFamily: 'var(--font-body)' }}>{item.text}</span>
                     <button aria-label="Send a little somethin'" onClick={() => navigate(`/send?toName=${encodeURIComponent(item.user?.displayName.split(' ')[0] ?? '')}`)} style={{
                       flexShrink: 0, minWidth: '44px', height: '34px', margin: '-5px -4px -5px 0', border: 'none', background: 'none',
                       cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '3px', padding: 0,
@@ -507,7 +508,7 @@ export default function HomePage() {
                 </>
               ) : (
                 <>
-                  <div style={{ fontSize: '15px', lineHeight: 1.4, fontFamily: 'var(--font-body)' }}>
+                  <div style={{ fontSize: '15px', lineHeight: '18px', fontFamily: 'var(--font-body)' }}>
                     <strong>{item.sender?.displayName}</strong> sent <strong>{item.recipient?.displayName}</strong>{' '}
                     {OCCASION_SENTENCE[item.occasionType ?? 'CUSTOM'] ?? 'a note'}
                   </div>
