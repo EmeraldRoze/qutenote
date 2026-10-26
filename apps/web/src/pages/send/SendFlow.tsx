@@ -411,20 +411,37 @@ function CardPicker({ note, update, onWrite }: {
   const panelRef = useRef<HTMLDivElement>(null)
   const fileRef = useRef<HTMLInputElement>(null)
 
-  const current = LIBRARY[Math.min(cardIdx, LIBRARY.length - 1)]
+  // Emerald, Oct 25: your own photo rides at the FRONT of the same deck, so
+  // there is one panel, one swipe and one WRITE ON IT — no second button
+  // sitting under the first.
+  const DECK = useMemo(() => {
+    const mine = note.cardImageUrl
+      ? [{ card: { id: '__photo', title: 'Your photo', art: note.cardImageUrl, bg: 'var(--selected-fill)' }, artist: null as null, artistIdx: -1 }]
+      : []
+    return [...mine, ...LIBRARY]
+  }, [note.cardImageUrl, LIBRARY])
+
+  const current = DECK[Math.min(cardIdx, DECK.length - 1)]
   const artist = current.artist
+
+  function selectIndex(i: number) {
+    const item = DECK[i]
+    if (!item) return
+    setCardIdx(i)
+    if (item.artistIdx === -1) update({ cardDesignType: 'USER_UPLOAD', cardDesignId: undefined })
+    else update({ cardDesignType: 'ARTIST', cardDesignId: item.card.id, cardImageUrl: undefined })
+  }
 
   function goToCard(i: number, smooth = true) {
     const el = panelRef.current
-    if (!el || !LIBRARY[i]) return
-    setCardIdx(i)
-    update({ cardDesignType: 'ARTIST', cardDesignId: LIBRARY[i].card.id, cardImageUrl: undefined })
+    if (!el || !DECK[i]) return
+    selectIndex(i)
     el.scrollTo({ left: i * el.clientWidth, behavior: smooth ? 'smooth' : 'auto' })
   }
 
   // Tapping an artist below swipes the panel to the first card they made.
   function selectArtist(i: number) {
-    const first = LIBRARY.findIndex((x) => x.artistIdx === i)
+    const first = DECK.findIndex((x) => x.artistIdx === i)
     if (first < 0) return
     goToCard(first)
     window.scrollTo({ top: 0, behavior: 'smooth' })
@@ -434,15 +451,12 @@ function CardPicker({ note, update, onWrite }: {
     const el = panelRef.current
     if (!el) return
     const i = Math.round(el.scrollLeft / el.clientWidth)
-    if (i !== cardIdx && LIBRARY[i]) {
-      setCardIdx(i)
-      update({ cardDesignType: 'ARTIST', cardDesignId: LIBRARY[i].card.id, cardImageUrl: undefined })
-    }
+    if (i !== cardIdx && DECK[i]) selectIndex(i)
   }
 
   // On load: pick up where the note left off, or select the first card.
   useEffect(() => {
-    const chosen = note.cardDesignId ? LIBRARY.findIndex((x) => x.card.id === note.cardDesignId) : -1
+    const chosen = note.cardDesignId ? DECK.findIndex((x) => x.card.id === note.cardDesignId) : -1
     if (chosen > 0) {
       setCardIdx(chosen)
       requestAnimationFrame(() => {
@@ -450,7 +464,7 @@ function CardPicker({ note, update, onWrite }: {
         if (el) el.scrollTo({ left: chosen * el.clientWidth, behavior: 'auto' })
       })
     } else if (!note.cardDesignId && !note.cardImageUrl) {
-      update({ cardDesignType: 'ARTIST', cardDesignId: LIBRARY[0].card.id })
+      update({ cardDesignType: 'ARTIST', cardDesignId: DECK[0].card.id })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
@@ -462,6 +476,8 @@ function CardPicker({ note, update, onWrite }: {
     try {
       const url = await uploadPhoto(file)
       update({ cardDesignType: 'USER_UPLOAD', cardImageUrl: url, cardDesignId: undefined })
+      setCardIdx(0)
+      requestAnimationFrame(() => panelRef.current?.scrollTo({ left: 0, behavior: 'smooth' }))
     } catch (err: any) {
       const detail = err?.response?.data?.error ?? err?.message ?? 'unknown'
       setUploadError(`That photo didn't upload (${detail}). Try again, or pick a different one.`)
@@ -480,14 +496,14 @@ function CardPicker({ note, update, onWrite }: {
           onScroll={onPanelScroll}
           style={{ overflowX: 'auto', scrollSnapType: 'x mandatory', scrollbarWidth: 'none', display: 'flex' }}
         >
-          {LIBRARY.map(({ card: c, artist: a }, i) => (
+          {DECK.map(({ card: c, artist: a }, i) => (
             <div key={c.id} style={{
               flex: '0 0 100%', height: '300px', scrollSnapAlign: 'start',
               display: 'flex', alignItems: 'flex-start', justifyContent: 'center',
               paddingTop: '26px', boxSizing: 'border-box',
             }}>
               {c.art ? (
-                <img src={c.art} alt={`${c.title} postcard by ${a.handle ?? a.name}`} style={{
+                <img src={c.art} alt={a ? `${c.title} postcard by ${a.handle ?? a.name}` : 'Your photo on the postcard'} style={{
                   height: '270px', width: 'auto', maxWidth: '86%', objectFit: 'cover', borderRadius: '4px',
                   transform: `rotate(${CARD_ROTATIONS[i % 3]}deg)`, boxShadow: '0 12px 24px rgba(74, 36, 36, 0.2)',
                 }} />
@@ -504,17 +520,17 @@ function CardPicker({ note, update, onWrite }: {
           ))}
         </div>
         <div aria-hidden style={{ position: 'absolute', left: 0, right: 0, top: '318px', display: 'flex', gap: '6px', justifyContent: 'center' }}>
-          {LIBRARY.map((_, i) => (
+          {DECK.map((_, i) => (
             <span key={i} style={{ width: i === cardIdx ? '18px' : '5px', height: '5px', borderRadius: '3px', background: i === cardIdx ? 'var(--ink)' : '#C2B6AA', transition: 'width 0.2s' }} />
           ))}
         </div>
         <div style={{ position: 'absolute', left: '18px', bottom: '18px', display: 'flex', flexDirection: 'column', gap: '2px' }}>
-          <span style={{ fontSize: '13px', fontFamily: 'var(--font-body)', color: 'var(--ink)' }}>{artist.featured ? 'Featured this month' : 'October artist'}</span>
-          <span style={{ fontSize: '17px', fontWeight: 700, fontFamily: 'var(--font-body)', color: 'var(--ink)' }}>{artist.handle ?? artist.name}</span>
+          <span style={{ fontSize: '13px', fontFamily: 'var(--font-body)', color: 'var(--ink)' }}>{artist ? (artist.featured ? 'Featured this month' : 'October artist') : 'Your photo'}</span>
+          <span style={{ fontSize: '17px', fontWeight: 700, fontFamily: 'var(--font-body)', color: 'var(--ink)' }}>{artist ? (artist.handle ?? artist.name) : 'Tap below to swap it'}</span>
         </div>
         <button
           onClick={() => {
-            update({ cardDesignType: 'ARTIST', cardDesignId: current.card.id, cardImageUrl: undefined })
+            selectIndex(cardIdx)
             onWrite()
           }}
           style={{
@@ -542,12 +558,6 @@ function CardPicker({ note, update, onWrite }: {
           }}>
             {uploading ? 'Uploading…' : 'Your photo is on it. Tap to swap.'}
           </button>
-          <button onClick={onWrite} style={{
-            height: '44px', padding: '0 16px', borderRadius: '22px', background: 'var(--btn)', color: 'var(--ink)',
-            border: '2px solid var(--outline)', boxSizing: 'border-box', cursor: 'pointer',
-            fontFamily: 'var(--font-body)', fontSize: '13px',
-            fontWeight: 700, letterSpacing: '0.08em', flex: 'none',
-          }}>WRITE ON IT</button>
         </div>
       ) : (
         <button className="qn-stamp" onClick={() => fileRef.current?.click()} style={{
