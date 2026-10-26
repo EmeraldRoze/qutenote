@@ -7,6 +7,7 @@ import { enableReminders, remindersEnabled, lastReminderFailure, type ReminderRe
 import { isNativeApp } from '../lib/native'
 import { fetchHandwritingProgress } from '../lib/handwriting/api'
 import QIcon from '../components/QIcon'
+import QEmoji from '../components/QEmoji'
 
 // Settings, palette 4 restyle of screen 16-settings.html. No tab bar.
 // Free mode: no Membership or Payment methods rows.
@@ -156,6 +157,16 @@ export default function SettingsPage() {
           <button style={rowStyle} onClick={() => navigate('/secret-key')}>
             <span style={rowLabel}>Secret language</span>
             <QIcon name="shush" size={22} style={{ marginRight: '8px' }} />
+            {chevron}
+          </button>
+
+          {/* Become a QuteNote artist (her qutenote-artists package, screen 01) */}
+          <button style={rowStyle} onClick={() => navigate('/artist/apply')}>
+            <span style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '2px' }}>
+              <span style={rowLabel}>Become a QuteNote artist</span>
+              <span style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--ink)' }}>Sell your art as postcards.</span>
+            </span>
+            <QEmoji name="palette" size={26} style={{ height: 'auto', marginRight: '8px' }} />
             {chevron}
           </button>
 

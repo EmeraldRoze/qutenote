@@ -33,6 +33,8 @@ import SignupBirthdayPage from './pages/signup/SignupBirthdayPage'
 import AddDatePage from './pages/AddDatePage'
 import ScheduledCardsPage from './pages/ScheduledCardsPage'
 import CardScanPage from './pages/CardScanPage'
+import ArtistApplyPage from './pages/artist/ArtistApplyPage'
+import ArtistApplicationSentPage from './pages/artist/ArtistApplicationSentPage'
 
 // A new screen should always open at the top — without this, React Router
 // keeps whatever scroll position the previous screen was left at.
@@ -80,6 +82,8 @@ function AppRoutes() {
       <Route path="/connections" element={<ProtectedRoute><ConnectionsPage /></ProtectedRoute>} />
       <Route path="/dates" element={<ProtectedRoute><ImportantDatesPage /></ProtectedRoute>} />
       <Route path="/secret-key" element={<ProtectedRoute><SecretKeyPage /></ProtectedRoute>} />
+      <Route path="/artist/apply" element={<ProtectedRoute><ArtistApplyPage /></ProtectedRoute>} />
+      <Route path="/artist/sent" element={<ProtectedRoute><ArtistApplicationSentPage /></ProtectedRoute>} />
       <Route path="/extra-card/success" element={<ExtraCardSuccessPage />} />
       <Route path="/signup/handle" element={<ProtectedRoute><PickHandlePage /></ProtectedRoute>} />
       <Route path="/signup/address" element={<ProtectedRoute><SignupAddressPage /></ProtectedRoute>} />
