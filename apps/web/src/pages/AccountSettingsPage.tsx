@@ -3,8 +3,6 @@ import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { api } from '../lib/api'
 import { waxLetterSrc, WAX_CENTER_X, WAX_CENTER_Y, WAX_WIDTH } from '../lib/wax'
-import QEmoji from '../components/QEmoji'
-import { STATUS_EMOJI } from '../components/Happenings'
 
 // Account ("Deets"), palette 4 restyle of screen 17-account.html. No tab bar.
 // Every field is editable; username/email clashes come back as a 409 with a
@@ -40,7 +38,6 @@ export default function AccountSettingsPage() {
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
   const [error, setError] = useState('')
-  const [pickingAvatar, setPickingAvatar] = useState(false)
   const [confirmingDelete, setConfirmingDelete] = useState(false)
   const [deleteText, setDeleteText] = useState('')
   const [deleting, setDeleting] = useState(false)
@@ -108,13 +105,6 @@ export default function AccountSettingsPage() {
               position: 'absolute', left: `${240 * WAX_CENTER_X}px`, top: `${240 * WAX_CENTER_Y}px`,
               width: `${Math.round(240 * WAX_WIDTH)}px`, transform: 'translate(-50%, -50%)',
             }} />
-            <button onClick={() => setPickingAvatar(true)} aria-label="Pick an emoji or add a photo" style={{
-              position: 'absolute', left: '5px', top: '12px', width: '38px', height: '38px', borderRadius: '50%',
-              border: '3px solid var(--stone)', background: 'var(--stamp-center)', color: 'var(--card)', padding: 0, boxSizing: 'border-box',
-              display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
-            }}>
-              <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
-            </button>
           </div>
         </div>
 
@@ -176,28 +166,6 @@ export default function AccountSettingsPage() {
         </div>
       </div>
 
-      {pickingAvatar && (
-        <div style={{ position: 'fixed', inset: 0, zIndex: 100, background: 'rgba(74,36,36,0.45)', display: 'flex', alignItems: 'flex-end' }} onClick={() => setPickingAvatar(false)}>
-          <div style={{ width: '100%', background: 'var(--cream)', borderRadius: '16px 16px 0 0', padding: '24px 24px calc(24px + env(safe-area-inset-bottom))' }} onClick={(e) => e.stopPropagation()}>
-            <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '22px', fontWeight: 300, marginBottom: '14px' }}>Pick your emoji</h2>
-            <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-              {STATUS_EMOJI.map((e) => (
-                <button key={e} onClick={async () => {
-                  await api.put('/users/me', { avatarUrl: `/emoji/${e}.png` })
-                  refreshUser?.()
-                  setPickingAvatar(false)
-                }} style={{
-                  width: '52px', height: '52px', borderRadius: '26px', cursor: 'pointer',
-                  background: 'var(--card)', border: '1.5px solid var(--stone)',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                }}>
-                  <QEmoji name={e} size={32} />
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
 
       {confirmingDelete && (
         <div style={{ position: 'fixed', inset: 0, zIndex: 100, background: 'rgba(74,36,36,0.45)', display: 'flex', alignItems: 'flex-end' }} onClick={() => !deleting && setConfirmingDelete(false)}>

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { api } from '../../lib/api'
 import { PROMPTS, OCCASIONS } from '../../lib/prompts'
@@ -399,20 +399,34 @@ function CardPicker({ note, update, onWrite }: {
   update: (d: Partial<NoteData>) => void
   onWrite: () => void
 }) {
-  const [artistIdx, setArtistIdx] = useState(0)
+  // Emerald, Oct 25: the panel holds the WHOLE library now — every artist's
+  // cards in one swipe, and the name underneath changes with the card.
+  const LIBRARY = useMemo(
+    () => ARTISTS.flatMap((a, ai) => a.cards.map((card) => ({ card, artist: a, artistIdx: ai }))),
+    [],
+  )
   const [cardIdx, setCardIdx] = useState(0)
   const [uploading, setUploading] = useState(false)
   const [uploadError, setUploadError] = useState('')
   const panelRef = useRef<HTMLDivElement>(null)
   const fileRef = useRef<HTMLInputElement>(null)
 
-  const artist = ARTISTS[artistIdx]
+  const current = LIBRARY[Math.min(cardIdx, LIBRARY.length - 1)]
+  const artist = current.artist
 
+  function goToCard(i: number, smooth = true) {
+    const el = panelRef.current
+    if (!el || !LIBRARY[i]) return
+    setCardIdx(i)
+    update({ cardDesignType: 'ARTIST', cardDesignId: LIBRARY[i].card.id, cardImageUrl: undefined })
+    el.scrollTo({ left: i * el.clientWidth, behavior: smooth ? 'smooth' : 'auto' })
+  }
+
+  // Tapping an artist below swipes the panel to the first card they made.
   function selectArtist(i: number) {
-    setArtistIdx(i)
-    setCardIdx(0)
-    update({ cardDesignType: 'ARTIST', cardDesignId: ARTISTS[i].cards[0].id, cardImageUrl: undefined })
-    panelRef.current?.scrollTo({ left: 0 })
+    const first = LIBRARY.findIndex((x) => x.artistIdx === i)
+    if (first < 0) return
+    goToCard(first)
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
@@ -420,16 +434,23 @@ function CardPicker({ note, update, onWrite }: {
     const el = panelRef.current
     if (!el) return
     const i = Math.round(el.scrollLeft / el.clientWidth)
-    if (i !== cardIdx && artist.cards[i]) {
+    if (i !== cardIdx && LIBRARY[i]) {
       setCardIdx(i)
-      update({ cardDesignType: 'ARTIST', cardDesignId: artist.cards[i].id, cardImageUrl: undefined })
+      update({ cardDesignType: 'ARTIST', cardDesignId: LIBRARY[i].card.id, cardImageUrl: undefined })
     }
   }
 
-  // The first time the flow loads, make sure something is selected.
+  // On load: pick up where the note left off, or select the first card.
   useEffect(() => {
-    if (!note.cardDesignId && !note.cardImageUrl) {
-      update({ cardDesignType: 'ARTIST', cardDesignId: artist.cards[0].id })
+    const chosen = note.cardDesignId ? LIBRARY.findIndex((x) => x.card.id === note.cardDesignId) : -1
+    if (chosen > 0) {
+      setCardIdx(chosen)
+      requestAnimationFrame(() => {
+        const el = panelRef.current
+        if (el) el.scrollTo({ left: chosen * el.clientWidth, behavior: 'auto' })
+      })
+    } else if (!note.cardDesignId && !note.cardImageUrl) {
+      update({ cardDesignType: 'ARTIST', cardDesignId: LIBRARY[0].card.id })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
@@ -455,19 +476,18 @@ function CardPicker({ note, update, onWrite }: {
       {/* Featured swipe panel */}
       <div style={{ marginTop: '20px', height: '400px', borderRadius: '28px', background: 'var(--light-blush)', position: 'relative', overflow: 'hidden' }}>
         <div
-          key={artistIdx}
           ref={panelRef}
           onScroll={onPanelScroll}
           style={{ overflowX: 'auto', scrollSnapType: 'x mandatory', scrollbarWidth: 'none', display: 'flex' }}
         >
-          {artist.cards.map((c, i) => (
+          {LIBRARY.map(({ card: c, artist: a }, i) => (
             <div key={c.id} style={{
               flex: '0 0 100%', height: '300px', scrollSnapAlign: 'start',
               display: 'flex', alignItems: 'flex-start', justifyContent: 'center',
               paddingTop: '26px', boxSizing: 'border-box',
             }}>
               {c.art ? (
-                <img src={c.art} alt={`${c.title} postcard by ${artist.handle ?? artist.name}`} style={{
+                <img src={c.art} alt={`${c.title} postcard by ${a.handle ?? a.name}`} style={{
                   height: '270px', width: 'auto', maxWidth: '86%', objectFit: 'cover', borderRadius: '4px',
                   transform: `rotate(${CARD_ROTATIONS[i % 3]}deg)`, boxShadow: '0 12px 24px rgba(74, 36, 36, 0.2)',
                 }} />
@@ -484,8 +504,8 @@ function CardPicker({ note, update, onWrite }: {
           ))}
         </div>
         <div aria-hidden style={{ position: 'absolute', left: 0, right: 0, top: '318px', display: 'flex', gap: '6px', justifyContent: 'center' }}>
-          {artist.cards.map((_, i) => (
-            <span key={i} style={{ width: i === cardIdx ? '22px' : '6px', height: '6px', borderRadius: '3px', background: i === cardIdx ? 'var(--ink)' : '#C2B6AA', transition: 'width 0.2s' }} />
+          {LIBRARY.map((_, i) => (
+            <span key={i} style={{ width: i === cardIdx ? '18px' : '5px', height: '5px', borderRadius: '3px', background: i === cardIdx ? 'var(--ink)' : '#C2B6AA', transition: 'width 0.2s' }} />
           ))}
         </div>
         <div style={{ position: 'absolute', left: '18px', bottom: '18px', display: 'flex', flexDirection: 'column', gap: '2px' }}>
@@ -494,7 +514,7 @@ function CardPicker({ note, update, onWrite }: {
         </div>
         <button
           onClick={() => {
-            update({ cardDesignType: 'ARTIST', cardDesignId: artist.cards[cardIdx].id, cardImageUrl: undefined })
+            update({ cardDesignType: 'ARTIST', cardDesignId: current.card.id, cardImageUrl: undefined })
             onWrite()
           }}
           style={{
@@ -551,7 +571,7 @@ function CardPicker({ note, update, onWrite }: {
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
         {ARTISTS.map((a, i) => {
-          const active = i === artistIdx && !note.cardImageUrl
+          const active = i === current.artistIdx && !note.cardImageUrl
           return (
             <div key={a.key} style={{
               background: 'var(--card)', borderRadius: '18px', padding: '14px',
