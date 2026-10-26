@@ -8,3 +8,7 @@ apps/api/dist
 
 .DS_Store
 backups/
+
+# local-only preview harness (never ship)
+apps/web/public/__preview.html
+apps/web/public/__audit.html
