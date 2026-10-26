@@ -198,7 +198,18 @@ export default function ConnectionsPage() {
 
       <div style={{ maxWidth: '480px', margin: '0 auto', padding: '0 20px' }}>
 
-        {/* Invite box first: a perforated postage-stamp box */}
+        {/* Search first */}
+        <label style={{ marginTop: '16px', height: '48px', borderRadius: '24px', background: 'var(--card)', border: '1.5px solid var(--outline)', display: 'flex', alignItems: 'center', gap: '10px', padding: '0 16px' }}>
+          <QIcon name="search" size={22} />
+          <input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search your QTs"
+            aria-label="Search your QTs"
+            style={{ border: 0, outline: 'none', background: 'transparent', fontFamily: 'var(--font-body)', fontSize: '17px', color: 'var(--ink)', width: '100%' }}
+          />
+        </label>
+        {/* The invite stamp sits under the search field (Emerald, Oct 25) */}
         <div className="qn-stamp" style={{ marginTop: '16px', border: '10px solid transparent', background: 'transparent', padding: '12px 10px', display: 'flex', gap: '14px', alignItems: 'center' }}>
           {/* Her new INVITE envelope replaces the heart hands here (Emerald,
               Oct 25). Same 102px footprint the hands had. */}
@@ -227,17 +238,6 @@ export default function ConnectionsPage() {
           </button>
         </div>
 
-        {/* Search */}
-        <label style={{ marginTop: '16px', height: '48px', borderRadius: '24px', background: 'var(--card)', border: '1.5px solid var(--outline)', display: 'flex', alignItems: 'center', gap: '10px', padding: '0 16px' }}>
-          <QIcon name="search" size={22} />
-          <input
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search your QTs"
-            aria-label="Search your QTs"
-            style={{ border: 0, outline: 'none', background: 'transparent', fontFamily: 'var(--font-body)', fontSize: '17px', color: 'var(--ink)', width: '100%' }}
-          />
-        </label>
 
         {/* Contacts sync (native app only) */}
         {contactsAvailable && syncState !== 'done' && (
