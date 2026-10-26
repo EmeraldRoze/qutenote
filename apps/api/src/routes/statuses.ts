@@ -58,11 +58,14 @@ statusesRouter.get('/home-feed', async (req: AuthRequest, res: Response) => {
   const userSelect = { id: true, username: true, displayName: true, avatarUrl: true }
 
   const [statuses, notes] = await Promise.all([
+    // Only the CURRENT status per person. Every save writes a new row, so
+    // without this one chatty friend filled the whole feed with their own
+    // history (Emerald, Oct 25: "why is his status showing so many times").
     prisma.status.findMany({
       where: { userId: { in: ids } },
-      select: { id: true, emoji: true, text: true, createdAt: true, user: { select: userSelect } },
+      select: { id: true, emoji: true, text: true, createdAt: true, userId: true, user: { select: userSelect } },
       orderBy: { createdAt: 'desc' },
-      take: 20,
+      take: 120,
     }),
     prisma.note.findMany({
       where: { senderId: { in: [...ids, req.userId!] }, status: { in: ['SENT', 'PRINTED'] } },
@@ -75,8 +78,15 @@ statusesRouter.get('/home-feed', async (req: AuthRequest, res: Response) => {
     }),
   ])
 
+  const seenUser = new Set<string>()
+  const latestStatuses = statuses.filter((s) => {
+    if (seenUser.has(s.userId)) return false
+    seenUser.add(s.userId)
+    return true
+  })
+
   const items = [
-    ...statuses.map((s) => ({
+    ...latestStatuses.map((s) => ({
       kind: 'status' as const,
       id: s.id, emoji: s.emoji, text: s.text, createdAt: s.createdAt, user: s.user,
     })),
