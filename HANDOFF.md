@@ -1,6 +1,12 @@
 # QuteNote — Handoff / Status Board
 Written: 2026-10-06 (replaces stale April 10 handoff). Last updated: 2026-10-25 (late evening).
 
+## NEXT ROUND, HER SPEC SO FAR: "send it now, mail it when they add an address" (Oct 25, late)
+Her ask, verbatim intent: finish writing and sending a card even when you don't have the person's address, so you never have to write it twice; the moment they add an address it mails itself. Plus the alerts live IN the app (feed + QTs page + an inbox), not just as a push that vanishes.
+- Q1 ANSWERED: the card is **deducted from her monthly allowance immediately**. If the person doesn't add an address within **14 days**, the sender gets a notification and the card is **returned** (credit back).
+- Q2 ASKED, awaiting her: does this cover people who aren't on QuteNote at all (card waits on a phone number + invite link), or only existing accounts missing an address?
+- GROUNDWORK ALREADY THERE: a Notification table exists and is written when a card ships (admin.ts), but NOTHING displays it — the inbox is a new screen. POST /notes currently HARD-REJECTS a recipient with no address (routes/notes.ts ~line 114) — that rejection is the thing to replace with a pending state. NoteStatus enum is PENDING/PRINTED/SENT/FAILED, so a new state (e.g. AWAITING_ADDRESS) + a release job when an address lands.
+
 ## OPEN WITH EMERALD (Oct 25, late)
 - FACEBOOK DEVELOPER APP created by her: **App ID 1617450783187207** (name "QuteNote"). Nothing is wired to it yet — ASK what she wants it for before touching it (Facebook/Instagram login? share sheets? ads conversion tracking?). Each one is a different setup.
 - SHE PUT qutenote.com IN HER INSTAGRAM BIO and wants to know when someone signs up from it. Today nothing notifies her: launch-list signups land in EarlySignup and only show on /admin. Proposed (await her pick): (1) push to admins the moment someone joins, (2) a morning digest, (3) a signups card on /admin + the analytics dashboard, (4) ?ref=ig on the bio link captured into EarlySignup.source so Instagram traffic is attributable.
