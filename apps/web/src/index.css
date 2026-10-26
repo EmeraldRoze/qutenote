@@ -206,32 +206,13 @@ body::before {
   cursor:pointer; text-align:center;
 }
 .qn-action:disabled{ opacity:0.5; cursor:not-allowed; }
-/* The SQUARE stamp: exactly the photoreal cardstock, ink rule and printed
-   panel of .qn-stamp, with straight edges instead of punched perforations. */
+/* THE SQUARE STAMP (Emerald, Oct 25): her real perforated stamp border — the
+   same one the status box wears — on a button whose four sides are the same
+   length. Log in and Sign up only. Use WITH .qn-stamp:
+   className="qn-stamp qn-action qn-action-square". */
 .qn-action-square{
-  position:relative; isolation:isolate;
-  border:10px solid transparent; border-radius:0;
-  background:transparent; padding:0 16px; min-height:56px;
-  filter:drop-shadow(0 0 1.5px rgba(74,36,36,.5)) drop-shadow(0 0 4px rgba(74,36,36,.28)) drop-shadow(0 0 10px rgba(74,36,36,.14));
-}
-.qn-action-square{
-  /* a cut piece of cardstock lifting off the page: hairline rim, light
-     catching the top edge, shadow under the bottom one (option B) */
-  filter:drop-shadow(0 1px 0 rgba(74,36,36,.35)) drop-shadow(0 4px 7px rgba(74,36,36,.3));
-}
-.qn-action-square::after{
-  content:''; position:absolute; inset:-2px; z-index:-1; pointer-events:none;
-  background:
-    linear-gradient(var(--qn-panel,#E9EDF1),var(--qn-panel,#E9EDF1)) 50% 50%/calc(100% - 24px) calc(100% - 24px) no-repeat,
-    linear-gradient(rgba(74,36,36,.3),rgba(74,36,36,.3)) 50% 50%/calc(100% - 22px) calc(100% - 22px) no-repeat,
-    url('/brand/paper_texture.png'),
-    linear-gradient(145deg, #F6EFE0 0%, #EFE5D0 55%, #E9DCC4 100%);
-  box-shadow:
-    inset 0 0 0 1px rgba(74,36,36,.45),
-    inset 0 2px 0 rgba(255,255,255,.75),
-    inset 0 -2px 0 rgba(74,36,36,.14),
-    inset 3px 0 0 rgba(255,255,255,.4),
-    inset -3px 0 0 rgba(74,36,36,.1);
+  width:128px; height:128px; min-height:0; padding:0 10px;
+  text-align:center; white-space:normal; line-height:1.3; font-size:14px;
 }
 .qn-action-sm{ min-height:42px; padding:0 16px; font-size:13px; }
 .qn-actions{ display:flex; flex-direction:column; align-items:center; gap:14px; }

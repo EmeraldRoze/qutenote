@@ -191,7 +191,7 @@ export default function SignUpPage() {
             <button
               type="submit"
               disabled={loading}
-              className="qn-action qn-action-square"
+              className="qn-stamp qn-action qn-action-square"
               style={{ alignSelf: 'center', ['--qn-panel' as string]: loading ? 'var(--light-blush)' : 'var(--btn)' }}
             >
               {loading ? 'CREATING…' : 'CREATE ACCOUNT'}
