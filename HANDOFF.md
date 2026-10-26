@@ -1,6 +1,10 @@
 # QuteNote — Handoff / Status Board
 Written: 2026-10-06 (replaces stale April 10 handoff). Last updated: 2026-10-25 (late evening).
 
+## BUILD 55 SHIPPED TO ALL TESTERS Oct 26 ~12:30am (FIREFLY) — beta review APPROVED, in the Public Beta group
+Pipeline ran clean: CURRENT_PROJECT_VERSION 54→55, web built with VITE_API_BASE=prod + VITE_BUILD=55, cap sync, archive with manual signing. VERIFIED BEFORE UPLOAD: no server.url in capacitor.config, display name QuteNote (not Qute Dev), scheme qutenote only, entitlements present (applesignin + aps-environment production), bundle 55 baked, new art bundled (lock/invite/gear/search/chevrons/writing-hand/ink_grain). Upload succeeded first try; processing VALID in ~2 min; beta review APPROVED immediately; build shows in the Public Beta group (check it with filter[betaGroups], the group→builds endpoint reads empty even when it is attached — not a bug).
+Public link unchanged: https://testflight.apple.com/join/BRW6MMEJ
+
 ## DEPLOY #2 Oct 25 ~11:56pm (FIREFLY "deploy everything") — 13 commits live, site + API ACTIVE, STILL NO NEW BUILD
 Verified live: /api/health ok, site 200, uploads still send cross-origin, every new art file 200s (lock, invite, gear, search, chevrons, writing-hand, ink_grain), and the feed now returns ONE status per person (was her "why is his status showing so many times").
 In this deploy: her painted icons everywhere (chevrons/search/QR/gear/bell/shush/writing-hand/lock/invite), all text oxblood #4A2424 (she confirmed "keep it as is" after seeing five lighter options), 18px text rhythm + .on-paper backdrop so rules never strike words, ruled paper PINNED again (she asked), QTs search above the invite stamp, invite stamp = envelope + two centred lines + a DRAWN plus (a typed + never centres), privacy switch in Settings, Log out stamp in Settings only, photo at the front of the card deck, Flower key on the Secret page, lavender dusk on the Dates empty card, add-a-date + upload buttons sized to their words.
