@@ -1,4 +1,5 @@
 import { prisma } from './prisma'
+import { ARTIST_EARNING_CENTS } from './artistPay'
 // @ts-ignore — lob package has no types
 import Lob from 'lob'
 
@@ -101,6 +102,12 @@ export async function submitNoteToLob(noteId: string): Promise<void> {
       size: '6x4',
     })
     await prisma.note.update({ where: { id: note.id }, data: { status: 'SENT', lobNoteId: postcard.id } })
+
+    // If the front of this card belongs to a QuteNote artist, they just
+    // earned their fee. One row per card sent, so a payout is provable
+    // (Emerald, Oct 26). Never let this break a send.
+    await creditArtist(note.id, note.cardDesignId).catch((e) =>
+      console.error(`[submitNote] ${note.id}: could not credit the artist`, e))
     console.log(`[submitNote] ${noteId} submitted to Lob as ${postcard.id}`)
   } catch (err: any) {
     console.error(`[submitNote] ${noteId} Lob error:`, err?.message ?? err)
@@ -124,4 +131,25 @@ export async function submitDueNotes(): Promise<void> {
     take: 25,
   })
   for (const n of due) await submitNoteToLob(n.id)
+}
+
+// An artist is paid every time one of their cards is mailed.
+async function creditArtist(noteId: string, cardDesignId: string | null): Promise<void> {
+  if (!cardDesignId) return
+  const card = await prisma.artistCard.findUnique({ where: { id: cardDesignId }, include: { artist: true } })
+  if (!card) return   // one of the house cards, nothing to pay
+
+  await prisma.artistCard.update({ where: { id: card.id }, data: { sentCount: { increment: 1 } } })
+  await prisma.artistEarning.create({
+    data: { artistId: card.artistId, noteId, amountCents: ARTIST_EARNING_CENTS },
+  }).catch(() => {})   // unique on noteId: never pay twice for the same card
+
+  await prisma.notification.create({
+    data: {
+      userId: card.artist.userId,
+      type: 'ARTIST_CARD_SENT',
+      title: 'Someone sent your card',
+      body: `"${card.title}" is in the mail.`,
+    },
+  }).catch(() => {})
 }

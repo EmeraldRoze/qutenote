@@ -10,18 +10,22 @@ datasource db {
 // ─── USERS ───────────────────────────────────────────────────────────────────
 
 model User {
-  id               String             @id @default(uuid())
-  email            String             @unique
-  username         String             @unique
-  displayName      String
-  passwordHash     String?
-  googleId         String?          @unique
-  appleId          String?          @unique
-  avatarUrl        String?
-  bio              String?
-  birthday         DateTime?
-  isPrivate        Boolean            @default(true)
-  isAdmin          Boolean            @default(false)
+  id              String          @id @default(uuid())
+  email           String          @unique
+  username        String          @unique
+  displayName     String
+  passwordHash    String?
+  googleId        String?         @unique
+  appleId         String?         @unique
+  avatarUrl       String?
+  bio             String?
+  birthday        DateTime?
+  isPrivate       Boolean         @default(true)
+  isAdmin         Boolean         @default(false)
+  // who can see the Saved tab on this profile (Emerald, Oct 26)
+  savedVisibility SavedVisibility @default(FRIENDS)
+  artistProfile   ArtistProfile?
+  savedItems      SavedItem[]
 
   // Notification preferences — each kind can be turned off independently
   notifyBirthdays             Boolean @default(true)
@@ -48,24 +52,24 @@ model User {
   updatedAt DateTime @updatedAt
 
   // Relations
-  address          Address?
-  notesSent        Note[]          @relation("NotesSent")
-  notesReceived    Note[]          @relation("NotesReceived")
-  badges           Badge[]
-  following        Connection[]    @relation("Follower")
-  followers        Connection[]    @relation("Following")
-  importantDates   ImportantDate[]
-  passItForwards   PassItForward[] @relation("Gifter")
-  passesReceived   PassItForward[] @relation("Recipient")
-  notifications    Notification[]
-  passwordResets   PasswordReset[]
-  statuses         Status[]
-  hearts           Heart[]
-  deviceTokens     DeviceToken[]
-  uploads          Upload[]
-  handwritingFont  HandwritingFont?
-  invitesSent      Invite[]
-  receivedCards    ReceivedCard[]
+  address         Address?
+  notesSent       Note[]           @relation("NotesSent")
+  notesReceived   Note[]           @relation("NotesReceived")
+  badges          Badge[]
+  following       Connection[]     @relation("Follower")
+  followers       Connection[]     @relation("Following")
+  importantDates  ImportantDate[]
+  passItForwards  PassItForward[]  @relation("Gifter")
+  passesReceived  PassItForward[]  @relation("Recipient")
+  notifications   Notification[]
+  passwordResets  PasswordReset[]
+  statuses        Status[]
+  hearts          Heart[]
+  deviceTokens    DeviceToken[]
+  uploads         Upload[]
+  handwritingFont HandwritingFont?
+  invitesSent     Invite[]
+  receivedCards   ReceivedCard[]
 }
 
 // ─── ADDRESSES (encrypted at app level) ─────────────────────────────────────
@@ -105,15 +109,15 @@ model Connection {
 // ─── IMPORTANT DATES ─────────────────────────────────────────────────────────
 
 model ImportantDate {
-  id                String   @id @default(uuid())
-  userId            String
-  connectionName    String
-  label             String   // "Birthday", "Anniversary", etc.
-  month             Int
-  day               Int
-  year              Int?
-  reminderDaysBefore Int     @default(7)
-  createdAt         DateTime @default(now())
+  id                 String   @id @default(uuid())
+  userId             String
+  connectionName     String
+  label              String // "Birthday", "Anniversary", etc.
+  month              Int
+  day                Int
+  year               Int?
+  reminderDaysBefore Int      @default(7)
+  createdAt          DateTime @default(now())
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
@@ -121,15 +125,15 @@ model ImportantDate {
 // ─── CARD DESIGNS ────────────────────────────────────────────────────────────
 
 model CardDesign {
-  id          String         @id @default(uuid())
-  artistName  String
-  title       String
-  imageUrl    String
-  isActive    Boolean        @default(true)
-  isFeatured  Boolean        @default(false)
+  id            String   @id @default(uuid())
+  artistName    String
+  title         String
+  imageUrl      String
+  isActive      Boolean  @default(true)
+  isFeatured    Boolean  @default(false)
   featuredMonth Int?
   featuredYear  Int?
-  createdAt   DateTime       @default(now())
+  createdAt     DateTime @default(now())
 
   notes Note[]
 }
@@ -146,7 +150,7 @@ model Note {
   fontChoice      FontChoice
   cardDesignType  CardDesignType
   cardDesignId    String?
-  cardImageUrl    String?        // for user-uploaded photos
+  cardImageUrl    String? // for user-uploaded photos
   status          NoteStatus     @default(PENDING)
   scheduledFor    DateTime? // the event day the sender picked (land-near date)
   mailAt          DateTime? // when the scheduler actually submits to print/mail
@@ -228,12 +232,12 @@ model Notification {
 // ─── PASSWORD RESETS ─────────────────────────────────────────────────────────
 
 model PasswordReset {
-  id        String   @id @default(uuid())
+  id        String    @id @default(uuid())
   userId    String
-  token     String   @unique
+  token     String    @unique
   expiresAt DateTime
   usedAt    DateTime?
-  createdAt DateTime @default(now())
+  createdAt DateTime  @default(now())
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
@@ -241,24 +245,24 @@ model PasswordReset {
 // ─── INVITES (SMS-based address collection) ─────────────────────────────────
 
 model Invite {
-  id              String       @id @default(uuid())
-  senderId        String
-  recipientName   String
-  recipientPhone  String
-  token           String       @unique
-  status          InviteStatus @default(PENDING)
+  id             String       @id @default(uuid())
+  senderId       String
+  recipientName  String
+  recipientPhone String
+  token          String       @unique
+  status         InviteStatus @default(PENDING)
 
   // Address collected from recipient
-  addressLine1    String?
-  addressLine2    String?
-  addressCity     String?
-  addressState    String?
-  addressZip      String?
-  addressCountry  String?      @default("US")
+  addressLine1   String?
+  addressLine2   String?
+  addressCity    String?
+  addressState   String?
+  addressZip     String?
+  addressCountry String? @default("US")
 
-  smsSentAt       DateTime?
-  completedAt     DateTime?
-  createdAt       DateTime     @default(now())
+  smsSentAt   DateTime?
+  completedAt DateTime?
+  createdAt   DateTime  @default(now())
 
   sender User @relation(fields: [senderId], references: [id], onDelete: Cascade)
 }
@@ -344,6 +348,11 @@ enum NotificationType {
   BADGE_EARNED
   PASS_IT_FORWARD_RECEIVED
   NEW_FOLLOWER
+  // the artist program (Emerald, Oct 26)
+  ARTIST_APPLICATION
+  ARTIST_APPROVED
+  ARTIST_CARD_APPROVED
+  ARTIST_CARD_SENT
 }
 
 // ─── STATUSES & HEARTS (Home feed, Oct 2026 redesign) ───────────────────────
@@ -363,7 +372,7 @@ model Heart {
   id         String   @id @default(uuid())
   userId     String
   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  targetType String   // NOTE | STATUS
+  targetType String // NOTE | STATUS
   targetId   String
   createdAt  DateTime @default(now())
 
@@ -423,10 +432,10 @@ model HandwritingFont {
 model UsageEvent {
   id        String   @id @default(uuid())
   userId    String?
-  sessionId String   // one app launch
-  name      String   // screen_view | tap | funnel | feature | error | slow_screen
+  sessionId String // one app launch
+  name      String // screen_view | tap | funnel | feature | error | slow_screen
   screen    String?
-  target    String?  // button label / funnel step / feature key
+  target    String? // button label / funnel step / feature key
   props     Json?
   createdAt DateTime @default(now())
 
@@ -439,11 +448,113 @@ model UsageEvent {
 model WallFlag {
   id        String   @id @default(uuid())
   userId    String?
-  kind      String   // rage_tap | error | slow_screen
+  kind      String // rage_tap | error | slow_screen
   screen    String?
   target    String?
   detail    String?
   createdAt DateTime @default(now())
 
   @@index([createdAt])
+}
+
+// ─── ARTISTS ─────────────────────────────────────────────────────────────────
+// An artist profile is switched on INSIDE a normal account (Emerald, Oct 26) —
+// there is no separate artist login. Applications are reviewed by hand, and
+// every card is reviewed again before it can be sent.
+
+model ArtistProfile {
+  id     String @id @default(uuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // the application (step 1)
+  city            String
+  state           String?
+  bio             String // 140 characters, enforced in the API
+  portfolioUrl    String?
+  instagram       String?
+  phone           String?
+  rightsConfirmed Boolean  @default(false)
+  sampleUploadIds String[] @default([]) // up to 3 sample pieces
+
+  status     ArtistStatus @default(PENDING)
+  appliedAt  DateTime     @default(now())
+  reviewedAt DateTime?
+  reviewNote String?
+
+  // step 3: paid by hand from this address for now (no PayPal API yet)
+  paypalEmail String?
+
+  // this month's five, picked by Emerald: "2026-11" + an order
+  featuredMonth String?
+  featuredOrder Int?
+
+  cards    ArtistCard[]
+  earnings ArtistEarning[]
+
+  @@index([status])
+  @@index([city])
+  @@index([featuredMonth, featuredOrder])
+}
+
+model ArtistCard {
+  id         String           @id @default(uuid())
+  artistId   String
+  artist     ArtistProfile    @relation(fields: [artistId], references: [id], onDelete: Cascade)
+  title      String
+  uploadId   String // print-ready file, 4x6 at 1800x1200 or better
+  width      Int?
+  height     Int?
+  status     ArtistCardStatus @default(IN_REVIEW)
+  sentCount  Int              @default(0)
+  createdAt  DateTime         @default(now())
+  reviewedAt DateTime?
+
+  @@index([artistId])
+  @@index([status])
+}
+
+// One row per card sent, so a payout is always provable. Nothing here is ever
+// shown in the app — amounts live only on the artist's own earnings panel.
+model ArtistEarning {
+  id          String        @id @default(uuid())
+  artistId    String
+  artist      ArtistProfile @relation(fields: [artistId], references: [id], onDelete: Cascade)
+  noteId      String        @unique
+  amountCents Int
+  createdAt   DateTime      @default(now())
+  paidOutAt   DateTime?
+
+  @@index([artistId, createdAt])
+}
+
+// Bookmarks: saved cards and saved artists (hearts reuse the Heart model)
+model SavedItem {
+  id         String   @id @default(uuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  targetType String // ARTIST_CARD | ARTIST
+  targetId   String
+  createdAt  DateTime @default(now())
+
+  @@unique([userId, targetType, targetId])
+  @@index([targetType, targetId])
+}
+
+enum ArtistStatus {
+  PENDING
+  APPROVED
+  DECLINED
+}
+
+enum ArtistCardStatus {
+  IN_REVIEW
+  APPROVED
+  REJECTED
+}
+
+enum SavedVisibility {
+  ONLY_ME
+  FRIENDS
+  EVERYONE
 }
