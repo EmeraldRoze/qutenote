@@ -216,7 +216,7 @@ export default function ConnectionsPage() {
               border: '2px solid var(--outline)', background: 'var(--btn)', color: 'var(--ink)',
               display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
               fontFamily: 'var(--font-body)', fontSize: '26px', fontWeight: 700, lineHeight: 1,
-              paddingBottom: '3px', boxSizing: 'border-box',
+              letterSpacing: 0, textIndent: 0, padding: 0, boxSizing: 'border-box',
             }}
           >+</button>
         </div>

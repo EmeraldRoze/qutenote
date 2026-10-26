@@ -297,7 +297,8 @@ export default function ProfilePage() {
               {'Invite friends,\nget free cards.'}
             </button>
             <button onClick={() => navigate('/handwriting')} style={actionTile}>
-              <QEmoji name="pen" size={32} />
+              {/* her writing hand, not the bare pen (Emerald, Oct 25) */}
+              <QEmoji name="writing-hand" size={38} style={{ height: 'auto' }} />
               Handwriting
             </button>
           </div>
