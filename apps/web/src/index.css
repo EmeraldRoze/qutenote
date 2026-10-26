@@ -14,7 +14,7 @@
   --selected-fill:  #F4ECE6;  /* fill behind dashed selected states */
   --light-blush:    #E3D5CC;  /* back buttons, panels, segmented switches */
   --light-blue:     #E9EDF1;  /* I NEED WORDS and soft note boxes */
-  --nav-inactive:   #9E7B70;  /* inactive tab labels */
+  --nav-inactive:   #9E625F;  /* inactive tab labels: dusty rose, dimmed in TabBar */
   --progress-track: #EBDDD6;
 
   /* Legacy aliases → palette 4 */
@@ -30,8 +30,9 @@
   --blush-pale:     #F4ECE6;
 
   --ink:            #4A2424;  /* ALL text and icons — nothing is black */
-  --ink-mid:        #A07D7D;  /* secondary text: lighter oxblood */
-  --ink-muted:      #8A8078;  /* muted icons */
+  --ink-mid:        #9E625F;  /* secondary text: DUSTY ROSE (Emerald, Oct 25: every
+                                 bit of text is oxblood or dusty rose, nothing else) */
+  --ink-muted:      #9E625F;  /* was a grey-brown; dusty rose now */
 
   --cream:          #F1EBE3;
   --cream-warm:     #F4ECE6;
@@ -46,7 +47,7 @@
   --pink-pale:      #EBDDD6;
   --lilac:          #B4897A;  /* dashed selected-state borders */
   --stamp-frame:    #F4ECE6;
-  --placeholder:    #A07D7D;
+  --placeholder:    #9E625F;
   --note-ink:       #4A2424;
   --logo-heart:     #EEFC4E;
   --white:          #FBF8F3;  /* "white" cards are card-white */
@@ -145,7 +146,19 @@ body::before {
 .qn-glow{position:absolute;width:30.9%;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,rgba(255,214,130,.6) 0%,rgba(255,206,120,0) 70%);animation:qnGlow 1.7s ease-in-out infinite;pointer-events:none}
 @media (prefers-reduced-motion: reduce){.qn-flame,.qn-glow{animation:none}}
 
-/* The Rose paper ombre (Home carousel + Dates empty state) */
+/* Her Lavender dusk card (qutenote-home-dates-card package): slate into dusty
+   lavender into baby blue, a glossy streak and a soft bottom shadow, no paper
+   grain, and it holds still. Home's dates card and the Dates empty state wear
+   it (Emerald, Oct 25). */
+.dusk-paper{
+  background-image:
+    linear-gradient(118deg, rgba(255,255,255,0) 32%, rgba(255,255,255,0.22) 46%, rgba(255,255,255,0.05) 56%, rgba(255,255,255,0) 64%),
+    linear-gradient(160deg, rgba(0,0,0,0) 70%, rgba(74,36,36,0.10) 100%),
+    linear-gradient(155deg, #495F68 0%, #495F68 14%, #AE8FD1 50%, #BADAFF 86%, #BADAFF 100%);
+  border: 1.5px solid var(--outline);
+}
+
+/* The Rose paper ombre (Home carousel) */
 .rose-paper {
   background-image: url('/brand/paper_texture.png'), radial-gradient(circle at 50% 38%, #F1EBE3 0%, #D5ADA3 100%);
   border: 1.5px solid var(--outline);

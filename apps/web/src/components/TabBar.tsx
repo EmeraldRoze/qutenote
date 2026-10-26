@@ -37,7 +37,8 @@ export default function TabBar() {
     return (
       <button key={t.label} onClick={() => go(t.path)} style={{
         display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '5px',
-        color: active ? ACTIVE : INACTIVE, background: 'none', border: 'none', cursor: 'pointer',
+        color: active ? ACTIVE : INACTIVE, opacity: active ? 1 : 0.6,
+        background: 'none', border: 'none', cursor: 'pointer',
         fontSize: '14px', fontWeight: 700, fontFamily: 'var(--font-body)',
         textTransform: 'none', letterSpacing: 0, padding: 0,
       }}>

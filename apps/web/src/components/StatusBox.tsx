@@ -51,7 +51,7 @@ export default function StatusBox({ onPosted }: { onPosted?: (s: any) => void })
   // are all drawn by .qn-stamp — the element itself stays transparent.
   const shell: React.CSSProperties = {
     border: '10px solid transparent', background: 'transparent',
-    padding: '5px 5px 5px 7px',
+    padding: '12px 8px 12px 10px',
   }
 
   // A status is set and we're not editing: show it with the pencil.

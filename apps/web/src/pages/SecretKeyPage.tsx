@@ -1,5 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import { encodeSecret, SECRET_FONT_FAMILY } from '../lib/secret'
+import FlowerText from '../components/FlowerText'
+import flowerGlyphs from '../lib/flowerGlyphs.json'
 
 // The decoder key for Emerald's Secret Language: the full alphabet, the
 // vowel rules, and the standalone words — pretty enough to screenshot and
@@ -20,6 +22,23 @@ export default function SecretKeyPage() {
       <span style={{ fontFamily: 'var(--font-body)', fontSize: '12px', fontWeight: 700, color: 'var(--ink-mid)', textTransform: 'uppercase' }}>{ch}</span>
     </div>
   )
+
+  // Emerald, Oct 25: the Flower Language gets a key here too, beside the
+  // Secret one. Each letter is one of her flowers; a word gathers into a
+  // tied bouquet.
+  const flowerCell = (ch: string) => {
+    const g = (flowerGlyphs as { letters: Record<string, { w: number; h: number }> }).letters[ch]
+    if (!g) return null
+    return (
+      <div key={`f-${ch}`} style={{
+        display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px',
+        background: 'var(--card)', border: '1.5px solid var(--stone)', borderRadius: '12px', padding: '8px 2px 4px',
+      }}>
+        <img src={`/flower/${ch}.png`} alt="" style={{ height: '44px', width: 'auto', objectFit: 'contain', filter: 'grayscale(1)' }} />
+        <span style={{ fontFamily: 'var(--font-body)', fontSize: '12px', fontWeight: 700, color: 'var(--ink-mid)', textTransform: 'uppercase' }}>{ch}</span>
+      </div>
+    )
+  }
 
   const example = (word: string) => (
     <div key={word} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px' }}>
@@ -63,6 +82,28 @@ export default function SecretKeyPage() {
 
         <div style={{ marginTop: '18px', display: 'flex', justifyContent: 'space-around', flexWrap: 'wrap', gap: '10px', background: 'var(--card)', border: '1.5px solid var(--stone)', borderRadius: '16px', padding: '14px' }}>
           {['love', 'amy', 'zoo', 'I', 'a'].map(example)}
+        </div>
+
+        {/* The Flower Language, same page */}
+        <h2 style={{ margin: '34px 0 0', fontFamily: 'var(--font-display)', fontWeight: 300, fontSize: '20px', color: 'var(--ink)' }}>
+          The Flower Language
+        </h2>
+        <p style={{ fontFamily: 'var(--font-body)', fontSize: '15px', color: 'var(--ink-mid)', lineHeight: 1.5, margin: '8px 0 18px' }}>
+          Cards written with the Flowers 🌷 pen say it in blooms. Every letter is a flower, and a word gathers into one tied bouquet you read left to right.
+        </p>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '6px' }}>
+          {ROW1.map(flowerCell)}
+          {ROW2.map(flowerCell)}
+        </div>
+
+        <div style={{ marginTop: '18px', display: 'flex', justifyContent: 'space-around', flexWrap: 'wrap', gap: '18px', background: 'var(--card)', border: '1.5px solid var(--stone)', borderRadius: '16px', padding: '18px 14px' }}>
+          {['love', 'hug'].map((w) => (
+            <div key={`fx-${w}`} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
+              <FlowerText text={w} size={58} />
+              <span style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--ink-mid)' }}>{w}</span>
+            </div>
+          ))}
         </div>
       </div>
     </div>

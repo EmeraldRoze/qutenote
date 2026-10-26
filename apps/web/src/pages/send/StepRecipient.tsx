@@ -209,9 +209,9 @@ export default function StepRecipient({ note, onChangeCard, onNext, initialQuery
         onClick={inviteThem}
         disabled={inviteState === 'working'}
         style={{
-          marginTop: '12px', minHeight: '60px', boxSizing: 'border-box', borderRadius: '16px',
+          marginTop: '14px', minHeight: '75px', boxSizing: 'border-box', borderRadius: '16px',
           border: '10px solid transparent', background: 'transparent',
-          display: 'flex', alignItems: 'center', gap: '12px', padding: '0 6px',
+          display: 'flex', alignItems: 'center', gap: '12px', padding: '14px 10px',
           color: 'var(--ink)', cursor: 'pointer', fontFamily: 'var(--font-body)',
           textTransform: 'none', letterSpacing: 0, fontWeight: 400, textAlign: 'left',
           opacity: inviteState === 'working' ? 0.7 : 1,

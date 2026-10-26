@@ -249,7 +249,7 @@ export default function ImportantDatesPage() {
             Fetching your dates…
           </p>
         ) : sorted.length === 0 ? (
-          <div className="rose-paper" style={{
+          <div className="dusk-paper" style={{
             marginTop: '18px', borderRadius: '26px', padding: '26px 20px 22px',
             display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center',
           }}>
