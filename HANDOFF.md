@@ -1,6 +1,13 @@
 # QuteNote — Handoff / Status Board
 Written: 2026-10-06 (replaces stale April 10 handoff). Last updated: 2026-10-25 (late evening).
 
+## BUILD 56 SHIPPED TO ALL TESTERS Oct 26 (FIREFLY) — approved, in the Public Beta group
+Everything from Oct 26 is now on phones: the artist program phases 1-2 (apply with name/city/phone/bio/links/3 samples/photo ID, three-card upload with the print-size check, PayPal step, review desk), her hand-drawn QUTENOTE wordmark (served as /brand/wordmark-v3.png — RENAMED on purpose, overwriting a logo filename leaves phones showing the cached old one), Lob address autocomplete, and one status per friend in the feed.
+- Pipeline clean: 55→56, prod API + VITE_BUILD baked, no server.url, display name QuteNote, entitlements present, new art bundled. Processing VALID in ~2 min, beta review APPROVED.
+- GIT LANDMINE: the osxkeychain GitHub credential went stale mid-session (403 on push). Workaround that worked: GIT_CONFIG_KEY_0=credential.https://github.com.helper GIT_CONFIG_VALUE_0='!gh auth git-credential' git push. The gh CLI login is still valid.
+- ⚠️ LOB IS ON A TEST KEY IN PRODUCTION. Proof: every address row has isVerified=false and Lob returns the canned id us_ver_a123456; autocomplete returns Lob's "TEST KEYS DO NOT AUTOCOMPLETE" row (filtered out in code). In test mode Lob NEVER PRINTS OR MAILS. Nothing lost yet (0 notes sent) but this is a launch blocker. She needs to add a payment method in Lob, go live, and hand over the live key; then autocomplete, real verification and real mail all start working at once.
+- Her own artist application (@emeraldrozeeeeeeeee, city "Dsguh") is sitting PENDING in the review desk, plus the applereview test artist (APPROVED, 3 test cards, Santa Fe).
+
 ## ARTIST PROGRAM — PHASES 1 + 2 BUILT AND PROVEN LIVE (Oct 26)
 Her package: ~/Downloads/qutenote-artists.zip (10 screens + README). Her decisions: PayPal collected but paid BY HAND (no API), no SMS/ID verification (she vets portfolios), review desk in BOTH places + push, ask for location AND let people type a city, public profiles show ART ONLY (message stays private), feed is QTs only and a send never names the recipient, Send page keeps ONLY the featured 15 (local artists are found through the map), US only for now with a decorative map, $1.50 per card sent (PRICES WILL CHANGE — it lives in src/lib/artistPay.ts + ARTIST_EARNING_CENTS env).
 - SCHEMA PUSHED TO PROD (FIREFLY): ArtistProfile, ArtistCard, ArtistEarning (one row per card sent, provable payouts), SavedItem, User.savedVisibility, 4 new NotificationTypes. Additive only — verified 22 users / 15 statuses untouched after the push.
