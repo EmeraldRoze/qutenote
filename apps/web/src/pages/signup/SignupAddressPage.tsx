@@ -85,9 +85,8 @@ export default function SignupAddressPage() {
           borderRadius: '14px', padding: '14px 16px',
           display: 'flex', gap: '12px', alignItems: 'flex-start',
         }}>
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#9E625F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flex: 'none', marginTop: '1px' }}>
-            <rect x="5" y="11" width="14" height="10" rx="2" /><path d="M8 11V8a4 4 0 0 1 8 0v3" />
-          </svg>
+          {/* her painted padlock, never a drawn icon (Emerald, Oct 25) */}
+          <QEmoji name="lock" size={34} style={{ flex: 'none', height: 'auto', marginTop: '1px' }} />
           <p style={{ margin: 0, fontSize: '15px', lineHeight: 1.45 }}>
             Your address is private. It stays between us and the post office.{' '}
           </p>

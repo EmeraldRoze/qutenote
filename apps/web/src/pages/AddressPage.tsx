@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { api } from '../lib/api'
+import QEmoji from '../components/QEmoji'
 
 // Your address ("Where you at?"), palette 4 restyle of screen 18-your-address.html.
 // No tab bar. Serves both /address and /settings/address. Save goes through the
@@ -83,7 +84,7 @@ export default function AddressPage() {
 
         {/* Privacy note */}
         <div style={{ marginTop: '24px', background: 'var(--light-blush)', borderRadius: '14px', padding: '14px 16px', display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
-          <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flex: 'none', marginTop: '1px', color: 'var(--stamp-center)' }}><rect x="5" y="11" width="14" height="10" rx="2" /><path d="M8 11V8a4 4 0 0 1 8 0v3" /></svg>
+          <QEmoji name="lock" size={34} style={{ flex: 'none', height: 'auto', marginTop: '1px' }} />
           <p style={{ margin: 0, fontFamily: 'var(--font-body)', fontSize: '15px', lineHeight: 1.45, color: 'var(--ink)' }}>
             Your address is private. It stays between us and the post office.
           </p>
