@@ -56,7 +56,7 @@ export default function ResetPasswordPage() {
       <div className="w-full max-w-md">
 
         <div className="text-center mb-8">
-          <Logo height={32} />
+          <Logo height={40} />
         </div>
 
         <div style={{

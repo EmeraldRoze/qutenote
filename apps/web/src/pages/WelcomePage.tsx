@@ -25,7 +25,7 @@ export default function WelcomePage() {
         paddingTop: 'max(calc(54px - env(safe-area-inset-top)), 0px)',
       }}>
         <div style={{ ...col, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Logo height={26} />
+          <Logo height={46} />
         </div>
       </header>
 

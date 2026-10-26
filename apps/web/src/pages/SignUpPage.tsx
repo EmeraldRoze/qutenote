@@ -72,7 +72,7 @@ export default function SignUpPage() {
             }}>
               <QIcon name="chevron-left" size={18} />
             </button>
-            <Logo height={26} />
+            <Logo height={34} />
           </div>
           <div style={{ marginTop: '14px', display: 'flex', alignItems: 'center', gap: '12px' }}>
             <h1 style={{
