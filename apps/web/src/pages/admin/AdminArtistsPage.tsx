@@ -87,7 +87,7 @@ export default function AdminArtistsPage() {
         {apps.map((a) => (
           <div key={a.id} style={card}>
             <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
-              <strong style={{ fontFamily: 'var(--font-body)', fontSize: '16px' }}>{a.user.displayName}</strong>
+              <strong style={{ fontFamily: 'var(--font-body)', fontSize: '16px' }}>{a.artistName || a.user.displayName}</strong>
               <span style={{ fontFamily: 'var(--font-body)', fontSize: '13px' }}>@{a.user.username}</span>
               <span style={{ marginLeft: 'auto', fontFamily: 'var(--font-body)', fontSize: '13px' }}>{a.city}</span>
             </div>
@@ -98,6 +98,14 @@ export default function AdminArtistsPage() {
               {a.portfolioUrl ? <a href={a.portfolioUrl} target="_blank" rel="noreferrer" style={{ color: 'var(--ink)' }}>portfolio</a> : null}
               {a.phone ? ` · ${a.phone}` : ''}
             </p>
+            {a.idUploadId && (
+              <div style={{ marginBottom: '10px' }}>
+                <span style={{ fontFamily: 'var(--font-body)', fontSize: '12px', fontWeight: 700 }}>Photo ID (deleted when you decide)</span>
+                <a href={a.idUploadId} target="_blank" rel="noreferrer" style={{ display: 'block', marginTop: '4px' }}>
+                  <img src={a.idUploadId} alt="" style={{ width: '160px', borderRadius: '8px', border: '1.5px solid var(--outline)' }} />
+                </a>
+              </div>
+            )}
             {!!a.sampleUploadIds?.length && (
               <div style={{ display: 'flex', gap: '8px', marginBottom: '10px' }}>
                 {a.sampleUploadIds.map((u: string) => (

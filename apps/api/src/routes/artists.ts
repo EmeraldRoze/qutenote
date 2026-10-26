@@ -16,6 +16,7 @@ const BIO_MAX = 140
 
 const publicArtist = {
   id: true,
+  artistName: true,
   city: true,
   state: true,
   bio: true,
@@ -30,8 +31,9 @@ const publicArtist = {
 
 // POST /artists/apply
 artistsRouter.post('/apply', requireAuth, async (req: AuthRequest, res: Response) => {
-  const { city, state, bio, portfolioUrl, instagram, phone, rightsConfirmed, sampleUploadIds } = req.body ?? {}
+  const { artistName, city, state, bio, portfolioUrl, instagram, phone, rightsConfirmed, sampleUploadIds, idUploadId } = req.body ?? {}
 
+  if (typeof artistName !== 'string' || !artistName.trim()) return res.status(400).json({ error: 'What name do you go by?' })
   if (typeof city !== 'string' || !city.trim()) return res.status(400).json({ error: 'Which city are you in?' })
   if (typeof bio !== 'string' || !bio.trim()) return res.status(400).json({ error: 'Add a short bio.' })
   if (bio.trim().length > BIO_MAX) return res.status(400).json({ error: `Keep the bio under ${BIO_MAX} characters.` })
@@ -46,6 +48,7 @@ artistsRouter.post('/apply', requireAuth, async (req: AuthRequest, res: Response
   }
 
   const data = {
+    artistName: artistName.trim().slice(0, 80),
     city: city.trim(),
     state: typeof state === 'string' && state.trim() ? state.trim() : null,
     bio: bio.trim(),
@@ -54,6 +57,7 @@ artistsRouter.post('/apply', requireAuth, async (req: AuthRequest, res: Response
     phone: typeof phone === 'string' && phone.trim() ? phone.trim() : null,
     rightsConfirmed: true,
     sampleUploadIds: samples,
+    idUploadId: typeof idUploadId === 'string' && idUploadId ? idUploadId : null,
     status: 'PENDING' as const,
     appliedAt: new Date(),
     reviewedAt: null,
@@ -246,6 +250,7 @@ artistsRouter.get('/:username', requireAuth, async (req: AuthRequest, res: Respo
   return res.json({
     data: {
       user,
+      artistName: profile.artistName,
       city: profile.city,
       state: profile.state,
       bio: profile.bio,

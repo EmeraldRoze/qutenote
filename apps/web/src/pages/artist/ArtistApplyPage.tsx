@@ -30,12 +30,14 @@ const BIO_MAX = 140
 
 export default function ArtistApplyPage() {
   const navigate = useNavigate()
+  const [name, setName] = useState('')
   const [city, setCity] = useState('')
   const [bio, setBio] = useState('')
   const [link, setLink] = useState('')
   const [phone, setPhone] = useState('')
   const [rights, setRights] = useState(true)
   const [samples, setSamples] = useState<string[]>([])
+  const [idPhoto, setIdPhoto] = useState('')
   const [uploadingAt, setUploadingAt] = useState<number | null>(null)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
@@ -55,11 +57,15 @@ export default function ArtistApplyPage() {
     setError('')
     try {
       const url = await uploadPhoto(file)
-      setSamples((prev) => {
-        const next = [...prev]
-        next[slotRef.current] = url
-        return next.filter(Boolean)
-      })
+      if (slotRef.current === -1) {
+        setIdPhoto(url)
+      } else {
+        setSamples((prev) => {
+          const next = [...prev]
+          next[slotRef.current] = url
+          return next.filter(Boolean)
+        })
+      }
     } catch (err: any) {
       setError(`That picture didn't upload (${err?.message ?? 'unknown'}). Try another.`)
     } finally {
@@ -69,6 +75,7 @@ export default function ArtistApplyPage() {
 
   async function submit() {
     setError('')
+    if (!name.trim()) return setError('What name do you go by?')
     if (!city.trim()) return setError('Which city are you in?')
     if (!bio.trim()) return setError('Add a short bio.')
     if (!link.trim()) return setError('Add a portfolio link or your Instagram.')
@@ -77,6 +84,7 @@ export default function ArtistApplyPage() {
     try {
       const isHandle = link.trim().startsWith('@') || !/[./]/.test(link)
       await api.post('/artists/apply', {
+        artistName: name.trim(),
         city: city.trim(),
         bio: bio.trim(),
         instagram: isHandle ? link.trim() : undefined,
@@ -84,6 +92,7 @@ export default function ArtistApplyPage() {
         phone: phone.trim() || undefined,
         rightsConfirmed: true,
         sampleUploadIds: samples,
+        idUploadId: idPhoto || undefined,
       })
       trackFunnel('artist', 'applied')
       navigate('/artist/sent', { replace: true })
@@ -132,8 +141,16 @@ export default function ArtistApplyPage() {
 
         <div style={{ background: 'var(--card)', border: '1.5px solid var(--outline)', borderRadius: '18px', overflow: 'hidden', boxShadow: 'var(--shadow-card)' }}>
           <label style={fieldRow}>
+            <span style={label}>Name</span>
+            <input value={name} onChange={(e) => setName(e.target.value)} placeholder="The name you sell under" style={fieldInput} />
+          </label>
+          <label style={fieldRow}>
             <span style={label}>City</span>
             <input value={city} onChange={(e) => setCity(e.target.value)} placeholder="Santa Fe, NM" style={fieldInput} />
+          </label>
+          <label style={fieldRow}>
+            <span style={label}>Phone number</span>
+            <input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="(555) 123-4567" inputMode="tel" style={fieldInput} />
           </label>
           <label style={fieldRow}>
             <span style={{ ...label, display: 'flex', justifyContent: 'space-between' }}>
@@ -188,24 +205,33 @@ export default function ArtistApplyPage() {
           Up to three pieces that show your style.
         </p>
 
-        {/* Her design has a "verify your phone or ID" row. Until there's a
-            verification service, it's a phone field with the same look. */}
-        <label className="qn-stamp" style={{
-          marginTop: '28px', border: '10px solid transparent', minHeight: '64px',
-          display: 'flex', alignItems: 'center', gap: '12px', padding: '6px 12px',
-        }}>
-          <QEmoji name="lock" size={30} style={{ flex: 'none', height: 'auto' }} />
+        {/* Photo ID instead of the old phone row: she checks it by hand
+            alongside the sample art, and it is deleted the moment she
+            decides (Emerald, Oct 26). */}
+        <h2 style={{ margin: '22px 0 8px', fontSize: '13px', fontWeight: 700, fontFamily: 'var(--font-body)' }}>Photo ID</h2>
+        <button
+          onClick={() => { slotRef.current = -1; fileRef.current?.click() }}
+          className="qn-stamp"
+          style={{
+            border: '10px solid transparent', minHeight: '64px', width: '100%',
+            display: 'flex', alignItems: 'center', gap: '12px', padding: '6px 12px',
+            background: 'transparent', cursor: 'pointer', textAlign: 'left',
+            textTransform: 'none', letterSpacing: 0, fontWeight: 400,
+          }}
+        >
+          {idPhoto
+            ? <img src={idPhoto} alt="" style={{ width: '54px', height: '36px', objectFit: 'cover', borderRadius: '6px', border: '1.5px solid var(--outline)', flex: 'none' }} />
+            : <QEmoji name="lock" size={30} style={{ flex: 'none', height: 'auto' }} />}
           <span style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '2px' }}>
-            <span style={{ fontSize: '15px', fontWeight: 700, fontFamily: 'var(--font-body)' }}>Your phone number</span>
-            <input
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              placeholder="So we know every artist is real."
-              inputMode="tel"
-              style={{ ...fieldInput, fontSize: '13px' }}
-            />
+            <span style={{ fontSize: '15px', fontWeight: 700, fontFamily: 'var(--font-body)' }}>
+              {idPhoto ? 'ID added. Tap to swap.' : uploadingAt === -1 ? 'Adding…' : 'Add a photo of your ID'}
+            </span>
+            <span style={{ fontSize: '13px', fontFamily: 'var(--font-body)' }}>
+              So we know every artist is real. Deleted once we review you.
+            </span>
           </span>
-        </label>
+          <QIcon name="chevron-right" size={14} />
+        </button>
 
         <label style={{ marginTop: '16px', display: 'flex', gap: '10px', alignItems: 'flex-start', fontSize: '14px', lineHeight: '18px', fontFamily: 'var(--font-body)' }}>
           <input type="checkbox" checked={rights} onChange={(e) => setRights(e.target.checked)} style={{ position: 'absolute', opacity: 0, width: '1px', height: '1px' }} />

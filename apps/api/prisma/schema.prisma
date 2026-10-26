@@ -468,6 +468,7 @@ model ArtistProfile {
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   // the application (step 1)
+  artistName      String? // the name they sell under, which may not be their account name
   city            String
   state           String?
   bio             String // 140 characters, enforced in the API
@@ -476,6 +477,9 @@ model ArtistProfile {
   phone           String?
   rightsConfirmed Boolean  @default(false)
   sampleUploadIds String[] @default([]) // up to 3 sample pieces
+  // A photo of their ID, looked at by hand during review and DELETED the
+  // moment a decision is made (Emerald, Oct 26).
+  idUploadId      String?
 
   status     ArtistStatus @default(PENDING)
   appliedAt  DateTime     @default(now())

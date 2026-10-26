@@ -84,12 +84,22 @@ adminRouter.get('/artists/applications', async (req: AuthRequest, res) => {
 // POST /admin/artists/:id/decision  { approve: true|false, note?: string }
 adminRouter.post('/artists/:id/decision', async (req: AuthRequest, res) => {
   const approve = req.body?.approve === true
+
+  // The ID photo exists only for this moment. Once she has decided, the
+  // image is deleted and the link cleared (Emerald, Oct 26).
+  const before = await prisma.artistProfile.findUnique({ where: { id: String(req.params.id) }, select: { idUploadId: true } })
+  if (before?.idUploadId) {
+    const uploadId = before.idUploadId.split('/').pop() ?? ''
+    await prisma.upload.delete({ where: { id: uploadId } }).catch(() => {})
+  }
+
   const profile = await prisma.artistProfile.update({
     where: { id: String(req.params.id) },
     data: {
       status: approve ? 'APPROVED' : 'DECLINED',
       reviewedAt: new Date(),
       reviewNote: typeof req.body?.note === 'string' ? req.body.note.slice(0, 300) : null,
+      idUploadId: null,
     },
   })
   await prisma.notification.create({
