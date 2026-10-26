@@ -3,6 +3,8 @@
 // all one piece of art. Cut from her drawing by lifting the ink as alpha, so
 // every rough edge and dry-brush speckle survives, then inked in oxblood.
 //
+// The file is named v3 on purpose: overwriting the old name left phones
+// showing the cached old logo (Emerald, Oct 26).
 // Earlier versions set the letters in Unbounded next to a cut-out heart.
 // That's gone: this is one image now.
 export default function Logo({ height = 26, style }: {
@@ -13,7 +15,7 @@ export default function Logo({ height = 26, style }: {
 }) {
   return (
     <img
-      src="/brand/qutenote_logo.png"
+      src="/brand/wordmark-v3.png"
       alt="QuteNote"
       style={{ height: `${height}px`, width: 'auto', display: 'block', ...style }}
     />
