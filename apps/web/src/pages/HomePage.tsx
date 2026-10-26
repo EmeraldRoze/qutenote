@@ -106,14 +106,17 @@ function OfferCarousel({ hasSentCard, hasHandwriting }: { hasSentCard: boolean; 
               {c.title}
             </p>
             {c.key !== 'invite' && (
-              <button onClick={() => c.onClick(navigate)} style={{
+              <button onClick={(e) => { e.stopPropagation(); c.onClick(navigate) }} style={{
                 marginTop: 'auto', height: '50px', padding: '0 28px', borderRadius: '25px', border: '2px solid var(--outline)', cursor: 'pointer',
                 background: 'var(--btn)', color: 'var(--ink)', fontFamily: 'var(--font-body)',
                 fontSize: '15px', fontWeight: 700, letterSpacing: '0.08em', boxSizing: 'border-box',
               }}>{c.cta}</button>
             )}
+            {/* stopPropagation on the arrows: the invite card is itself a tap
+                target, so without it the arrow opened the invite page instead
+                of turning to the next card (Emerald, Oct 25) */}
             {i > 0 && (
-              <button aria-label="Previous card" onClick={() => scrollToCard(i - 1)} style={{
+              <button aria-label="Previous card" onClick={(e) => { e.stopPropagation(); scrollToCard(i - 1) }} style={{
                 position: 'absolute', left: '6px', top: '50%', transform: 'translateY(-50%)',
                 background: 'none', border: 'none', cursor: 'pointer', padding: '8px', opacity: 0.45, color: 'var(--ink)',
               }}>
@@ -121,7 +124,7 @@ function OfferCarousel({ hasSentCard, hasHandwriting }: { hasSentCard: boolean; 
               </button>
             )}
             {i < OFFER_CARDS.length - 1 && (
-              <button aria-label="Next card" onClick={() => scrollToCard(i + 1)} style={{
+              <button aria-label="Next card" onClick={(e) => { e.stopPropagation(); scrollToCard(i + 1) }} style={{
                 position: 'absolute', right: '6px', top: '50%', transform: 'translateY(-50%)',
                 background: 'none', border: 'none', cursor: 'pointer', padding: '8px', opacity: 0.45, color: 'var(--ink)',
               }}>
