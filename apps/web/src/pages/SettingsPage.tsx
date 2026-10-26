@@ -100,16 +100,29 @@ export default function SettingsPage() {
             {chevron}
           </button>
 
-          <button style={rowStyle} onClick={togglePrivacy}>
+          {/* Privacy flips right here, no explainer line underneath
+              (Emerald, Oct 25) */}
+          <div style={{ ...rowStyle, cursor: 'default' }}>
             <span style={rowLabel}>Privacy</span>
             <span style={rowValue}>{user?.isPrivate ? 'Private' : 'Public'}</span>
-            {chevron}
-          </button>
-          <p style={{ margin: 0, fontFamily: 'var(--font-body)', fontSize: '12px', color: 'var(--ink-muted)', padding: '0 20px 10px', background: 'var(--card)', borderBottom: '1px solid var(--stone)' }}>
-            {user?.isPrivate
-              ? 'Private: your sends stay off feeds. Tap to go public.'
-              : "Public: your sends show on your QTs' feeds. Tap to go private."}
-          </p>
+            <button
+              role="switch"
+              aria-checked={!!user?.isPrivate}
+              aria-label="Private account"
+              onClick={togglePrivacy}
+              style={{
+                width: '52px', height: '32px', flex: 'none', borderRadius: '16px',
+                border: '1.5px solid var(--stone)', background: user?.isPrivate ? 'var(--lime)' : '#D9CFC2',
+                position: 'relative', padding: 0, cursor: 'pointer',
+              }}
+            >
+              <span style={{
+                position: 'absolute', top: '2px', left: user?.isPrivate ? '22px' : '2px',
+                width: '25px', height: '25px', borderRadius: '50%', background: 'var(--card)',
+                border: '1.5px solid var(--stone)', boxSizing: 'border-box', transition: 'left 0.15s ease',
+              }} />
+            </button>
+          </div>
 
           <button
             style={{ ...rowStyle, cursor: isNativeApp ? 'pointer' : 'default' }}
@@ -152,17 +165,16 @@ export default function SettingsPage() {
           </a>
         </div>
 
-        <button
-          onClick={() => { logout(); navigate('/') }}
-          style={{
-            display: 'block', margin: '22px 20px 0', padding: 0,
-            background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left',
-            fontFamily: 'var(--font-body)', fontSize: '14px', color: 'var(--ink)',
-            textTransform: 'none', letterSpacing: 0, fontWeight: 400,
-          }}
-        >
-          Log out
-        </button>
+        {/* Log out wears the same square stamp as LOGIN, centered
+            (Emerald, Oct 25) */}
+        <div className="qn-actions" style={{ marginTop: '28px' }}>
+          <button
+            onClick={() => { logout(); navigate('/') }}
+            className="qn-stamp qn-action qn-action-square"
+          >
+            LOG OUT
+          </button>
+        </div>
       </div>
     </div>
   )

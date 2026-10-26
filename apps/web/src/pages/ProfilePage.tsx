@@ -398,18 +398,16 @@ export default function ProfilePage() {
             </button>
           </div>
 
-          {/* Log out, at the end of your own profile, per Emerald */}
-          <button
-            onClick={() => { logout(); navigate('/') }}
-            style={{
-              width: '100%', marginTop: '22px', minHeight: '48px', border: 'none', background: 'none',
-              cursor: 'pointer', fontFamily: 'var(--font-body)', fontSize: '15px', fontWeight: 700,
-              color: 'var(--ink)', textDecoration: 'underline', textUnderlineOffset: '3px',
-              textTransform: 'none', letterSpacing: 0,
-            }}
-          >
-            Log out
-          </button>
+          {/* Log out, at the end of your own profile, on the same square
+              stamp as LOGIN (Emerald, Oct 25) */}
+          <div className="qn-actions" style={{ marginTop: '26px' }}>
+            <button
+              onClick={() => { logout(); navigate('/') }}
+              className="qn-stamp qn-action qn-action-square"
+            >
+              LOG OUT
+            </button>
+          </div>
         </div>
 
         {showQR && <QRCodeSheet username={profile.username} onClose={() => setShowQR(false)} />}
