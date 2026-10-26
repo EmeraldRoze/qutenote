@@ -97,6 +97,12 @@ export default function AdminPage() {
         border: '2px solid #B4897A', background: '#FBF8F3', color: '#4A2424',
         fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '13px',
       }}>USABILITY DASHBOARD →</button>
+      {/* her review desk, same screen the app uses (Emerald, Oct 26) */}
+      <button onClick={() => (window.location.href = '/admin/artists')} style={{
+        marginTop: '10px', marginLeft: '8px', height: '40px', padding: '0 16px', borderRadius: '20px', cursor: 'pointer',
+        border: '2px solid #B4897A', background: '#FBF8F3', color: '#4A2424',
+        fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '13px',
+      }}>ARTIST REVIEW →</button>
         <button
           onClick={() => navigate('/home')}
           style={{ fontSize: '13px', color: 'var(--ink-muted)', background: 'none', border: 'none', cursor: 'pointer' }}

@@ -160,6 +160,15 @@ export default function SettingsPage() {
             {chevron}
           </button>
 
+          {/* Admins only: the artist review desk, in the app (Emerald, Oct 26) */}
+          {user?.isAdmin && (
+            <button style={rowStyle} onClick={() => navigate('/admin/artists')}>
+              <span style={rowLabel}>Artist review</span>
+              <span style={rowValue}>Admin</span>
+              {chevron}
+            </button>
+          )}
+
           {/* Become a QuteNote artist (her qutenote-artists package, screen 01) */}
           <button style={rowStyle} onClick={() => navigate('/artist/apply')}>
             <span style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '2px' }}>
