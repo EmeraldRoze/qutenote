@@ -77,8 +77,6 @@ html {
   background: var(--cream);
 }
 
-body { position: relative; }
-
 body {
   font-family: var(--font-body);
   background: transparent;
@@ -95,10 +93,9 @@ body {
    headers no longer need to be multiples of 36px to keep the rhythm). */
 body::before {
   content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 100%;
-  min-height: 100vh;
+  /* Emerald, Oct 25: the paper holds still and everything moves over it. */
+  position: fixed;
+  inset: 0;
   z-index: -1;
   pointer-events: none;
   /* ruled lines over the paper grain over the paper color */
