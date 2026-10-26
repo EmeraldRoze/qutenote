@@ -130,7 +130,7 @@ export default function LoginPage() {
             className="qn-stamp qn-action qn-action-square"
             style={{ marginTop: '10px', ['--qn-panel' as string]: loading ? 'var(--light-blush)' : 'var(--btn)' }}
           >
-            {loading ? 'LOGGING IN…' : 'LOG IN'}
+            {loading ? 'LOGGING IN…' : 'LOGIN'}
           </button>
 
           <div style={{ margin: '24px 0 18px', display: 'flex', alignItems: 'center', gap: '12px', fontSize: '14px', color: 'var(--ink)' }}>

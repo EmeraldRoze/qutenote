@@ -57,7 +57,7 @@ export default function WelcomePage() {
       {/* Log in / Sign up: her square stamps (Emerald, Oct 25) */}
       <div className="qn-actions-row" style={{ ...col, marginTop: 'auto', paddingBottom: '40px', flex: 'none' }}>
         <button onClick={() => navigate('/login')} className="qn-stamp qn-action qn-action-square">
-          LOG IN
+          LOGIN
         </button>
         <button onClick={() => navigate('/signup')} className="qn-stamp qn-action qn-action-square"
           style={{ ['--qn-panel' as string]: 'var(--btn)' }}>
