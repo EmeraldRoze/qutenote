@@ -154,11 +154,13 @@ export default function SignupBirthdayPage() {
 
         <div className="qn-stamp" style={{
           marginTop: '14px', background: 'transparent', border: '10px solid transparent',
-          borderRadius: '16px', padding: '4px 6px', display: 'flex', alignItems: 'center', gap: '12px',
+          borderRadius: '16px', padding: '14px 6px', display: 'flex', alignItems: 'center', gap: '12px',
         }}>
           <QEmoji name="mailbox" size={46} style={{ flex: 'none' }} />
-          <p style={{ margin: 0, fontSize: '14px', lineHeight: 1.4 }}>
-            A little reminder for your QTs. A little magic for your mailbox.
+          {/* the two sentences each get their own line, so the second "A"
+              never dangles at the end of the first (Emerald, Oct 25) */}
+          <p style={{ margin: 0, fontSize: '14px', lineHeight: 1.4, whiteSpace: 'pre-line' }}>
+            {'A little reminder for your QTs.\nA little magic for your mailbox.'}
           </p>
         </div>
 

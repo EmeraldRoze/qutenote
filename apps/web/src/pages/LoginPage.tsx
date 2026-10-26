@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { api } from '../lib/api'
-import { postSocialAuthRoute } from '../lib/postAuthRoute'
+import { postSocialAuthRoute, setSetupNext, clearSetupNext } from '../lib/postAuthRoute'
 import { useAuth } from '../context/AuthContext'
 import { isNativeApp } from '../lib/native'
 import { appleSignIn, openGoogleSignIn } from '../lib/nativeAuth'
@@ -148,9 +148,11 @@ export default function LoginPage() {
                   setError('')
                   try {
                     const data = await appleSignIn()
-                    login(data.token, data.user)
                     const isNew = (data as any).isNew === true
+                    if (isNew) setSetupNext('/signup/handle')
+                    login(data.token, data.user)
                     const dest = await postSocialAuthRoute(isNew, data.user)
+                    if (dest === '/home') clearSetupNext(); else setSetupNext(dest)
                     navigate(dest, isNew ? { state: { provider: 'Apple' } } : undefined)
                   } catch (err: any) {
                     const code = String(err?.code ?? '')

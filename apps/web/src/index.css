@@ -211,8 +211,9 @@ body::before {
    length. Log in and Sign up only. Use WITH .qn-stamp:
    className="qn-stamp qn-action qn-action-square". */
 .qn-action-square{
-  width:128px; height:128px; min-height:0; padding:0 8px;
-  text-align:center; white-space:normal; line-height:1.25; font-size:18px;
+  /* 20% smaller than the first pass (Emerald, Oct 25) */
+  width:102px; height:102px; min-height:0; padding:0 4px;
+  text-align:center; white-space:normal; line-height:1.25; font-size:14px;
 }
 .qn-action-sm{ min-height:42px; padding:0 16px; font-size:13px; }
 .qn-actions{ display:flex; flex-direction:column; align-items:center; gap:14px; }

@@ -2,7 +2,7 @@ import { useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { api } from '../lib/api'
-import { postSocialAuthRoute } from '../lib/postAuthRoute'
+import { postSocialAuthRoute, setSetupNext, clearSetupNext } from '../lib/postAuthRoute'
 
 export default function GoogleAuthSuccessPage() {
   const navigate = useNavigate()
@@ -25,6 +25,7 @@ export default function GoogleAuthSuccessPage() {
       .then(async (res) => {
         login(token, res.data.data)
         const dest = await postSocialAuthRoute(isNew, res.data.data)
+        if (dest === '/home') clearSetupNext(); else setSetupNext(dest)
         navigate(dest, dest === '/home' ? undefined : { replace: true, state: { provider: 'Google' } })
       })
       .catch(() => {

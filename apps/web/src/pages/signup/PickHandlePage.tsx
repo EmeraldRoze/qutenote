@@ -4,6 +4,7 @@ import { api } from '../../lib/api'
 import { useAuth } from '../../context/AuthContext'
 import QEmoji from '../../components/QEmoji'
 import Logo from '../../components/Logo'
+import { setSetupNext } from '../../lib/postAuthRoute'
 
 // Pick your handle — screen 03 of the Oct 15 2026 redesign. Shown only after
 // Apple or Google just created a NEW account (they don't give us a username).
@@ -55,6 +56,7 @@ export default function PickHandlePage() {
     try {
       await api.put('/users/me', { username: handle })
       refreshUser()
+      setSetupNext('/signup/address')
       navigate('/signup/address')
     } catch (err: any) {
       setError(err.response?.data?.error ?? 'Something went wrong. Try again.')
