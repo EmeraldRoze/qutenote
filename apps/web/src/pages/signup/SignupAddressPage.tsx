@@ -5,6 +5,7 @@ import { api } from '../../lib/api'
 import { setSetupNext } from '../../lib/postAuthRoute'
 import QEmoji from '../../components/QEmoji'
 import QIcon from '../../components/QIcon'
+import AddressAutocomplete from '../../components/AddressAutocomplete'
 
 // Sign-up: address — screen 04 of the Oct 15 2026 redesign. Same endpoints as
 // the settings AddressPage (POST /address runs Lob verification server-side),
@@ -101,10 +102,12 @@ export default function SignupAddressPage() {
 
         <div style={{ marginTop: '20px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
           <label htmlFor="street" style={labelStyle}>Street address</label>
-          <input
-            id="street" name="address-line1" autoComplete="address-line1" required style={inputStyle}
+          {/* pick a real address instead of typing one nobody can deliver to */}
+          <AddressAutocomplete
+            id="street" required style={inputStyle}
             value={form.line1}
-            onChange={(e) => setForm({ ...form, line1: e.target.value })}
+            onChange={(v: string) => setForm({ ...form, line1: v })}
+            onPick={(a) => setForm({ ...form, line1: a.line1, city: a.city, state: a.state, zip: a.zip })}
           />
         </div>
 

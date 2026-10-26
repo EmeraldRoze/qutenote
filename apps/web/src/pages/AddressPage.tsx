@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { api } from '../lib/api'
 import QEmoji from '../components/QEmoji'
 import QIcon from '../components/QIcon'
+import AddressAutocomplete from '../components/AddressAutocomplete'
 
 // Your address ("Where you at?"), palette 4 restyle of screen 18-your-address.html.
 // No tab bar. Serves both /address and /settings/address. Save goes through the
@@ -111,7 +112,12 @@ export default function AddressPage() {
             <div style={{ marginTop: '20px', background: 'var(--card)', border: '1.5px solid var(--stone)', borderRadius: '18px', overflow: 'hidden' }}>
               <label style={rowStyle}>
                 <span style={labelStyle}>Street address</span>
-                <input value={form.line1} onChange={(e) => setForm({ ...form, line1: e.target.value })} required name="address-line1" autoComplete="address-line1" style={fieldStyle} />
+                <AddressAutocomplete
+                  value={form.line1}
+                  onChange={(v: string) => setForm({ ...form, line1: v })}
+                  onPick={(a) => setForm({ ...form, line1: a.line1, city: a.city, state: a.state, zip: a.zip })}
+                  required style={fieldStyle}
+                />
               </label>
               <label style={rowStyle}>
                 <span style={labelStyle}>Apt, suite, etc. (optional)</span>

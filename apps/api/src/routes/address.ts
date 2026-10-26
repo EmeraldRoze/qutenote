@@ -19,6 +19,48 @@ const addressSchema = z.object({
   country: z.string().min(1).max(100).default('US'),
 })
 
+// GET /address/autocomplete?q=185+Berr&city=&state=
+// Type-ahead for the address fields, so people pick a REAL address instead
+// of typing one that cannot be delivered to (Emerald, Oct 26). It goes
+// through Lob — the same company that prints and mails the card — so if a
+// suggestion comes back, the postcard can physically get there.
+//
+// NOTE: a Lob TEST key returns a canned "test keys do not autocomplete"
+// row. We detect that and return nothing rather than show it to anyone, so
+// this screen simply has no suggestions until a live key is in place.
+addressRouter.get('/autocomplete', async (req: AuthRequest, res: Response) => {
+  const q = String(req.query.q ?? '').trim()
+  if (q.length < 4) return res.json({ data: [] })
+
+  try {
+    const auth = 'Basic ' + Buffer.from(`${process.env.LOB_API_KEY}:`).toString('base64')
+    const r = await fetch('https://api.lob.com/v1/us_autocompletions', {
+      method: 'POST',
+      headers: { Authorization: auth, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        address_prefix: q,
+        city: String(req.query.city ?? '') || undefined,
+        state: String(req.query.state ?? '') || undefined,
+      }),
+    })
+    if (!r.ok) return res.json({ data: [] })
+    const j: any = await r.json()
+    const rows = (j?.suggestions ?? [])
+      .filter((s: any) => s?.primary_line && !/TEST KEYS/i.test(s.primary_line))
+      .slice(0, 6)
+      .map((s: any) => ({
+        line1: s.primary_line,
+        city: s.city,
+        state: s.state,
+        zip: s.zip_code,
+      }))
+    return res.json({ data: rows })
+  } catch (err: any) {
+    console.error('[address/autocomplete]', err?.message ?? err)
+    return res.json({ data: [] })   // never block someone typing their address
+  }
+})
+
 // GET /address/me
 addressRouter.get('/me', async (req: AuthRequest, res: Response) => {
   const address = await prisma.address.findUnique({
