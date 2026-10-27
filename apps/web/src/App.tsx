@@ -38,6 +38,7 @@ import ArtistApplicationSentPage from './pages/artist/ArtistApplicationSentPage'
 import ArtistUploadPage from './pages/artist/ArtistUploadPage'
 import ArtistPayoutsPage from './pages/artist/ArtistPayoutsPage'
 import AdminArtistsPage from './pages/admin/AdminArtistsPage'
+import AdminArtistDetailPage from './pages/admin/AdminArtistDetailPage'
 
 // A new screen should always open at the top — without this, React Router
 // keeps whatever scroll position the previous screen was left at.
@@ -90,6 +91,7 @@ function AppRoutes() {
       <Route path="/artist/cards" element={<ProtectedRoute><ArtistUploadPage /></ProtectedRoute>} />
       <Route path="/artist/payouts" element={<ProtectedRoute><ArtistPayoutsPage /></ProtectedRoute>} />
       <Route path="/admin/artists" element={<ProtectedRoute><AdminArtistsPage /></ProtectedRoute>} />
+      <Route path="/admin/artists/:id" element={<ProtectedRoute><AdminArtistDetailPage /></ProtectedRoute>} />
       <Route path="/extra-card/success" element={<ExtraCardSuccessPage />} />
       <Route path="/signup/handle" element={<ProtectedRoute><PickHandlePage /></ProtectedRoute>} />
       <Route path="/signup/address" element={<ProtectedRoute><SignupAddressPage /></ProtectedRoute>} />

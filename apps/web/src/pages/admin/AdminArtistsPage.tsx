@@ -27,12 +27,15 @@ export default function AdminArtistsPage() {
   const [owed, setOwed] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  // She could only ever see PENDING, so anything she had already decided
+  // vanished and looked lost (Emerald, Oct 26).
+  const [filter, setFilter] = useState<'PENDING' | 'APPROVED' | 'DECLINED' | 'ALL'>('PENDING')
 
   async function load() {
     setLoading(true)
     try {
       const [a, c, o] = await Promise.all([
-        api.get('/admin/artists/applications?status=PENDING'),
+        api.get(`/admin/artists/applications?status=${filter}`),
         api.get('/admin/artists/cards?status=IN_REVIEW'),
         api.get('/admin/artists/earnings'),
       ])
@@ -47,7 +50,7 @@ export default function AdminArtistsPage() {
     }
   }
 
-  useEffect(() => { load() }, [])
+  useEffect(() => { load() }, [filter])
 
   async function decideArtist(id: string, approve: boolean) {
     await api.post(`/admin/artists/${id}/decision`, { approve }).catch(() => {})
@@ -83,9 +86,20 @@ export default function AdminArtistsPage() {
         <h2 className="on-paper" style={{ margin: '0 0 10px', fontFamily: 'var(--font-display)', fontWeight: 300, fontSize: '20px' }}>
           Applications {apps.length ? `(${apps.length})` : ''}
         </h2>
+        <div style={{ display: 'flex', gap: '8px', marginBottom: '12px', flexWrap: 'wrap' }}>
+          {(['PENDING', 'APPROVED', 'DECLINED', 'ALL'] as const).map((f) => (
+            <button key={f} onClick={() => setFilter(f)} style={{
+              height: '34px', padding: '0 14px', borderRadius: '17px', cursor: 'pointer',
+              border: '1.5px solid var(--outline)',
+              background: filter === f ? 'var(--btn)' : 'var(--card)',
+              color: 'var(--ink)', fontFamily: 'var(--font-body)', fontSize: '12px', fontWeight: 700,
+              letterSpacing: '0.08em', textIndent: '0.08em',
+            }}>{f}</button>
+          ))}
+        </div>
         {!loading && !apps.length && <p className="on-paper" style={{ fontFamily: 'var(--font-body)', fontSize: '14px', marginBottom: '20px' }}>Nothing waiting.</p>}
         {apps.map((a) => (
-          <div key={a.id} style={card}>
+          <div key={a.id} style={{ ...card, cursor: 'pointer' }} onClick={() => navigate(`/admin/artists/${a.id}`)}>
             <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
               <strong style={{ fontFamily: 'var(--font-body)', fontSize: '16px' }}>{a.artistName || a.user.displayName}</strong>
               <span style={{ fontFamily: 'var(--font-body)', fontSize: '13px' }}>@{a.user.username}</span>
@@ -115,9 +129,19 @@ export default function AdminArtistsPage() {
                 ))}
               </div>
             )}
-            <div style={{ display: 'flex', gap: '10px' }}>
-              <button onClick={() => decideArtist(a.id, true)} style={btn('var(--highlight)')}>APPROVE</button>
-              <button onClick={() => decideArtist(a.id, false)} style={btn('var(--card)')}>DECLINE</button>
+            <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+              {a.status === 'PENDING' ? (
+                <>
+                  <button onClick={(e) => { e.stopPropagation(); decideArtist(a.id, true) }} style={btn('var(--highlight)')}>APPROVE</button>
+                  <button onClick={(e) => { e.stopPropagation(); decideArtist(a.id, false) }} style={btn('var(--card)')}>DECLINE</button>
+                </>
+              ) : (
+                <span style={{
+                  fontSize: '11px', fontWeight: 700, fontFamily: 'var(--font-body)', padding: '4px 10px', borderRadius: '10px',
+                  background: a.status === 'APPROVED' ? 'var(--highlight)' : 'var(--error-pale)',
+                }}>{a.status}</span>
+              )}
+              <span style={{ marginLeft: 'auto', fontFamily: 'var(--font-body)', fontSize: '12px' }}>Open ›</span>
             </div>
           </div>
         ))}

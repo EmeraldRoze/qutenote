@@ -195,3 +195,24 @@ adminRouter.post('/artists/earnings/paid', async (req: AuthRequest, res) => {
   })
   return res.json({ data: { settled: r.count } })
 })
+
+// GET /admin/artists/:id — one application, everything she needs to judge it
+adminRouter.get('/artists/:id', async (req: AuthRequest, res) => {
+  const profile = await prisma.artistProfile.findUnique({
+    where: { id: String(req.params.id) },
+    include: {
+      user: { select: { id: true, username: true, displayName: true, email: true, createdAt: true } },
+      cards: { orderBy: { createdAt: 'asc' } },
+    },
+  })
+  if (!profile) return res.status(404).json({ error: 'No application by that id.' })
+
+  const [sent, earned] = await Promise.all([
+    prisma.artistCard.aggregate({ where: { artistId: profile.id }, _sum: { sentCount: true } }),
+    prisma.artistEarning.aggregate({ where: { artistId: profile.id }, _sum: { amountCents: true } }),
+  ])
+
+  return res.json({
+    data: { ...profile, cardsSent: sent._sum.sentCount ?? 0, earnedCents: earned._sum.amountCents ?? 0 },
+  })
+})
