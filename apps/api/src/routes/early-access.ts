@@ -22,7 +22,7 @@ earlyAccessRouter.post('/', limiter, async (req: Request, res: Response) => {
   const email = result.data.email.toLowerCase().trim()
   const name = result.data.name?.trim() || null
   await prisma.earlySignup.upsert({
-    where: { email },
+    where: { email },   // stored lower case on the way in, so this matches
     // A repeat signup that now includes a name fills the blank in
     update: name ? { name } : {},
     create: { email, name, source: result.data.source ?? null },

@@ -40,13 +40,22 @@ authRouter.post('/register', authLimiter, async (req: Request, res: Response) =>
     return res.status(400).json({ error: result.error.issues[0].message })
   }
 
-  const { email, password, displayName, username, birthday } = result.data
+  // Emails and handles are stored lower case and compared without capitals,
+  // so "Emma@..." and "emma@..." are the same person (Emerald, Oct 26).
+  const email = result.data.email.trim().toLowerCase()
+  const username = result.data.username.trim().toLowerCase()
+  const { password, displayName, birthday } = result.data
 
   const existing = await prisma.user.findFirst({
-    where: { OR: [{ email }, { username }] },
+    where: {
+      OR: [
+        { email: { equals: email, mode: 'insensitive' } },
+        { username: { equals: username, mode: 'insensitive' } },
+      ],
+    },
   })
   if (existing) {
-    const field = existing.email === email ? 'email' : 'username'
+    const field = existing.email.toLowerCase() === email ? 'email' : 'username'
     return res.status(409).json({ error: `That ${field} is already taken.` })
   }
 
@@ -154,7 +163,9 @@ authRouter.post('/forgot-password', authLimiter, async (req: Request, res: Respo
     return res.status(400).json({ error: 'Please enter a valid email address.' })
   }
 
-  const user = await prisma.user.findUnique({ where: { email: result.data.email } })
+  const user = await prisma.user.findFirst({
+    where: { email: { equals: result.data.email.trim(), mode: 'insensitive' } },
+  })
 
   // Always return success to avoid revealing which emails exist
   if (!user) {

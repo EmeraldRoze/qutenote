@@ -48,7 +48,7 @@ usersRouter.get('/handle-check', requireAuth, async (req: AuthRequest, res: Resp
   let available = false
   if (valid) {
     const taken = await prisma.user.findFirst({
-      where: { username: u, NOT: { id: req.userId } },
+      where: { username: { equals: u, mode: 'insensitive' }, NOT: { id: req.userId } },
       select: { id: true },
     })
     available = !taken
@@ -72,8 +72,8 @@ usersRouter.get('/handle-check', requireAuth, async (req: AuthRequest, res: Resp
 // ─── Get user profile by username ────────────────────────────────────────────
 
 usersRouter.get('/:username', requireAuth, async (req: AuthRequest, res: Response) => {
-  const user = await prisma.user.findUnique({
-    where: { username: req.params.username },
+  const user = await prisma.user.findFirst({
+    where: { username: { equals: String(req.params.username).trim(), mode: 'insensitive' } },
     select: {
       id: true,
       username: true,
@@ -162,7 +162,7 @@ usersRouter.put('/me', requireAuth, async (req: AuthRequest, res: Response) => {
   // Changing the handle: make sure nobody else already has it
   if (rest.username) {
     const taken = await prisma.user.findFirst({
-      where: { username: rest.username, NOT: { id: req.userId } },
+      where: { username: { equals: rest.username, mode: 'insensitive' }, NOT: { id: req.userId } },
       select: { id: true },
     })
     if (taken) {
@@ -173,7 +173,7 @@ usersRouter.put('/me', requireAuth, async (req: AuthRequest, res: Response) => {
   // Changing the email: same story
   if (rest.email) {
     const taken = await prisma.user.findFirst({
-      where: { email: rest.email, NOT: { id: req.userId } },
+      where: { email: { equals: rest.email, mode: 'insensitive' }, NOT: { id: req.userId } },
       select: { id: true },
     })
     if (taken) {
