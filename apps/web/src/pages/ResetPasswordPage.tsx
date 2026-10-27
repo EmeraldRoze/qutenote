@@ -55,8 +55,8 @@ export default function ResetPasswordPage() {
     <div className="min-h-screen flex items-center justify-center px-4" style={{ background: 'var(--cream)' }}>
       <div className="w-full max-w-md">
 
-        <div className="text-center mb-8">
-          <Logo height={40} />
+        <div style={{ display: 'flex', justifyContent: 'center', marginTop: '-24px', marginBottom: '34px' }}>
+          <Logo height={40} style={{ margin: '0 auto' }} />
         </div>
 
         <div style={{
