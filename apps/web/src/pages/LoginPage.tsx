@@ -95,6 +95,7 @@ export default function LoginPage() {
               <span style={fieldLabel}>Email or username</span>
               <input
                 placeholder="you@email.com" autoComplete="username" required style={fieldStyle}
+                autoCapitalize="none" autoCorrect="off" spellCheck={false} inputMode="email"
                 value={form.identifier}
                 onChange={(e) => setForm({ ...form, identifier: e.target.value })}
               />
