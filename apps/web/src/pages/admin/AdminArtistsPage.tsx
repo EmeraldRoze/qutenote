@@ -25,6 +25,7 @@ export default function AdminArtistsPage() {
   const [apps, setApps] = useState<any[]>([])
   const [cards, setCards] = useState<any[]>([])
   const [owed, setOwed] = useState<any[]>([])
+  const [roster, setRoster] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   // She could only ever see PENDING, so anything she had already decided
@@ -34,14 +35,16 @@ export default function AdminArtistsPage() {
   async function load() {
     setLoading(true)
     try {
-      const [a, c, o] = await Promise.all([
+      const [a, c, o, r] = await Promise.all([
         api.get(`/admin/artists/applications?status=${filter}`),
         api.get('/admin/artists/cards?status=IN_REVIEW'),
         api.get('/admin/artists/earnings'),
+        api.get('/admin/artists/applications?status=APPROVED'),
       ])
       setApps(a.data.data ?? [])
       setCards(c.data.data ?? [])
       setOwed(o.data.data ?? [])
+      setRoster(r.data.data ?? [])
       setError('')
     } catch (err: any) {
       setError(err?.response?.status === 403 ? 'This account is not an admin.' : "Couldn't load the review desk.")
@@ -60,6 +63,17 @@ export default function AdminArtistsPage() {
     await api.post(`/admin/artists/cards/${id}/decision`, { approve }).catch(() => {})
     load()
   }
+  const month = new Date().toISOString().slice(0, 7)   // "2026-10"
+
+  async function toggleFeatured(artistId: string) {
+    const current = roster.filter((a) => a.featuredMonth === month).sort((x, y) => (x.featuredOrder ?? 0) - (y.featuredOrder ?? 0)).map((a) => a.id)
+    const next = current.includes(artistId) ? current.filter((id) => id !== artistId) : [...current, artistId]
+    if (next.length > 5) { setError('Five featured artists a month, no more.'); return }
+    setError('')
+    await api.post('/admin/artists/featured', { month, artistIds: next }).catch(() => {})
+    load()
+  }
+
   async function markPaid(artistId: string) {
     await api.post('/admin/artists/earnings/paid', { artistId }).catch(() => {})
     load()
@@ -165,6 +179,37 @@ export default function AdminArtistsPage() {
             </span>
           </div>
         ))}
+
+        <h2 className="on-paper" style={{ margin: '24px 0 10px', fontFamily: 'var(--font-display)', fontWeight: 300, fontSize: '20px' }}>
+          Your artists {roster.length ? `(${roster.length})` : ''}
+        </h2>
+        {!loading && !roster.length && <p className="on-paper" style={{ fontFamily: 'var(--font-body)', fontSize: '14px', marginBottom: '20px' }}>Nobody approved yet.</p>}
+        {roster.map((a) => {
+          const live = (a.cards ?? []).filter((c: any) => c.status === 'APPROVED').length
+          const waiting = (a.cards ?? []).filter((c: any) => c.status === 'IN_REVIEW').length
+          const featured = a.featuredMonth === month
+          return (
+            <div key={a.id} style={{ ...card, cursor: 'pointer' }} onClick={() => navigate(`/admin/artists/${a.id}`)}>
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
+                <strong style={{ fontFamily: 'var(--font-body)', fontSize: '16px' }}>{a.artistName || a.user.displayName}</strong>
+                <span style={{ fontFamily: 'var(--font-body)', fontSize: '13px' }}>@{a.user.username}</span>
+                <span style={{ marginLeft: 'auto', fontFamily: 'var(--font-body)', fontSize: '13px' }}>{a.city}</span>
+              </div>
+              <p style={{ margin: '6px 0 10px', fontFamily: 'var(--font-body)', fontSize: '13px' }}>
+                {live} card{live === 1 ? '' : 's'} in the shop
+                {waiting ? ` · ${waiting} waiting on you` : ''}
+                {a.paypalEmail ? ` · ${a.paypalEmail}` : ' · no PayPal address yet'}
+              </p>
+              <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                <button
+                  onClick={(e) => { e.stopPropagation(); toggleFeatured(a.id) }}
+                  style={btn(featured ? 'var(--highlight)' : 'var(--card)')}
+                >{featured ? 'FEATURED THIS MONTH' : 'FEATURE THIS MONTH'}</button>
+                <span style={{ marginLeft: 'auto', fontFamily: 'var(--font-body)', fontSize: '12px' }}>Open ›</span>
+              </div>
+            </div>
+          )
+        })}
 
         <h2 className="on-paper" style={{ margin: '24px 0 10px', fontFamily: 'var(--font-display)', fontWeight: 300, fontSize: '20px' }}>Owed to artists</h2>
         {!loading && !owed.length && <p className="on-paper" style={{ fontFamily: 'var(--font-body)', fontSize: '14px' }}>Nothing owed yet.</p>}
