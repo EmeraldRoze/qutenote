@@ -480,6 +480,10 @@ export default function ImportantDatesPage() {
                           overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                         }}>{d.label}</span>
                       </span>
+                      {/* the heart only turns up when it's close (Emerald, Oct 28) */}
+                      {daysUntil(d.month, d.day) <= 7 && (
+                        <SendHeart size={26} name={d.connectionName} onSend={() => navigate(`/send?toName=${encodeURIComponent(d.connectionName.split(' ')[0])}`)} />
+                      )}
                     </div>
                   </SwipeRow>
                 ))}
