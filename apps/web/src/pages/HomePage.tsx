@@ -190,23 +190,25 @@ interface FeedItem {
 }
 interface ImportantDate { id: string; connectionName: string; label: string; month: number; day: number }
 
-const OCCASION_SENTENCE: Record<string, string> = {
-  BIRTHDAY: 'a birthday note', ANNIVERSARY: 'an anniversary note',
-  CONGRATULATIONS: 'a congrats note', HOLIDAY: 'a holiday note',
-  CONSOLATION: 'a thinking-of-you note', JUST_BECAUSE: 'a just-because note',
-  INVITATION: 'an invitation', CUSTOM: 'a note',
-}
 const OCCASION_ART: Record<string, string> = {
   BIRTHDAY: 'cake', ANNIVERSARY: 'hearteyes', CONGRATULATIONS: 'popper',
   HOLIDAY: 'star', CONSOLATION: 'rainbow', JUST_BECAUSE: 'envelope',
   INVITATION: 'plane', CUSTOM: 'envelope',
 }
 
-function timeAgo(d: string) {
+// Said out loud, for the feed (Emerald, Oct 27: she wants to know WHEN a
+// status was posted, not decode "3h").
+function whenPosted(d: string) {
   const mins = Math.floor((Date.now() - +new Date(d)) / 60000)
-  if (mins < 60) return `${Math.max(1, mins)}m`
-  if (mins < 60 * 24) return `${Math.floor(mins / 60)}h`
-  return `${Math.floor(mins / 1440)}d`
+  if (mins < 2) return 'just now'
+  if (mins < 60) return `${mins} minutes ago`
+  const hours = Math.floor(mins / 60)
+  if (hours < 24) return `${hours} hour${hours === 1 ? '' : 's'} ago`
+  const days = Math.floor(hours / 24)
+  if (days < 7) return `${days} day${days === 1 ? '' : 's'} ago`
+  const weeks = Math.floor(days / 7)
+  if (weeks < 5) return `${weeks} week${weeks === 1 ? '' : 's'} ago`
+  return new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
 }
 
 function daysUntil(month: number, day: number) {
@@ -469,65 +471,67 @@ export default function HomePage() {
         )}
 
         {feed.map((item) => (
-          <div key={`${item.kind}-${item.id}`} style={{ display: 'flex', gap: '12px', padding: '16px 0', borderBottom: '1.5px solid var(--outline)' }}>
-            {item.kind === 'status' ? (
-              /* the friend's own status emoji leads the row, so it updates
-                 whenever their status does (Emerald, Oct 23) */
-              <span style={{ width: '44px', minWidth: '44px', display: 'flex', alignItems: 'flex-start', justifyContent: 'center' }}>
-                <QEmoji name={item.emoji || 'thought-bubble'} size={40} />
-              </span>
-            ) : (
-              <span style={{ width: '44px', minWidth: '44px', display: 'flex', alignItems: 'flex-start', justifyContent: 'center' }}>
-                <QEmoji name={OCCASION_ART[item.occasionType ?? 'CUSTOM'] ?? 'envelope'} size={40} />
-              </span>
-            )}
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              {item.kind === 'status' ? (
-                <>
-                  <div style={{ fontSize: '15px', fontFamily: 'var(--font-body)' }}>
-                    <strong>{item.user?.displayName}</strong>{' '}
-                    <span style={{ color: 'var(--ink-mid)' }}>shared a status · {timeAgo(item.createdAt)}</span>
-                    {+new Date(item.createdAt) > lastSeen && (
-                      <span style={{ display: 'inline-block', width: '10px', height: '10px', marginLeft: '6px', borderRadius: '5px', background: 'var(--highlight)', border: '1.5px solid var(--outline)', verticalAlign: 'middle' }} />
-                    )}
-                  </div>
-                  {/* the send-them-somethin' heart lives inside the status bar:
-                      wax heart + oxblood squiggles (Emerald, Oct 23) */}
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 12px', borderRadius: '14px', background: 'var(--card)', border: '1.5px solid var(--outline)' }}>
-                    <span style={{ flex: 1, fontSize: '15px', lineHeight: '18px', fontFamily: 'var(--font-body)' }}>{item.text}</span>
-                    <button aria-label="Send a little somethin'" onClick={() => navigate(`/send?toName=${encodeURIComponent(item.user?.displayName.split(' ')[0] ?? '')}`)} style={{
-                      flexShrink: 0, minWidth: '44px', height: '34px', margin: '-5px -4px -5px 0', border: 'none', background: 'none',
-                      cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '3px', padding: 0,
-                    }}>
-                      <img src="/brand/wax_heart.png" alt="" style={{ width: '24px', height: 'auto' }} />
-                      <svg aria-hidden width="16" height="20" viewBox="0 0 16 20" fill="none" stroke="#4A2424" strokeWidth="1.8" strokeLinecap="round">
-                        <path d="M1 4c2.4-1.6 4-1.6 6.4 0s4 1.6 6.4 0M1 10c2.4-1.6 4-1.6 6.4 0s4 1.6 6.4 0M1 16c2.4-1.6 4-1.6 6.4 0s4 1.6 6.4 0" />
-                      </svg>
-                    </button>
-                  </div>
-                </>
-              ) : (
-                <>
-                  <div style={{ fontSize: '15px', lineHeight: '18px', fontFamily: 'var(--font-body)' }}>
-                    <strong>{item.sender?.displayName}</strong> sent <strong>{item.recipient?.displayName}</strong>{' '}
-                    {OCCASION_SENTENCE[item.occasionType ?? 'CUSTOM'] ?? 'a note'}
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '16px', fontSize: '13px', fontFamily: 'var(--font-body)', color: 'var(--ink-mid)' }}>
-                    <span>{timeAgo(item.createdAt)}</span>
-                    <button onClick={() => toggleHeart(item)} style={{
-                      height: '30px', display: 'flex', alignItems: 'center', gap: '5px', border: 'none',
-                      background: 'transparent', padding: 0, fontSize: '13px', cursor: 'pointer',
-                      color: item.heartedByMe ? 'var(--ink)' : 'var(--ink-mid)', fontFamily: 'var(--font-body)',
-                      textTransform: 'none', letterSpacing: 0, fontWeight: item.heartedByMe ? 700 : 400,
-                    }}>
-                      <svg width="17" height="17" viewBox="0 0 24 24" fill={item.heartedByMe ? '#4A2424' : 'none'} stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z" /></svg>
-                      {item.hearts}
-                    </button>
-                  </div>
-                </>
-              )}
+          item.kind === 'status' ? (
+            /* One calm card per status (Emerald's pick, Oct 27): who and when
+               in a quiet line, the status itself as the headline, and the wax
+               heart on the right — no circle around it. */
+            <div key={`${item.kind}-${item.id}`} style={{
+              display: 'flex', alignItems: 'center', gap: '14px',
+              background: 'var(--card)', borderRadius: '20px', padding: '16px 18px',
+              marginBottom: '12px', boxShadow: '0 4px 14px rgba(74,36,36,0.07)',
+            }}>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ fontSize: '12px', fontFamily: 'var(--font-body)', color: 'var(--ink)', opacity: 0.6, display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <QEmoji name={item.emoji || 'thought-bubble'} size={20} style={{ height: 'auto' }} />
+                  <span>{item.user?.displayName} · {whenPosted(item.createdAt)}</span>
+                  {+new Date(item.createdAt) > lastSeen && (
+                    <span style={{ width: '9px', height: '9px', borderRadius: '5px', background: 'var(--highlight)', border: '1.5px solid var(--outline)' }} />
+                  )}
+                </div>
+                <div style={{ fontFamily: 'var(--font-display)', fontWeight: 300, fontSize: '21px', lineHeight: '28px', color: 'var(--ink)', margin: '6px 0 0' }}>
+                  {item.text}
+                </div>
+              </div>
+              <button
+                aria-label={`Send ${item.user?.displayName.split(' ')[0] ?? 'them'} a little somethin'`}
+                onClick={() => navigate(`/send?toName=${encodeURIComponent(item.user?.displayName.split(' ')[0] ?? '')}`)}
+                style={{
+                  flexShrink: 0, border: 'none', background: 'none', cursor: 'pointer', padding: 0,
+                  display: 'flex', alignItems: 'center', gap: '3px',
+                }}
+              >
+                <img src="/brand/wax_heart.png" alt="" style={{ width: '30px', height: 'auto' }} />
+                <svg aria-hidden width="18" height="22" viewBox="0 0 16 20" fill="none" stroke="#4A2424" strokeWidth="1.8" strokeLinecap="round">
+                  <path d="M1 4c2.4-1.6 4-1.6 6.4 0s4 1.6 6.4 0M1 10c2.4-1.6 4-1.6 6.4 0s4 1.6 6.4 0M1 16c2.4-1.6 4-1.6 6.4 0s4 1.6 6.4 0" />
+                </svg>
+              </button>
             </div>
-          </div>
+          ) : (
+            <div key={`${item.kind}-${item.id}`} style={{
+              display: 'flex', alignItems: 'center', gap: '14px',
+              background: 'var(--card)', borderRadius: '20px', padding: '16px 18px',
+              marginBottom: '12px', boxShadow: '0 4px 14px rgba(74,36,36,0.07)',
+            }}>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ fontSize: '12px', fontFamily: 'var(--font-body)', color: 'var(--ink)', opacity: 0.6, display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <QEmoji name={OCCASION_ART[item.occasionType ?? 'CUSTOM'] ?? 'envelope'} size={20} style={{ height: 'auto' }} />
+                  <span>{whenPosted(item.createdAt)}</span>
+                </div>
+                <div style={{ fontFamily: 'var(--font-display)', fontWeight: 300, fontSize: '21px', lineHeight: '28px', color: 'var(--ink)', margin: '6px 0 0' }}>
+                  {item.sender?.displayName} sent a card
+                </div>
+              </div>
+              <button onClick={() => toggleHeart(item)} style={{
+                flexShrink: 0, display: 'flex', alignItems: 'center', gap: '5px', border: 'none',
+                background: 'transparent', padding: 0, fontSize: '13px', cursor: 'pointer',
+                color: 'var(--ink)', fontFamily: 'var(--font-body)',
+                textTransform: 'none', letterSpacing: 0, fontWeight: item.heartedByMe ? 700 : 400,
+              }}>
+                <svg width="19" height="19" viewBox="0 0 24 24" fill={item.heartedByMe ? '#4A2424' : 'none'} stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z" /></svg>
+                {item.hearts}
+              </button>
+            </div>
+          )
         ))}
       </div>
 
