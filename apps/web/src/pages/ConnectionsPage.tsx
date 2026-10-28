@@ -184,7 +184,15 @@ export default function ConnectionsPage() {
     </button>
   )
 
-  const listCard: React.CSSProperties = { background: 'var(--card)', border: '1.5px solid var(--outline)', borderRadius: '18px', overflow: 'hidden' }
+  // Everything under the tabs lives on one sheet, and the active tab is cut
+  // from the same piece of paper — that's what makes it read as a folder
+  // (Emerald, Oct 27).
+  const sheet: React.CSSProperties = {
+    background: 'var(--card)', border: '1.5px solid var(--outline)',
+    borderRadius: '0 16px 16px 16px', padding: '14px 14px 6px', position: 'relative',
+  }
+  // the lists sit ON the sheet, so they bring no box of their own
+  const listCard: React.CSSProperties = { background: 'transparent', border: 0, borderRadius: 0, overflow: 'hidden' }
   const row = (last: boolean): React.CSSProperties => ({
     display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 14px', minHeight: '68px',
     borderBottom: last ? 'none' : '1.5px solid var(--outline)',
@@ -257,6 +265,8 @@ export default function ConnectionsPage() {
             )
           })}
         </div>
+
+        <div style={sheet}>
 
         {/* Contacts sync (native app only) */}
         {contactsAvailable && syncState !== 'done' && (
@@ -416,6 +426,8 @@ export default function ConnectionsPage() {
             })}
           </div>
         ))}
+
+        </div>
 
         {/* Privacy */}
         <div style={{ marginTop: '22px', padding: '14px 16px', borderRadius: '18px', background: 'var(--card)', border: '1.5px solid var(--outline)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px' }}>

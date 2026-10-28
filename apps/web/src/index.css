@@ -234,16 +234,11 @@ body::before {
 .qn-actions{ display:flex; flex-direction:column; align-items:center; gap:14px; }
 .qn-actions-row{ display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:14px; }
 
-/* Text that sits straight on the ruled paper (no card under it) carries a
-   paper-coloured halo, so a ruled line passes BEHIND the words the way ink
-   does on real paper instead of striking through them (Emerald, Oct 25). */
-.on-paper{
-  /* the paper itself sits over the ruling behind the words, so a rule stops
-     at the edge of the text instead of running through it */
-  background: var(--paper);
-  box-shadow: 0 0 0 4px var(--paper);
-  border-radius: 2px;
-}
+/* Emerald, Oct 27: the ruled lines stay visible behind EVERY word. An
+   earlier version gave bare text a paper backing so a rule could not cut
+   through it; she'd rather see the paper. The class stays so the markup
+   doesn't churn, but it paints nothing. */
+.on-paper{ background: none; box-shadow: none; }
 
 /* Placeholders are oxblood like everything else, just faded so they don't
    read as something you already typed. */
