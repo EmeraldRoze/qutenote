@@ -63,7 +63,7 @@ export default function WelcomePage() {
         <button
           onClick={() => navigate('/login')}
           className="qn-stamp qn-action qn-action-square"
-          style={{ transform: 'rotate(-7deg)', marginRight: '-14px', zIndex: 2 }}
+          style={{ transform: 'rotate(-12deg)', marginRight: '-6px', zIndex: 2 }}
         >
           LOGIN
         </button>
@@ -71,7 +71,7 @@ export default function WelcomePage() {
           onClick={() => navigate('/signup')}
           className="qn-stamp qn-action qn-action-square"
           style={{
-            transform: 'rotate(14deg) translateY(10px)', zIndex: 1,
+            transform: 'rotate(-12deg) translateY(10px)', zIndex: 1,
             ['--qn-panel' as string]: 'var(--btn)',
           }}
         >
