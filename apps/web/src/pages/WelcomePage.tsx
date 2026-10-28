@@ -54,13 +54,27 @@ export default function WelcomePage() {
         </p>
       </div>
 
-      {/* Log in / Sign up: her square stamps (Emerald, Oct 25) */}
-      <div className="qn-actions-row" style={{ ...col, marginTop: 'auto', paddingBottom: '40px', flex: 'none' }}>
-        <button onClick={() => navigate('/login')} className="qn-stamp qn-action qn-action-square">
+      {/* Two stamps tossed down on a table: each one tilted its own way and
+          overlapping a little, sitting higher up the page (Emerald, Oct 27) */}
+      <div style={{
+        ...col, marginTop: 'auto', paddingBottom: '76px', flex: 'none',
+        display: 'flex', justifyContent: 'center', alignItems: 'center',
+      }}>
+        <button
+          onClick={() => navigate('/login')}
+          className="qn-stamp qn-action qn-action-square"
+          style={{ transform: 'rotate(-7deg)', marginRight: '-14px', zIndex: 2 }}
+        >
           LOGIN
         </button>
-        <button onClick={() => navigate('/signup')} className="qn-stamp qn-action qn-action-square"
-          style={{ ['--qn-panel' as string]: 'var(--btn)' }}>
+        <button
+          onClick={() => navigate('/signup')}
+          className="qn-stamp qn-action qn-action-square"
+          style={{
+            transform: 'rotate(5deg) translateY(6px)', zIndex: 1,
+            ['--qn-panel' as string]: 'var(--btn)',
+          }}
+        >
           SIGN UP
         </button>
       </div>
