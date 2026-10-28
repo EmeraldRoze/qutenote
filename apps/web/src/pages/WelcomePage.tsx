@@ -71,7 +71,7 @@ export default function WelcomePage() {
           onClick={() => navigate('/signup')}
           className="qn-stamp qn-action qn-action-square"
           style={{
-            transform: 'rotate(5deg) translateY(6px)', zIndex: 1,
+            transform: 'rotate(14deg) translateY(10px)', zIndex: 1,
             ['--qn-panel' as string]: 'var(--btn)',
           }}
         >
