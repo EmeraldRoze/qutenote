@@ -54,10 +54,19 @@ export default function StatusBox({ onPosted }: { onPosted?: (s: any) => void })
     padding: '12px 8px 12px 10px',
   }
 
-  // A status is set and we're not editing: show it with the pencil.
+  // A status is set and we're not editing. No pen any more: the whole stamp
+  // is the tap target (Emerald, Oct 27).
   if (loaded && status && !editing) {
     return (
-      <div className="qn-stamp" style={{ ...shell, display: 'flex', alignItems: 'center', gap: '10px' }}>
+      <div
+        className="qn-stamp"
+        role="button"
+        tabIndex={0}
+        aria-label="Edit your status"
+        onClick={() => setEditing(true)}
+        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setEditing(true) }}
+        style={{ ...shell, display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }}
+      >
         <QEmoji name={status.emoji ?? 'thought-bubble'} size={34} style={{ flexShrink: 0 }} />
         <span style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '2px' }}>
           <span style={{ fontSize: '13px', fontFamily: 'var(--font-body)', color: 'var(--ink)' }}>Your status</span>
@@ -65,14 +74,6 @@ export default function StatusBox({ onPosted }: { onPosted?: (s: any) => void })
             {status.text}
           </span>
         </span>
-        <button onClick={() => setEditing(true)} aria-label="Edit your status" style={{
-          flexShrink: 0, width: '44px', height: '44px', border: 0, borderRadius: '22px',
-          background: 'transparent', color: 'var(--ink)', cursor: 'pointer', padding: 0,
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-        }}>
-          {/* always her pen art, never a drawn pencil icon (Emerald, Oct 24) */}
-          <img src="/emoji/pen.png" alt="" style={{ width: '30px', height: '30px', objectFit: 'contain' }} />
-        </button>
       </div>
     )
   }

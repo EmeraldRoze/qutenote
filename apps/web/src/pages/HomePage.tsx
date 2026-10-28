@@ -488,7 +488,7 @@ export default function HomePage() {
                     <span style={{ width: '9px', height: '9px', borderRadius: '5px', background: 'var(--highlight)', border: '1.5px solid var(--outline)' }} />
                   )}
                 </div>
-                <div style={{ fontFamily: 'var(--font-display)', fontWeight: 300, fontSize: '21px', lineHeight: '28px', color: 'var(--ink)', margin: '6px 0 0' }}>
+                <div style={{ fontFamily: 'var(--font-body)', fontSize: '18px', lineHeight: '24px', color: 'var(--ink)', margin: '6px 0 0' }}>
                   {item.text}
                 </div>
               </div>
@@ -517,7 +517,7 @@ export default function HomePage() {
                   <QEmoji name={OCCASION_ART[item.occasionType ?? 'CUSTOM'] ?? 'envelope'} size={20} style={{ height: 'auto' }} />
                   <span>{whenPosted(item.createdAt)}</span>
                 </div>
-                <div style={{ fontFamily: 'var(--font-display)', fontWeight: 300, fontSize: '21px', lineHeight: '28px', color: 'var(--ink)', margin: '6px 0 0' }}>
+                <div style={{ fontFamily: 'var(--font-body)', fontSize: '18px', lineHeight: '24px', color: 'var(--ink)', margin: '6px 0 0' }}>
                   {item.sender?.displayName} sent a card
                 </div>
               </div>

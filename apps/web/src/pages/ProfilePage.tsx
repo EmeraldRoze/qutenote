@@ -286,12 +286,9 @@ export default function ProfilePage() {
             <StatusBox onPosted={() => refreshUser?.()} />
           </div>
 
-          {/* Add friends / Invite / Handwriting */}
-          <div style={{ marginTop: '20px', display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: '10px' }}>
-            <button onClick={() => navigate('/connections')} style={actionTile}>
-              <QEmoji name="bff" size={48} />
-              Add friends
-            </button>
+          {/* Invite / Handwriting — "Add friends" said the same thing as
+              invite, so it's gone (Emerald, Oct 27) */}
+          <div style={{ marginTop: '20px', display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: '10px' }}>
             <button onClick={() => navigate('/invite')} style={{ ...actionTile, whiteSpace: 'pre-line' }}>
               <QEmoji name="gift" size={30} />
               {'Invite friends,\nget free cards.'}
@@ -303,30 +300,39 @@ export default function ProfilePage() {
             </button>
           </div>
 
-          {/* Sent / Received segmented control */}
-          <div role="tablist" aria-label="Your cards" style={{
-            marginTop: '20px', height: '48px', borderRadius: '24px', background: 'var(--light-blush)',
-            padding: '4px', boxSizing: 'border-box', display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
-          }}>
-            <button role="tab" aria-selected={tab === 'sent'} onClick={() => setTab('sent')} style={{
-              border: 0, borderRadius: '20px', background: tab === 'sent' ? 'var(--card)' : 'transparent',
-              fontFamily: 'var(--font-body)', fontSize: '15px', fontWeight: 700, cursor: 'pointer',
-              color: 'var(--ink)', textTransform: 'none', letterSpacing: 0,
-            }}>Sent</button>
-            <button role="tab" aria-selected={tab === 'received'} onClick={() => setTab('received')} style={{
-              border: 0, borderRadius: '20px', background: tab === 'received' ? 'var(--card)' : 'transparent',
-              fontFamily: 'var(--font-body)', fontSize: '15px', fontWeight: 700, cursor: 'pointer',
-              color: 'var(--ink)', textTransform: 'none', letterSpacing: 0,
-            }}>Received</button>
+          {/* Sent / Received as folder tabs, same as QTs (Emerald, Oct 27) */}
+          <div role="tablist" aria-label="Your cards" style={{ marginTop: '22px', display: 'flex', gap: '6px', marginBottom: '-1.5px', position: 'relative', zIndex: 1 }}>
+            {([['sent', 'SENT'], ['received', 'RECEIVED']] as const).map(([key, text]) => {
+              const on = tab === key
+              return (
+                <button
+                  key={key}
+                  role="tab"
+                  aria-selected={on}
+                  onClick={() => setTab(key)}
+                  style={{
+                    border: '1.5px solid var(--stone)', borderBottomColor: on ? 'var(--card)' : 'var(--stone)',
+                    background: on ? 'var(--card)' : 'var(--paper)',
+                    borderRadius: '12px 12px 0 0', padding: '9px 16px', cursor: 'pointer',
+                    fontFamily: 'var(--font-body)', fontSize: '13px', fontWeight: 700,
+                    letterSpacing: '0.06em', textIndent: '0.06em', color: 'var(--ink)',
+                    opacity: on ? 1 : 0.55,
+                  }}
+                >
+                  {text}
+                </button>
+              )
+            })}
           </div>
 
           {/* 3-column photo grid of real cards */}
+          <div style={{ background: 'var(--card)', border: '1.5px solid var(--stone)', borderRadius: '0 16px 16px 16px', padding: '12px' }}>
           {notes.length === 0 ? (
-            <p style={{ fontFamily: 'var(--font-body)', fontSize: '14px', color: 'var(--ink-muted)', padding: '14px 0 4px' }}>
+            <p style={{ fontFamily: 'var(--font-body)', fontSize: '14px', color: 'var(--ink)', margin: 0, padding: '6px 2px' }}>
               {tab === 'sent' ? 'None sent yet.' : 'None received yet.'}
             </p>
           ) : (
-            <div style={{ marginTop: '12px', display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: '4px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: '4px' }}>
               {notes.map((n, i) => (
                 <button key={n.id} aria-label={`${tab === 'sent' ? 'Sent' : 'Received'} card ${i + 1}, open`} onClick={() => setOpenCard(n)} style={{
                   aspectRatio: '1 / 1', borderRadius: '6px', overflow: 'hidden', border: 'none', padding: 0, cursor: 'pointer',
@@ -340,6 +346,7 @@ export default function ProfilePage() {
               ))}
             </div>
           )}
+          </div>
 
           {/* Left this month, free mode: no prices */}
           <div style={{ marginTop: '16px', background: 'var(--card)', border: '1.5px solid var(--stone)', borderRadius: '22px', padding: '20px' }}>
