@@ -56,7 +56,12 @@ export default function ConnectionsPage() {
   const [sentRequests, setSentRequests] = useState<PendingRequest[]>([])
 
   // Contacts sync (native app only)
-  const [syncState, setSyncState] = useState<'idle' | 'syncing' | 'done' | 'failed'>('idle')
+  // Synced once = the button never comes back, even after a restart
+  // (Emerald, Oct 27).
+  const SYNCED_KEY = 'qn_contacts_synced'
+  const [syncState, setSyncState] = useState<'idle' | 'syncing' | 'done' | 'failed'>(
+    (() => { try { return localStorage.getItem(SYNCED_KEY) ? 'done' : 'idle' } catch { return 'idle' } })()
+  )
   const [matches, setMatches] = useState<MatchedMember[]>([])
   const [syncChecked, setSyncChecked] = useState(0)
   const [syncError, setSyncError] = useState('')
@@ -72,6 +77,7 @@ export default function ConnectionsPage() {
       const matched = await matchContactsToMembers(contacts)
       setMatches(matched)
       setSyncState('done')
+      try { localStorage.setItem(SYNCED_KEY, new Date().toISOString()) } catch { /* private mode */ }
     } catch (err: any) {
       // Surface the real reason — a tester saying "it didn't work" should be
       // able to screenshot exactly what went wrong.
@@ -187,10 +193,31 @@ export default function ConnectionsPage() {
   return (
     <div style={{ minHeight: '100vh', paddingBottom: '120px' }}>
 
-      {/* Title band */}
-      <header className="title-band" style={{ height: '144px' }}>
+      {/* No "QTs" title: the invite stamp lives up here instead
+          (Emerald, Oct 27) */}
+      <header className="title-band" style={{ height: '180px', justifyContent: 'center' }}>
         <div style={{ width: '100%', maxWidth: '480px', margin: '0 auto', padding: '0 20px' }}>
-          <h1 style={{ margin: 0, fontFamily: 'var(--font-display)', fontWeight: 300, fontSize: '30px', letterSpacing: '-0.02em', color: 'var(--ink)' }}>QTs</h1>
+          <div className="qn-stamp" style={{ border: '10px solid transparent', background: 'transparent', padding: '12px 10px', display: 'flex', gap: '14px', alignItems: 'center' }}>
+            <QEmoji name="invite" size={92} style={{ flexShrink: 0, height: 'auto' }} />
+            <p style={{ flex: 1, minWidth: 0, margin: 0, textAlign: 'center', fontFamily: 'var(--font-body)', fontSize: '15px', lineHeight: '18px', color: 'var(--ink)', whiteSpace: 'pre-line' }}>
+              {'Invite friends,\nget free cards.'}
+            </p>
+            <button
+              onClick={() => inviteByText(user?.displayName?.split(' ')[0]).catch(() => navigate('/invite'))}
+              aria-label="Invite friends"
+              style={{
+                width: '44px', height: '44px', flex: 'none', borderRadius: '50%',
+                border: '2px solid var(--outline)', background: 'var(--btn)', color: 'var(--ink)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
+                padding: 0, boxSizing: 'border-box',
+              }}
+            >
+              <svg aria-hidden width="18" height="18" viewBox="0 0 18 18">
+                <rect x="7.6" y="1.6" width="2.8" height="14.8" rx="1.4" fill="currentColor" />
+                <rect x="1.6" y="7.6" width="14.8" height="2.8" rx="1.4" fill="currentColor" />
+              </svg>
+            </button>
+          </div>
         </div>
       </header>
 
@@ -230,36 +257,6 @@ export default function ConnectionsPage() {
             )
           })}
         </div>
-
-        {/* The invite stamp sits under the search field (Emerald, Oct 25) */}
-        <div className="qn-stamp" style={{ marginTop: '16px', border: '10px solid transparent', background: 'transparent', padding: '12px 10px', display: 'flex', gap: '14px', alignItems: 'center' }}>
-          {/* Her new INVITE envelope replaces the heart hands here (Emerald,
-              Oct 25). Same 102px footprint the hands had. */}
-          <QEmoji name="invite" size={102} style={{ flexShrink: 0, height: 'auto' }} />
-          {/* Two lines of copy and a round + on the far right — no button
-              (Emerald, Oct 25) */}
-          <p style={{ flex: 1, minWidth: 0, margin: 0, textAlign: 'center', fontFamily: 'var(--font-body)', fontSize: '15px', lineHeight: '18px', color: 'var(--ink)', whiteSpace: 'pre-line' }}>
-            {'Invite friends,\nget free cards.'}
-          </p>
-          <button
-            onClick={() => inviteByText(user?.displayName?.split(' ')[0]).catch(() => navigate('/invite'))}
-            aria-label="Invite friends"
-            style={{
-              width: '44px', height: '44px', flex: 'none', borderRadius: '50%',
-              border: '2px solid var(--outline)', background: 'var(--btn)', color: 'var(--ink)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
-              padding: 0, boxSizing: 'border-box',
-            }}
-          >
-            {/* the plus is drawn, not typed: a text glyph never sits dead
-                centre in a circle (Emerald, Oct 25) */}
-            <svg aria-hidden width="18" height="18" viewBox="0 0 18 18">
-              <rect x="7.6" y="1.6" width="2.8" height="14.8" rx="1.4" fill="currentColor" />
-              <rect x="1.6" y="7.6" width="14.8" height="2.8" rx="1.4" fill="currentColor" />
-            </svg>
-          </button>
-        </div>
-
 
         {/* Contacts sync (native app only) */}
         {contactsAvailable && syncState !== 'done' && (
