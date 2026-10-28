@@ -40,13 +40,6 @@ function daysUntil(month: number, day: number): number {
   if (next < today) next = new Date(year + 1, month - 1, day)
   return Math.round((+next - +today) / 86400000)
 }
-function countdownLabel(days: number): string {
-  if (days === 0) return 'Today'
-  if (days === 1) return 'Tomorrow'
-  if (days <= 7) return `In ${days} days`
-  return `${days} days`
-}
-
 export default function ConnectionsPage() {
   const navigate = useNavigate()
   const { user, refreshUser } = useAuth()
@@ -214,23 +207,28 @@ export default function ConnectionsPage() {
             style={{ border: 0, outline: 'none', background: 'transparent', fontFamily: 'var(--font-body)', fontSize: '17px', color: 'var(--ink)', width: '100%' }}
           />
         </label>
-        {/* Your QTs | Requests (Emerald, Oct 27) */}
-        <div style={{ display: 'flex', gap: '10px', marginTop: '14px' }}>
-          {([['qts', 'Your QTs'], ['requests', `Requests${pendingRequests.length ? ` (${pendingRequests.length})` : ''}`]] as const).map(([key, text]) => (
-            <button
-              key={key}
-              onClick={() => setTab(key)}
-              style={{
-                flex: 1, height: '40px', borderRadius: '20px', cursor: 'pointer',
-                border: '1.5px solid var(--outline)',
-                background: tab === key ? 'var(--btn)' : 'var(--card)',
-                color: 'var(--ink)', fontFamily: 'var(--font-body)', fontSize: '13px', fontWeight: 700,
-                letterSpacing: '0.08em', textIndent: '0.08em',
-              }}
-            >
-              {text}
-            </button>
-          ))}
+        {/* Paper tabs: the active one is part of the sheet below it, like a
+            file folder (Emerald's pick, Oct 27) */}
+        <div style={{ display: 'flex', gap: '6px', marginTop: '16px', marginBottom: '-1.5px', position: 'relative', zIndex: 1 }}>
+          {([['qts', 'YOUR QTS'], ['requests', `REQUESTS${pendingRequests.length ? ` (${pendingRequests.length})` : ''}`]] as const).map(([key, text]) => {
+            const on = tab === key
+            return (
+              <button
+                key={key}
+                onClick={() => setTab(key)}
+                style={{
+                  border: '1.5px solid var(--outline)', borderBottomColor: on ? 'var(--card)' : 'var(--outline)',
+                  background: on ? 'var(--card)' : 'var(--paper)',
+                  borderRadius: '12px 12px 0 0', padding: '9px 16px', cursor: 'pointer',
+                  fontFamily: 'var(--font-body)', fontSize: '13px', fontWeight: 700,
+                  letterSpacing: '0.06em', textIndent: '0.06em', color: 'var(--ink)',
+                  opacity: on ? 1 : 0.55,
+                }}
+              >
+                {text}
+              </button>
+            )
+          })}
         </div>
 
         {/* The invite stamp sits under the search field (Emerald, Oct 25) */}
@@ -386,7 +384,6 @@ export default function ConnectionsPage() {
               const d = dateFor(c.displayName)
               const bMonth = c.birthdayMonth ?? d?.month ?? null
               const bDay = c.birthdayDay ?? d?.day ?? null
-              const days = bMonth && bDay ? daysUntil(bMonth, bDay) : null
               return (
                 <button key={c.id} onClick={() => navigate(`/profile/${c.username}`)} style={{
                   ...row(i === shownConnections.length - 1), width: '100%',
@@ -394,20 +391,29 @@ export default function ConnectionsPage() {
                   textTransform: 'none', letterSpacing: 0, fontWeight: 400,
                   borderLeft: 'none', borderRight: 'none', borderTop: 'none',
                 }}>
-                  {avatar()}
+                  {/* Emerald, Oct 27: no sparkle heart beside the name and no
+                      countdown pill — the wax heart sends them one from here. */}
                   <span style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '2px' }}>
                     <span style={{ fontFamily: 'var(--font-body)', fontSize: '16px', fontWeight: 700, color: 'var(--ink)' }}>{c.displayName}</span>
-                    <span style={{ fontFamily: 'var(--font-body)', fontSize: '14px', color: bMonth ? 'var(--ink)' : 'var(--ink-mid)' }}>
+                    <span style={{ fontFamily: 'var(--font-body)', fontSize: '14px', color: 'var(--ink)' }}>
                       {bMonth && bDay ? `${MONTHS[bMonth - 1]} ${bDay}` : `@${c.username}`}
                     </span>
                   </span>
-                  {days !== null && (
-                    <span style={{
-                      fontSize: '13px', fontWeight: 700, fontFamily: 'var(--font-body)', color: 'var(--ink)',
-                      borderRadius: '10px', padding: '3px 9px', whiteSpace: 'nowrap', flexShrink: 0,
-                      background: days <= 7 ? 'var(--highlight)' : 'var(--btn)',
-                    }}>{countdownLabel(days)}</span>
-                  )}
+                  <span
+                    role="button"
+                    tabIndex={0}
+                    aria-label={`Send ${c.displayName.split(' ')[0]} a little somethin'`}
+                    onClick={(e) => { e.stopPropagation(); navigate(`/send?toId=${c.id}&toName=${encodeURIComponent(c.displayName)}`) }}
+                    style={{
+                      flexShrink: 0, minWidth: '46px', height: '36px', display: 'flex',
+                      alignItems: 'center', justifyContent: 'center', gap: '3px', cursor: 'pointer',
+                    }}
+                  >
+                    <img src="/brand/wax_heart.png" alt="" style={{ width: '26px', height: 'auto' }} />
+                    <svg aria-hidden width="16" height="20" viewBox="0 0 16 20" fill="none" stroke="#4A2424" strokeWidth="1.8" strokeLinecap="round">
+                      <path d="M1 4c2.4-1.6 4-1.6 6.4 0s4 1.6 6.4 0M1 10c2.4-1.6 4-1.6 6.4 0s4 1.6 6.4 0M1 16c2.4-1.6 4-1.6 6.4 0s4 1.6 6.4 0" />
+                    </svg>
+                  </span>
                 </button>
               )
             })}
