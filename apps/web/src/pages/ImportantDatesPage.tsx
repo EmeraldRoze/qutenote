@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { api } from '../lib/api'
 import TabBar from '../components/TabBar'
@@ -44,17 +44,75 @@ function daysUntil(month: number, day: number): number {
   if (next < today) next = new Date(year + 1, month - 1, day)
   return Math.round((+next - +today) / 86400000)
 }
-function countdownLabel(days: number): string {
-  if (days === 0) return 'Today'
-  if (days === 1) return 'Tomorrow'
-  if (days <= 7) return `In ${days} days`
-  return `${days} days`
+const FULL_MONTHS = ['JANUARY', 'FEBRUARY', 'MARCH', 'APRIL', 'MAY', 'JUNE', 'JULY', 'AUGUST', 'SEPTEMBER', 'OCTOBER', 'NOVEMBER', 'DECEMBER']
+const WEEKDAYS = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT']
+// The weekday of the next time this date comes around
+function weekdayOf(month: number, day: number): string {
+  const now = new Date()
+  let next = new Date(now.getFullYear(), month - 1, day)
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+  if (next < today) next = new Date(now.getFullYear() + 1, month - 1, day)
+  return WEEKDAYS[next.getDay()]
 }
 
 const whiteCard: React.CSSProperties = {
   background: 'var(--card)',
   border: '1.5px solid var(--stone)',
   borderRadius: '18px',
+}
+
+// The wax heart with squiggles — the one send control, same on QTs, the feed,
+// the calendar panel and the list (Emerald, Oct 28).
+function SendHeart({ name, onSend, size = 28 }: { name: string; onSend: () => void; size?: number }) {
+  return (
+    <button
+      aria-label={`Send ${name} a little somethin'`}
+      onClick={onSend}
+      style={{ flex: 'none', border: 'none', background: 'none', cursor: 'pointer', padding: 0, display: 'flex', alignItems: 'center', gap: '3px' }}
+    >
+      <img src="/brand/wax_heart.png" alt="" style={{ width: `${size}px`, height: 'auto' }} />
+      <svg aria-hidden width={size * 0.6} height={size * 0.75} viewBox="0 0 16 20" fill="none" stroke="#4A2424" strokeWidth="1.8" strokeLinecap="round">
+        <path d="M1 4c2.4-1.6 4-1.6 6.4 0s4 1.6 6.4 0M1 10c2.4-1.6 4-1.6 6.4 0s4 1.6 6.4 0M1 16c2.4-1.6 4-1.6 6.4 0s4 1.6 6.4 0" />
+      </svg>
+    </button>
+  )
+}
+
+// Swipe a row to the left to uncover Remove. The ✕ left every row so nothing
+// competes with the person's name (Emerald, Oct 28).
+const REVEAL = 88
+function SwipeRow({ onRemove, children }: { onRemove: () => void; children: React.ReactNode }) {
+  const [open, setOpen] = useState(false)
+  const [drag, setDrag] = useState<number | null>(null)
+  const startX = useRef(0)
+
+  const x = drag !== null ? drag : open ? -REVEAL : 0
+
+  return (
+    <div style={{ position: 'relative', overflow: 'hidden' }}>
+      <button
+        onClick={onRemove}
+        style={{
+          position: 'absolute', top: 0, right: 0, bottom: 0, width: `${REVEAL}px`, border: 'none',
+          background: 'var(--stamp-center)', color: 'var(--card)', cursor: 'pointer',
+          fontFamily: 'var(--font-body)', fontSize: '13px', fontWeight: 700, letterSpacing: '0.04em',
+        }}
+      >Remove</button>
+      <div
+        onTouchStart={(e) => { startX.current = e.touches[0].clientX; setDrag(open ? -REVEAL : 0) }}
+        onTouchMove={(e) => {
+          const d = (open ? -REVEAL : 0) + (e.touches[0].clientX - startX.current)
+          setDrag(Math.max(-REVEAL, Math.min(0, d)))
+        }}
+        onTouchEnd={() => { setOpen((drag ?? 0) < -REVEAL / 2); setDrag(null) }}
+        style={{
+          background: 'var(--card)', position: 'relative',
+          transform: `translateX(${x}px)`,
+          transition: drag === null ? 'transform 0.18s ease' : 'none',
+        }}
+      >{children}</div>
+    </div>
+  )
 }
 
 export default function ImportantDatesPage() {
@@ -147,6 +205,19 @@ export default function ImportantDatesPage() {
     () => [...dates].sort((a, b) => daysUntil(a.month, a.day) - daysUntil(b.month, b.day)),
     [dates],
   )
+
+  // Soonest first, then cut into month headings in that same order so the
+  // list reads December, March, April... from today forward (Emerald, Oct 28)
+  const grouped = useMemo(() => {
+    const out: { key: string; title: string; items: ImportantDate[] }[] = []
+    for (const d of sorted) {
+      const key = String(d.month)
+      const last = out[out.length - 1]
+      if (last && last.key === key) last.items.push(d)
+      else out.push({ key, title: FULL_MONTHS[d.month - 1], items: [d] })
+    }
+    return out
+  }, [sorted])
 
   const savedNames = useMemo(
     () => new Set(dates.map((d) => d.connectionName.toLowerCase())),
@@ -367,50 +438,53 @@ export default function ImportantDatesPage() {
                           <span style={{ fontFamily: 'var(--font-body)', fontSize: '16px', fontWeight: 700, color: 'var(--ink)' }}>{d.connectionName}</span>
                           <span style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--ink)' }}>{d.label} · {MONTHS[d.month - 1]} {d.day}</span>
                         </span>
-                        <button
-                          aria-label={`Send ${d.connectionName} a little somethin'`}
-                          onClick={() => navigate(`/send?toName=${encodeURIComponent(d.connectionName.split(' ')[0])}`)}
-                          style={{ flex: 'none', border: 'none', background: 'none', cursor: 'pointer', padding: 0, display: 'flex', alignItems: 'center', gap: '3px' }}
-                        >
-                          <img src="/brand/wax_heart.png" alt="" style={{ width: '28px', height: 'auto' }} />
-                          <svg aria-hidden width="17" height="21" viewBox="0 0 16 20" fill="none" stroke="#4A2424" strokeWidth="1.8" strokeLinecap="round">
-                            <path d="M1 4c2.4-1.6 4-1.6 6.4 0s4 1.6 6.4 0M1 10c2.4-1.6 4-1.6 6.4 0s4 1.6 6.4 0M1 16c2.4-1.6 4-1.6 6.4 0s4 1.6 6.4 0" />
-                          </svg>
-                        </button>
+                        <SendHeart
+                          name={d.connectionName}
+                          onSend={() => navigate(`/send?toName=${encodeURIComponent(d.connectionName.split(' ')[0])}`)}
+                        />
                       </div>
                     ))}
                   </div>
                 )}
               </>
             ) : (
-          <div style={{ marginTop: '18px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-            {sorted.map((d) => {
-              const days = daysUntil(d.month, d.day)
-              return (
-                <div key={d.id} style={{ ...whiteCard, padding: '10px 10px 10px 14px', display: 'flex', alignItems: 'center', gap: '12px' }}>
-                  <QEmoji name={artForLabel(d.label)} size={36} style={{ flex: 'none', height: 'auto' }} />
-                  <span style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column' }}>
-                    <span style={{ fontFamily: 'var(--font-body)', fontSize: '16px', fontWeight: 700, color: 'var(--ink)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                      {d.connectionName}
-                    </span>
-                    <span style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--ink-mid)' }}>
-                      {d.label} · {MONTHS[d.month - 1]} {d.day}
-                    </span>
-                  </span>
-                  <span style={{
-                    padding: '5px 11px', borderRadius: '999px', fontSize: '11px', fontWeight: 700,
-                    fontFamily: 'var(--font-body)', letterSpacing: '0.04em', whiteSpace: 'nowrap', flex: 'none',
-                    background: days <= 7 ? 'var(--lime)' : 'var(--btn)',
-                    border: '1.5px solid var(--stone)', boxSizing: 'border-box',
-                    color: 'var(--ink)',
-                  }}>{countdownLabel(days)}</span>
-                  <button onClick={() => handleDelete(d.id)} aria-label={`Remove ${d.connectionName}`} style={{
-                    width: '34px', height: '34px', flex: 'none', borderRadius: '50%', border: 'none',
-                    background: 'transparent', color: 'var(--ink-muted)', cursor: 'pointer', fontSize: '15px',
-                  }}>✕</button>
-                </div>
-              )
-            })}
+          /* Grouped by month (Emerald, Oct 28, option B). No card around each
+             row and no blue pill: the folder is the only box, and the month
+             heading says when, so the countdown is gone. */
+          <div>
+            {grouped.map((group) => (
+              <div key={group.key}>
+                <div style={{
+                  fontFamily: 'var(--font-body)', fontSize: '11px', fontWeight: 700,
+                  letterSpacing: '0.09em', textIndent: '0.09em', color: 'var(--ink)', opacity: 0.55,
+                  margin: '14px 0 2px',
+                }}>{group.title}</div>
+                {group.items.map((d, i) => (
+                  <SwipeRow key={d.id} onRemove={() => handleDelete(d.id)}>
+                    <div style={{
+                      display: 'flex', alignItems: 'center', gap: '11px', padding: '10px 0',
+                      borderBottom: i === group.items.length - 1 ? 'none' : '1.5px solid rgba(180,137,122,0.3)',
+                    }}>
+                      <span style={{ flex: 'none', width: '40px', textAlign: 'center', display: 'flex', flexDirection: 'column' }}>
+                        <span style={{ fontFamily: 'var(--font-body)', fontSize: '17px', fontWeight: 700, lineHeight: '19px', color: 'var(--ink)' }}>{d.day}</span>
+                        <span style={{ fontFamily: 'var(--font-body)', fontSize: '10px', letterSpacing: '0.06em', color: 'var(--ink)', opacity: 0.6 }}>{weekdayOf(d.month, d.day)}</span>
+                      </span>
+                      <QEmoji name={artForLabel(d.label)} size={30} style={{ flex: 'none', height: 'auto' }} />
+                      <span style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column' }}>
+                        <span style={{
+                          fontFamily: 'var(--font-body)', fontSize: '16px', fontWeight: 700, color: 'var(--ink)',
+                          overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                        }}>{d.connectionName}</span>
+                        <span style={{
+                          fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--ink)', opacity: 0.75,
+                          overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                        }}>{d.label}</span>
+                      </span>
+                    </div>
+                  </SwipeRow>
+                ))}
+              </div>
+            ))}
           </div>
             )}
           </div>
