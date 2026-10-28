@@ -192,6 +192,9 @@ export default function ConnectionsPage() {
     borderRadius: '0 16px 16px 16px', padding: '14px 14px 6px', position: 'relative',
   }
   // the lists sit ON the sheet, so they bring no box of their own
+  // Native only, and only until they've synced once.
+  const needsSync = contactsAvailable && syncState !== 'done'
+
   const listCard: React.CSSProperties = { background: 'transparent', border: 0, borderRadius: 0, overflow: 'hidden' }
   const row = (last: boolean): React.CSSProperties => ({
     display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 14px', minHeight: '68px',
@@ -201,31 +204,59 @@ export default function ConnectionsPage() {
   return (
     <div style={{ minHeight: '100vh', paddingBottom: '120px' }}>
 
-      {/* No "QTs" title: the invite stamp lives up here instead
-          (Emerald, Oct 27) */}
+      {/* The header holds the two stamps (Emerald, Oct 27): invite takes
+          two thirds and sync contacts a third, until you've synced — then
+          sync disappears and invite goes full width and gets its + back. */}
       <header className="title-band" style={{ height: '180px', justifyContent: 'center' }}>
-        <div style={{ width: '100%', maxWidth: '480px', margin: '0 auto', padding: '0 20px' }}>
-          <div className="qn-stamp" style={{ border: '10px solid transparent', background: 'transparent', padding: '12px 10px', display: 'flex', gap: '14px', alignItems: 'center' }}>
-            <QEmoji name="invite" size={92} style={{ flexShrink: 0, height: 'auto' }} />
-            <p style={{ flex: 1, minWidth: 0, margin: 0, textAlign: 'center', fontFamily: 'var(--font-body)', fontSize: '15px', lineHeight: '18px', color: 'var(--ink)', whiteSpace: 'pre-line' }}>
+        <div style={{ width: '100%', maxWidth: '480px', margin: '0 auto', padding: '0 20px', display: 'flex', gap: '12px' }}>
+          <div className="qn-stamp" style={{
+            flex: needsSync ? '2 1 0' : '1 1 100%', minWidth: 0,
+            border: '10px solid transparent', background: 'transparent', padding: '12px 10px',
+            display: 'flex', gap: needsSync ? '10px' : '14px', alignItems: 'center',
+          }}>
+            <QEmoji name="invite" size={needsSync ? 72 : 92} style={{ flexShrink: 0, height: 'auto' }} />
+            <p style={{ flex: 1, minWidth: 0, margin: 0, textAlign: 'center', fontFamily: 'var(--font-body)', fontSize: needsSync ? '14px' : '15px', lineHeight: '18px', color: 'var(--ink)', whiteSpace: 'pre-line' }}>
               {'Invite friends,\nget free cards.'}
             </p>
+            {/* the + only belongs on the full-width version */}
+            {!needsSync && (
+              <button
+                onClick={() => inviteByText(user?.displayName?.split(' ')[0]).catch(() => navigate('/invite'))}
+                aria-label="Invite friends"
+                style={{
+                  width: '44px', height: '44px', flex: 'none', borderRadius: '50%',
+                  border: '2px solid var(--outline)', background: 'var(--btn)', color: 'var(--ink)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
+                  padding: 0, boxSizing: 'border-box',
+                }}
+              >
+                <svg aria-hidden width="18" height="18" viewBox="0 0 18 18">
+                  <rect x="7.6" y="1.6" width="2.8" height="14.8" rx="1.4" fill="currentColor" />
+                  <rect x="1.6" y="7.6" width="14.8" height="2.8" rx="1.4" fill="currentColor" />
+                </svg>
+              </button>
+            )}
+          </div>
+
+          {needsSync && (
             <button
-              onClick={() => inviteByText(user?.displayName?.split(' ')[0]).catch(() => navigate('/invite'))}
-              aria-label="Invite friends"
+              onClick={syncContacts}
+              disabled={syncState === 'syncing'}
+              aria-label="Sync your contacts"
+              className="qn-stamp"
               style={{
-                width: '44px', height: '44px', flex: 'none', borderRadius: '50%',
-                border: '2px solid var(--outline)', background: 'var(--btn)', color: 'var(--ink)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
-                padding: 0, boxSizing: 'border-box',
+                flex: '1 1 0', minWidth: 0, border: '10px solid transparent', background: 'transparent',
+                padding: '10px 6px', cursor: 'pointer', display: 'flex', flexDirection: 'column',
+                alignItems: 'center', justifyContent: 'center', gap: '4px',
+                textTransform: 'none', letterSpacing: 0, fontWeight: 400,
               }}
             >
-              <svg aria-hidden width="18" height="18" viewBox="0 0 18 18">
-                <rect x="7.6" y="1.6" width="2.8" height="14.8" rx="1.4" fill="currentColor" />
-                <rect x="1.6" y="7.6" width="14.8" height="2.8" rx="1.4" fill="currentColor" />
-              </svg>
+              <QEmoji name="sync" size={52} style={{ height: 'auto' }} />
+              <span style={{ fontFamily: 'var(--font-body)', fontSize: '12px', fontWeight: 700, lineHeight: '14px', textAlign: 'center', color: 'var(--ink)', whiteSpace: 'pre-line' }}>
+                {syncState === 'syncing' ? 'Checking…' : 'Sync\ncontacts'}
+              </span>
             </button>
-          </div>
+          )}
         </div>
       </header>
 
@@ -268,16 +299,6 @@ export default function ConnectionsPage() {
 
         <div style={sheet}>
 
-        {/* Contacts sync (native app only) */}
-        {contactsAvailable && syncState !== 'done' && (
-          <button onClick={syncContacts} disabled={syncState === 'syncing'} style={{
-            width: '100%', marginTop: '12px', height: '44px', borderRadius: '22px', cursor: 'pointer',
-            border: '2px dashed var(--outline)', background: 'var(--selected-fill)', color: 'var(--ink)',
-            fontFamily: 'var(--font-body)', fontSize: '14px', fontWeight: 700, letterSpacing: '0.08em',
-          }}>
-            {syncState === 'syncing' ? 'CHECKING YOUR CONTACTS…' : 'SYNC CONTACTS'}
-          </button>
-        )}
         {syncState === 'failed' && (
           <p style={{ margin: '10px 0 0', fontFamily: 'var(--font-body)', fontSize: '14px', color: 'var(--ink-mid)' }}>
             We couldn't read your contacts{syncError ? ` (${syncError})` : ''}. Check Settings → QuteNote → Contacts, or invite friends by text instead.
