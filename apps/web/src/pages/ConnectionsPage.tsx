@@ -57,6 +57,10 @@ export default function ConnectionsPage() {
   const [query, setQuery] = useState(() => new URLSearchParams(window.location.search).get('q') ?? '')
   const [results, setResults] = useState<SearchResult[]>([])
   const [requested, setRequested] = useState<Set<string>>(new Set())
+  // Requests used to be a block buried under the friends list, easy to miss
+  // entirely (Emerald, Oct 27). They get their own tab now.
+  const [tab, setTab] = useState<'qts' | 'requests'>('qts')
+  const [sentRequests, setSentRequests] = useState<PendingRequest[]>([])
 
   // Contacts sync (native app only)
   const [syncState, setSyncState] = useState<'idle' | 'syncing' | 'done' | 'failed'>('idle')
@@ -90,6 +94,7 @@ export default function ConnectionsPage() {
       api.get('/important-dates').then((res) => setDates(res.data.data)).catch(() => {}),
       // requests already sent render as "Requested" instead of a dead Add QT
       api.get('/connections/outgoing').then((res) => setRequested(new Set(res.data.data))).catch(() => {}),
+      api.get('/connections/outgoing/details').then((res) => setSentRequests(res.data.data ?? [])).catch(() => {}),
     ]).finally(() => setLoading(false))
     // Opened as "/connections?sync=1" (e.g. from Home's SYNC CONTACTS button)
     if (new URLSearchParams(window.location.search).get('sync') === '1' && contactsAvailable) {
@@ -209,6 +214,25 @@ export default function ConnectionsPage() {
             style={{ border: 0, outline: 'none', background: 'transparent', fontFamily: 'var(--font-body)', fontSize: '17px', color: 'var(--ink)', width: '100%' }}
           />
         </label>
+        {/* Your QTs | Requests (Emerald, Oct 27) */}
+        <div style={{ display: 'flex', gap: '10px', marginTop: '14px' }}>
+          {([['qts', 'Your QTs'], ['requests', `Requests${pendingRequests.length ? ` (${pendingRequests.length})` : ''}`]] as const).map(([key, text]) => (
+            <button
+              key={key}
+              onClick={() => setTab(key)}
+              style={{
+                flex: 1, height: '40px', borderRadius: '20px', cursor: 'pointer',
+                border: '1.5px solid var(--outline)',
+                background: tab === key ? 'var(--btn)' : 'var(--card)',
+                color: 'var(--ink)', fontFamily: 'var(--font-body)', fontSize: '13px', fontWeight: 700,
+                letterSpacing: '0.08em', textIndent: '0.08em',
+              }}
+            >
+              {text}
+            </button>
+          ))}
+        </div>
+
         {/* The invite stamp sits under the search field (Emerald, Oct 25) */}
         <div className="qn-stamp" style={{ marginTop: '16px', border: '10px solid transparent', background: 'transparent', padding: '12px 10px', display: 'flex', gap: '14px', alignItems: 'center' }}>
           {/* Her new INVITE envelope replaces the heart hands here (Emerald,
@@ -302,31 +326,56 @@ export default function ConnectionsPage() {
           </div>
         )}
 
-        {/* Pending requests */}
-        {pendingRequests.length > 0 && (
-          <div style={{ marginTop: '20px' }}>
-            <p style={{ ...label, margin: '0 0 10px' }}>Wants to be your QT</p>
-            <div style={listCard}>
-              {pendingRequests.map((r, i) => (
-                <div key={r.requestId} style={{ ...row(i === pendingRequests.length - 1), background: 'var(--selected-fill)' }}>
-                  {avatar()}
-                  <span style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                    <span style={{ fontFamily: 'var(--font-body)', fontSize: '16px', fontWeight: 700 }}>{r.displayName}</span>
-                    <span style={{ fontFamily: 'var(--font-body)', fontSize: '14px', color: 'var(--ink-mid)' }}>@{r.username}</span>
-                  </span>
-                  <button onClick={() => acceptRequest(r.requestId)} style={{ height: '34px', padding: '0 12px', borderRadius: '999px', border: '1.5px solid var(--outline)', background: 'var(--btn)', color: 'var(--ink)', fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '11px', letterSpacing: '0.12em', cursor: 'pointer' }}>Yes</button>
-                  <button onClick={() => declineRequest(r.requestId)} style={{ height: '34px', padding: '0 10px', borderRadius: '999px', border: '1.5px solid var(--outline)', background: 'var(--card)', color: 'var(--ink-mid)', fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '11px', letterSpacing: '0.12em', cursor: 'pointer' }}>No</button>
-                </div>
-              ))}
-            </div>
-          </div>
+        {tab === 'requests' && (
+          <>
+            <p className="on-paper" style={{ ...label, margin: '20px 0 10px' }}>Wants to be your QT</p>
+            {pendingRequests.length === 0 ? (
+              <p className="on-paper" style={{ fontFamily: 'var(--font-body)', fontSize: '14px', marginBottom: '8px' }}>
+                Nobody's asked yet.
+              </p>
+            ) : (
+              <div style={listCard}>
+                {pendingRequests.map((r, i) => (
+                  <div key={r.requestId} style={{ ...row(i === pendingRequests.length - 1), background: 'var(--selected-fill)' }}>
+                    {avatar()}
+                    <span style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                      <span style={{ fontFamily: 'var(--font-body)', fontSize: '16px', fontWeight: 700 }}>{r.displayName}</span>
+                      <span style={{ fontFamily: 'var(--font-body)', fontSize: '14px' }}>@{r.username}</span>
+                    </span>
+                    <button onClick={() => acceptRequest(r.requestId)} style={{ height: '34px', padding: '0 12px', borderRadius: '999px', border: '1.5px solid var(--outline)', background: 'var(--btn)', color: 'var(--ink)', fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '11px', letterSpacing: '0.12em', cursor: 'pointer' }}>Yes</button>
+                    <button onClick={() => declineRequest(r.requestId)} style={{ height: '34px', padding: '0 10px', borderRadius: '999px', border: '1.5px solid var(--outline)', background: 'var(--card)', color: 'var(--ink)', fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '11px', letterSpacing: '0.12em', cursor: 'pointer' }}>No</button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <p className="on-paper" style={{ ...label, margin: '22px 0 10px' }}>Waiting on them</p>
+            {sentRequests.length === 0 ? (
+              <p className="on-paper" style={{ fontFamily: 'var(--font-body)', fontSize: '14px' }}>
+                You haven't asked anyone yet.
+              </p>
+            ) : (
+              <div style={listCard}>
+                {sentRequests.map((r, i) => (
+                  <div key={r.requestId} style={row(i === sentRequests.length - 1)}>
+                    {avatar()}
+                    <span style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                      <span style={{ fontFamily: 'var(--font-body)', fontSize: '16px', fontWeight: 700 }}>{r.displayName}</span>
+                      <span style={{ fontFamily: 'var(--font-body)', fontSize: '14px' }}>@{r.username}</span>
+                    </span>
+                    <span style={{ fontSize: '12px', fontWeight: 700, fontFamily: 'var(--font-body)', background: 'var(--light-blush)', borderRadius: '10px', padding: '4px 10px' }}>Asked</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </>
         )}
 
         {/* Friends, still sorted by whose birthday is next — the caption that
             said so is gone (Emerald, Oct 24) */}
 
-        {loading ? (
-          <p style={{ fontFamily: 'var(--font-body)', fontSize: '14px', color: 'var(--ink-muted)', padding: '20px 0' }}>Fetching your people…</p>
+        {tab === 'qts' && (loading ? (
+          <p style={{ fontFamily: 'var(--font-body)', fontSize: '14px', padding: '20px 0' }}>Fetching your people…</p>
         ) : shownConnections.length === 0 ? (
           <p style={{ fontFamily: 'var(--font-body)', fontSize: '14px', color: 'var(--ink-muted)', padding: '20px 0' }}>
             {query.length >= 2 ? 'No QTs match that.' : 'No QTs yet. Search for someone above, or send an invite.'}
@@ -363,7 +412,7 @@ export default function ConnectionsPage() {
               )
             })}
           </div>
-        )}
+        ))}
 
         {/* Privacy */}
         <div style={{ marginTop: '22px', padding: '14px 16px', borderRadius: '18px', background: 'var(--card)', border: '1.5px solid var(--outline)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px' }}>

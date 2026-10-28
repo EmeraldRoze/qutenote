@@ -1,5 +1,6 @@
 import { Router, Response } from 'express'
 import { prisma } from '../lib/prisma'
+import { pushToUserDevices } from '../lib/apns'
 import { requireAuth, AuthRequest } from '../middleware/auth'
 import { notifyUser } from '../lib/notify'
 
@@ -61,6 +62,27 @@ connectionsRouter.get('/outgoing', async (req: AuthRequest, res: Response) => {
   return res.json({ data: rows.map((r) => r.followingId) })
 })
 
+// GET /connections/outgoing/details — who I asked, with their names, so the
+// Requests tab can show "waiting on them" (Emerald, Oct 27)
+connectionsRouter.get('/outgoing/details', async (req: AuthRequest, res: Response) => {
+  const rows = await prisma.connection.findMany({
+    where: { followerId: req.userId, status: 'PENDING' },
+    select: {
+      id: true,
+      createdAt: true,
+      following: { select: { id: true, username: true, displayName: true, avatarUrl: true } },
+    },
+    orderBy: { createdAt: 'desc' },
+  })
+  return res.json({
+    data: rows.map((r) => ({
+      requestId: r.id,
+      sentAt: r.createdAt,
+      ...r.following,
+    })),
+  })
+})
+
 // GET /connections/user/:userId — get a user's accepted connections
 connectionsRouter.get('/user/:userId', async (req: AuthRequest, res: Response) => {
   const { userId } = req.params
@@ -105,6 +127,19 @@ connectionsRouter.post('/request/:userId', async (req: AuthRequest, res: Respons
       status: target.isPrivate ? 'PENDING' : 'ACCEPTED',
     },
   })
+  // Until now a request landed silently: the only way to know was to open
+  // QTs and scroll (Emerald, Oct 27). Now they get a notification and a push.
+  const me = await prisma.user.findUnique({ where: { id: req.userId! }, select: { displayName: true, username: true } })
+  await prisma.notification.create({
+    data: {
+      userId: target.id,
+      type: 'NEW_FOLLOWER',
+      title: 'Someone wants to be your QT',
+      body: `${me?.displayName ?? 'Someone'} (@${me?.username}) sent you a QT request.`,
+    },
+  }).catch(() => {})
+  pushToUserDevices(target.id, 'Someone wants to be your QT', `${me?.displayName ?? 'Someone'} sent you a QT request.`).catch(() => {})
+
   return res.status(201).json({ data: connection })
 })
 
@@ -129,6 +164,26 @@ connectionsRouter.post('/accept/:requestId', async (req: AuthRequest, res: Respo
       `${accepter.displayName} accepted your QT request`,
       "You're connected! Send them something cute.",
     )
+  }
+
+  const accepted = await prisma.connection.findUnique({
+    where: { id: String(req.params.requestId) },
+    select: { followerId: true },
+  }).catch(() => null)
+  if (accepted) {
+    const them = await prisma.user.findUnique({ where: { id: req.userId! }, select: { displayName: true } })
+    const wants = await prisma.user.findUnique({ where: { id: accepted.followerId }, select: { notifyFriendRequestAccepted: true } })
+    await prisma.notification.create({
+      data: {
+        userId: accepted.followerId,
+        type: 'NEW_FOLLOWER',
+        title: "You're QTs now",
+        body: `${them?.displayName ?? 'They'} accepted your request.`,
+      },
+    }).catch(() => {})
+    if (wants?.notifyFriendRequestAccepted !== false) {
+      pushToUserDevices(accepted.followerId, "You're QTs now", `${them?.displayName ?? 'They'} accepted your request.`).catch(() => {})
+    }
   }
 
   return res.json({ data: updated })
