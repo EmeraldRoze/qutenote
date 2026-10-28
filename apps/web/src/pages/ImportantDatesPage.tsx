@@ -155,6 +155,23 @@ export default function ImportantDatesPage() {
 
   // Contacts already added disappear from the pull-in list (Emerald, Oct 18)
   const [contactsOpen, setContactsOpen] = useState(true)
+  // Calendar | List, in the folder tabs (Emerald, Oct 27). The calendar puts
+  // the art under the day; tapping a day pops the people up underneath with
+  // a wax heart so she can send from there.
+  const [view, setView] = useState<'calendar' | 'list'>('calendar')
+  const today = new Date()
+  const [shownMonth, setShownMonth] = useState(today.getMonth())   // 0-11
+  const [pickedDay, setPickedDay] = useState<number | null>(null)
+
+  const byDay = useMemo(() => {
+    const m: Record<number, ImportantDate[]> = {}
+    for (const d of dates) if (d.month === shownMonth + 1) (m[d.day] ??= []).push(d)
+    return m
+  }, [dates, shownMonth])
+
+  const monthName = new Date(2026, shownMonth, 1).toLocaleDateString('en-US', { month: 'long' })
+  const firstWeekday = new Date(today.getFullYear(), shownMonth, 1).getDay()
+  const daysInMonth = new Date(today.getFullYear(), shownMonth + 1, 0).getDate()
   const remainingBdays = useMemo(
     () => contactBdays.filter((c) => !savedNames.has(c.name.toLowerCase())),
     [contactBdays, savedNames],
@@ -270,6 +287,102 @@ export default function ImportantDatesPage() {
             }}>+ ADD A DATE</button>
           </div>
         ) : (
+          <>
+          {/* Calendar | List, folder tabs (Emerald, Oct 27) */}
+          <div style={{ display: 'flex', gap: '6px', marginTop: '20px', marginBottom: '-1.5px', position: 'relative', zIndex: 1 }}>
+            {([['calendar', 'CALENDAR'], ['list', 'LIST']] as const).map(([key, text]) => {
+              const on = view === key
+              return (
+                <button key={key} onClick={() => setView(key)} style={{
+                  border: '1.5px solid var(--stone)', borderBottomColor: on ? 'var(--card)' : 'var(--stone)',
+                  background: on ? 'var(--card)' : 'var(--paper)',
+                  borderRadius: '12px 12px 0 0', padding: '9px 16px', cursor: 'pointer',
+                  fontFamily: 'var(--font-body)', fontSize: '13px', fontWeight: 700,
+                  letterSpacing: '0.06em', textIndent: '0.06em', color: 'var(--ink)', opacity: on ? 1 : 0.55,
+                }}>{text}</button>
+              )
+            })}
+          </div>
+
+          <div style={{ background: 'var(--card)', border: '1.5px solid var(--stone)', borderRadius: '0 16px 16px 16px', padding: '14px' }}>
+            {view === 'calendar' ? (
+              <>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
+                  <button onClick={() => { setShownMonth((m) => (m + 11) % 12); setPickedDay(null) }} aria-label="Previous month"
+                    style={{ border: 0, background: 'none', cursor: 'pointer', padding: '4px 8px' }}>
+                    <QIcon name="chevron-left" size={16} />
+                  </button>
+                  <span style={{ fontFamily: 'var(--font-display)', fontWeight: 300, fontSize: '19px', color: 'var(--ink)' }}>{monthName}</span>
+                  <button onClick={() => { setShownMonth((m) => (m + 1) % 12); setPickedDay(null) }} aria-label="Next month"
+                    style={{ border: 0, background: 'none', cursor: 'pointer', padding: '4px 8px' }}>
+                    <QIcon name="chevron-right" size={16} />
+                  </button>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '3px', textAlign: 'center' }}>
+                  {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((d, i) => (
+                    <span key={i} style={{ fontSize: '10px', fontFamily: 'var(--font-body)', color: 'var(--ink)', opacity: 0.5, paddingBottom: '4px' }}>{d}</span>
+                  ))}
+                  {Array.from({ length: firstWeekday }).map((_, i) => <span key={`pad-${i}`} />)}
+                  {Array.from({ length: daysInMonth }).map((_, i) => {
+                    const day = i + 1
+                    const here = byDay[day] ?? []
+                    const isToday = shownMonth === today.getMonth() && day === today.getDate()
+                    const picked = pickedDay === day
+                    return (
+                      <button
+                        key={day}
+                        onClick={() => setPickedDay(here.length ? (picked ? null : day) : null)}
+                        aria-label={here.length ? `${day}: ${here.map((d) => d.connectionName).join(', ')}` : `${day}`}
+                        style={{
+                          aspectRatio: '1 / 1', border: picked ? '1.5px solid var(--stone)' : '1.5px solid transparent',
+                          borderRadius: '10px', background: picked ? 'var(--selected-fill)' : 'transparent',
+                          cursor: here.length ? 'pointer' : 'default', padding: 0,
+                          display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                          fontFamily: 'var(--font-body)', fontSize: here.length ? '11px' : '13px',
+                          fontWeight: isToday ? 700 : 400, color: 'var(--ink)',
+                          textDecoration: isToday ? 'underline' : 'none', textUnderlineOffset: '2px',
+                          textTransform: 'none', letterSpacing: 0,
+                        }}
+                      >
+                        {day}
+                        {here.length > 0 && (
+                          <span style={{ display: 'flex', alignItems: 'center', gap: '1px', marginTop: '1px' }}>
+                            <QEmoji name={artForLabel(here[0].label)} size={16} style={{ height: 'auto' }} />
+                            {here.length > 1 && <span style={{ fontSize: '9px', fontWeight: 700 }}>+{here.length - 1}</span>}
+                          </span>
+                        )}
+                      </button>
+                    )
+                  })}
+                </div>
+
+                {/* tap a day and its people appear down here, ready to send to */}
+                {pickedDay && (byDay[pickedDay] ?? []).length > 0 && (
+                  <div style={{ marginTop: '12px', borderTop: '1.5px solid rgba(180,137,122,0.35)', paddingTop: '10px' }}>
+                    {(byDay[pickedDay] ?? []).map((d) => (
+                      <div key={d.id} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '8px 0' }}>
+                        <QEmoji name={artForLabel(d.label)} size={30} style={{ flex: 'none', height: 'auto' }} />
+                        <span style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column' }}>
+                          <span style={{ fontFamily: 'var(--font-body)', fontSize: '16px', fontWeight: 700, color: 'var(--ink)' }}>{d.connectionName}</span>
+                          <span style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--ink)' }}>{d.label} · {MONTHS[d.month - 1]} {d.day}</span>
+                        </span>
+                        <button
+                          aria-label={`Send ${d.connectionName} a little somethin'`}
+                          onClick={() => navigate(`/send?toName=${encodeURIComponent(d.connectionName.split(' ')[0])}`)}
+                          style={{ flex: 'none', border: 'none', background: 'none', cursor: 'pointer', padding: 0, display: 'flex', alignItems: 'center', gap: '3px' }}
+                        >
+                          <img src="/brand/wax_heart.png" alt="" style={{ width: '28px', height: 'auto' }} />
+                          <svg aria-hidden width="17" height="21" viewBox="0 0 16 20" fill="none" stroke="#4A2424" strokeWidth="1.8" strokeLinecap="round">
+                            <path d="M1 4c2.4-1.6 4-1.6 6.4 0s4 1.6 6.4 0M1 10c2.4-1.6 4-1.6 6.4 0s4 1.6 6.4 0M1 16c2.4-1.6 4-1.6 6.4 0s4 1.6 6.4 0" />
+                          </svg>
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </>
+            ) : (
           <div style={{ marginTop: '18px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
             {sorted.map((d) => {
               const days = daysUntil(d.month, d.day)
@@ -299,6 +412,9 @@ export default function ImportantDatesPage() {
               )
             })}
           </div>
+            )}
+          </div>
+          </>
         )}
 
         {/* Quick add */}
