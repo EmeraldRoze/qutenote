@@ -59,8 +59,8 @@ export default function TabBar() {
           <img src={t.emojiIcon} alt="" className={active ? undefined : 'tab-inactive'} style={{ height: '38px', width: 'auto' }} />
           {t.label === 'QTs' && unread > 0 && (
             <span aria-label={`${unread} unread notifications`} style={{
-              // top LEFT: the SEND stamp overlaps the right corner of this icon
-              position: 'absolute', top: '-4px', left: '-10px', minWidth: '20px', height: '20px', zIndex: 2,
+              // tucked onto the left hand, slightly overlapping it (Emerald, Oct 28)
+              position: 'absolute', top: '7px', left: '1px', minWidth: '20px', height: '20px', zIndex: 2,
               padding: '0 5px', borderRadius: '10px', background: 'var(--highlight)',
               border: '1.5px solid var(--ink)', boxSizing: 'border-box',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
