@@ -115,18 +115,19 @@ export default function StatusBox({ onPosted }: { onPosted?: (s: any) => void })
             }}
           />
         </label>
+        {/* bye-bye pen (Emerald, Oct 28): the word posts it, and so does Enter */}
         <button
           onClick={save}
           disabled={!text.trim() || saving}
           aria-label="Post your status"
           style={{
-            flexShrink: 0, width: '44px', height: '44px', padding: 0, border: 0, background: 'transparent',
+            flexShrink: 0, height: '44px', padding: '0 2px', border: 0, background: 'transparent',
             cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
-            opacity: !text.trim() || saving ? 0.55 : 1,
+            fontFamily: 'var(--font-body)', fontSize: '13px', fontWeight: 700,
+            letterSpacing: '0.08em', textIndent: '0.08em', color: 'var(--ink)',
+            opacity: !text.trim() || saving ? 0.4 : 1,
           }}
-        >
-          <img src="/emoji/pen.png" alt="" style={{ width: '36px', height: '36px', objectFit: 'contain' }} />
-        </button>
+        >POST</button>
       </div>
       {/* The popup picker — only when the emoji is tapped */}
       {pickerOpen && (
