@@ -59,12 +59,12 @@ export default function TabBar() {
           <img src={t.emojiIcon} alt="" className={active ? undefined : 'tab-inactive'} style={{ height: '38px', width: 'auto' }} />
           {t.label === 'QTs' && unread > 0 && (
             <span aria-label={`${unread} unread notifications`} style={{
-              // tucked onto the left hand, slightly overlapping it (Emerald, Oct 28)
-              position: 'absolute', top: '7px', left: '1px', minWidth: '20px', height: '20px', zIndex: 2,
-              padding: '0 5px', borderRadius: '10px', background: 'var(--highlight)',
-              border: 'none', boxSizing: 'border-box',  // no outline (Emerald, Oct 28)
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: '11px', fontWeight: 700, lineHeight: 1, color: 'var(--ink)',
+              // No bubble: the numeral itself, neon with an oxblood outline,
+              // like it was written on with a paint pen (Emerald, Oct 28)
+              position: 'absolute', top: '3px', left: '-4px', zIndex: 2,
+              fontFamily: 'var(--font-body)', fontSize: '16px', fontWeight: 700, lineHeight: 1,
+              color: 'var(--highlight)',
+              WebkitTextStroke: '0.9px var(--ink)', paintOrder: 'stroke fill',
             }}>{unread > 99 ? '99+' : unread}</span>
           )}
         </span>
