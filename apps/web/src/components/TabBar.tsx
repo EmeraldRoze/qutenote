@@ -29,7 +29,7 @@ export default function TabBar() {
   const tabs: { label: string; path: string; emojiIcon: string }[] = [
     { label: 'Home', path: '/home', emojiIcon: '/emoji/house.png' },
     { label: 'QTs', path: '/connections', emojiIcon: '/emoji/bff.png' },
-    { label: 'Dates', path: '/dates', emojiIcon: '/emoji/calendar.png' },
+    { label: 'Dates', path: '/dates', emojiIcon: '/emoji/calendar-v2.png' },
     { label: 'Profile', path: `/profile/${user?.username ?? ''}`, emojiIcon: '/emoji/sunglasses.png' },
   ]
 

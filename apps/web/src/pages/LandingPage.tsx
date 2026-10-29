@@ -207,15 +207,15 @@ export default function LandingPage() {
           <div style={{ ...container, paddingTop: 'clamp(72px, 9vw, 120px)', paddingBottom: 'clamp(72px, 9vw, 120px)', display: 'flex', flexDirection: 'column', gap: '48px' }}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', maxWidth: '760px' }}>
               <span style={eyebrow}>How it works</span>
-              <h2 style={h2Style}>Thoughtful doesn't have to be complicated.</h2>
-              <p style={{ ...bodyText, fontSize: 'clamp(17px, 1.5vw, 19px)', maxWidth: '620px' }}>Instead of doomscrolling on your phone, send a QuteNote. You write it on your phone, we send it in the mail.</p>
+              <h2 style={h2Style}>Show up beyond the screen.</h2>
+              <p style={{ ...bodyText, fontSize: 'clamp(17px, 1.5vw, 19px)', maxWidth: '620px' }}>Remember the dates. Find the words. Send the postcard. QuteNote turns the people you think about into the people you actually reach out to.</p>
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '20px' }}>
               {[
                 { art: 'heart-torn', step: '01', title: 'Add QTs.', copy: 'Connect with your favorite people.' },
                 { art: 'finger', step: '02', title: 'Get the nudge.', copy: 'Birthdays, hard days, weird days, and all the little moments worth creating connection.' },
                 { art: 'envelope-heart', step: '03', title: 'Find your words.', copy: 'Write from the heart, with a little help when you need it (NO AI BS).' },
-                { art: 'popper', step: '04', title: 'Make their mailbox day.', copy: 'We print your note and mail it as a real freakin postcard. They get a surprise at the mailbox and you get to feel cool for sending actual mail.' },
+                { art: 'popper', step: '04', title: 'Slide into their mailbox.', copy: 'We print your note and mail it as a real freakin postcard. They get a surprise at the mailbox and you get to feel cool for sending actual mail.' },
               ].map((s) => (
                 <div key={s.step} style={{ display: 'flex', flexDirection: 'column', gap: '14px', padding: '28px 24px 30px', borderRadius: '20px', background: CREAM, border: `1px solid ${LILAC}` }}>
                   <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
@@ -239,8 +239,8 @@ export default function LandingPage() {
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px' }}>
               {[
-                { art: 'envelope-heart', title: 'No address awkwardness.', copy: 'Connect with your people on QuteNote and you never have to ask for an address yourself.' },
-                { art: 'cake', title: 'Remember the little things.', copy: 'Because being remembered feels pretty wonderful.' },
+                { art: 'envelope-heart', title: "You don't need their address.", copy: 'Connect with your people on QuteNote and you never have to ask for an address yourself.' },
+                { art: 'cake', title: 'Remember the little things.', copy: "QuteNote reminds you ahead of time, so you're not scrambling to send a last-minute text or realizing three days later that you forgot." },
                 { art: 'star-gold', title: "Help when the words won't come.", copy: "Get thoughtful prompts when you know what you feel but aren't quite sure how to say it. No AI BS, just real feelings." },
                 { art: 'flower', title: 'Featured Artists.', copy: 'The card aisle at Walgreens is so BLEH! We curate artists so you can send beautiful art while supporting talented creators.' },
               ].map((f) => (
