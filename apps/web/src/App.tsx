@@ -9,6 +9,7 @@ import SignUpPage from './pages/SignUpPage'
 import LoginPage from './pages/LoginPage'
 import HomePage from './pages/HomePage'
 import LandingPage from './pages/LandingPage'
+import { PrivacyPage, TermsPage, SupportPage } from './pages/LegalPage'
 import SendFlow from './pages/send/SendFlow'
 import ConnectionsPage from './pages/ConnectionsPage'
 import AddressPage from './pages/AddressPage'
@@ -75,6 +76,11 @@ function AppRoutes() {
   return (
     <Routes>
       <Route path="/" element={<PublicRoute>{isNativeApp ? <Navigate to="/welcome" replace /> : <LandingPage />}</PublicRoute>} />
+      {/* Open to anyone, logged in or not: Google and Apple both have to be
+          able to read these without an account (Emerald, Oct 29) */}
+      <Route path="/privacy" element={<PrivacyPage />} />
+      <Route path="/terms" element={<TermsPage />} />
+      <Route path="/support" element={<SupportPage />} />
       <Route path="/welcome" element={<PublicRoute><WelcomePage /></PublicRoute>} />
       <Route path="/signup" element={<PublicRoute><SignUpPage /></PublicRoute>} />
       <Route path="/login" element={<PublicRoute><LoginPage /></PublicRoute>} />
