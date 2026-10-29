@@ -59,9 +59,13 @@ export default function ConnectionsPage() {
   // Synced once = the button never comes back, even after a restart
   // (Emerald, Oct 27).
   const SYNCED_KEY = 'qn_contacts_synced'
-  const [syncState, setSyncState] = useState<'idle' | 'syncing' | 'done' | 'failed'>(
-    (() => { try { return localStorage.getItem(SYNCED_KEY) ? 'done' : 'idle' } catch { return 'idle' } })()
+  // Two different things: syncedBefore is remembered forever and retires the
+  // stamp, syncState is this visit only so the results stop following her
+  // around the app (Emerald, Oct 28).
+  const [syncedBefore, setSyncedBefore] = useState(
+    (() => { try { return !!localStorage.getItem(SYNCED_KEY) } catch { return false } })()
   )
+  const [syncState, setSyncState] = useState<'idle' | 'syncing' | 'done' | 'failed'>('idle')
   const [matches, setMatches] = useState<MatchedMember[]>([])
   const [syncChecked, setSyncChecked] = useState(0)
   const [syncError, setSyncError] = useState('')
@@ -77,6 +81,7 @@ export default function ConnectionsPage() {
       const matched = await matchContactsToMembers(contacts)
       setMatches(matched)
       setSyncState('done')
+      setSyncedBefore(true)
       try { localStorage.setItem(SYNCED_KEY, new Date().toISOString()) } catch { /* private mode */ }
     } catch (err: any) {
       // Surface the real reason — a tester saying "it didn't work" should be
@@ -193,7 +198,7 @@ export default function ConnectionsPage() {
   }
   // the lists sit ON the sheet, so they bring no box of their own
   // Native only, and only until they've synced once.
-  const needsSync = contactsAvailable && syncState !== 'done'
+  const needsSync = contactsAvailable && !syncedBefore && syncState !== 'done'
 
   const listCard: React.CSSProperties = { background: 'transparent', border: 0, borderRadius: 0, overflow: 'hidden' }
   const row = (last: boolean): React.CSSProperties => ({

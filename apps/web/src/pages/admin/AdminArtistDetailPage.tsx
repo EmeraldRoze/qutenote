@@ -40,7 +40,8 @@ export default function AdminArtistDetailPage() {
     setBusy(true)
     try {
       await api.post(`/admin/artists/${id}/decision`, { approve, note: note.trim() || undefined })
-      navigate('/admin/artists')
+      // replace, not push: otherwise back lands on the application we just decided
+      navigate('/admin/artists', { replace: true })
     } catch {
       setError("That didn't go through.")
       setBusy(false)
@@ -58,7 +59,7 @@ export default function AdminArtistDetailPage() {
     <div style={{ minHeight: '100vh', paddingBottom: '60px' }}>
       <header className="title-band" style={{ height: '144px', boxSizing: 'border-box' }}>
         <div style={{ ...col, display: 'flex', alignItems: 'center', gap: '14px' }}>
-          <button onClick={() => navigate('/admin/artists')} aria-label="Back" style={{
+          <button onClick={() => navigate(-1)} aria-label="Back" style={{
             width: '44px', height: '44px', flex: 'none', borderRadius: '50%', background: 'var(--light-blush)',
             border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>
