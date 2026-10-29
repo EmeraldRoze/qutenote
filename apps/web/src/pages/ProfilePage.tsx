@@ -14,6 +14,7 @@ import { encodeSecret, SECRET_FONT_FAMILY } from '../lib/secret'
 import FlowerText from '../components/FlowerText'
 import { trackFeature } from '../lib/analytics'
 import QIcon from '../components/QIcon'
+import CountBadge from '../components/CountBadge'
 
 // Profile tab, palette 4 restyle of screen 15-profile.html.
 // Postmark-heart header with initials, status box, Sent/Received photo grid,
@@ -158,6 +159,18 @@ export default function ProfilePage() {
   const [pickingAvatar, setPickingAvatar] = useState(false)
   const [showQR, setShowQR] = useState(false)
   const [showAllStamps, setShowAllStamps] = useState(false)
+
+  // the number on the bell: notifications she has not checked (Emerald, Oct 29)
+  const [unread, setUnread] = useState(0)
+  useEffect(() => {
+    let alive = true
+    const load = () => api.get('/notifications/unread-count')
+      .then((r) => { if (alive) setUnread(r.data.data.count ?? 0) })
+      .catch(() => {})
+    load()
+    window.addEventListener('qn-notifications-read', load)
+    return () => { alive = false; window.removeEventListener('qn-notifications-read', load) }
+  }, [])
   const [openCard, setOpenCard] = useState<NoteThumb | null>(null)
 
   useEffect(() => {
@@ -244,13 +257,18 @@ export default function ProfilePage() {
               }}>
                 <QIcon name="qr" size={22} />
               </button>
-              <button onClick={() => navigate('/settings/notifications')} aria-label="Notifications" style={{
-                width: '44px', height: '44px', borderRadius: '50%', background: 'var(--card)', color: 'var(--ink)',
-                boxSizing: 'border-box', border: '1.5px solid var(--stone)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', padding: 0,
-              }}>
-                <QIcon name="bell" size={24} />
-              </button>
+              {/* the bell is the list of what happened; the switches moved to
+                  Settings (Emerald, Oct 29) */}
+              <span style={{ position: 'relative', display: 'flex' }}>
+                <button onClick={() => navigate('/notifications')} aria-label="Notifications" style={{
+                  width: '44px', height: '44px', borderRadius: '50%', background: 'var(--card)', color: 'var(--ink)',
+                  boxSizing: 'border-box', border: '1.5px solid var(--stone)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', padding: 0,
+                }}>
+                  <QIcon name="bell" size={24} />
+                </button>
+                <CountBadge count={unread} label="unread notifications" style={{ top: '-4px', right: '-5px' }} />
+              </span>
               <button onClick={() => navigate('/settings')} aria-label="Settings" style={{
                 width: '44px', height: '44px', borderRadius: '50%', background: 'var(--card)', color: 'var(--ink)',
                 boxSizing: 'border-box', border: '1.5px solid var(--stone)',

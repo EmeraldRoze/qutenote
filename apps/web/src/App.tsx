@@ -17,6 +17,7 @@ import ForgotPasswordPage from './pages/ForgotPasswordPage'
 import ResetPasswordPage from './pages/ResetPasswordPage'
 import GoogleAuthSuccessPage from './pages/GoogleAuthSuccessPage'
 import ProfilePage from './pages/ProfilePage'
+import NotificationsPage from './pages/NotificationsPage'
 import InvitePage from './pages/InvitePage'
 import CollectAddressPage from './pages/CollectAddressPage'
 import ImportantDatesPage from './pages/ImportantDatesPage'
@@ -106,6 +107,7 @@ function AppRoutes() {
       <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
       <Route path="/settings/account" element={<ProtectedRoute><AccountSettingsPage /></ProtectedRoute>} />
       <Route path="/settings/notifications" element={<ProtectedRoute><NotificationPreferencesPage /></ProtectedRoute>} />
+      <Route path="/notifications" element={<ProtectedRoute><NotificationsPage /></ProtectedRoute>} />
       <Route path="/handwriting" element={<ProtectedRoute><HandwritingPage /></ProtectedRoute>} />
       <Route path="/handwriting/:sessionKey" element={<ProtectedRoute><HandwritingPage /></ProtectedRoute>} />
       <Route path="/collect-address/:token" element={<CollectAddressPage />} />

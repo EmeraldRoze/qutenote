@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { api } from '../lib/api'
+import CountBadge from './CountBadge'
 
 // The five-tab bar, palette 4: paper grain behind it, no top divider,
 // warm-tinted inactive tabs, and the perforated dusty rose SEND stamp.
@@ -57,15 +58,8 @@ export default function TabBar() {
       }}>
         <span style={{ position: 'relative', display: 'flex' }}>
           <img src={t.emojiIcon} alt="" className={active ? undefined : 'tab-inactive'} style={{ height: '38px', width: 'auto' }} />
-          {t.label === 'QTs' && unread > 0 && (
-            <span aria-label={`${unread} unread notifications`} style={{
-              // No bubble: the numeral itself, neon with an oxblood outline,
-              // like it was written on with a paint pen (Emerald, Oct 28)
-              position: 'absolute', top: '7px', left: '6px', zIndex: 2,
-              fontFamily: 'var(--font-body)', fontSize: '16px', fontWeight: 700, lineHeight: 1,
-              color: 'var(--highlight)',
-              WebkitTextStroke: '0.9px var(--ink)', paintOrder: 'stroke fill',
-            }}>{unread > 99 ? '99+' : unread}</span>
+          {t.label === 'QTs' && (
+            <CountBadge count={unread} label="unread notifications" style={{ top: '0px', left: '-2px' }} />
           )}
         </span>
         {t.label}

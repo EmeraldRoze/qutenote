@@ -8,6 +8,7 @@ import QEmoji from '../components/QEmoji'
 import { inviteByText } from '../lib/inviteText'
 import { contactsAvailable, readContacts, matchContactsToMembers, type MatchedMember } from '../lib/contacts'
 import QIcon from '../components/QIcon'
+import CountBadge from '../components/CountBadge'
 
 // QTs tab, restyled to palette 4 (qutenote-app-palette4, 12-qts):
 // invite box first, then search, then friends sorted by whose birthday is next.
@@ -281,7 +282,7 @@ export default function ConnectionsPage() {
         {/* Paper tabs: the active one is part of the sheet below it, like a
             file folder (Emerald's pick, Oct 27) */}
         <div style={{ display: 'flex', gap: '6px', marginTop: '16px', marginBottom: '-1.5px', position: 'relative', zIndex: 1 }}>
-          {([['qts', 'YOUR QTS'], ['requests', `REQUESTS${pendingRequests.length ? ` (${pendingRequests.length})` : ''}`]] as const).map(([key, text]) => {
+          {([['qts', 'YOUR QTS'], ['requests', 'REQUESTS']] as const).map(([key, text]) => {
             const on = tab === key
             return (
               <button
@@ -293,10 +294,15 @@ export default function ConnectionsPage() {
                   borderRadius: '12px 12px 0 0', padding: '9px 16px', cursor: 'pointer',
                   fontFamily: 'var(--font-body)', fontSize: '13px', fontWeight: 700,
                   letterSpacing: '0.06em', textIndent: '0.06em', color: 'var(--ink)',
-                  opacity: on ? 1 : 0.55,
+                  position: 'relative', overflow: 'visible',
                 }}
               >
-                {text}
+                {/* the label dims when the tab is asleep, the badge never does */}
+                <span style={{ opacity: on ? 1 : 0.55 }}>{text}</span>
+                {/* the count stays until she accepts or clears it (Emerald, Oct 29) */}
+                {key === 'requests' && (
+                  <CountBadge count={pendingRequests.length} label="requests waiting" style={{ top: '-8px', right: '-7px', opacity: 1 }} />
+                )}
               </button>
             )
           })}

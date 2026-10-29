@@ -3,7 +3,7 @@ import { listDrafts } from '../lib/drafts'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { api } from '../lib/api'
-import { enableReminders, remindersEnabled, lastReminderFailure, type ReminderResult } from '../lib/push'
+import { remindersEnabled, lastReminderFailure, type ReminderResult } from '../lib/push'
 import { isNativeApp } from '../lib/native'
 import { fetchHandwritingProgress } from '../lib/handwriting/api'
 import QIcon from '../components/QIcon'
@@ -28,7 +28,7 @@ export default function SettingsPage() {
   const navigate = useNavigate()
   const { user, logout, refreshUser } = useAuth()
   const [addressVerified, setAddressVerified] = useState<boolean | null>(null)
-  const [reminderStatus, setReminderStatus] = useState<ReminderResult | 'idle' | 'working'>('idle')
+  const [reminderStatus] = useState<ReminderResult | 'idle' | 'working'>('idle')
   const [hasHandwriting, setHasHandwriting] = useState(false)
   const [scheduledCount, setScheduledCount] = useState(0)
   const draftCount = listDrafts().length
@@ -44,13 +44,6 @@ export default function SettingsPage() {
       .then((r) => setHasHandwriting(r.hasFont))
       .catch(() => {})
   }, [])
-
-  async function toggleNotifications() {
-    if (remindersEnabled()) return // iOS owns the off-switch; point people to Settings app
-    setReminderStatus('working')
-    const r = await enableReminders()
-    setReminderStatus(r)
-  }
 
   async function togglePrivacy() {
     await api.post('/connections/privacy', { isPrivate: !user?.isPrivate })
@@ -126,16 +119,19 @@ export default function SettingsPage() {
             </button>
           </div>
 
+          {/* The switches live here now, not behind the bell (Emerald, Oct 29).
+              The row always opens them; turning one on still registers the
+              phone for pushes. */}
           <button
-            style={{ ...rowStyle, cursor: isNativeApp ? 'pointer' : 'default' }}
-            onClick={isNativeApp ? (remindersEnabled() ? () => navigate('/settings/notifications') : toggleNotifications) : undefined}
-            disabled={!isNativeApp || reminderStatus === 'working'}
+            style={{ ...rowStyle, cursor: 'pointer' }}
+            onClick={() => navigate('/settings/notifications')}
+            disabled={reminderStatus === 'working'}
           >
             <span style={rowLabel}>Notifications</span>
             <span style={rowValue}>
               {!isNativeApp ? 'App only' : remindersEnabled() ? 'On' : reminderStatus === 'working' ? 'Turning on…' : 'Off'}
             </span>
-            {isNativeApp && chevron}
+            {chevron}
           </button>
           {reminderStatus === 'denied' && (
             <p style={{ margin: 0, fontFamily: 'var(--font-body)', fontSize: '12px', color: 'var(--ink-mid)', padding: '0 20px 10px', background: 'var(--card)', borderBottom: '1px solid var(--stone)' }}>
