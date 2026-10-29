@@ -23,6 +23,9 @@ interface OfferCard {
   ombre?: string
   /* false = the ombre holds still (her Lavender dusk card ships that way) */
   live?: boolean
+  /* the ombre is one of her gradient pictures, so it drifts and drifts back
+     instead of wrapping (Emerald, Oct 29) */
+  artOmbre?: boolean
   title: string
   cta: string
   onClick: (navigate: ReturnType<typeof useNavigate>) => void
@@ -40,7 +43,9 @@ interface OfferCard {
 // the end of the loop is pixel-identical to the start.
 const SHEEN = 'repeating-linear-gradient(145deg, rgba(255,255,255,0) 0px, rgba(255,255,255,0.06) 72px, rgba(255,255,255,0.42) 160px, rgba(255,255,255,0.06) 248px, rgba(255,255,255,0) 320px)'
 const ALL_OFFER_CARDS: (OfferCard & { key: string })[] = [
-  { key: 'invite', art: 'bff-live', artWidth: 525, artBoxH: 253, ombre: `${SHEEN}, repeating-linear-gradient(145deg, #EEFC4E 0px, #D9EDB3 80px, #BADAFF 160px, #D9EDB3 240px, #EEFC4E 320px)`, title: 'Invite friends,\nget free cards.', cta: 'INVITE', onClick: (nav) => nav('/invite') },
+  // Her own gradients now, not mixes of them (Emerald, Oct 29): lemon sky on
+  // the hands, apricot sky on the camera, periwinkle pink on the cake.
+  { key: 'invite', art: 'bff-live', artWidth: 525, artBoxH: 253, artOmbre: true, ombre: `${SHEEN}, url('/brand/lemon-sky-tile.webp')`, title: 'Invite friends,\nget free cards.', cta: 'INVITE', onClick: (nav) => nav('/invite') },
   { key: 'first-card', art: 'gift', artWidth: 165, ombre: `${SHEEN}, repeating-linear-gradient(145deg, #AE8FD1 0px, #D6C7DF 80px, #EFE7E0 160px, #D6C7DF 240px, #AE8FD1 320px)`, title: 'Your first card is on us', cta: 'SEND A CARD', onClick: (nav) => nav('/send') },
   // Mailbox wears her Lavender paper, camera wears her Apricot sky (Emerald,
   // Oct 24; colors sampled from her gradient files), each the full diagonal
@@ -50,8 +55,8 @@ const ALL_OFFER_CARDS: (OfferCard & { key: string })[] = [
   // Her Lavender dusk card (qutenote-home-dates-card package, Oct 24): slate
   // into dusty lavender into baby blue, a glossy streak and a soft bottom
   // shadow, no paper grain, and it does not drift like the others.
-  { key: 'dates', art: 'cake', artWidth: 160, live: false, ombre: 'linear-gradient(118deg, rgba(255,255,255,0) 32%, rgba(255,255,255,0.22) 46%, rgba(255,255,255,0.05) 56%, rgba(255,255,255,0) 64%), linear-gradient(160deg, rgba(0,0,0,0) 70%, rgba(74,36,36,0.10) 100%), linear-gradient(155deg, #495F68 0%, #495F68 14%, #AE8FD1 50%, #BADAFF 86%, #BADAFF 100%)', title: 'Remember the important things', cta: 'ADD A DATE', onClick: (nav) => nav('/dates/add') },
-  { key: 'photo', art: 'camera', artWidth: 190, ombre: `${SHEEN}, repeating-linear-gradient(145deg, #D88F73 0px, #E6DBD3 80px, #BADAFF 160px, #E6DBD3 240px, #D88F73 320px)`, title: 'Got a good photo? Mail it.', cta: 'UPLOAD A PHOTO', onClick: (nav) => nav('/send') },
+  { key: 'dates', art: 'cake', artWidth: 160, artOmbre: true, ombre: `${SHEEN}, url('/brand/periwinkle-pink-tile.webp')`, title: 'Remember the important things', cta: 'ADD A DATE', onClick: (nav) => nav('/dates/add') },
+  { key: 'photo', art: 'camera', artWidth: 190, artOmbre: true, ombre: `${SHEEN}, url('/brand/apricot-sky-tile.webp')`, title: 'Got a good photo? Mail it.', cta: 'UPLOAD A PHOTO', onClick: (nav) => nav('/send') },
 ]
 
 function OfferCarousel({ hasSentCard, hasHandwriting }: { hasSentCard: boolean; hasHandwriting: boolean }) {
@@ -82,7 +87,7 @@ function OfferCarousel({ hasSentCard, hasHandwriting }: { hasSentCard: boolean; 
         }}
       >
         {OFFER_CARDS.map((c, i) => (
-          <div key={i} className={c.ombre ? (c.live === false ? 'rose-paper' : 'rose-paper ombre-live') : 'rose-paper'}
+          <div key={i} className={c.ombre ? (c.live === false ? 'rose-paper' : `rose-paper ombre-live${c.artOmbre ? ' ombre-art' : ''}`) : 'rose-paper'}
             onClick={c.key === 'invite' ? () => c.onClick(navigate) : undefined}
             role={c.key === 'invite' ? 'button' : undefined}
             aria-label={c.key === 'invite' ? 'Invite friends, get free cards' : undefined}
