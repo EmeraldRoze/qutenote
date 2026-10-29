@@ -8,7 +8,7 @@
 // for, and it SAYS SO IN THE LOG when it cannot send, instead of failing in
 // silence.
 
-const FROM = process.env.SENDGRID_FROM_EMAIL ?? process.env.RESEND_FROM_EMAIL ?? 'hello@qutenote.com'
+const FROM = process.env.RESEND_FROM_EMAIL ?? process.env.SENDGRID_FROM_EMAIL ?? 'hello@qutenote.com'
 const FROM_NAME = 'QuteNote'
 
 export interface Mail {
@@ -22,8 +22,11 @@ export function mailIsConfigured(): boolean {
 }
 
 export async function sendEmail(mail: Mail): Promise<{ sent: boolean; error?: string }> {
-  if (process.env.SENDGRID_API_KEY) return sendWithSendGrid(mail)
+  // Resend first (Emerald, Oct 29): the SendGrid account is out of credits, so
+  // preferring it meant every send picked the dead service. SendGrid stays as
+  // a fallback in case Resend is ever down.
   if (process.env.RESEND_API_KEY) return sendWithResend(mail)
+  if (process.env.SENDGRID_API_KEY) return sendWithSendGrid(mail)
   console.error('[mail] NOT SENT — no SENDGRID_API_KEY or RESEND_API_KEY is set:', mail.subject, '→', mail.to)
   return { sent: false, error: 'no email service configured' }
 }
