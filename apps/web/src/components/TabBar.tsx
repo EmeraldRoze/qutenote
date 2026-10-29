@@ -61,7 +61,7 @@ export default function TabBar() {
             <span aria-label={`${unread} unread notifications`} style={{
               // No bubble: the numeral itself, neon with an oxblood outline,
               // like it was written on with a paint pen (Emerald, Oct 28)
-              position: 'absolute', top: '3px', left: '-4px', zIndex: 2,
+              position: 'absolute', top: '7px', left: '6px', zIndex: 2,
               fontFamily: 'var(--font-body)', fontSize: '16px', fontWeight: 700, lineHeight: 1,
               color: 'var(--highlight)',
               WebkitTextStroke: '0.9px var(--ink)', paintOrder: 'stroke fill',
