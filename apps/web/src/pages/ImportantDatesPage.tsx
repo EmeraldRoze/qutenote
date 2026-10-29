@@ -9,6 +9,8 @@ import { isNativeApp } from '../lib/native'
 import { contactsAvailable, readContacts, contactsWithBirthdays } from '../lib/contacts'
 import type { DeviceContact } from '../lib/contacts'
 import QIcon from '../components/QIcon'
+import { App as CapApp } from '@capacitor/app'
+import { Browser } from '@capacitor/browser'
 
 // Dates tab, palette 4 restyle (screens/13-dates.html)
 
@@ -130,6 +132,72 @@ export default function ImportantDatesPage() {
   const [contactsChecked, setContactsChecked] = useState(0)
   const [contactsError, setContactsError] = useState('')
   const [addingContact, setAddingContact] = useState<string | null>(null)
+
+  // Birthdays out of Google Contacts (Emerald, Oct 28). Google keeps birthdays
+  // on the contact card, not on the calendar, so this reads People, and the
+  // results land in the same review list as the phone's address book.
+  const [googleState, setGoogleState] = useState<'idle' | 'opening' | 'loading' | 'error'>('idle')
+  const [googleError, setGoogleError] = useState('')
+
+  async function spendGooglePass(pass: string) {
+    setGoogleState('loading')
+    try {
+      const r = await api.post('/google-contacts/birthdays', { pass })
+      const found: DeviceContact[] = r.data.data.contacts
+      setContactBdays((prev) => {
+        const seen = new Set(prev.map((c) => c.name.toLowerCase()))
+        return [...prev, ...found.filter((c) => !seen.has(c.name.toLowerCase()))]
+      })
+      setContactsChecked((n) => n + (r.data.data.checked ?? 0))
+      setContactsState('ready')
+      setContactsOpen(true)
+      setGoogleState('idle')
+    } catch (err: any) {
+      setGoogleError(err?.response?.data?.error ?? 'That did not go through.')
+      setGoogleState('error')
+    }
+  }
+
+  async function startGoogle() {
+    if (googleState === 'opening' || googleState === 'loading') return
+    setGoogleState('opening')
+    setGoogleError('')
+    try {
+      const r = await api.post('/google-contacts/start', {
+        native: isNativeApp,
+        dev: import.meta.env.VITE_BUILD === 'dev',
+      })
+      const url = r.data.data.url
+      if (isNativeApp) await Browser.open({ url })
+      else window.location.href = url
+    } catch {
+      setGoogleError('Could not open Google just then.')
+      setGoogleState('error')
+    }
+  }
+
+  // Coming back from Google: the website lands on /dates?gpass=…, the app
+  // comes back through qutenote://google-contacts?pass=…
+  useEffect(() => {
+    const q = new URLSearchParams(window.location.search)
+    const pass = q.get('gpass')
+    if (pass) {
+      window.history.replaceState({}, '', '/dates')
+      spendGooglePass(pass)
+    } else if (q.get('google') === 'failed') {
+      window.history.replaceState({}, '', '/dates')
+      setGoogleError('Google did not finish that sign-in.')
+      setGoogleState('error')
+    }
+    if (!isNativeApp) return
+    const sub = CapApp.addListener('appUrlOpen', ({ url }) => {
+      const m = url.match(/^qutenote(?:dev)?:\/\/google-contacts\?pass=(.+)$/)
+      if (!m) return
+      Browser.close().catch(() => {})
+      spendGooglePass(decodeURIComponent(m[1]))
+    })
+    return () => { sub.then((x) => x.remove()) }
+  }, [])
 
   useEffect(() => {
     api.get('/important-dates')
@@ -531,6 +599,25 @@ export default function ImportantDatesPage() {
         {contactsState === 'denied' && (
           <p style={hint}>QuteNote can't see your contacts{contactsError ? ` (${contactsError})` : ''}. Open Settings → QuteNote → Contacts and allow access, then try again.</p>
         )}
+
+        {/* Google Contacts — works on the website too */}
+        <button onClick={startGoogle} style={{
+          ...whiteCard, marginTop: '12px', width: '100%', minHeight: '72px',
+          display: 'flex', alignItems: 'center', gap: '14px', padding: '10px 16px',
+          fontFamily: 'var(--font-body)', textAlign: 'left', color: 'var(--ink)', cursor: 'pointer',
+          textTransform: 'none', letterSpacing: 0,
+          opacity: googleState === 'opening' || googleState === 'loading' ? 0.6 : 1,
+        }}>
+          <QEmoji name="calendar" size={48} style={{ flex: 'none', height: 'auto' }} />
+          <span style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '2px' }}>
+            <span style={{ fontSize: '15px', fontWeight: 700 }}>
+              {googleState === 'loading' ? 'Reading your Google contacts…' : googleState === 'opening' ? 'Opening Google…' : 'Pull birthdays from Google'}
+            </span>
+            <span style={{ fontSize: '13px', color: 'var(--ink)', fontWeight: 400 }}>Everyone in your Google contacts with a birthday</span>
+          </span>
+          <QIcon name="chevron-right" size={14} />
+        </button>
+        {googleState === 'error' && <p style={hint}>{googleError}</p>}
         {contactsState === 'ready' && (
           <div style={{ marginTop: '20px' }}>
             {/* Collapsible header — the little caret, per Emerald (Oct 18) */}

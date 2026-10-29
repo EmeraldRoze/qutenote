@@ -16,6 +16,7 @@ import { googleAuthRouter } from './routes/google-auth'
 import { appleAuthRouter } from './routes/apple-auth'
 import { statusesRouter } from './routes/statuses'
 import { notificationsRouter } from './routes/notifications'
+import { googleContactsRouter } from './routes/google-contacts'
 import { earlyAccessRouter } from './routes/early-access'
 import { devicesRouter } from './routes/devices'
 import { uploadsRouter } from './routes/uploads'
@@ -82,6 +83,7 @@ app.use('/auth', googleAuthRouter)
 app.use('/auth', appleAuthRouter)
 app.use('/statuses', statusesRouter)
 app.use('/notifications', notificationsRouter)
+app.use('/google-contacts', googleContactsRouter)
 app.use('/early-access', earlyAccessRouter)
 app.use('/devices', devicesRouter)
 app.use('/uploads', uploadsRouter)
