@@ -1,5 +1,7 @@
+import { useEffect, useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { api } from '../lib/api'
 
 // The five-tab bar, palette 4: paper grain behind it, no top divider,
 // warm-tinted inactive tabs, and the perforated dusty rose SEND stamp.
@@ -9,6 +11,19 @@ export default function TabBar() {
   const navigate = useNavigate()
   const { pathname } = useLocation()
   const { user } = useAuth()
+
+  // The little number on QTs: how many notifications she has not checked yet.
+  // It clears when she opens the bell on her profile (Emerald, Oct 28).
+  const [unread, setUnread] = useState(0)
+  useEffect(() => {
+    let alive = true
+    const load = () => api.get('/notifications/unread-count')
+      .then((r) => { if (alive) setUnread(r.data.data.count ?? 0) })
+      .catch(() => {})
+    load()
+    window.addEventListener('qn-notifications-read', load)
+    return () => { alive = false; window.removeEventListener('qn-notifications-read', load) }
+  }, [pathname])
 
   const tabs: { label: string; path: string; emojiIcon: string }[] = [
     { label: 'Home', path: '/home', emojiIcon: '/emoji/house.png' },
@@ -40,7 +55,19 @@ export default function TabBar() {
         fontSize: '14px', fontWeight: 700, fontFamily: 'var(--font-body)',
         textTransform: 'none', letterSpacing: 0, padding: 0,
       }}>
-        <img src={t.emojiIcon} alt="" className={active ? undefined : 'tab-inactive'} style={{ height: '38px', width: 'auto' }} />
+        <span style={{ position: 'relative', display: 'flex' }}>
+          <img src={t.emojiIcon} alt="" className={active ? undefined : 'tab-inactive'} style={{ height: '38px', width: 'auto' }} />
+          {t.label === 'QTs' && unread > 0 && (
+            <span aria-label={`${unread} unread notifications`} style={{
+              // top LEFT: the SEND stamp overlaps the right corner of this icon
+              position: 'absolute', top: '-4px', left: '-10px', minWidth: '20px', height: '20px', zIndex: 2,
+              padding: '0 5px', borderRadius: '10px', background: 'var(--highlight)',
+              border: '1.5px solid var(--ink)', boxSizing: 'border-box',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: '11px', fontWeight: 700, lineHeight: 1, color: 'var(--ink)',
+            }}>{unread > 99 ? '99+' : unread}</span>
+          )}
+        </span>
         {t.label}
       </button>
     )
