@@ -62,7 +62,7 @@ export default function TabBar() {
               // tucked onto the left hand, slightly overlapping it (Emerald, Oct 28)
               position: 'absolute', top: '7px', left: '1px', minWidth: '20px', height: '20px', zIndex: 2,
               padding: '0 5px', borderRadius: '10px', background: 'var(--highlight)',
-              border: '1.5px solid var(--ink)', boxSizing: 'border-box',
+              border: 'none', boxSizing: 'border-box',  // no outline (Emerald, Oct 28)
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               fontSize: '11px', fontWeight: 700, lineHeight: 1, color: 'var(--ink)',
             }}>{unread > 99 ? '99+' : unread}</span>
