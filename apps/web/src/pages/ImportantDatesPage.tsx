@@ -437,7 +437,7 @@ export default function ImportantDatesPage() {
                   background: on ? 'var(--card)' : 'var(--paper)',
                   borderRadius: '12px 12px 0 0', padding: '9px 16px', cursor: 'pointer',
                   fontFamily: 'var(--font-body)', fontSize: '13px', fontWeight: 700,
-                  letterSpacing: '0.06em', textIndent: '0.06em', color: 'var(--ink)', opacity: on ? 1 : 0.55,
+                  letterSpacing: '0.06em', textIndent: '0.06em', color: 'var(--ink)', opacity: on ? 1 : 0.75,
                 }}>{text}</button>
               )
             })}
@@ -524,7 +524,7 @@ export default function ImportantDatesPage() {
               <div key={group.key}>
                 <div style={{
                   fontFamily: 'var(--font-body)', fontSize: '11px', fontWeight: 700,
-                  letterSpacing: '0.09em', textIndent: '0.09em', color: 'var(--ink)', opacity: 0.55,
+                  letterSpacing: '0.09em', textIndent: '0.09em', color: 'var(--ink)', opacity: 0.75,
                   margin: '14px 0 2px',
                 }}>{group.title}</div>
                 {group.items.map((d, i) => (
@@ -535,7 +535,7 @@ export default function ImportantDatesPage() {
                     }}>
                       <span style={{ flex: 'none', width: '40px', textAlign: 'center', display: 'flex', flexDirection: 'column' }}>
                         <span style={{ fontFamily: 'var(--font-body)', fontSize: '17px', fontWeight: 700, lineHeight: '19px', color: 'var(--ink)' }}>{d.day}</span>
-                        <span style={{ fontFamily: 'var(--font-body)', fontSize: '10px', letterSpacing: '0.06em', color: 'var(--ink)', opacity: 0.6 }}>{weekdayOf(d.month, d.day)}</span>
+                        <span style={{ fontFamily: 'var(--font-body)', fontSize: '10px', letterSpacing: '0.06em', color: 'var(--ink)', opacity: 0.75 }}>{weekdayOf(d.month, d.day)}</span>
                       </span>
                       <QEmoji name={artForLabel(d.label)} size={30} style={{ flex: 'none', height: 'auto' }} />
                       <span style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column' }}>

@@ -495,6 +495,11 @@ function CardPicker({ note, update, onWrite }: {
         <div
           ref={panelRef}
           onScroll={onPanelScroll}
+          /* keyboard users have to be able to reach and scroll the card deck
+             (WCAG 2.1.1) — Emerald, Oct 30 */
+          tabIndex={0}
+          role="group"
+          aria-label="Card designs, scroll sideways"
           style={{ overflowX: 'auto', scrollSnapType: 'x mandatory', scrollbarWidth: 'none', display: 'flex' }}
         >
           {DECK.map(({ card: c, artist: a }, i) => (

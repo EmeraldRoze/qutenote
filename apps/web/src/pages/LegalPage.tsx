@@ -70,6 +70,7 @@ function Shell({ kicker, title, children }: { kicker: string; title: string; chi
           <Link to="/privacy" style={footLink}>Privacy</Link>
           <Link to="/terms" style={footLink}>Terms</Link>
           <Link to="/support" style={footLink}>Support</Link>
+          <Link to="/accessibility" style={footLink}>Accessibility</Link>
           <a href={`mailto:${CONTACT}`} style={footLink}>{CONTACT}</a>
         </div>
       </div>
@@ -200,6 +201,44 @@ export function TermsPage() {
       <p style={p}>
         You can delete your account whenever you like, in Settings, then Account. We can close an account that
         breaks these terms. These terms are governed by the laws of the State of New Mexico.
+      </p>
+    </Shell>
+  )
+}
+
+export function AccessibilityPage() {
+  return (
+    <Shell kicker="Everyone gets their mail" title="Accessibility">
+      <p style={p}>
+        QuteNote is built by {OPERATOR}, and we want it to work for everyone, including people who use a screen
+        reader, navigate by keyboard, or need larger text and stronger contrast.
+      </p>
+
+      <h2 style={h2}>What we aim for</h2>
+      <p style={p}>
+        We measure ourselves against the Web Content Accessibility Guidelines, WCAG 2.1, at level AA, on both the
+        website and the app. We test every screen with automated tooling and fix what it finds.
+      </p>
+
+      <h2 style={h2}>What we have done</h2>
+      <ul style={list}>
+        <li style={li}>Every image carries alternative text, and decorative art is marked so screen readers skip it.</li>
+        <li style={li}>Every form field has a label, and every icon-only button has a spoken name.</li>
+        <li style={li}>Text meets the 4.5 to 1 contrast minimum against its background.</li>
+        <li style={li}>Keyboard focus is always visible, and a skip link jumps past the menu.</li>
+        <li style={li}>Animation respects your system setting for reduced motion.</li>
+      </ul>
+
+      <h2 style={h2}>Where we know we fall short</h2>
+      <p style={p}>
+        Text in the app does not yet grow when you raise the text size in your phone's settings. We are working on
+        it. If that makes QuteNote hard for you to use, tell us and we will help you directly in the meantime.
+      </p>
+
+      <h2 style={h2}>Tell us</h2>
+      <p style={p}>
+        If anything here is hard to use, write to <Mail /> and say what happened and what device you were on. We
+        answer, and we treat it as a bug, not a suggestion.
       </p>
     </Shell>
   )

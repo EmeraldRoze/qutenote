@@ -93,7 +93,7 @@ export default function NotificationsPage() {
                 <span style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column' }}>
                   <span style={{ fontFamily: 'var(--font-body)', fontSize: '15px', fontWeight: 700, color: 'var(--ink)' }}>{n.title}</span>
                   <span style={{ fontFamily: 'var(--font-body)', fontSize: '14px', color: 'var(--ink)' }}>{n.body}</span>
-                  <span style={{ fontFamily: 'var(--font-body)', fontSize: '12px', color: 'var(--ink)', opacity: 0.6, marginTop: '2px' }}>{whenPosted(n.createdAt)}</span>
+                  <span style={{ fontFamily: 'var(--font-body)', fontSize: '12px', color: 'var(--ink)', opacity: 0.75, marginTop: '2px' }}>{whenPosted(n.createdAt)}</span>
                 </span>
               </div>
             ))}

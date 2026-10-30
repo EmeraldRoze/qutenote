@@ -282,3 +282,9 @@ img { max-width: 100%; }
   padding-top: env(safe-area-inset-top);
   padding-bottom: env(safe-area-inset-bottom);
 }
+
+
+/* Keyboard and switch-control users have to see where they are (WCAG 2.4.7).
+   Mouse taps never show this; only keyboard focus does. Emerald, Oct 30. */
+:focus-visible{ outline: 3px solid var(--ink); outline-offset: 3px; border-radius: 6px; }
+.qn-stamp:focus-visible{ outline-offset: 6px; }

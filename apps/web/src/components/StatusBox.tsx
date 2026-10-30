@@ -62,12 +62,14 @@ export default function StatusBox({ onPosted }: { onPosted?: (s: any) => void })
         className="qn-stamp"
         role="button"
         tabIndex={0}
-        aria-label="Edit your status"
+        /* no aria-label: the spoken name is the words you can actually see,
+           which is what voice control needs (Emerald, Oct 30) */
         onClick={() => setEditing(true)}
         onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setEditing(true) }}
         style={{ ...shell, display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }}
       >
         <QEmoji name={status.emoji ?? 'thought-bubble'} size={34} style={{ flexShrink: 0 }} />
+        <span style={{ position: 'absolute', width: 1, height: 1, overflow: 'hidden', clip: 'rect(0 0 0 0)', whiteSpace: 'nowrap' }}>Edit</span>
         <span style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '2px' }}>
           <span style={{ fontSize: '13px', fontFamily: 'var(--font-body)', color: 'var(--ink)' }}>Your status</span>
           <span style={{ fontFamily: 'var(--font-body)', fontSize: '16px', color: 'var(--ink)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>

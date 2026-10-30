@@ -85,12 +85,18 @@ function OfferCarousel({ hasSentCard, hasHandwriting }: { hasSentCard: boolean; 
           display: 'flex', gap: '12px', overflowX: 'auto',
           scrollSnapType: 'x mandatory', scrollbarWidth: 'none',
         }}
+        /* a scrolling strip has to be reachable and arrow-key scrollable by
+           keyboard, not mouse-only (Emerald, Oct 30) */
+        tabIndex={0}
+        role="group"
+        aria-label="Things you can do"
       >
         {OFFER_CARDS.map((c, i) => (
           <div key={i} className={c.ombre ? (c.live === false ? 'rose-paper' : `rose-paper ombre-live${c.artOmbre ? ' ombre-art' : ''}`) : 'rose-paper'}
+            /* tap anywhere on the invite card still works, but the card is no
+               longer announced as a button wrapped around another button
+               (WCAG 4.1.2). The CTA inside is the real control. */
             onClick={c.key === 'invite' ? () => c.onClick(navigate) : undefined}
-            role={c.key === 'invite' ? 'button' : undefined}
-            aria-label={c.key === 'invite' ? 'Invite friends, get free cards' : undefined}
             style={{
             ...(c.key === 'invite' ? { cursor: 'pointer' } : {}),
             ...(c.ombre ? (c.live === false
@@ -340,7 +346,7 @@ export default function HomePage() {
                 onKeyDown={(e) => { if (e.key === 'Enter' && search.trim()) navigate(`/connections?q=${encodeURIComponent(search.trim())}`) }}
                 placeholder="Find a QT"
                 aria-label="Find a QT"
-                style={{ border: 0, outline: 'none', background: 'transparent', fontFamily: 'var(--font-body)', fontSize: '17px', color: 'var(--ink)', width: '100%' }}
+                style={{ border: 0, outline: 'none', background: 'transparent', fontFamily: 'var(--font-body)', fontSize: '17px', color: 'var(--ink)', width: '100%', height: '100%' }}
               />
             </label>
             <button onClick={() => setShowQR(true)} aria-label="Your QR code" style={{
@@ -486,7 +492,7 @@ export default function HomePage() {
               marginBottom: '12px', boxShadow: '0 4px 14px rgba(74,36,36,0.07)',
             }}>
               <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontSize: '12px', fontFamily: 'var(--font-body)', color: 'var(--ink)', opacity: 0.6, display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <div style={{ fontSize: '12px', fontFamily: 'var(--font-body)', color: 'var(--ink)', opacity: 0.75, display: 'flex', alignItems: 'center', gap: '6px' }}>
                   <QEmoji name={item.emoji || 'thought-bubble'} size={20} style={{ height: 'auto' }} />
                   <span>{item.user?.displayName} · {whenPosted(item.createdAt)}</span>
                   {+new Date(item.createdAt) > lastSeen && (
@@ -518,7 +524,7 @@ export default function HomePage() {
               marginBottom: '12px', boxShadow: '0 4px 14px rgba(74,36,36,0.07)',
             }}>
               <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontSize: '12px', fontFamily: 'var(--font-body)', color: 'var(--ink)', opacity: 0.6, display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <div style={{ fontSize: '12px', fontFamily: 'var(--font-body)', color: 'var(--ink)', opacity: 0.75, display: 'flex', alignItems: 'center', gap: '6px' }}>
                   <QEmoji name={OCCASION_ART[item.occasionType ?? 'CUSTOM'] ?? 'envelope'} size={20} style={{ height: 'auto' }} />
                   <span>{whenPosted(item.createdAt)}</span>
                 </div>

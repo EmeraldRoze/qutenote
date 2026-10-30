@@ -334,7 +334,7 @@ export default function ProfilePage() {
                     borderRadius: '12px 12px 0 0', padding: '9px 16px', cursor: 'pointer',
                     fontFamily: 'var(--font-body)', fontSize: '13px', fontWeight: 700,
                     letterSpacing: '0.06em', textIndent: '0.06em', color: 'var(--ink)',
-                    opacity: on ? 1 : 0.55,
+                    opacity: on ? 1 : 0.75,
                   }}
                 >
                   {text}

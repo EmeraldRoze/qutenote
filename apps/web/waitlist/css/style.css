@@ -1,6 +1,6 @@
 :root{
   --cream:#F1EBE3; --rule:#DCD0C6; --lav:#F4ECE6; --lav-line:#C4A396;
-  --uv:#9E625F; --lime:#EEFC4E; --lilac:#B4897A; --ink:#4A2424; --ink-mid:#8A6F66; --ink-soft:#8A8078;
+  --uv:#9E625F; --uv-text:#8F5955; --lime:#EEFC4E; --lilac:#B4897A; --ink:#4A2424; --ink-mid:#7F665E; --ink-soft:#8A8078;
   --head:'Unbounded', 'Arial Black', system-ui, sans-serif;
   --body:'Anonymous Pro', ui-monospace, 'Courier New', monospace;
   color-scheme: light;
@@ -116,9 +116,10 @@ header{ position:sticky; top:env(safe-area-inset-top,0px); z-index:50; backgroun
 .how-head h2{ margin:0 0 12px; font-family:var(--head); font-weight:300; letter-spacing:-.02em; font-size:clamp(28px,3.6vw,46px); line-height:1.08; max-width:560px; }
 .how-head p{ margin:0; font-size:clamp(16px,1.4vw,18px); line-height:1.6; color:var(--ink-mid); max-width:520px; }
 .steps{ list-style:none; margin:36px 0 0; padding:0; display:flex; flex-direction:column; gap:6px; }
-.steps li{ display:grid; grid-template-columns:44px 1fr; gap:14px; padding:14px 0; border-top:1px solid var(--lav-line); opacity:.38; transition:opacity .35s; }
+.steps li{ display:grid; grid-template-columns:44px 1fr; gap:14px; padding:14px 0; border-top:1px solid var(--lav-line); opacity:.72; transition:opacity .35s; }
 .steps li.on{ opacity:1; }
-.steps .n{ font-family:var(--head); font-weight:300; font-size:15px; color:var(--uv); padding-top:3px; }
+.steps .n{ font-family:var(--head); font-weight:300; font-size:15px; color:var(--ink); padding-top:3px; }
+.steps li.on .n{ color:var(--uv-text); }
 .steps h3{ margin:0; font-family:var(--head); font-weight:300; font-size:clamp(18px,1.8vw,22px); }
 .steps p{ margin:0; max-height:0; overflow:hidden; font-size:16px; line-height:1.55; color:var(--ink-mid); transition:max-height .45s ease, margin .45s ease; }
 .steps li.on p{ max-height:90px; margin-top:6px; }
@@ -221,7 +222,7 @@ header{ position:sticky; top:env(safe-area-inset-top,0px); z-index:50; backgroun
 .ph img+img{ left:9px; width:20px; height:20px; filter:drop-shadow(0 1px 1px rgba(74,36,36,.6)); }
 
 .wrap{ max-width:1200px; margin:0 auto; padding:clamp(80px,10vw,136px) clamp(20px,4vw,48px); }
-.kicker{ font-weight:700; font-size:13px; letter-spacing:.14em; text-transform:uppercase; color:var(--uv); }
+.kicker{ font-weight:700; font-size:13px; letter-spacing:.14em; text-transform:uppercase; color:var(--uv-text); }
 .h2{ margin:12px 0 0; font-family:var(--head); font-weight:300; letter-spacing:-.02em; font-size:clamp(30px,4.2vw,52px); line-height:1.08; max-width:760px; }
 
 /* scroll-linked "dropped on the table" */
@@ -272,9 +273,9 @@ header{ position:sticky; top:env(safe-area-inset-top,0px); z-index:50; backgroun
 .band .wrap{ padding:clamp(100px,13vw,170px) clamp(20px,4vw,48px); }
 .band h2{ margin:0 auto; font-family:var(--head); font-weight:300; letter-spacing:-.02em; font-size:clamp(36px,6vw,80px); line-height:1.02; max-width:900px; }
 .fill-sub{ margin:26px auto 0; font-family:var(--head); font-weight:300; font-size:clamp(20px,2.6vw,32px); line-height:1.25; max-width:760px; color:#fff; }
-#fill span{ color:rgba(255,255,255,.34); transition:color .25s; }
+#fill span{ color:rgba(255,255,255,.72); transition:color .25s; }
 #fill span.lit{ color:var(--lime); }
-.band p.small{ margin:22px auto 0; max-width:520px; font-size:17px; line-height:1.6; color:#F4ECE6; }
+.band p.small{ margin:22px auto 0; max-width:520px; font-size:17px; line-height:1.6; color:#FAF7F4; }
 .band .bf{ position:absolute; width:clamp(80px,11vw,150px); will-change:transform; }
 .bf.mega{ right:13%; top:50%; width:clamp(90px,13vw,170px); transform:translateY(calc(-50% + var(--bp,0) * -60px)) scaleX(-1) rotate(calc(-6deg + var(--bp,0) * 12deg)); }
 
@@ -437,3 +438,12 @@ footer .fl{ height:30px; width:auto; display:block; }
 .qn-flame{ position:absolute; width:10.9%; aspect-ratio:12/19; border-radius:50% 50% 50% 50%/62% 62% 38% 38%; background:radial-gradient(ellipse at 50% 72%,rgba(255,255,236,.95) 0%,rgba(255,228,150,.85) 32%,rgba(255,176,90,.45) 64%,rgba(255,160,70,0) 100%); mix-blend-mode:screen; transform-origin:50% 92%; animation:qnFlicker .9s ease-in-out infinite; pointer-events:none; }
 .qn-glow{ position:absolute; width:30.9%; aspect-ratio:1; border-radius:50%; background:radial-gradient(circle,rgba(255,214,130,.6) 0%,rgba(255,206,120,0) 70%); animation:qnGlow 1.7s ease-in-out infinite; pointer-events:none; }
 @media (prefers-reduced-motion: reduce){ .qn-flame,.qn-glow{ animation:none } }
+
+
+/* Keyboard users have to be able to SEE where they are (WCAG 2.4.7).
+   Mouse clicks never show it; only keyboard focus does. Emerald, Oct 30. */
+:focus-visible{ outline:3px solid #4A2424; outline-offset:3px; border-radius:4px; }
+.btn:focus-visible, a:focus-visible{ outline-color:#4A2424; }
+.skip-link{ position:absolute; left:-9999px; top:0; z-index:200; background:#FBF8F4; color:#4A2424;
+  border:2px solid #4A2424; border-radius:0 0 12px 0; padding:12px 18px; font-weight:700; text-decoration:none; }
+.skip-link:focus{ left:0; }

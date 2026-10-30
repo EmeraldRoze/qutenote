@@ -276,7 +276,7 @@ export default function ConnectionsPage() {
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search your QTs"
             aria-label="Search your QTs"
-            style={{ border: 0, outline: 'none', background: 'transparent', fontFamily: 'var(--font-body)', fontSize: '17px', color: 'var(--ink)', width: '100%' }}
+            style={{ border: 0, outline: 'none', background: 'transparent', fontFamily: 'var(--font-body)', fontSize: '17px', color: 'var(--ink)', width: '100%', height: '100%' }}
           />
         </label>
         {/* Paper tabs: the active one is part of the sheet below it, like a
@@ -298,7 +298,7 @@ export default function ConnectionsPage() {
                 }}
               >
                 {/* the label dims when the tab is asleep, the badge never does */}
-                <span style={{ opacity: on ? 1 : 0.55 }}>{text}</span>
+                <span style={{ opacity: on ? 1 : 0.75 }}>{text}</span>
                 {/* the count stays until she accepts or clears it (Emerald, Oct 29) */}
                 {key === 'requests' && (
                   <CountBadge count={pendingRequests.length} label="requests waiting" style={{ top: '-8px', right: '-7px', opacity: 1 }} />
@@ -424,36 +424,38 @@ export default function ConnectionsPage() {
               const bMonth = c.birthdayMonth ?? d?.month ?? null
               const bDay = c.birthdayDay ?? d?.day ?? null
               return (
-                <button key={c.id} onClick={() => navigate(`/profile/${c.username}`)} style={{
-                  ...row(i === shownConnections.length - 1), width: '100%',
-                  background: 'none', cursor: 'pointer', textAlign: 'left',
-                  textTransform: 'none', letterSpacing: 0, fontWeight: 400,
-                  borderLeft: 'none', borderRight: 'none', borderTop: 'none',
-                }}>
-                  {/* Emerald, Oct 27: no sparkle heart beside the name and no
-                      countdown pill — the wax heart sends them one from here. */}
-                  <span style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                /* two buttons side by side, not one inside the other: a
+                   control nested in a control confuses screen readers and
+                   fails WCAG 4.1.2 (Emerald, Oct 30) */
+                <div key={c.id} style={{ ...row(i === shownConnections.length - 1) }}>
+                  <button
+                    onClick={() => navigate(`/profile/${c.username}`)}
+                    style={{
+                      flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '2px',
+                      border: 'none', background: 'none', padding: 0, cursor: 'pointer', textAlign: 'left',
+                      textTransform: 'none', letterSpacing: 0, fontWeight: 400,
+                    }}
+                  >
                     <span style={{ fontFamily: 'var(--font-body)', fontSize: '16px', fontWeight: 700, color: 'var(--ink)' }}>{c.displayName}</span>
                     <span style={{ fontFamily: 'var(--font-body)', fontSize: '14px', color: 'var(--ink)' }}>
                       {bMonth && bDay ? `${MONTHS[bMonth - 1]} ${bDay}` : `@${c.username}`}
                     </span>
-                  </span>
-                  <span
-                    role="button"
-                    tabIndex={0}
+                  </button>
+                  <button
                     aria-label={`Send ${c.displayName.split(' ')[0]} a little somethin'`}
-                    onClick={(e) => { e.stopPropagation(); navigate(`/send?toId=${c.id}&toName=${encodeURIComponent(c.displayName)}`) }}
+                    onClick={() => navigate(`/send?toId=${c.id}&toName=${encodeURIComponent(c.displayName)}`)}
                     style={{
                       flexShrink: 0, minWidth: '46px', height: '36px', display: 'flex',
                       alignItems: 'center', justifyContent: 'center', gap: '3px', cursor: 'pointer',
+                      border: 'none', background: 'none', padding: 0,
                     }}
                   >
                     <img src="/brand/wax_heart.png" alt="" style={{ width: '26px', height: 'auto' }} />
                     <svg aria-hidden width="16" height="20" viewBox="0 0 16 20" fill="none" stroke="#4A2424" strokeWidth="1.8" strokeLinecap="round">
                       <path d="M1 4c2.4-1.6 4-1.6 6.4 0s4 1.6 6.4 0M1 10c2.4-1.6 4-1.6 6.4 0s4 1.6 6.4 0M1 16c2.4-1.6 4-1.6 6.4 0s4 1.6 6.4 0" />
                     </svg>
-                  </span>
-                </button>
+                  </button>
+                </div>
               )
             })}
           </div>
