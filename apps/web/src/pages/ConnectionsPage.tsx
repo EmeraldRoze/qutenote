@@ -464,7 +464,7 @@ export default function ConnectionsPage() {
         </div>
 
         {/* Privacy */}
-        <div style={{ marginTop: '22px', padding: '14px 16px', borderRadius: '18px', background: 'var(--card)', border: '1.5px solid var(--outline)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px' }}>
+        <div style={{ marginTop: '22px', padding: '14px 16px', borderRadius: '18px', background: 'var(--card)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px' }}>
           <div>
             <div style={{ fontFamily: 'var(--font-body)', fontSize: '15px', fontWeight: 700 }}>Who sees your sends</div>
             <div style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--ink-mid)' }}>

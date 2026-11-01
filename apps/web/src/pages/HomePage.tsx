@@ -42,10 +42,16 @@ interface OfferCard {
 // card. It now repeats on the SAME 320px period as the colors underneath, so
 // the end of the loop is pixel-identical to the start.
 const SHEEN = 'repeating-linear-gradient(145deg, rgba(255,255,255,0) 0px, rgba(255,255,255,0.06) 72px, rgba(255,255,255,0.42) 160px, rgba(255,255,255,0.06) 248px, rgba(255,255,255,0) 320px)'
+// The sheen on HER gradient cards has to repeat on the same rhythm the card
+// drifts, or the shine snaps back at the end of the loop and the whole card
+// looks like it slid sideways (Emerald, Oct 30: "then all of a sudden the card
+// slides away"). The art tile travels 360 across and 514 down per loop, which
+// is 627.5px along the 145deg axis, so the sheen period is exactly half that.
+const SHEEN_ART = 'repeating-linear-gradient(145deg, rgba(255,255,255,0) 0px, rgba(255,255,255,0.06) 70.6px, rgba(255,255,255,0.42) 156.9px, rgba(255,255,255,0.06) 243.1px, rgba(255,255,255,0) 313.77px)'
 const ALL_OFFER_CARDS: (OfferCard & { key: string })[] = [
   // Her own gradients now, not mixes of them (Emerald, Oct 29): lemon sky on
   // the hands, apricot sky on the camera, periwinkle pink on the cake.
-  { key: 'invite', art: 'bff-live', artWidth: 525, artBoxH: 253, artOmbre: true, ombre: `${SHEEN}, url('/brand/lemon-sky-tile.webp')`, title: 'Invite friends,\nget free cards.', cta: 'INVITE', onClick: (nav) => nav('/invite') },
+  { key: 'invite', art: 'bff-live', artWidth: 525, artBoxH: 253, artOmbre: true, ombre: `${SHEEN_ART}, url('/brand/lemon-sky-tile.webp')`, title: 'Invite friends,\nget free cards.', cta: 'INVITE', onClick: (nav) => nav('/invite') },
   { key: 'first-card', art: 'gift', artWidth: 165, ombre: `${SHEEN}, repeating-linear-gradient(145deg, #AE8FD1 0px, #D6C7DF 80px, #EFE7E0 160px, #D6C7DF 240px, #AE8FD1 320px)`, title: 'Your first card is on us', cta: 'SEND A CARD', onClick: (nav) => nav('/send') },
   // Mailbox wears her Lavender paper, camera wears her Apricot sky (Emerald,
   // Oct 24; colors sampled from her gradient files), each the full diagonal
@@ -55,8 +61,8 @@ const ALL_OFFER_CARDS: (OfferCard & { key: string })[] = [
   // Her Lavender dusk card (qutenote-home-dates-card package, Oct 24): slate
   // into dusty lavender into baby blue, a glossy streak and a soft bottom
   // shadow, no paper grain, and it does not drift like the others.
-  { key: 'dates', art: 'cake', artWidth: 160, artOmbre: true, ombre: `${SHEEN}, url('/brand/periwinkle-pink-tile.webp')`, title: 'Remember the important things', cta: 'ADD A DATE', onClick: (nav) => nav('/dates/add') },
-  { key: 'photo', art: 'camera', artWidth: 190, artOmbre: true, ombre: `${SHEEN}, url('/brand/apricot-sky-tile.webp')`, title: 'Got a good photo? Mail it.', cta: 'UPLOAD A PHOTO', onClick: (nav) => nav('/send') },
+  { key: 'dates', art: 'cake', artWidth: 160, artOmbre: true, ombre: `${SHEEN_ART}, url('/brand/periwinkle-pink-tile.webp')`, title: 'Remember the important things', cta: 'ADD A DATE', onClick: (nav) => nav('/dates/add') },
+  { key: 'photo', art: 'camera', artWidth: 190, artOmbre: true, ombre: `${SHEEN_ART}, url('/brand/apricot-sky-tile.webp')`, title: 'Got a good photo? Mail it.', cta: 'UPLOAD A PHOTO', onClick: (nav) => nav('/send') },
 ]
 
 function OfferCarousel({ hasSentCard, hasHandwriting }: { hasSentCard: boolean; hasHandwriting: boolean }) {

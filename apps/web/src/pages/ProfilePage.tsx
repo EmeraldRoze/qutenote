@@ -72,7 +72,7 @@ function initialsOf(name: string): string {
 }
 
 const actionTile: React.CSSProperties = {
-  minHeight: '76px', borderRadius: '16px', border: '1.5px solid var(--stone)', background: 'var(--card)',
+  minHeight: '76px', borderRadius: '16px', background: 'var(--card)',
   display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '6px',
   fontFamily: 'var(--font-body)', fontSize: '13px', fontWeight: 700, color: 'var(--ink)', cursor: 'pointer',
   textTransform: 'none', letterSpacing: 0, padding: '8px 4px',
@@ -110,7 +110,7 @@ function CardSheet({ note, onClose }: { note: NoteThumb; onClose: () => void }) 
               ? `url(${note.cardImageUrl}) center/cover`
               : design?.art ? `url(${design.art}) center/cover` : design?.bg ?? 'var(--selected-fill)',
           }} />
-          <div style={{ marginTop: '14px', background: 'var(--card)', border: '1.5px solid var(--stone)', borderRadius: '14px', padding: '16px' }}>
+          <div style={{ marginTop: '14px', background: 'var(--card)', borderRadius: '14px', padding: '16px' }}>
             {isFlower && !decoded ? (
               <FlowerText text={text} size={54} />
             ) : (
@@ -367,7 +367,7 @@ export default function ProfilePage() {
           </div>
 
           {/* Left this month, free mode: no prices */}
-          <div style={{ marginTop: '16px', background: 'var(--card)', border: '1.5px solid var(--stone)', borderRadius: '22px', padding: '20px' }}>
+          <div style={{ marginTop: '16px', background: 'var(--card)', borderRadius: '22px', padding: '20px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
               <span style={{ fontFamily: 'var(--font-body)', fontSize: '15px', color: 'var(--ink)' }}>Left this month</span>
               <span style={{ fontFamily: 'var(--font-body)', fontSize: '14px', color: 'var(--ink)' }}>{renewLabel}</span>
@@ -384,7 +384,7 @@ export default function ProfilePage() {
           </div>
 
           {/* Stamp collection, one stamp per postcard sent */}
-          <div style={{ marginTop: '16px', background: 'var(--card)', border: '1.5px solid var(--stone)', borderRadius: '22px', padding: '16px 20px' }}>
+          <div style={{ marginTop: '16px', background: 'var(--card)', borderRadius: '22px', padding: '16px 20px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <span style={{ fontFamily: 'var(--font-body)', fontSize: '16px', fontWeight: 700, color: 'var(--ink)' }}>Your stamp collection</span>
               {stampsEarned > 0 && (
@@ -413,7 +413,7 @@ export default function ProfilePage() {
           </div>
 
           {/* Your address */}
-          <div style={{ marginTop: '16px', background: 'var(--card)', border: '1.5px solid var(--stone)', borderRadius: '22px', overflow: 'hidden' }}>
+          <div style={{ marginTop: '16px', background: 'var(--card)', borderRadius: '22px', overflow: 'hidden' }}>
             <button onClick={() => navigate('/settings/address')} style={{
               display: 'flex', alignItems: 'center', gap: '12px', width: '100%', minHeight: '60px',
               padding: '0 18px', border: 'none', background: 'none', cursor: 'pointer', textAlign: 'left',
