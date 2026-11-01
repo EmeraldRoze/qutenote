@@ -139,6 +139,19 @@ export default function ImportantDatesPage() {
   const [googleState, setGoogleState] = useState<'idle' | 'opening' | 'loading' | 'error'>('idle')
   const [googleError, setGoogleError] = useState('')
 
+  // Each header stamp retires for good once it has done its job, the way the
+  // sync-contacts stamp does on QTs (Emerald, Oct 30).
+  const PULLED_CONTACTS = 'qn_dates_pulled_contacts'
+  const PULLED_GOOGLE = 'qn_dates_pulled_google'
+  const [pulledContacts, setPulledContacts] = useState(
+    (() => { try { return !!localStorage.getItem(PULLED_CONTACTS) } catch { return false } })()
+  )
+  const [pulledGoogle, setPulledGoogle] = useState(
+    (() => { try { return !!localStorage.getItem(PULLED_GOOGLE) } catch { return false } })()
+  )
+  const showContactsStamp = contactsAvailable && !pulledContacts
+  const showGoogleStamp = !pulledGoogle
+
   async function spendGooglePass(pass: string) {
     setGoogleState('loading')
     try {
@@ -152,6 +165,8 @@ export default function ImportantDatesPage() {
       setContactsState('ready')
       setContactsOpen(true)
       setGoogleState('idle')
+      setPulledGoogle(true)
+      try { localStorage.setItem(PULLED_GOOGLE, new Date().toISOString()) } catch { /* private mode */ }
     } catch (err: any) {
       setGoogleError(err?.response?.data?.error ?? 'That did not go through.')
       setGoogleState('error')
@@ -235,6 +250,8 @@ export default function ImportantDatesPage() {
       setContactsChecked(contacts.length)
       setContactBdays(contactsWithBirthdays(contacts).sort((a, b) => a.name.localeCompare(b.name)))
       setContactsState('ready')
+      setPulledContacts(true)
+      try { localStorage.setItem(PULLED_CONTACTS, new Date().toISOString()) } catch { /* private mode */ }
     } catch (err: any) {
       setContactsError(String(err?.message ?? err ?? ''))
       setContactsState('denied')
@@ -336,17 +353,49 @@ export default function ImportantDatesPage() {
       <style>{'.qn-chips::-webkit-scrollbar{display:none}'}</style>
 
       {/* Title band — clear header space, 144px keeps the 36px ruling rhythm */}
-      <header className="title-band" style={{ height: '144px' }}>
-        <div style={{ maxWidth: '480px', width: '100%', margin: '0 auto', padding: '0 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <h1 style={{ margin: 0, fontFamily: 'var(--font-display)', fontWeight: 300, fontSize: '28px', letterSpacing: '-0.02em', color: 'var(--ink)' }}>
-            Important dates
-          </h1>
-          <button onClick={() => navigate('/dates/add')} aria-label="Add a date" style={{
-            width: '44px', height: '44px', borderRadius: '50%', border: '2px solid var(--stone)', flex: 'none', boxSizing: 'border-box',
-            background: 'var(--btn)', color: 'var(--ink)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
-          }}>
-            <svg aria-hidden width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
-          </button>
+      {/* once both stamps retire there is nothing up here, so the band
+          shrinks to plain breathing room (Emerald, Oct 30) */}
+      <header className="title-band" style={{ height: showContactsStamp || showGoogleStamp ? '144px' : '96px' }}>
+        <div style={{ maxWidth: '480px', width: '100%', margin: '0 auto', padding: '0 20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+          {/* No title and no plus any more: the header is where you fill the
+              page from, and each stamp retires once you've used it. Quick add
+              below is the by-hand route (Emerald, Oct 30). */}
+          {showContactsStamp && (
+            <button
+              onClick={handlePullContacts}
+              disabled={contactsState === 'loading'}
+              className="qn-stamp"
+              style={{
+                flex: 1, minHeight: '84px', border: '10px solid transparent', background: 'transparent',
+                padding: '6px 4px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
+                opacity: contactsState === 'loading' ? 0.6 : 1,
+              }}
+            >
+              <QEmoji name="bff" size={34} style={{ flex: 'none', height: 'auto' }} />
+              <span style={{
+                fontFamily: 'var(--font-body)', fontSize: '13px', fontWeight: 700, lineHeight: '16px',
+                color: 'var(--ink)', textAlign: 'left', textTransform: 'none', letterSpacing: 0, whiteSpace: 'pre-line',
+              }}>{contactsState === 'loading' ? 'Reading your\ncontacts…' : 'Birthdays from\ncontacts'}</span>
+            </button>
+          )}
+          {showGoogleStamp && (
+            <button
+              onClick={startGoogle}
+              disabled={googleState === 'opening' || googleState === 'loading'}
+              className="qn-stamp"
+              style={{
+                flex: 1, minHeight: '84px', border: '10px solid transparent', background: 'transparent',
+                padding: '6px 4px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
+                opacity: googleState === 'opening' || googleState === 'loading' ? 0.6 : 1,
+              }}
+            >
+              <QEmoji name="calendar" size={34} style={{ flex: 'none', height: 'auto' }} />
+              <span style={{
+                fontFamily: 'var(--font-body)', fontSize: '13px', fontWeight: 700, lineHeight: '16px',
+                color: 'var(--ink)', textAlign: 'left', textTransform: 'none', letterSpacing: 0, whiteSpace: 'pre-line',
+              }}>{googleState === 'loading' ? 'Reading your\nGoogle…' : 'Birthdays from\nGoogle'}</span>
+            </button>
+          )}
         </div>
       </header>
 
@@ -577,46 +626,9 @@ export default function ImportantDatesPage() {
           <span aria-hidden style={{ flex: 'none', width: '12px' }} />
         </div>
 
-        {/* Pull birthdays from contacts — native app only */}
-        {contactsAvailable && contactsState !== 'ready' && (
-          <button onClick={handlePullContacts} style={{
-            ...whiteCard, marginTop: '20px', width: '100%', minHeight: '72px',
-            display: 'flex', alignItems: 'center', gap: '14px', padding: '10px 16px',
-            fontFamily: 'var(--font-body)', textAlign: 'left', color: 'var(--ink)', cursor: 'pointer',
-            textTransform: 'none', letterSpacing: 0,
-            opacity: contactsState === 'loading' ? 0.6 : 1,
-          }}>
-            <QEmoji name="bff" size={48} style={{ flex: 'none', height: 'auto' }} />
-            <span style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '2px' }}>
-              <span style={{ fontSize: '15px', fontWeight: 700 }}>
-                {contactsState === 'loading' ? 'Reading your contacts…' : 'Pull birthdays from contacts'}
-              </span>
-              <span style={{ fontSize: '13px', color: 'var(--ink)', fontWeight: 400 }}>Fill this page in one tap</span>
-            </span>
-            <QIcon name="chevron-right" size={14} />
-          </button>
-        )}
         {contactsState === 'denied' && (
           <p style={hint}>QuteNote can't see your contacts{contactsError ? ` (${contactsError})` : ''}. Open Settings → QuteNote → Contacts and allow access, then try again.</p>
         )}
-
-        {/* Google Contacts — works on the website too */}
-        <button onClick={startGoogle} style={{
-          ...whiteCard, marginTop: '12px', width: '100%', minHeight: '72px',
-          display: 'flex', alignItems: 'center', gap: '14px', padding: '10px 16px',
-          fontFamily: 'var(--font-body)', textAlign: 'left', color: 'var(--ink)', cursor: 'pointer',
-          textTransform: 'none', letterSpacing: 0,
-          opacity: googleState === 'opening' || googleState === 'loading' ? 0.6 : 1,
-        }}>
-          <QEmoji name="calendar" size={48} style={{ flex: 'none', height: 'auto' }} />
-          <span style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '2px' }}>
-            <span style={{ fontSize: '15px', fontWeight: 700 }}>
-              {googleState === 'loading' ? 'Reading your Google contacts…' : googleState === 'opening' ? 'Opening Google…' : 'Pull birthdays from Google'}
-            </span>
-            <span style={{ fontSize: '13px', color: 'var(--ink)', fontWeight: 400 }}>Everyone in your Google contacts with a birthday</span>
-          </span>
-          <QIcon name="chevron-right" size={14} />
-        </button>
         {googleState === 'error' && <p style={hint}>{googleError}</p>}
         {contactsState === 'ready' && (
           <div style={{ marginTop: '20px' }}>
