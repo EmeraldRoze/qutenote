@@ -5,13 +5,13 @@
 :root {
   /* QuteNote palette 4, Oct 2026 — warm paper, oxblood ink, baby blue buttons.
      Legacy variable names stay so every inline style follows the repaint. */
-  --paper:          #F4EFE9;  /* the background of every screen */
+  --paper:          #F7F3EE;  /* the background of every screen */
   --card:           #FBF8F3;  /* white cards sitting on the ruled lines */
-  --outline:        #B4897A;  /* rosy brown: EVERY outline, solid and dashed */
+  --outline:        #EEFC4E;  /* rosy brown: EVERY outline, solid and dashed */
   --btn:            #BADAFF;  /* baby blue: primary button fill */
   --highlight:      #EEFC4E;  /* neon yellow: progress, pills, badges, stamp hearts */
   --stamp-center:   #9E625F;  /* dusty rose: note-card stamp center, + badges */
-  --selected-fill:  #F6F0EB;  /* fill behind dashed selected states */
+  --selected-fill:  #F8F4F0;  /* fill behind dashed selected states */
   --light-blush:    #E3D5CC;  /* back buttons, panels, segmented switches */
   --light-blue:     #E9EDF1;  /* I NEED WORDS and soft note boxes */
   --nav-inactive:   #4A2424;  /* tab labels are oxblood too; inactive ones are dimmed */
@@ -21,31 +21,31 @@
   --ultraviolet:    #4A2424;  /* old action color: accents/links read as oxblood now */
   --lavender:       #4A2424;
   --lavender-light: #E3D5CC;
-  --lavender-pale:  #F6F0EB;
+  --lavender-pale:  #F8F4F0;
   --lavender-dark:  #3A1C1C;
   --lavender-deep:  #4A2424;
   --lavender-soft:  #B4897A;
 
   --blush:          #D5ADA3;  /* edge of the Rose paper ombre, avatars */
-  --blush-pale:     #F6F0EB;
+  --blush-pale:     #F8F4F0;
 
   --ink:            #4A2424;  /* ALL text and icons — nothing is black */
   --ink-mid:        #4A2424;  /* Emerald, Oct 25 (final): ALL text is oxblood */
   --ink-muted:      #4A2424;  /* all text is oxblood */
 
-  --cream:          #F4EFE9;
-  --cream-warm:     #F6F0EB;
+  --cream:          #F7F3EE;
+  --cream-warm:     #F8F4F0;
   --cream-ruled:    #ACA8B8;  /* 1px ruled line every 36px */
-  --stone:          #B4897A;  /* card/field border */
+  --stone:          #EEFC4E;  /* card/field border */
   --divider:        #E6DED3;
   --title-band-rule:#ACA8B8;
   --lime:           #EEFC4E;  /* highlights keep their old hook names */
   --lime-tint:      #E9EDF1;  /* I NEED WORDS box is light blue now */
-  --lime-border:    #B4897A;
+  --lime-border:    #EEFC4E;
   --neon-pink:      #D5ADA3;  /* carousel accent → blush */
   --pink-pale:      #EBDDD6;
   --lilac:          #B4897A;  /* dashed selected-state borders */
-  --stamp-frame:    #F6F0EB;
+  --stamp-frame:    #F8F4F0;
   --placeholder:    #4A2424;
   --note-ink:       #4A2424;
   --logo-heart:     #EEFC4E;
@@ -54,7 +54,7 @@
   --error:          #B4453C;  /* warmed into the palette */
   --error-pale:     #F6E3DE;
 
-  --border-default: #B4897A;
+  --border-default: #EEFC4E;
   --border-focused: #4A2424;
 
   --shadow-card:    0 4px 14px rgba(74,36,36,0.08);
@@ -167,8 +167,8 @@ body::before {
 
 /* The Rose paper ombre (Home carousel) */
 .rose-paper {
-  background-image: url('/brand/paper_texture.png'), radial-gradient(circle at 50% 38%, #F1EBE3 0%, #D5ADA3 100%);
-  border: 1.5px solid var(--outline);
+  background-image: url('/brand/paper_texture.png'), radial-gradient(circle at 50% 38%, #F7F3EE 0%, #D5ADA3 100%);
+  border: none;
 }
 
 /* Living ombre (Emerald, Oct 24): the gradient slowly breathes across the
