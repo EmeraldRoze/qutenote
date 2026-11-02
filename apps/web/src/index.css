@@ -7,7 +7,7 @@
      Legacy variable names stay so every inline style follows the repaint. */
   --paper:          #F7F3EE;  /* the background of every screen */
   --card:           #FBF8F3;  /* white cards sitting on the ruled lines */
-  --outline:        #EEFC4E;  /* rosy brown: EVERY outline, solid and dashed */
+  --outline:        #B4897A;  /* rosy brown: EVERY outline, solid and dashed */
   --btn:            #BADAFF;  /* baby blue: primary button fill */
   --highlight:      #EEFC4E;  /* neon yellow: progress, pills, badges, stamp hearts */
   --stamp-center:   #9E625F;  /* dusty rose: note-card stamp center, + badges */
@@ -36,12 +36,12 @@
   --cream:          #F7F3EE;
   --cream-warm:     #F8F4F0;
   --cream-ruled:    #ACA8B8;  /* 1px ruled line every 36px */
-  --stone:          #EEFC4E;  /* card/field border */
+  --stone:          #B4897A;  /* card/field border */
   --divider:        #E6DED3;
   --title-band-rule:#ACA8B8;
   --lime:           #EEFC4E;  /* highlights keep their old hook names */
   --lime-tint:      #E9EDF1;  /* I NEED WORDS box is light blue now */
-  --lime-border:    #EEFC4E;
+  --lime-border:    #B4897A;
   --neon-pink:      #D5ADA3;  /* carousel accent → blush */
   --pink-pale:      #EBDDD6;
   --lilac:          #B4897A;  /* dashed selected-state borders */
@@ -54,7 +54,7 @@
   --error:          #B4453C;  /* warmed into the palette */
   --error-pale:     #F6E3DE;
 
-  --border-default: #EEFC4E;
+  --border-default: #B4897A;
   --border-focused: #4A2424;
 
   --shadow-card:    0 4px 14px rgba(74,36,36,0.08);
