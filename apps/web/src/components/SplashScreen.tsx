@@ -17,8 +17,8 @@ export default function SplashScreen() {
   useEffect(() => {
     if (state !== 'in') return
     try { sessionStorage.setItem(SHOWN_KEY, '1') } catch { /* private mode */ }
-    const leave = setTimeout(() => setState('out'), 1600)
-    const gone = setTimeout(() => setState('hidden'), 2100)
+    const leave = setTimeout(() => setState('out'), 1250)
+    const gone = setTimeout(() => setState('hidden'), 1720)
     return () => { clearTimeout(leave); clearTimeout(gone) }
   }, [state])
 
@@ -37,7 +37,7 @@ export default function SplashScreen() {
         boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '16px',
         pointerEvents: 'none', overflow: 'hidden',
         opacity: state === 'out' ? 0 : 1,
-        transition: 'opacity 0.5s ease',
+        transition: 'opacity 0.45s ease',
       }}
     >
       <style>{`
@@ -47,16 +47,14 @@ export default function SplashScreen() {
         @keyframes qn-press { 0% { opacity: 0; transform: scale(1.5) rotate(-12deg); }
                               65% { opacity: 1; transform: scale(0.95) rotate(2deg); }
                               100% { opacity: 1; transform: scale(1) rotate(0deg); } }
-        @keyframes qn-words { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
         .qn-ring   { stroke-dasharray: 540; animation: qn-ring 0.55s ease-out both; }
         .qn-dots   { animation: qn-dots 0.3s 0.45s ease-out both; }
         .qn-strike { stroke-dasharray: 230; animation: qn-strike 0.42s ease-out both; }
         .qn-s1 { animation-delay: 0.30s } .qn-s2 { animation-delay: 0.38s }
         .qn-s3 { animation-delay: 0.46s } .qn-s4 { animation-delay: 0.54s }
         .qn-wax    { animation: qn-press 0.5s 0.62s cubic-bezier(.2,.9,.3,1.35) both; transform-origin: 98px 96px; }
-        .qn-words  { animation: qn-words 0.45s 0.9s ease-out both; }
-        @media (prefers-reduced-motion: reduce) {
-          .qn-ring, .qn-dots, .qn-strike, .qn-wax, .qn-words { animation: none; opacity: 1; stroke-dashoffset: 0; transform: none; }
+                @media (prefers-reduced-motion: reduce) {
+          .qn-ring, .qn-dots, .qn-strike, .qn-wax { animation: none; opacity: 1; stroke-dashoffset: 0; transform: none; }
         }
       `}</style>
 
@@ -92,10 +90,6 @@ export default function SplashScreen() {
             preserveAspectRatio="xMidYMid meet" filter="url(#qn-lift)" />
         </svg>
 
-        <span className="qn-words" style={{
-          fontFamily: 'var(--font-display)', fontWeight: 300, fontSize: '25px',
-          letterSpacing: '-0.01em', color: 'var(--ink)', textAlign: 'center',
-        }}>Send something real.</span>
       </div>
 
       <span style={block('100%', 88, 18)} />
