@@ -97,9 +97,10 @@ export default function TabBar() {
           color: 'var(--ink)', fontFamily: 'var(--font-body)', fontWeight: 700,
           fontSize: '13px', letterSpacing: '0.2em', paddingLeft: '0.2em',
         }}>
-          <svg aria-hidden width="44" height="30" viewBox="0 0 44 30">
+          <svg aria-hidden width="46" height="30" viewBox="0 0 50 30">
             <image href="/brand/send_stamp_heart.png" x="-1" y="2.5" width="29" height="25.6" />
-            <path d="M23 9c3-2 5-2 8 0s5 2 8 0M23 15c3-2 5-2 8 0s5 2 8 0M23 21c3-2 5-2 8 0s5 2 8 0" fill="none" stroke="#4A2424" strokeWidth="1.8" strokeLinecap="round" />
+            {/* nudged clear of the heart, the way the wax heart reads everywhere else */}
+            <path d="M29 9c3-2 5-2 8 0s5 2 8 0M29 15c3-2 5-2 8 0s5 2 8 0M29 21c3-2 5-2 8 0s5 2 8 0" fill="none" stroke="#4A2424" strokeWidth="1.8" strokeLinecap="round" />
           </svg>
           SEND
         </span>

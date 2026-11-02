@@ -4,7 +4,7 @@ import QEmoji from './QEmoji'
 
 // The Happenings status row + composer, shared by Home and Profile.
 
-const label: React.CSSProperties = { fontSize: '11px', fontWeight: 700, letterSpacing: '1.4px', textTransform: 'uppercase', color: 'var(--ink-mid)' }
+const label: React.CSSProperties = { fontSize: '12px', fontWeight: 700, letterSpacing: '1.4px', textTransform: 'uppercase', color: 'var(--ink-mid)' }
 export const STATUS_EMOJI = ['thought-bubble', 'sun', 'heart', 'coffee', 'moon', 'cloud', 'rainbow', 'music', 'flower', 'smile', 'joy', 'star', 'plane']
 
 export interface MyStatus { id: string; emoji: string | null; text: string; createdAt: string }

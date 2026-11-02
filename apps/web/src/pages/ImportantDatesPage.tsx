@@ -401,8 +401,8 @@ export default function ImportantDatesPage() {
 
       <div style={{ maxWidth: '480px', margin: '0 auto', padding: '0 20px' }}>
 
-        {/* Reminders — neon outline, trying it out (Emerald, Nov 2) */}
-        <div style={{ ...whiteCard, border: '2px solid var(--highlight)', marginTop: '20px', padding: '14px 16px', display: 'flex', alignItems: 'center', gap: '14px' }}>
+        {/* Reminders — back to Light Blush like everything else (Emerald, Nov 2) */}
+        <div style={{ ...whiteCard, marginTop: '20px', padding: '14px 16px', display: 'flex', alignItems: 'center', gap: '14px' }}>
           <span aria-hidden style={{
             width: '44px', height: '44px', flex: 'none', borderRadius: '50%',
             background: 'var(--lime)', border: '1.5px solid var(--stone)',
@@ -509,7 +509,7 @@ export default function ImportantDatesPage() {
 
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '3px', textAlign: 'center' }}>
                   {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((d, i) => (
-                    <span key={i} style={{ fontSize: '10px', fontFamily: 'var(--font-body)', color: 'var(--ink)', opacity: 0.5, paddingBottom: '4px' }}>{d}</span>
+                    <span key={i} style={{ fontSize: '12px', fontFamily: 'var(--font-body)', color: 'var(--ink)', opacity: 0.75, paddingBottom: '4px' }}>{d}</span>
                   ))}
                   {Array.from({ length: firstWeekday }).map((_, i) => <span key={`pad-${i}`} />)}
                   {Array.from({ length: daysInMonth }).map((_, i) => {
@@ -537,7 +537,7 @@ export default function ImportantDatesPage() {
                         {here.length > 0 && (
                           <span style={{ display: 'flex', alignItems: 'center', gap: '1px', marginTop: '1px' }}>
                             <QEmoji name={artForLabel(here[0].label)} size={16} style={{ height: 'auto' }} />
-                            {here.length > 1 && <span style={{ fontSize: '9px', fontWeight: 700 }}>+{here.length - 1}</span>}
+                            {here.length > 1 && <span style={{ fontSize: '12px', fontWeight: 700 }}>+{here.length - 1}</span>}
                           </span>
                         )}
                       </button>
@@ -572,7 +572,7 @@ export default function ImportantDatesPage() {
             {grouped.map((group) => (
               <div key={group.key}>
                 <div style={{
-                  fontFamily: 'var(--font-body)', fontSize: '11px', fontWeight: 700,
+                  fontFamily: 'var(--font-body)', fontSize: '12px', fontWeight: 700,
                   letterSpacing: '0.09em', textIndent: '0.09em', color: 'var(--ink)', opacity: 0.75,
                   margin: '14px 0 2px',
                 }}>{group.title}</div>
@@ -584,7 +584,7 @@ export default function ImportantDatesPage() {
                     }}>
                       <span style={{ flex: 'none', width: '40px', textAlign: 'center', display: 'flex', flexDirection: 'column' }}>
                         <span style={{ fontFamily: 'var(--font-body)', fontSize: '17px', fontWeight: 700, lineHeight: '19px', color: 'var(--ink)' }}>{d.day}</span>
-                        <span style={{ fontFamily: 'var(--font-body)', fontSize: '10px', letterSpacing: '0.06em', color: 'var(--ink)', opacity: 0.75 }}>{weekdayOf(d.month, d.day)}</span>
+                        <span style={{ fontFamily: 'var(--font-body)', fontSize: '12px', letterSpacing: '0.06em', color: 'var(--ink)', opacity: 0.75 }}>{weekdayOf(d.month, d.day)}</span>
                       </span>
                       <QEmoji name={artForLabel(d.label)} size={30} style={{ flex: 'none', height: 'auto' }} />
                       <span style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column' }}>
@@ -685,7 +685,7 @@ export default function ImportantDatesPage() {
                           height: '34px', padding: '0 14px', borderRadius: '999px', flex: 'none',
                           border: '1.5px solid var(--stone)', cursor: 'pointer',
                           background: 'var(--card)', color: 'var(--ink)',
-                          fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '11px', letterSpacing: '0.12em',
+                          fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '12px', letterSpacing: '0.12em',
                           opacity: addingContact === c.name ? 0.6 : 1,
                         }}
                       >

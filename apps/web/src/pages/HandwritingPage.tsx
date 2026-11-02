@@ -440,7 +440,7 @@ export default function HandwritingPage() {
             : 'Write a few little words and QuteNote learns your real handwriting — flow and all — then turns it into your own font.'}
         </p>
         <p className="on-paper" style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--ink-muted)', marginBottom: '22px' }}>
-          {doneCount} of {TOTAL_CHARS} letters learned.{doneCount >= TOTAL_CHARS ? ' Rewrite any word anytime to freshen it up.' : ' Do it all now, or come back anytime.'} <span style={{ fontSize: '10px' }}>· build {WEB_BUILD || 'dev'}</span>
+          {doneCount} of {TOTAL_CHARS} letters learned.{doneCount >= TOTAL_CHARS ? ' Rewrite any word anytime to freshen it up.' : ' Do it all now, or come back anytime.'} <span style={{ fontSize: '12px' }}>· build {WEB_BUILD || 'dev'}</span>
         </p>
 
         {WORD_SESSIONS.map((s) => {
@@ -462,7 +462,7 @@ export default function HandwritingPage() {
                 <div style={{ fontFamily: 'var(--font-body)', fontSize: '12px', color: 'var(--ink-mid)' }}>{s.detail} · {sessionDone} of {sessionChars.length} letters</div>
               </div>
               <span style={{
-                fontFamily: 'var(--font-body)', fontSize: '11px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase',
+                fontFamily: 'var(--font-body)', fontSize: '12px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase',
                 color: complete ? '#4A2424' : 'var(--ink-mid)',
               }}>
                 {complete ? '✓ Done' : sessionDone > 0 ? 'Continue' : 'Start'}

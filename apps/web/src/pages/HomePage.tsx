@@ -99,20 +99,21 @@ function OfferCarousel({ hasSentCard, hasHandwriting }: { hasSentCard: boolean; 
         aria-label="Things you can do"
       >
         {OFFER_CARDS.map((c, i) => (
-          <div key={i} className={c.ombre ? (c.live === false ? 'rose-paper' : `rose-paper ombre-live${c.artOmbre ? ' ombre-art' : ''}`) : 'rose-paper'}
-            /* tap anywhere on the invite card still works, but the card is no
-               longer announced as a button wrapped around another button
-               (WCAG 4.1.2). The CTA inside is the real control. */
-            onClick={c.key === 'invite' ? () => c.onClick(navigate) : undefined}
+          /* Every card is the whole tap target now, the gradients hold still,
+             and there is no button inside — they all read like the invite card
+             did (Emerald, Nov 2). */
+          <div key={i} className="rose-paper"
+            onClick={() => c.onClick(navigate)}
             style={{
-            ...(c.key === 'invite' ? { cursor: 'pointer' } : {}),
-            ...(c.ombre ? (c.live === false
-              ? { backgroundImage: c.ombre }
-              : { ['--qn-ombre' as string]: c.ombre }) : {}),
+            cursor: 'pointer',
+            ...(c.ombre ? {
+              backgroundImage: c.ombre,
+              ...(c.artOmbre ? { backgroundSize: 'auto, cover', backgroundRepeat: 'repeat, no-repeat' } : {}),
+            } : {}),
             flex: '0 0 calc(100% - 32px)', height: '370px', scrollSnapAlign: 'start',
             position: 'relative', borderRadius: '26px', boxSizing: 'border-box',
-            padding: '26px 22px 22px', display: 'flex', flexDirection: 'column',
-            alignItems: 'center', textAlign: 'center',
+            padding: '26px 22px', display: 'flex', flexDirection: 'column',
+            alignItems: 'center', justifyContent: 'center', gap: '4px', textAlign: 'center',
           }}>
             <div style={{ height: `${c.artBoxH ?? 170}px`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               {c.art === 'cake' ? (
@@ -124,13 +125,6 @@ function OfferCarousel({ hasSentCard, hasHandwriting }: { hasSentCard: boolean; 
             <p style={{ margin: '16px 0 0', fontFamily: 'var(--font-display)', fontSize: '22px', lineHeight: '36px', letterSpacing: '-0.01em', color: 'var(--ink)', whiteSpace: 'pre-line' }}>
               {c.title}
             </p>
-            {c.key !== 'invite' && (
-              <button onClick={(e) => { e.stopPropagation(); c.onClick(navigate) }} style={{
-                marginTop: 'auto', height: '50px', padding: '0 28px', borderRadius: '25px', cursor: 'pointer',
-                background: 'var(--btn)', color: 'var(--ink)', fontFamily: 'var(--font-body)',
-                fontSize: '15px', fontWeight: 700, letterSpacing: '0.08em', boxSizing: 'border-box',
-              }}>{c.cta}</button>
-            )}
             {/* stopPropagation on the arrows: the invite card is itself a tap
                 target, so without it the arrow opened the invite page instead
                 of turning to the next card (Emerald, Oct 25) */}

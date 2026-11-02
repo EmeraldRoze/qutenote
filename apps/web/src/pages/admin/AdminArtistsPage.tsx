@@ -151,7 +151,7 @@ export default function AdminArtistsPage() {
                 </>
               ) : (
                 <span style={{
-                  fontSize: '11px', fontWeight: 700, fontFamily: 'var(--font-body)', padding: '4px 10px', borderRadius: '10px',
+                  fontSize: '12px', fontWeight: 700, fontFamily: 'var(--font-body)', padding: '4px 10px', borderRadius: '10px',
                   background: a.status === 'APPROVED' ? 'var(--highlight)' : 'var(--error-pale)',
                 }}>{a.status}</span>
               )}

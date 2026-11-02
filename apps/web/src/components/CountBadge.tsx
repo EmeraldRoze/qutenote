@@ -13,7 +13,7 @@ export default function CountBadge({ count, label, style }: {
       display: 'flex', alignItems: 'center', justifyContent: 'center',
       minWidth: '19px', height: '19px', padding: '0 4px', boxSizing: 'border-box',
       borderRadius: '10px', background: 'var(--highlight)', border: '1.6px solid var(--ink)',
-      fontFamily: 'var(--font-body)', fontSize: '11px', fontWeight: 700, lineHeight: 1,
+      fontFamily: 'var(--font-body)', fontSize: '12px', fontWeight: 700, lineHeight: 1,
       color: 'var(--ink)', letterSpacing: 0, textTransform: 'none',
       ...style,
     }}>{count > 99 ? '99+' : count}</span>

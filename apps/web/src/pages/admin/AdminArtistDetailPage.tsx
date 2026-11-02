@@ -80,7 +80,7 @@ export default function AdminArtistDetailPage() {
             <div style={panel}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
                 <span style={{
-                  fontSize: '11px', fontWeight: 700, fontFamily: 'var(--font-body)', padding: '4px 10px',
+                  fontSize: '12px', fontWeight: 700, fontFamily: 'var(--font-body)', padding: '4px 10px',
                   borderRadius: '10px', background: a.status === 'APPROVED' ? 'var(--highlight)' : a.status === 'DECLINED' ? 'var(--error-pale)' : 'var(--light-blush)',
                 }}>{a.status}</span>
                 <span style={{ fontFamily: 'var(--font-body)', fontSize: '13px' }}>

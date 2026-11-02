@@ -238,7 +238,7 @@ export default function CollectAddressPage() {
               {submitting ? 'Saving...' : 'Share my address'}
             </button>
 
-            <p style={{ fontSize: '11px', color: 'var(--ink-muted)', textAlign: 'center', lineHeight: '18px' }}>
+            <p style={{ fontSize: '12px', color: 'var(--ink-muted)', textAlign: 'center', lineHeight: '18px' }}>
               Your address is only shared with {invite?.sender.displayName} for sending you mail. We never share it with anyone else.
             </p>
           </form>

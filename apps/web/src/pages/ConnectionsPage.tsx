@@ -183,7 +183,7 @@ export default function ConnectionsPage() {
       style={{
         height: '34px', padding: '0 12px', borderRadius: '999px', cursor: 'pointer', flexShrink: 0,
         border: '1.5px solid var(--outline)', background: requested.has(id) ? 'var(--selected-fill)' : 'var(--card)',
-        color: 'var(--ink)', fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '11px', letterSpacing: '0.12em',
+        color: 'var(--ink)', fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '12px', letterSpacing: '0.12em',
       }}
     >
       {requested.has(id) ? 'Requested' : 'Add QT'}
@@ -379,8 +379,8 @@ export default function ConnectionsPage() {
                       <span style={{ fontFamily: 'var(--font-body)', fontSize: '16px', fontWeight: 700 }}>{r.displayName}</span>
                       <span style={{ fontFamily: 'var(--font-body)', fontSize: '14px' }}>@{r.username}</span>
                     </span>
-                    <button onClick={() => acceptRequest(r.requestId)} style={{ height: '34px', padding: '0 12px', borderRadius: '999px', border: '1.5px solid var(--outline)', background: 'var(--btn)', color: 'var(--ink)', fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '11px', letterSpacing: '0.12em', cursor: 'pointer' }}>Yes</button>
-                    <button onClick={() => declineRequest(r.requestId)} style={{ height: '34px', padding: '0 10px', borderRadius: '999px', border: '1.5px solid var(--outline)', background: 'var(--card)', color: 'var(--ink)', fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '11px', letterSpacing: '0.12em', cursor: 'pointer' }}>No</button>
+                    <button onClick={() => acceptRequest(r.requestId)} style={{ height: '34px', padding: '0 12px', borderRadius: '999px', border: '1.5px solid var(--outline)', background: 'var(--btn)', color: 'var(--ink)', fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '12px', letterSpacing: '0.12em', cursor: 'pointer' }}>Yes</button>
+                    <button onClick={() => declineRequest(r.requestId)} style={{ height: '34px', padding: '0 10px', borderRadius: '999px', border: '1.5px solid var(--outline)', background: 'var(--card)', color: 'var(--ink)', fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '12px', letterSpacing: '0.12em', cursor: 'pointer' }}>No</button>
                   </div>
                 ))}
               </div>
@@ -472,8 +472,8 @@ export default function ConnectionsPage() {
             </div>
           </div>
           <span style={{ display: 'flex', padding: '3px', borderRadius: '10px', background: 'var(--light-blush)', flexShrink: 0 }}>
-            <button onClick={() => user?.isPrivate || togglePrivacy()} style={{ height: '32px', padding: '0 12px', border: 'none', borderRadius: '8px', background: user?.isPrivate ? 'var(--card)' : 'transparent', fontFamily: 'var(--font-body)', fontSize: '11px', fontWeight: 700, letterSpacing: '0.1em', color: 'var(--ink)', cursor: 'pointer' }}>Private</button>
-            <button onClick={() => user?.isPrivate && togglePrivacy()} style={{ height: '32px', padding: '0 12px', border: 'none', borderRadius: '8px', background: user?.isPrivate ? 'transparent' : 'var(--card)', fontFamily: 'var(--font-body)', fontSize: '11px', fontWeight: 700, letterSpacing: '0.1em', color: 'var(--ink)', cursor: 'pointer' }}>Public</button>
+            <button onClick={() => user?.isPrivate || togglePrivacy()} style={{ height: '32px', padding: '0 12px', border: 'none', borderRadius: '8px', background: user?.isPrivate ? 'var(--card)' : 'transparent', fontFamily: 'var(--font-body)', fontSize: '12px', fontWeight: 700, letterSpacing: '0.1em', color: 'var(--ink)', cursor: 'pointer' }}>Private</button>
+            <button onClick={() => user?.isPrivate && togglePrivacy()} style={{ height: '32px', padding: '0 12px', border: 'none', borderRadius: '8px', background: user?.isPrivate ? 'transparent' : 'var(--card)', fontFamily: 'var(--font-body)', fontSize: '12px', fontWeight: 700, letterSpacing: '0.1em', color: 'var(--ink)', cursor: 'pointer' }}>Public</button>
           </span>
         </div>
       </div>

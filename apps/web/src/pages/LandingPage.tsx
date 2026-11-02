@@ -156,7 +156,7 @@ export default function LandingPage() {
         <section id="top" style={{ ...ruled, overflow: 'hidden' }}>
           <div style={{ ...container, paddingTop: 'clamp(48px, 7vw, 96px)', paddingBottom: 'clamp(64px, 8vw, 112px)', display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 'clamp(40px, 5vw, 72px)' }}>
             <div style={{ flex: '1 1 460px', minWidth: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '22px' }}>
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', height: '32px', padding: '0 14px', borderRadius: '16px', background: PALE, fontFamily: mono, fontWeight: 700, fontSize: '11px', letterSpacing: '0.16em', textTransform: 'uppercase', color: UV }}>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', height: '32px', padding: '0 14px', borderRadius: '16px', background: PALE, fontFamily: mono, fontWeight: 700, fontSize: '12px', letterSpacing: '0.16em', textTransform: 'uppercase', color: UV }}>
                 <Art name="star-gold" size={18} />Early access
               </span>
               <h1 style={{ margin: 0, fontFamily: display, fontWeight: 400, letterSpacing: '-0.02em', color: INK, fontSize: 'clamp(46px, 6.4vw, 88px)', lineHeight: 1.0 }}>
@@ -189,7 +189,7 @@ export default function LandingPage() {
                       <span style={{ display: 'flex', width: '100%', height: '100%', background: UV, borderRadius: '2px', alignItems: 'center', justifyContent: 'center' }}><PostmarkHeart /></span>
                     </span>
                     <span style={{ fontFamily: mono, fontWeight: 700, fontSize: '13px', color: INK, marginTop: 'auto' }}>MAYA OKAFOR</span>
-                    <span style={{ fontFamily: mono, fontSize: '11px', color: INK_LIGHT }}>ADDRESS ON FILE</span>
+                    <span style={{ fontFamily: mono, fontSize: '12px', color: INK_LIGHT }}>ADDRESS ON FILE</span>
                   </div>
                 </div>
                 <div style={{ position: 'absolute', left: 0, top: '2%', transform: 'rotate(-10deg)' }}><Art name="cake" size={112} /></div>
@@ -220,7 +220,7 @@ export default function LandingPage() {
                 <div key={s.step} style={{ display: 'flex', flexDirection: 'column', gap: '14px', padding: '28px 24px 30px', borderRadius: '20px', background: CREAM, border: `1px solid ${LILAC}` }}>
                   <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
                     <Art name={s.art} size={92} style={{ margin: '-8px 0 0 -6px' }} />
-                    <span style={{ ...eyebrow, fontSize: '11px', color: '#A78BC7' }}>Step {s.step}</span>
+                    <span style={{ ...eyebrow, fontSize: '12px', color: '#A78BC7' }}>Step {s.step}</span>
                   </div>
                   <h3 style={{ ...h2Style, fontSize: '22px', lineHeight: 1.2 }}>{s.title}</h3>
                   <p style={bodyText}>{s.copy}</p>

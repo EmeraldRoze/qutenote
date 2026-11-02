@@ -98,7 +98,7 @@ export default function ArtistUploadPage() {
     const approved = status === 'APPROVED'
     return (
       <span style={{
-        fontSize: '11px', fontWeight: 700, fontFamily: 'var(--font-body)', padding: '3px 9px', borderRadius: '10px',
+        fontSize: '12px', fontWeight: 700, fontFamily: 'var(--font-body)', padding: '3px 9px', borderRadius: '10px',
         background: approved ? 'var(--highlight)' : 'var(--light-blush)', color: 'var(--ink)', whiteSpace: 'nowrap',
       }}>
         {approved ? 'Approved' : 'In review'}

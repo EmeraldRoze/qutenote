@@ -163,7 +163,7 @@ export default function AdminPage() {
                 </p>
               </div>
               <span style={{
-                padding: '4px 12px', borderRadius: '12px', fontSize: '11px', fontWeight: 600,
+                padding: '4px 12px', borderRadius: '12px', fontSize: '12px', fontWeight: 600,
                 background: statusColors[note.status] ?? 'var(--lavender-pale)',
                 color: '#4A2424', border: '1.5px solid #B4897A',
               }}>
@@ -184,7 +184,7 @@ export default function AdminPage() {
             </p>
 
             {/* Meta */}
-            <div style={{ fontSize: '11px', color: 'var(--ink-muted)', marginBottom: '12px' }}>
+            <div style={{ fontSize: '12px', color: 'var(--ink-muted)', marginBottom: '12px' }}>
               Font: {note.fontChoice}
               {note.lobNoteId && <> · Lob: {note.lobNoteId}</>}
               {note.sentAt && <> · Sent: {new Date(note.sentAt).toLocaleDateString()}</>}
