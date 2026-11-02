@@ -242,7 +242,7 @@ export default function StepRecipient({ note, onChangeCard, onNext, initialQuery
         disabled={!selected}
         onClick={() => selected && onNext({ recipientId: selected.id, recipientName: selected.displayName })}
         style={{
-          marginTop: '24px', height: '56px', borderRadius: '28px', border: '2px solid var(--outline)',
+          marginTop: '24px', height: '56px', borderRadius: '28px', 
           boxSizing: 'border-box', cursor: selected ? 'pointer' : 'not-allowed',
           background: 'var(--btn)', opacity: selected ? 1 : 0.45, color: 'var(--ink)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',

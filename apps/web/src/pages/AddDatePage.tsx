@@ -330,7 +330,7 @@ export default function AddDatePage() {
 
         <div aria-hidden style={{ flex: 1, minHeight: '24px' }} />
         <button onClick={handleSave} disabled={saving} style={{
-          height: '56px', flex: 'none', borderRadius: '28px', border: '2px solid var(--stone)',
+          height: '56px', flex: 'none', borderRadius: '28px', 
           background: 'var(--btn)', color: 'var(--ink)', fontFamily: 'var(--font-body)', fontSize: '15px',
           fontWeight: 700, letterSpacing: '0.08em', cursor: saving ? 'default' : 'pointer',
           boxSizing: 'border-box', opacity: saving ? 0.7 : 1,

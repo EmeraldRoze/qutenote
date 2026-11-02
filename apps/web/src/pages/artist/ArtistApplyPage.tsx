@@ -249,7 +249,7 @@ export default function ArtistApplyPage() {
           disabled={saving}
           style={{
             marginTop: '22px', width: '100%', height: '56px', borderRadius: '28px', background: 'var(--btn)',
-            border: '2px solid var(--outline)', boxSizing: 'border-box', cursor: saving ? 'default' : 'pointer',
+            boxSizing: 'border-box', cursor: saving ? 'default' : 'pointer',
             color: 'var(--ink)', fontFamily: 'var(--font-body)', fontSize: '15px', fontWeight: 700,
             letterSpacing: '0.08em', textIndent: '0.08em', boxShadow: 'var(--shadow-button)', opacity: saving ? 0.7 : 1,
           }}

@@ -66,7 +66,7 @@ export default function ArtistApplicationSentPage() {
           onClick={() => navigate('/settings')}
           style={{
             marginTop: '22px', width: '100%', height: '56px', borderRadius: '28px', background: 'var(--card)',
-            border: '2px solid var(--outline)', boxSizing: 'border-box', cursor: 'pointer',
+            boxSizing: 'border-box', cursor: 'pointer',
             color: 'var(--ink)', fontFamily: 'var(--font-body)', fontSize: '15px', fontWeight: 700,
             letterSpacing: '0.08em', textIndent: '0.08em',
           }}

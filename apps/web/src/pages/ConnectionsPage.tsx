@@ -231,7 +231,7 @@ export default function ConnectionsPage() {
                 aria-label="Invite friends"
                 style={{
                   width: '44px', height: '44px', flex: 'none', borderRadius: '50%',
-                  border: '2px solid var(--outline)', background: 'var(--btn)', color: 'var(--ink)',
+                  background: 'var(--btn)', color: 'var(--ink)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
                   padding: 0, boxSizing: 'border-box',
                 }}

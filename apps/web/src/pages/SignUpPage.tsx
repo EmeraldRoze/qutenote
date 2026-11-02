@@ -26,7 +26,7 @@ const fieldRow: React.CSSProperties = {
   display: 'flex', flexDirection: 'column', gap: '4px', padding: '12px 16px', borderBottom: '1.5px solid var(--outline)',
 }
 const roundBtn: React.CSSProperties = {
-  width: '68px', height: '68px', borderRadius: '50%', border: '2px solid var(--outline)',
+  width: '68px', height: '68px', borderRadius: '50%', 
   background: 'var(--card)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
 }
 

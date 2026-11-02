@@ -213,7 +213,7 @@ export default function ArtistUploadPage() {
           disabled={busy || loading}
           style={{
             marginTop: '22px', width: '100%', height: '56px', borderRadius: '28px', background: 'var(--btn)',
-            border: '2px solid var(--outline)', boxSizing: 'border-box', cursor: busy ? 'default' : 'pointer',
+            boxSizing: 'border-box', cursor: busy ? 'default' : 'pointer',
             color: 'var(--ink)', fontFamily: 'var(--font-body)', fontSize: '15px', fontWeight: 700,
             letterSpacing: '0.08em', textIndent: '0.08em', boxShadow: 'var(--shadow-button)', opacity: busy ? 0.7 : 1,
           }}

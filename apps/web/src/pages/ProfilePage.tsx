@@ -121,7 +121,7 @@ function CardSheet({ note, onClose }: { note: NoteThumb; onClose: () => void }) 
           </div>
           {(isSecret || isFlower) && (
             <button onClick={() => { if (!decoded) trackFeature('decode'); setDecoded((d) => !d) }} style={{
-              width: '100%', marginTop: '12px', height: '56px', borderRadius: '28px', border: '2px solid var(--stone)',
+              width: '100%', marginTop: '12px', height: '56px', borderRadius: '28px', 
               background: 'var(--btn)', color: 'var(--ink)', cursor: 'pointer', boxSizing: 'border-box',
               fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '15px', letterSpacing: '0.08em',
             }}>
@@ -131,7 +131,7 @@ function CardSheet({ note, onClose }: { note: NoteThumb; onClose: () => void }) 
           {note.voiceUploadId && (
             <button onClick={toggleVoice} style={{
               width: '100%', marginTop: '12px', height: '56px', borderRadius: '28px',
-              border: '2px solid var(--stone)', background: 'var(--card)', color: 'var(--ink)', cursor: 'pointer', boxSizing: 'border-box',
+              background: 'var(--card)', color: 'var(--ink)', cursor: 'pointer', boxSizing: 'border-box',
               fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '15px', letterSpacing: '0.08em',
             }}>
               {playing ? '❚❚ PAUSE' : '🎤 LISTEN TO VOICE NOTE'}
@@ -377,7 +377,7 @@ export default function ProfilePage() {
               <span style={{ fontFamily: 'var(--font-body)', fontSize: '18px', fontWeight: 700, color: 'var(--ink)' }}>cards</span>
             </div>
             <button onClick={() => navigate('/send')} style={{
-              marginTop: '18px', width: '100%', height: '56px', borderRadius: '28px', border: '2px solid var(--stone)',
+              marginTop: '18px', width: '100%', height: '56px', borderRadius: '28px', 
               background: 'var(--btn)', color: 'var(--ink)', cursor: 'pointer', boxSizing: 'border-box',
               fontFamily: 'var(--font-body)', fontSize: '16px', fontWeight: 700, letterSpacing: '0.08em',
             }}>SEND A CARD</button>
@@ -503,7 +503,7 @@ export default function ProfilePage() {
               disabled={requested || profile.connectionStatus === 'ACCEPTED' || profile.connectionStatus === 'PENDING'}
               style={{
                 height: '44px', padding: '0 20px', borderRadius: '999px', cursor: 'pointer',
-                border: '2px solid var(--stone)', boxSizing: 'border-box',
+                boxSizing: 'border-box',
                 background: profile.connectionStatus === 'ACCEPTED' ? 'var(--selected-fill)' : 'var(--btn)',
                 color: 'var(--ink)', fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '13px', letterSpacing: '0.08em',
               }}

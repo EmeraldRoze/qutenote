@@ -23,7 +23,7 @@ const fieldStyle: React.CSSProperties = {
 }
 const fieldLabel: React.CSSProperties = { fontSize: '13px', color: 'var(--ink)' }
 const roundBtn: React.CSSProperties = {
-  width: '68px', height: '68px', borderRadius: '50%', border: '2px solid var(--outline)',
+  width: '68px', height: '68px', borderRadius: '50%', 
   background: 'var(--card)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
 }
 

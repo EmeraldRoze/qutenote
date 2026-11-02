@@ -156,7 +156,7 @@ export default function AddressPage() {
                 type="submit"
                 disabled={saving}
                 style={{
-                  height: '56px', border: '2px solid var(--stone)', borderRadius: '28px', background: 'var(--btn)', color: 'var(--ink)', boxSizing: 'border-box',
+                  height: '56px', borderRadius: '28px', background: 'var(--btn)', color: 'var(--ink)', boxSizing: 'border-box',
                   fontFamily: 'var(--font-body)', fontSize: '16px', fontWeight: 700, letterSpacing: '0.08em',
                   cursor: saving ? 'default' : 'pointer', opacity: saving ? 0.6 : 1,
                 }}

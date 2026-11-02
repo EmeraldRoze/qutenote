@@ -159,7 +159,7 @@ export default function VoiceNoteSheet({ onDone, onClose }: {
               </p>
               <button onClick={() => { if (takeRef.current) { cleanup(); onDone(takeRef.current) } }} style={{
                 width: '100%', marginTop: '18px', height: '54px', borderRadius: '27px',
-                border: '2px solid var(--outline)', boxSizing: 'border-box',
+                boxSizing: 'border-box',
                 background: 'var(--btn)', color: 'var(--ink)', cursor: 'pointer',
                 fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '15px', letterSpacing: '0.08em',
               }}>
@@ -167,7 +167,7 @@ export default function VoiceNoteSheet({ onDone, onClose }: {
               </button>
               <button onClick={() => { takeRef.current = null; setPhase('idle'); setSeconds(0) }} style={{
                 width: '100%', marginTop: '10px', height: '48px', borderRadius: '24px', background: 'var(--card)',
-                border: '2px solid var(--outline)', boxSizing: 'border-box', cursor: 'pointer',
+                boxSizing: 'border-box', cursor: 'pointer',
                 fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '13px', letterSpacing: '0.08em', color: 'var(--ink)',
               }}>
                 RECORD IT AGAIN

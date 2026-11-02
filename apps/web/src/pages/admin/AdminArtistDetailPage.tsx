@@ -15,7 +15,7 @@ const panel: React.CSSProperties = {
   padding: '16px', marginBottom: '14px', boxShadow: 'var(--shadow-card)',
 }
 const btn = (fill: string): React.CSSProperties => ({
-  height: '48px', padding: '0 24px', borderRadius: '24px', border: '2px solid var(--outline)',
+  height: '48px', padding: '0 24px', borderRadius: '24px', 
   background: fill, color: 'var(--ink)', fontFamily: 'var(--font-body)', fontSize: '14px',
   fontWeight: 700, letterSpacing: '0.08em', textIndent: '0.08em', cursor: 'pointer',
 })

@@ -96,7 +96,7 @@ export function StatusComposer({ onDone }: { onDone: (s: MyStatus | null) => voi
           onClick={share}
           style={{
             display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', height: '56px',
-            borderRadius: '28px', border: '2px solid var(--outline)', cursor: 'pointer',
+            borderRadius: '28px', cursor: 'pointer',
             background: 'var(--btn)', color: 'var(--ink)', opacity: !text.trim() || saving ? 0.45 : 1,
             fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '15px', textTransform: 'uppercase', letterSpacing: '0.08em',
           }}

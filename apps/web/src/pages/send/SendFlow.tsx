@@ -42,7 +42,7 @@ export interface NoteData {
 
 const primaryPill: React.CSSProperties = {
   display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px',
-  width: '100%', height: '56px', borderRadius: '28px', border: '2px solid var(--outline)',
+  width: '100%', height: '56px', borderRadius: '28px', 
   boxSizing: 'border-box', cursor: 'pointer',
   background: 'var(--btn)', color: 'var(--ink)', fontFamily: 'var(--font-body)', fontWeight: 700,
   fontSize: '15px', letterSpacing: '0.08em', textTransform: 'uppercase',
@@ -542,7 +542,7 @@ function CardPicker({ note, update, onWrite }: {
           style={{
             position: 'absolute', right: '16px', bottom: '16px', height: '44px', padding: '0 18px',
             borderRadius: '22px', background: 'var(--btn)', color: 'var(--ink)',
-            border: '2px solid var(--outline)', boxSizing: 'border-box', cursor: 'pointer',
+            boxSizing: 'border-box', cursor: 'pointer',
             display: 'flex', alignItems: 'center', fontFamily: 'var(--font-body)',
             fontSize: '14px', fontWeight: 700, letterSpacing: '0.08em',
           }}
@@ -553,7 +553,7 @@ function CardPicker({ note, update, onWrite }: {
       <input ref={fileRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={onFilePicked} />
       {note.cardImageUrl ? (
         <div style={{
-          marginTop: '16px', width: '100%', boxSizing: 'border-box', borderRadius: '18px', border: '2px solid var(--outline)',
+          marginTop: '16px', width: '100%', boxSizing: 'border-box', borderRadius: '18px', 
           background: 'var(--card)', display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 14px',
         }}>
           <img src={note.cardImageUrl} alt="" style={{ width: '48px', height: '64px', objectFit: 'cover', borderRadius: '6px', border: '1.5px solid var(--outline)', flex: 'none' }} />
@@ -876,7 +876,7 @@ function WriteStep({ note, update, onNext }: {
       ) : (
         <button onClick={() => { trackFeature('voice-note'); setRecording(true) }} style={{
           marginTop: '20px', width: '100%', minHeight: '56px', borderRadius: '16px', boxSizing: 'border-box',
-          border: '2px solid var(--outline)', background: 'var(--card)',
+          background: 'var(--card)',
           display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px',
           fontFamily: 'var(--font-body)', fontSize: '14px', fontWeight: 700, letterSpacing: '0.08em',
           color: 'var(--ink)', cursor: 'pointer',
@@ -1172,7 +1172,7 @@ function ReviewStep({ note, onSent, onEditNote, onEditRecipient, onSaveDraft, ed
               onClick={() => askForAddressByText(note.recipientName?.split(' ')[0])}
               style={{
                 display: 'block', width: '100%', marginTop: '10px', height: '46px', borderRadius: '23px', boxSizing: 'border-box',
-                border: '2px solid var(--outline)', background: 'var(--btn)', color: 'var(--ink)', cursor: 'pointer',
+                background: 'var(--btn)', color: 'var(--ink)', cursor: 'pointer',
                 fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '13px', letterSpacing: '0.08em',
               }}
             >
@@ -1187,7 +1187,7 @@ function ReviewStep({ note, onSent, onEditNote, onEditRecipient, onSaveDraft, ed
           You've sent all your cards for this month. More unlock on the 1st, or add one now.
           <button onClick={buyExtraCard} disabled={buying} style={{
             display: 'block', width: '100%', marginTop: '10px', height: '46px', borderRadius: '23px', boxSizing: 'border-box',
-            border: '2px solid var(--outline)', background: 'var(--btn)', color: 'var(--ink)', cursor: 'pointer', opacity: buying ? 0.7 : 1,
+            background: 'var(--btn)', color: 'var(--ink)', cursor: 'pointer', opacity: buying ? 0.7 : 1,
             fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '13px', letterSpacing: '0.08em',
           }}>
             {buying ? 'OPENING…' : 'ADD AN INDIVIDUAL CARD · $7.95'}
@@ -1201,7 +1201,7 @@ function ReviewStep({ note, onSent, onEditNote, onEditRecipient, onSaveDraft, ed
       {!editingNoteId && (
         <button onClick={onSaveDraft} style={{
           display: 'block', width: '100%', marginTop: '10px', height: '48px', borderRadius: '24px', boxSizing: 'border-box',
-          background: 'var(--card)', border: '2px solid var(--outline)', cursor: 'pointer',
+          background: 'var(--card)', cursor: 'pointer',
           fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '13px', letterSpacing: '0.08em', color: 'var(--ink)',
         }}>
           SAVE DRAFT

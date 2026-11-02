@@ -126,7 +126,7 @@ function OfferCarousel({ hasSentCard, hasHandwriting }: { hasSentCard: boolean; 
             </p>
             {c.key !== 'invite' && (
               <button onClick={(e) => { e.stopPropagation(); c.onClick(navigate) }} style={{
-                marginTop: 'auto', height: '50px', padding: '0 28px', borderRadius: '25px', border: '2px solid var(--outline)', cursor: 'pointer',
+                marginTop: 'auto', height: '50px', padding: '0 28px', borderRadius: '25px', cursor: 'pointer',
                 background: 'var(--btn)', color: 'var(--ink)', fontFamily: 'var(--font-body)',
                 fontSize: '15px', fontWeight: 700, letterSpacing: '0.08em', boxSizing: 'border-box',
               }}>{c.cta}</button>
@@ -397,7 +397,7 @@ export default function HomePage() {
                       setInviting(true)
                       try { await inviteByText() } finally { setInviting(false) }
                     }} style={{
-                      height: '46px', borderRadius: '23px', border: '2px solid var(--outline)', background: 'var(--btn)',
+                      height: '46px', borderRadius: '23px', background: 'var(--btn)',
                       color: 'var(--ink)', fontFamily: 'var(--font-body)', fontSize: '14px', fontWeight: 700,
                       letterSpacing: '0.08em', cursor: 'pointer', opacity: inviting ? 0.6 : 1,
                     }}>INVITE THEM BY TEXT</button>
@@ -454,7 +454,7 @@ export default function HomePage() {
             </div>
             <button onClick={() => navigate(`/send?toName=${encodeURIComponent(nudge.connectionName.split(' ')[0])}`)} style={{
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', height: '50px',
-              borderRadius: '25px', background: 'var(--btn)', color: 'var(--ink)', border: '2px solid var(--outline)', cursor: 'pointer',
+              borderRadius: '25px', background: 'var(--btn)', color: 'var(--ink)', cursor: 'pointer',
               fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '15px', letterSpacing: '0.08em',
             }}>
               Write to {nudge.connectionName.split(' ')[0]}
@@ -486,7 +486,7 @@ export default function HomePage() {
                 It's quiet in here. Once friends join, their birthdays, news and sends show up here.
               </p>
               <button onClick={() => navigate('/connections?sync=1')} style={{
-                alignSelf: 'flex-start', height: '44px', padding: '0 18px', borderRadius: '22px', border: '2px solid var(--outline)', cursor: 'pointer',
+                alignSelf: 'flex-start', height: '44px', padding: '0 18px', borderRadius: '22px', cursor: 'pointer',
                 background: 'var(--btn)', color: 'var(--ink)', fontFamily: 'var(--font-body)', fontSize: '14px', fontWeight: 700, letterSpacing: '0.08em', boxSizing: 'border-box',
               }}>SYNC CONTACTS</button>
             </div>

@@ -468,7 +468,7 @@ export default function ImportantDatesPage() {
             </p>
             {/* only as wide as its words (Emerald, Oct 25) */}
             <button onClick={() => navigate('/dates/add')} style={{
-              marginTop: '18px', height: '50px', padding: '0 26px', border: '2px solid var(--stone)', borderRadius: '25px',
+              marginTop: '18px', height: '50px', padding: '0 26px', borderRadius: '25px',
               background: 'var(--btn)', color: 'var(--ink)', fontFamily: 'var(--font-body)', fontSize: '15px',
               fontWeight: 700, letterSpacing: '0.08em', textIndent: '0.08em', cursor: 'pointer', boxSizing: 'border-box',
               display: 'inline-flex', alignItems: 'center', justifyContent: 'center', alignSelf: 'center',
@@ -617,7 +617,7 @@ export default function ImportantDatesPage() {
         <div style={{ margin: '26px 0 10px', display: 'flex', alignItems: 'center', gap: '10px' }}>
           <h2 className="on-paper" style={{ margin: 0, fontFamily: 'var(--font-display)', fontWeight: 300, fontSize: '18px', color: 'var(--ink)' }}>Quick add</h2>
           <button onClick={() => navigate('/dates/add')} aria-label="Add a date" style={{
-            width: '32px', height: '32px', borderRadius: '50%', border: '2px solid var(--stone)', flex: 'none', boxSizing: 'border-box',
+            width: '32px', height: '32px', borderRadius: '50%', flex: 'none', boxSizing: 'border-box',
             background: 'var(--btn)', color: 'var(--ink)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', padding: 0,
           }}>
             <svg aria-hidden width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
