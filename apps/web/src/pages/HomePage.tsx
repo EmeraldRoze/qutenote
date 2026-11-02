@@ -454,7 +454,7 @@ export default function HomePage() {
               </div>
             </div>
             <div style={{ fontSize: '15px', lineHeight: '18px', fontFamily: 'var(--font-body)', color: 'var(--ink)' }}>
-              Write it now. We'll mail it so it lands on the day.
+              Schedule it now.
             </div>
             <button onClick={() => navigate(`/send?toName=${encodeURIComponent(nudge.connectionName.split(' ')[0])}`)} style={{
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', height: '50px',
