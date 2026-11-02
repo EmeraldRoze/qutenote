@@ -88,7 +88,7 @@ export default function TabBar() {
         // the stamp's own edge shading (same as every other qn-stamp, which an
         // inline filter would otherwise wipe out) plus the lift off the bar —
         // Emerald, Oct 24: enough contrast that the edge reads against paper
-        filter: 'drop-shadow(0 0 1.5px rgba(74, 36, 36, 0.5)) drop-shadow(0 0 4px rgba(74, 36, 36, 0.28)) drop-shadow(0 0 10px rgba(74, 36, 36, 0.14)) drop-shadow(0 8px 12px rgba(158, 98, 95, 0.3))',
+        filter: 'drop-shadow(0 0 1.5px rgba(74, 36, 36, 0.375)) drop-shadow(0 0 4px rgba(74, 36, 36, 0.21)) drop-shadow(0 0 10px rgba(74, 36, 36, 0.105)) drop-shadow(0 8px 12px rgba(158, 98, 95, 0.225))',
         ['--qn-panel' as string]: 'var(--btn)',
         display: 'flex', cursor: 'pointer',
       }}>
