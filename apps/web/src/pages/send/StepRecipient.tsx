@@ -103,7 +103,9 @@ export default function StepRecipient({ note, onChangeCard, onNext, initialQuery
       ? `${design.title} by ${design.handle ?? design.artist}`
       : 'Pick a card'
 
-  function row(c: Connection, subtitle: string, pill?: string) {
+  // Hairline rows in one sheet, the way the QTs page reads. No bubble per
+  // person and no sparkle heart (Emerald, Nov 1).
+  function row(c: Connection, subtitle: string, pill?: string, last = false) {
     const isSelected = c.id === selectedId
     return (
       <button
@@ -112,21 +114,20 @@ export default function StepRecipient({ note, onChangeCard, onNext, initialQuery
         aria-checked={isSelected}
         onClick={() => setSelectedId(isSelected ? null : c.id)}
         style={{
-          width: '100%', minHeight: '64px', boxSizing: 'border-box', borderRadius: '16px',
-          border: isSelected ? '2px dashed var(--outline)' : '1.5px solid var(--outline)',
-          background: isSelected ? 'var(--selected-fill)' : 'var(--card)',
-          display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 14px',
+          width: '100%', minHeight: '56px', boxSizing: 'border-box',
+          border: 'none', borderBottom: last ? 'none' : '1.5px solid rgba(180,137,122,0.3)',
+          background: isSelected ? 'var(--selected-fill)' : 'transparent',
+          display: 'flex', alignItems: 'center', gap: '12px', padding: '11px 4px',
           fontFamily: 'var(--font-body)', textAlign: 'left', color: 'var(--ink)', cursor: 'pointer',
           textTransform: 'none', letterSpacing: 0, fontWeight: 400,
         }}
       >
-        <QEmoji name="heart-sparkle" size={42} style={{ flex: 'none' }} />
         <span style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '2px' }}>
-          <span style={{ fontSize: '16px', fontWeight: 700 }}>{c.displayName}</span>
-          <span style={{ fontSize: '13px', color: 'var(--ink)' }}>{subtitle}</span>
+          <span style={{ fontSize: '16px', fontWeight: 700, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{c.displayName}</span>
+          <span style={{ fontSize: '13px', color: 'var(--ink)', opacity: 0.75 }}>{subtitle}</span>
         </span>
         {pill && (
-          <span style={{ fontSize: '13px', fontWeight: 700, background: 'var(--highlight)', borderRadius: '10px', padding: '3px 9px', whiteSpace: 'nowrap' }}>{pill}</span>
+          <span style={{ fontSize: '13px', fontWeight: 700, color: 'var(--ink)', opacity: 0.75, whiteSpace: 'nowrap' }}>{pill}</span>
         )}
         <span style={{
           width: '24px', height: '24px', flex: 'none', borderRadius: '50%',
@@ -137,6 +138,11 @@ export default function StepRecipient({ note, onChangeCard, onNext, initialQuery
         </span>
       </button>
     )
+  }
+
+  const sheet: React.CSSProperties = {
+    background: 'var(--card)', border: '1.5px solid var(--outline)', borderRadius: '18px',
+    padding: '2px 14px',
   }
 
   const sectionHead: React.CSSProperties = { margin: '18px 0 8px', fontSize: '13px', fontWeight: 700, fontFamily: 'var(--font-body)', color: 'var(--ink)' }
@@ -181,8 +187,8 @@ export default function StepRecipient({ note, onChangeCard, onNext, initialQuery
           {shown.upcoming.length > 0 && (
             <>
               <h2 style={sectionHead}>Birthdays coming up</h2>
-              <div role="radiogroup" aria-label="Recipient" style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                {shown.upcoming.map(({ c, d, days }) => row(c, d ? `${MONTHS[d.month - 1]} ${d.day}` : `@${c.username}`, countdownLabel(days)))}
+              <div role="radiogroup" aria-label="Recipient" style={sheet}>
+                {shown.upcoming.map(({ c, d, days }, i) => row(c, d ? `${MONTHS[d.month - 1]} ${d.day}` : `@${c.username}`, countdownLabel(days), i === shown.upcoming.length - 1))}
               </div>
             </>
           )}
@@ -190,8 +196,8 @@ export default function StepRecipient({ note, onChangeCard, onNext, initialQuery
           {shown.rest.length > 0 && (
             <>
               <h2 style={sectionHead}>Your QTs</h2>
-              <div role="radiogroup" aria-label="Recipient" style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                {shown.rest.map(({ c }) => row(c, `@${c.username}`))}
+              <div role="radiogroup" aria-label="Recipient" style={sheet}>
+                {shown.rest.map(({ c }, i) => row(c, `@${c.username}`, undefined, i === shown.rest.length - 1))}
               </div>
             </>
           )}
