@@ -1,12 +1,12 @@
 :root{
-  --cream:#F1EBE3; --rule:#DCD0C6; --lav:#F4ECE6; --lav-line:#C4A396;
+  --cream:#F4EFE9; --rule:#DCD0C6; --lav:#F6F0EB; --lav-line:#C4A396;
   --uv:#9E625F; --uv-text:#8F5955; --lime:#EEFC4E; --lilac:#B4897A; --ink:#4A2424; --ink-mid:#7F665E; --ink-soft:#8A8078;
   --head:'Unbounded', 'Arial Black', system-ui, sans-serif;
   --body:'Anonymous Pro', ui-monospace, 'Courier New', monospace;
   color-scheme: light;
 }
-@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){ --cream:#F1EBE3; --ink:#4A2424; } }
-:root[data-theme="dark"]{ --cream:#F1EBE3; --ink:#4A2424; }
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){ --cream:#F4EFE9; --ink:#4A2424; } }
+:root[data-theme="dark"]{ --cream:#F4EFE9; --ink:#4A2424; }
 :root{ box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px); }
 html{ scroll-padding-top:env(safe-area-inset-top,0px); background:var(--cream); }
 *,*::before,*::after{ box-sizing:border-box; }

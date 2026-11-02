@@ -47,6 +47,7 @@ const SHEEN = 'repeating-linear-gradient(145deg, rgba(255,255,255,0) 0px, rgba(2
 // looks like it slid sideways (Emerald, Oct 30: "then all of a sudden the card
 // slides away"). The art tile travels 360 across and 514 down per loop, which
 // is 627.5px along the 145deg axis, so the sheen period is exactly half that.
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 const SHEEN_ART = 'repeating-linear-gradient(145deg, rgba(255,255,255,0) 0px, rgba(255,255,255,0.06) 70.6px, rgba(255,255,255,0.42) 156.9px, rgba(255,255,255,0.06) 243.1px, rgba(255,255,255,0) 313.77px)'
 const ALL_OFFER_CARDS: (OfferCard & { key: string })[] = [
   // Her own gradients now, not mixes of them (Emerald, Oct 29): lemon sky on
@@ -440,6 +441,11 @@ export default function HomePage() {
                 </div>
                 <div style={{ fontFamily: 'var(--font-display)', fontSize: '15px', marginTop: '2px', fontWeight: 300, letterSpacing: '-0.01em' }}>
                   {nudge.connectionName}'s {nudge.label.toLowerCase()}
+                </div>
+                {/* the actual date, so you know WHEN, not just how far off
+                    (Emerald, Nov 2) */}
+                <div style={{ fontFamily: 'var(--font-body)', fontSize: '13px', marginTop: '2px', color: 'var(--ink)', opacity: 0.75 }}>
+                  {MONTHS[nudge.month - 1]} {nudge.day}
                 </div>
               </div>
             </div>

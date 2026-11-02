@@ -612,8 +612,17 @@ export default function ImportantDatesPage() {
           </>
         )}
 
-        {/* Quick add */}
-        <h2 className="on-paper" style={{ margin: '26px 0 10px', fontFamily: 'var(--font-display)', fontWeight: 300, fontSize: '18px', color: 'var(--ink)' }}>Quick add</h2>
+        {/* Quick add — the plus moved down here from the header, since this is
+            the by-hand route now (Emerald, Nov 2) */}
+        <div style={{ margin: '26px 0 10px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <h2 className="on-paper" style={{ margin: 0, fontFamily: 'var(--font-display)', fontWeight: 300, fontSize: '18px', color: 'var(--ink)' }}>Quick add</h2>
+          <button onClick={() => navigate('/dates/add')} aria-label="Add a date" style={{
+            width: '32px', height: '32px', borderRadius: '50%', border: '2px solid var(--stone)', flex: 'none', boxSizing: 'border-box',
+            background: 'var(--btn)', color: 'var(--ink)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', padding: 0,
+          }}>
+            <svg aria-hidden width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
+          </button>
+        </div>
         <div className="qn-chips" style={{ display: 'flex', gap: '8px', overflowX: 'auto', scrollbarWidth: 'none', margin: '0 -20px', padding: '0 20px' }}>
           {quickAdd.map((q) => (
             <button key={q.chip} onClick={() => navigate(q.to)} style={{

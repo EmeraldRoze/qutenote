@@ -5,13 +5,13 @@
 :root {
   /* QuteNote palette 4, Oct 2026 — warm paper, oxblood ink, baby blue buttons.
      Legacy variable names stay so every inline style follows the repaint. */
-  --paper:          #F1EBE3;  /* the background of every screen */
+  --paper:          #F4EFE9;  /* the background of every screen */
   --card:           #FBF8F3;  /* white cards sitting on the ruled lines */
   --outline:        #B4897A;  /* rosy brown: EVERY outline, solid and dashed */
   --btn:            #BADAFF;  /* baby blue: primary button fill */
   --highlight:      #EEFC4E;  /* neon yellow: progress, pills, badges, stamp hearts */
   --stamp-center:   #9E625F;  /* dusty rose: note-card stamp center, + badges */
-  --selected-fill:  #F4ECE6;  /* fill behind dashed selected states */
+  --selected-fill:  #F6F0EB;  /* fill behind dashed selected states */
   --light-blush:    #E3D5CC;  /* back buttons, panels, segmented switches */
   --light-blue:     #E9EDF1;  /* I NEED WORDS and soft note boxes */
   --nav-inactive:   #4A2424;  /* tab labels are oxblood too; inactive ones are dimmed */
@@ -21,20 +21,20 @@
   --ultraviolet:    #4A2424;  /* old action color: accents/links read as oxblood now */
   --lavender:       #4A2424;
   --lavender-light: #E3D5CC;
-  --lavender-pale:  #F4ECE6;
+  --lavender-pale:  #F6F0EB;
   --lavender-dark:  #3A1C1C;
   --lavender-deep:  #4A2424;
   --lavender-soft:  #B4897A;
 
   --blush:          #D5ADA3;  /* edge of the Rose paper ombre, avatars */
-  --blush-pale:     #F4ECE6;
+  --blush-pale:     #F6F0EB;
 
   --ink:            #4A2424;  /* ALL text and icons — nothing is black */
   --ink-mid:        #4A2424;  /* Emerald, Oct 25 (final): ALL text is oxblood */
   --ink-muted:      #4A2424;  /* all text is oxblood */
 
-  --cream:          #F1EBE3;
-  --cream-warm:     #F4ECE6;
+  --cream:          #F4EFE9;
+  --cream-warm:     #F6F0EB;
   --cream-ruled:    #ACA8B8;  /* 1px ruled line every 36px */
   --stone:          #B4897A;  /* card/field border */
   --divider:        #E6DED3;
@@ -45,7 +45,7 @@
   --neon-pink:      #D5ADA3;  /* carousel accent → blush */
   --pink-pale:      #EBDDD6;
   --lilac:          #B4897A;  /* dashed selected-state borders */
-  --stamp-frame:    #F4ECE6;
+  --stamp-frame:    #F6F0EB;
   --placeholder:    #4A2424;
   --note-ink:       #4A2424;
   --logo-heart:     #EEFC4E;
@@ -102,6 +102,9 @@ body::before {
   background-image:
     repeating-linear-gradient(transparent, transparent 35px, var(--cream-ruled) 35px, var(--cream-ruled) 36px),
     url('/brand/paper_texture.png');
+  /* the ruling begins below the status bar, so the first section is a whole
+     section and no line crosses the clock (Emerald, Nov 2) */
+  background-position: 0 env(safe-area-inset-top), 0 0;
 }
 
 /* The clear header space at the top of every screen, like school notebook
@@ -194,7 +197,11 @@ body::before {
    Oct 29). Each file is mirrored into a 2x2 tile, so the colour spreads out
    from the middle and meets itself on every edge. That lets it repeat
    forever, and the drift can run one tile per loop with no seam at all. */
-.ombre-live.ombre-art::before{ background-size: auto, 360px 514px; background-repeat: repeat, repeat; }
+.ombre-live.ombre-art::before{ background-size: auto, 360px 514px; background-repeat: repeat, repeat;
+  /* a WHOLE tile of overhang top and left: the layer travels 360 across and
+     514 down, and anything less leaves bare paper in the corner halfway
+     through the loop (Emerald, Nov 2: "the backgrounds are glitching") */
+  inset: -514px -6px -6px -360px; }
 @media (prefers-reduced-motion: no-preference){
   .ombre-live.ombre-art::before{ animation: qn-ombre-art 20s linear infinite; }
   /* exactly one tile: 360 across, 514 down */
