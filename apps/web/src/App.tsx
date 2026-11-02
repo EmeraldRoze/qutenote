@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import { AuthProvider, useAuth } from './context/AuthContext'
+import SplashScreen from './components/SplashScreen'
 import { isNativeApp } from './lib/native'
 import { trackScreen, installTapTracking } from './lib/analytics'
 import { getSetupNext } from './lib/postAuthRoute'
@@ -131,6 +132,8 @@ export default function App() {
     <BrowserRouter>
       <AuthProvider>
         <ScrollToTop />
+        {/* the opening beat, once per launch (Emerald, Nov 2) */}
+        <SplashScreen />
         <AppRoutes />
       </AuthProvider>
     </BrowserRouter>
