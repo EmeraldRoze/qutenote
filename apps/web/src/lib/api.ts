@@ -19,7 +19,8 @@ api.interceptors.response.use(
     // real "Invalid email or password" message before the user could see it.
     const wasAuthenticated = !!err.config?.headers?.Authorization
     if (err.response?.status === 401 && wasAuthenticated) {
-      localStorage.removeItem('cn_token')
+      try { localStorage.removeItem('cn_token') } catch { /* private mode */ }
+      import('./tokenStore').then((m) => m.clearToken()).catch(() => {})
       window.location.href = '/login'
     }
     return Promise.reject(err)

@@ -6,6 +6,7 @@ import { Browser } from '@capacitor/browser'
 import { api } from '../lib/api'
 import { postSocialAuthRoute, setSetupNext, clearSetupNext } from '../lib/postAuthRoute'
 import { isNativeApp } from '../lib/native'
+import { writeToken, clearToken, restoreToken } from '../lib/tokenStore'
 
 interface User {
   id: string
@@ -40,13 +41,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const navigate = useNavigate()
 
   useEffect(() => {
-    const token = localStorage.getItem('cn_token')
-    if (!token) { setLoading(false); return }
-
-    api.get('/auth/me')
-      .then((res) => setUser(res.data.data))
-      .catch(() => localStorage.removeItem('cn_token'))
-      .finally(() => setLoading(false))
+    // the phone may be holding the token even when the webview forgot it
+    // (Emerald, Nov 2: force quitting Qute Dev logged her out)
+    restoreToken().then((token) => {
+      if (!token) { setLoading(false); return }
+      api.get('/auth/me')
+        .then((res) => setUser(res.data.data))
+        .catch(() => clearToken())
+        .finally(() => setLoading(false))
+    })
   }, [])
 
   // iOS app only: Google sign-in finishes in the system browser and comes
@@ -66,7 +69,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const isNew = params.get('new') === '1'
       if (isNew) setSetupNext('/signup/handle')
       Browser.close().catch(() => {})
-      localStorage.setItem('cn_token', token)
+      writeToken(token)
       api.get('/auth/me').then(async (res) => {
         setUser(res.data.data)
         const dest = await postSocialAuthRoute(isNew, res.data.data)
@@ -78,12 +81,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [])
 
   function login(token: string, userData: User) {
-    localStorage.setItem('cn_token', token)
+    writeToken(token)
     setUser(userData)
   }
 
   function logout() {
-    localStorage.removeItem('cn_token')
+    clearToken()
     setUser(null)
   }
 

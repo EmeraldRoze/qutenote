@@ -433,13 +433,11 @@ export default function HomePage() {
         {/* Date nudge */}
         {nudge && (
           <div style={{ marginTop: '18px', padding: '16px', borderRadius: '22px', background: 'var(--card)', border: '1.5px solid var(--outline)', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            {/* the countdown pill sits on the right now (Emerald, Nov 2) */}
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
               <QEmoji name={/birth/i.test(nudge.label) ? 'cake' : 'star'} size={48} />
-              <div style={{ flex: 1 }}>
-                <div style={{ display: 'inline-block', fontSize: '13px', fontWeight: 700, fontFamily: 'var(--font-body)', color: 'var(--ink)', background: 'var(--lime)', padding: '3px 9px', borderRadius: '10px' }}>
-                  {nudge.days === 0 ? 'Today' : `In ${nudge.days} day${nudge.days === 1 ? '' : 's'}`}
-                </div>
-                <div style={{ fontFamily: 'var(--font-display)', fontSize: '15px', marginTop: '2px', fontWeight: 300, letterSpacing: '-0.01em' }}>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ fontFamily: 'var(--font-display)', fontSize: '15px', fontWeight: 300, letterSpacing: '-0.01em' }}>
                   {nudge.connectionName}'s {nudge.label.toLowerCase()}
                 </div>
                 {/* the actual date, so you know WHEN, not just how far off
@@ -447,6 +445,12 @@ export default function HomePage() {
                 <div style={{ fontFamily: 'var(--font-body)', fontSize: '13px', marginTop: '2px', color: 'var(--ink)', opacity: 0.75 }}>
                   {MONTHS[nudge.month - 1]} {nudge.day}
                 </div>
+              </div>
+              <div style={{
+                flex: 'none', fontSize: '13px', fontWeight: 700, fontFamily: 'var(--font-body)', color: 'var(--ink)',
+                background: 'var(--lime)', padding: '3px 9px', borderRadius: '10px', whiteSpace: 'nowrap',
+              }}>
+                {nudge.days === 0 ? 'Today' : `In ${nudge.days} day${nudge.days === 1 ? '' : 's'}`}
               </div>
             </div>
             <div style={{ fontSize: '15px', lineHeight: '18px', fontFamily: 'var(--font-body)', color: 'var(--ink)' }}>
