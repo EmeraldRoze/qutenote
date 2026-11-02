@@ -74,7 +74,8 @@
 }
 
 html {
-  background: var(--cream);
+  background-color: var(--cream);
+  background-image: url('/brand/paper_texture.png');
 }
 
 body {
@@ -95,16 +96,17 @@ body::before {
   content: '';
   /* Emerald, Oct 25: the paper holds still and everything moves over it. */
   position: fixed;
-  inset: 0;
+  /* the ruled sheet starts BELOW the status bar, so no line ever crosses the
+     clock and the first section is a whole one. html paints the paper colour
+     behind the status bar strip (Emerald, Nov 2). */
+  top: env(safe-area-inset-top);
+  left: 0; right: 0; bottom: 0;
   z-index: -1;
   pointer-events: none;
   /* ruled lines over the paper grain over the paper color */
   background-image:
     repeating-linear-gradient(transparent, transparent 35px, var(--cream-ruled) 35px, var(--cream-ruled) 36px),
     url('/brand/paper_texture.png');
-  /* the ruling begins below the status bar, so the first section is a whole
-     section and no line crosses the clock (Emerald, Nov 2) */
-  background-position: 0 env(safe-area-inset-top), 0 0;
 }
 
 /* The clear header space at the top of every screen, like school notebook

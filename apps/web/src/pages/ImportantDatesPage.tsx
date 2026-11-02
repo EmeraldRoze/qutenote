@@ -401,8 +401,8 @@ export default function ImportantDatesPage() {
 
       <div style={{ maxWidth: '480px', margin: '0 auto', padding: '0 20px' }}>
 
-        {/* Reminders */}
-        <div style={{ ...whiteCard, marginTop: '20px', padding: '14px 16px', display: 'flex', alignItems: 'center', gap: '14px' }}>
+        {/* Reminders — neon outline, trying it out (Emerald, Nov 2) */}
+        <div style={{ ...whiteCard, border: '2px solid var(--highlight)', marginTop: '20px', padding: '14px 16px', display: 'flex', alignItems: 'center', gap: '14px' }}>
           <span aria-hidden style={{
             width: '44px', height: '44px', flex: 'none', borderRadius: '50%',
             background: 'var(--lime)', border: '1.5px solid var(--stone)',
