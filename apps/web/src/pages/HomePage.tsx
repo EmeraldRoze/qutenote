@@ -53,7 +53,8 @@ const ALL_OFFER_CARDS: (OfferCard & { key: string })[] = [
   // Her own gradients now, not mixes of them (Emerald, Oct 29): lemon sky on
   // the hands, apricot sky on the camera, periwinkle pink on the cake.
   { key: 'invite', art: 'bff-live', artWidth: 525, artBoxH: 253, artOmbre: true, ombre: `${SHEEN_ART}, url('/brand/lemon-sky-tile.webp')`, title: 'Invite friends,\nget free cards.', cta: 'INVITE', onClick: (nav) => nav('/invite') },
-  { key: 'first-card', art: 'gift', artWidth: 165, ombre: `${SHEEN}, repeating-linear-gradient(145deg, #AE8FD1 0px, #D6C7DF 80px, #EFE7E0 160px, #D6C7DF 240px, #AE8FD1 320px)`, title: 'Your first card is on us', cta: 'SEND A CARD', onClick: (nav) => nav('/send') },
+  // her animated mailbox instead of the gift box (Emerald, Nov 2)
+  { key: 'first-card', art: 'mailbox-live', artWidth: 170, ombre: `${SHEEN}, repeating-linear-gradient(145deg, #AE8FD1 0px, #D6C7DF 80px, #EFE7E0 160px, #D6C7DF 240px, #AE8FD1 320px)`, title: 'Your first card is on us', cta: 'SEND A CARD', onClick: (nav) => nav('/send') },
   // Mailbox wears her Lavender paper, camera wears her Apricot sky (Emerald,
   // Oct 24; colors sampled from her gradient files), each the full diagonal
   // spread of the art — it stays put while the sheen passes through it.
