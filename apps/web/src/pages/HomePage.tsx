@@ -102,14 +102,15 @@ function OfferCarousel({ hasSentCard, hasHandwriting }: { hasSentCard: boolean; 
           /* Every card is the whole tap target now, the gradients hold still,
              and there is no button inside — they all read like the invite card
              did (Emerald, Nov 2). */
-          <div key={i} className="rose-paper"
+          <div key={i}
             onClick={() => c.onClick(navigate)}
             style={{
             cursor: 'pointer',
-            ...(c.ombre ? {
-              backgroundImage: c.ombre,
-              ...(c.artOmbre ? { backgroundSize: 'auto, cover', backgroundRepeat: 'repeat, no-repeat' } : {}),
-            } : {}),
+            /* trying the cards in plain cream instead of the gradients
+               (Emerald, Nov 2) */
+            background: 'var(--card)',
+            backgroundImage: 'url(/brand/paper_texture.png)',
+            boxShadow: 'var(--shadow-card)',
             flex: '0 0 calc(100% - 32px)', height: '370px', scrollSnapAlign: 'start',
             position: 'relative', borderRadius: '26px', boxSizing: 'border-box',
             padding: '26px 22px', display: 'flex', flexDirection: 'column',
