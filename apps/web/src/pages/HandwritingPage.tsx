@@ -433,13 +433,16 @@ export default function HandwritingPage() {
     <div style={{ minHeight: '100vh', paddingBottom: '60px' }}>
       {nav}
 
-      <div style={{ maxWidth: '480px', margin: '0 auto', padding: '24px 20px' }}>
-        <p className="on-paper" style={{ fontFamily: 'var(--font-body)', fontSize: '15px', color: 'var(--ink-mid)', lineHeight: '18px', marginBottom: '8px' }}>
+      {/* 35 not 24: the header is 73 tall, so this lands the first line of
+          text at 108, a clean multiple of the 36px ruling, and no line
+          strikes through the words on open (Emerald, Nov 3) */}
+      <div style={{ maxWidth: '480px', margin: '0 auto', padding: '35px 20px 24px' }}>
+        <p className="on-paper" style={{ fontFamily: 'var(--font-body)', fontSize: '15px', color: 'var(--ink-mid)', lineHeight: '18px', marginBottom: '18px' }}>
           {doneCount >= TOTAL_CHARS
             ? 'Yay — your handwriting is all learned! Go write a bunch of Qute Notes in it. 🖋️'
             : 'Write a few little words and QuteNote learns your real handwriting — flow and all — then turns it into your own font.'}
         </p>
-        <p className="on-paper" style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--ink-muted)', marginBottom: '22px' }}>
+        <p className="on-paper" style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--ink-muted)', lineHeight: '18px', marginBottom: '18px' }}>
           {doneCount} of {TOTAL_CHARS} letters learned.{doneCount >= TOTAL_CHARS ? ' Rewrite any word anytime to freshen it up.' : ' Do it all now, or come back anytime.'} <span style={{ fontSize: '12px' }}>· build {WEB_BUILD || 'dev'}</span>
         </p>
 
