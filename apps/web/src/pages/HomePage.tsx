@@ -58,7 +58,8 @@ const ALL_OFFER_CARDS: (OfferCard & { key: string })[] = [
   // Mailbox wears her Lavender paper, camera wears her Apricot sky (Emerald,
   // Oct 24; colors sampled from her gradient files), each the full diagonal
   // spread of the art — it stays put while the sheen passes through it.
-  { key: 'alerts', art: 'mailbox', artWidth: 165, ombre: `${SHEEN}, repeating-linear-gradient(145deg, #AE8FD1 0px, #D6C7DF 80px, #EFE7E0 160px, #D6C7DF 240px, #AE8FD1 320px)`, title: 'Know when something is in the mail', cta: 'TURN ON ALERTS', onClick: (nav) => nav('/settings/notifications') },
+  // the present lives here now; the mailbox is the first-card art (Emerald, Nov 2)
+  { key: 'alerts', art: 'gift', artWidth: 165, ombre: `${SHEEN}, repeating-linear-gradient(145deg, #AE8FD1 0px, #D6C7DF 80px, #EFE7E0 160px, #D6C7DF 240px, #AE8FD1 320px)`, title: 'Know when something is in the mail', cta: 'TURN ON ALERTS', onClick: (nav) => nav('/settings/notifications') },
   { key: 'handwriting', art: 'pen', artWidth: 150, title: 'Make it look like YOU wrote it', cta: 'TEACH YOUR HANDWRITING', onClick: (nav) => nav('/handwriting') },
   // Her Lavender dusk card (qutenote-home-dates-card package, Oct 24): slate
   // into dusty lavender into baby blue, a glossy streak and a soft bottom
