@@ -6,8 +6,8 @@ import { useEffect, useState } from 'react'
 // across, and the wax seal pressing down into the middle. Once per launch.
 
 const SHOWN_KEY = 'qn_splash_shown'
-const WASH = '#BADAFF'
-const GHOST = 'rgba(255,255,255,0.22)'
+const WASH = 'var(--paper)'
+const GHOST = 'rgba(180,137,122,0.14)'
 
 export default function SplashScreen() {
   const [state, setState] = useState<'hidden' | 'in' | 'out'>(() => {
@@ -32,7 +32,8 @@ export default function SplashScreen() {
     <div
       aria-hidden
       style={{
-        position: 'fixed', inset: 0, zIndex: 200, background: WASH,
+        position: 'fixed', inset: 0, zIndex: 200,
+        background: WASH, backgroundImage: 'url(/brand/paper_texture.png)',
         padding: 'calc(env(safe-area-inset-top) + 24px) 20px calc(env(safe-area-inset-bottom) + 18px)',
         boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '16px',
         pointerEvents: 'none', overflow: 'hidden',
@@ -69,16 +70,7 @@ export default function SplashScreen() {
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '20px' }}>
         {/* her postmark, the same one that cancels "Send" on the website */}
         <svg viewBox="0 0 380 190" width="300" height="150" aria-hidden style={{ overflow: 'visible' }}>
-          <defs>
-            <filter id="qn-ink" x="-5%" y="-5%" width="110%" height="110%">
-              <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="7" result="n" />
-              <feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -2.2 2.0" result="m" />
-              <feComposite in="SourceGraphic" in2="m" operator="in" result="c" />
-              <feDisplacementMap in="c" in2="n" scale="4" />
-            </filter>
-            <filter id="qn-lift"><feDropShadow dx="0" dy="3" stdDeviation="3" floodColor="#4A2424" floodOpacity=".28" /></filter>
-          </defs>
-          <g filter="url(#qn-ink)" fill="none" stroke="#4A2424" strokeLinecap="round">
+          <g fill="none" stroke="#4A2424" strokeLinecap="round" opacity="0.92">
             <circle className="qn-ring" cx="98" cy="96" r="84" strokeWidth="10" />
             <circle className="qn-dots" cx="98" cy="96" r="68" strokeWidth="3" strokeDasharray="40 14 70 10" />
             <path className="qn-strike qn-s1" d="M176 64 q20 -14 40 0 t40 0 t40 0 t40 0 t40 -6" strokeWidth="10" />
@@ -86,8 +78,8 @@ export default function SplashScreen() {
             <path className="qn-strike qn-s3" d="M182 112 q20 -14 40 0 t40 0 t40 0 t40 0 t38 -4" strokeWidth="10" />
             <path className="qn-strike qn-s4" d="M176 136 q20 -14 40 0 t40 0 t40 0 t40 0 t36 -6" strokeWidth="10" />
           </g>
-          <image className="qn-wax" href="/brand/wax-press.webp" x="43" y="46" width="110" height="100"
-            preserveAspectRatio="xMidYMid meet" filter="url(#qn-lift)" />
+          <image className="qn-wax" href="/brand/wax-press.webp" xlinkHref="/brand/wax-press.webp"
+            x="43" y="46" width="110" height="100" preserveAspectRatio="xMidYMid meet" />
         </svg>
 
       </div>
