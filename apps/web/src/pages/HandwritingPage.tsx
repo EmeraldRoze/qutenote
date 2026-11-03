@@ -142,11 +142,9 @@ function WordFlow({ session, onSaved, glyphs }: {
   const word = session.words[index]
   const isSingleMark = word.length === 1
 
-  // Never interrupt (Emerald, Oct 18): ~1.5s after the pen goes quiet the
-  // word slices itself and the next one appears. Fix any oddballs later in
-  // Fix-one-letter.
-  const IDLE_MS = 1500
-
+  // No auto-slice any more (Emerald, Nov 3): the pen pausing used to grab the
+  // word after 1.5s, which meant dots and second strokes got cut off. Nothing
+  // is saved until she taps Save, so she can take as long as she likes.
   function disarm() {
     if (timerRef.current !== null) { window.clearTimeout(timerRef.current); timerRef.current = null }
   }
@@ -155,8 +153,6 @@ function WordFlow({ session, onSaved, glyphs }: {
   function onDraw(next: Stroke[]) {
     setStrokes(next)
     setError('')
-    disarm()
-    timerRef.current = window.setTimeout(() => finishWord(next, word, index), IDLE_MS)
   }
 
   useEffect(() => { trackFeature('handwriting-studio'); trackFunnel('handwriting', `start-${session.key}`) }, [session.key])
@@ -175,6 +171,10 @@ function WordFlow({ session, onSaved, glyphs }: {
         for (let i = 1; i < s.length; i++) d += Math.hypot(s[i].x - s[i - 1].x, s[i].y - s[i - 1].y)
         return a + d
       }, 0)
+      // A dot IS the letter for some of these, so the crumb gate must not
+      // eat them (Emerald, Nov 3: "people should just be able to do a simple
+      // dot for an i").
+      const SMALL_INK = new Set(['i', 'j', '!', '.', ',', ':', ';', "'", '"', '?'])
       const lens = result.letters.map((l) => inkLen(l.strokes))
       const positive = lens.filter((v) => v > 0).sort((a, b) => a - b)
       const median = positive.length ? positive[Math.floor(positive.length / 2)] : 0
@@ -182,7 +182,7 @@ function WordFlow({ session, onSaved, glyphs }: {
       const smudged: string[] = []
       result.letters.forEach((letter, i) => {
         const ok = letter.strokes.length > 0
-          && (forWord.length === 1 || lens[i] >= Math.max(30, median * 0.3))
+          && (forWord.length === 1 || SMALL_INK.has(letter.char) || lens[i] >= Math.max(30, median * 0.3))
         if (ok) captured[letter.char] = toGlyphSpace(letter.strokes, WORD_BASELINE)
         else smudged.push(letter.char)
       })
@@ -234,7 +234,7 @@ function WordFlow({ session, onSaved, glyphs }: {
             : flash
             ? `✓ ${flash} saved`
             : strokes.length
-              ? 'Pause when you\u2019re done — it moves on by itself.'
+              ? 'Done? Tap Save.'
               : isSingleMark
                 ? 'Just tap for a dot.'
                 : 'Sit the word on the dashed line. Flow is good — that is the whole point.'}
@@ -245,11 +245,21 @@ function WordFlow({ session, onSaved, glyphs }: {
       <div style={{ display: 'flex', gap: '10px', marginTop: '18px', justifyContent: 'center' }}>
         <button onClick={() => { disarm(); setStrokes([]) }} disabled={!strokes.length || saving}
           style={{
-            height: '48px', borderRadius: '24px', border: '2px solid #B4897A', cursor: 'pointer', padding: '0 26px',
+            height: '48px', borderRadius: '24px', border: 'none', cursor: 'pointer', padding: '0 24px',
             background: '#FBF8F3', color: '#4A2424', fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '13px',
             letterSpacing: '0.08em', opacity: strokes.length && !saving ? 1 : 0.5,
           }}>
           Clear & rewrite
+        </button>
+        {/* Save, not a pause: she decides when the word is finished
+            (Emerald, Nov 3) */}
+        <button onClick={() => finishWord(strokes, word, index)} disabled={!strokes.length || saving}
+          style={{
+            height: '48px', borderRadius: '24px', border: 'none', cursor: 'pointer', padding: '0 34px',
+            background: 'var(--btn)', color: '#4A2424', fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '13px',
+            letterSpacing: '0.08em', opacity: strokes.length && !saving ? 1 : 0.5,
+          }}>
+          {saving ? 'Saving…' : 'SAVE'}
         </button>
       </div>
     </div>
