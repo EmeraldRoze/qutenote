@@ -90,7 +90,22 @@ export async function submitNoteToLob(noteId: string): Promise<void> {
       : tint
         ? `<html><body style="margin:0;background:${tint.bg};width:6in;height:4in;display:flex;align-items:center;justify-content:center;">${tint.art ? `<img src="${SITE}/site/${tint.art}.png" style="width:2.6in;height:2.6in;object-fit:contain;" />` : ''}</body></html>`
         : `<html><body style="margin:0;background:linear-gradient(135deg,#E3D5CC,#F1EBE3);width:6in;height:4in;display:flex;align-items:center;justify-content:center;"><p style="font-family:Georgia,serif;font-size:48px;color:#4A2424;text-align:center;">💌</p></body></html>`
-  const backHtml = `<html><body style="margin:0;padding:40px;font-family:Georgia,serif;width:6in;height:4in;background:#F1EBE3;"><p style="font-size:22px;color:#2B2238;line-height:1.6;font-style:italic;">${safeText}</p><p style="margin-top:20px;font-size:14px;color:#766E82;">With love, ${note.sender.displayName}</p></body></html>`
+  // The back of a postcard is NOT ours to fill. Lob stamps a white address
+  // block over the right side and the lower band (it carries the routing
+  // barcode and the postage indicia, and the post office requires it to be
+  // clear). The old full-width paragraph ran straight underneath it, so a
+  // long note simply vanished. Found by rendering a real proof, Nov 4.
+  // Measured off that proof: the block starts 2.56in from the left edge
+  // and 1.52in down, and runs to both far edges. So the space we own is an
+  // L, the full width across the top and only the left column below.
+  // The empty right-floated spacer carves that out: pushed down 1.12in by
+  // its margin, so lines above it run the full width and lines beside it
+  // stop short of the address. shape-outside would be tidier but Lob's
+  // renderer ignores it (tried it, text stayed in a narrow column).
+  // 12px for a long note so even a 450-character one keeps its signature
+  // on the card; the proof with the longest possible note is what set this.
+  const noteFontPx = safeText.length <= 200 ? 18 : 12
+  const backHtml = `<html><body style="margin:0;padding:0;width:6in;height:4in;background:#F1EBE3;"><div style="box-sizing:border-box;width:6in;height:4in;padding:0.3in;font-family:Georgia,serif;"><div style="float:right;width:3.3in;height:2.28in;margin-top:1.12in;"></div><p style="margin:0;font-size:${noteFontPx}px;color:#2B2238;line-height:1.5;font-style:italic;">${safeText}</p><p style="margin:14px 0 0;font-size:12px;color:#766E82;">With love, ${note.sender.displayName}</p></div></body></html>`
 
   try {
     const postcard = await lob.postcards.create({
@@ -99,7 +114,15 @@ export async function submitNoteToLob(noteId: string): Promise<void> {
       from: fromAddress,
       front: frontHtml,
       back: backHtml,
-      size: '6x4',
+      // '6x4' is NOT a Lob size and was rejected with a 422 every time
+      // ("size must be a valid postcard size"). Lob writes it short edge
+      // first: 4x6, 5x7, 6x9, 6x11. Nobody caught it because no card has
+      // ever been sent, so this line had never run against Lob (Nov 4).
+      size: '4x6',
+      // Lob now refuses any mail piece that is not labelled. A QuteNote is
+      // the thing the sender paid us for, not a promotion, so it is
+      // operational. Missing this was a second 422 (Nov 4).
+      use_type: 'operational',
     })
     await prisma.note.update({ where: { id: note.id }, data: { status: 'SENT', lobNoteId: postcard.id } })
 
