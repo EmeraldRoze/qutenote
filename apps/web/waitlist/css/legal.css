@@ -1,0 +1,116 @@
+/* Privacy, Terms, Support and Accessibility as real pages Google can read.
+   The look matches LegalPage.tsx exactly (Emerald, Oct 29): QuteNote's own
+   cream ruled paper, Unbounded headings, Anonymous Pro body.
+   These exist as static HTML because the React versions served Google an
+   empty shell carrying the homepage's title and URL, so Search Console
+   filed them as duplicates of the homepage and refused to index them
+   (Nov 9). The React routes stay for anyone already inside the app. */
+
+:root {
+  --uv: #9E625F;
+  --ink: #4A2424;
+  --ink-mid: #5C5468;
+  --cream: #FBF8F4;
+  --stone: #E6E1DC;
+  --rule: #EFE8DE;
+  --mono: 'Anonymous Pro', monospace;
+  --display: 'Unbounded', sans-serif;
+}
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background-color: var(--cream);
+  background-image: repeating-linear-gradient(transparent, transparent 31px, var(--rule) 31px, var(--rule) 32px);
+}
+
+.wrap {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 48px clamp(20px, 5vw, 40px) 90px;
+  box-sizing: border-box;
+}
+
+.back {
+  display: inline-block;
+  margin-bottom: 26px;
+}
+
+.kicker {
+  font-family: var(--mono);
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--uv);
+  margin: 0;
+}
+
+h1 {
+  margin: 0 0 6px;
+  font-family: var(--display);
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  font-size: clamp(34px, 6vw, 52px);
+  line-height: 1.06;
+}
+
+h2 {
+  margin: 40px 0 10px;
+  font-family: var(--display);
+  font-weight: 400;
+  color: var(--ink);
+  font-size: clamp(20px, 3vw, 26px);
+  line-height: 1.2;
+}
+
+p, li {
+  font-family: var(--mono);
+  font-size: 16px;
+  line-height: 1.7;
+  color: var(--ink-mid);
+}
+
+p { margin: 0 0 14px; }
+li { margin: 0 0 8px; }
+ul { margin: 0 0 14px; padding-left: 22px; }
+
+.updated { color: var(--ink); margin-top: 10px; }
+
+/* A question in the Support list, and the bold lead-in on a bullet */
+.q {
+  color: var(--ink);
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+a { color: var(--uv); font-weight: 700; }
+
+footer {
+  margin-top: 56px;
+  padding-top: 20px;
+  border-top: 1.5px solid var(--stone);
+  display: flex;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+
+footer a, .back {
+  font-family: var(--mono);
+  font-size: 14px;
+  color: var(--uv);
+  text-decoration: none;
+  font-weight: 700;
+}
+
+footer a:hover, .back:hover, p a:hover, li a:hover { text-decoration: underline; }
+
+/* Keyboard focus stays visible, same promise the accessibility page makes */
+a:focus-visible {
+  outline: 3px solid var(--uv);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
