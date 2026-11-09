@@ -38,6 +38,13 @@ export default function AddressPage() {
   const [saved, setSaved] = useState(false)
   const [isVerified, setIsVerified] = useState(false)
   const [error, setError] = useState('')
+  // Three states now, not a yes/no (Nov 9): GOOD, BAD, UNCHECKED. A BAD one
+  // blocks cards being sent here, so this screen has to say WHY and offer the
+  // post office's own spelling of what it thinks was meant — otherwise the
+  // person is just stuck guessing at their own address.
+  const [verifyStatus, setVerifyStatus] = useState<'GOOD' | 'BAD' | 'UNCHECKED' | null>(null)
+  const [verifyReason, setVerifyReason] = useState<string | null>(null)
+  const [suggestion, setSuggestion] = useState<AddressData | null>(null)
 
   useEffect(() => {
     api.get('/address/me').then((res) => {
@@ -45,24 +52,42 @@ export default function AddressPage() {
         const a = res.data.data
         setForm({ line1: a.line1, line2: a.line2 ?? '', city: a.city, state: a.state, zip: a.zip, country: a.country })
         setIsVerified(!!a.isVerified)
+        setVerifyStatus(a.verifyStatus ?? null)
+        setVerifyReason(a.verifyReason ?? null)
       }
     }).finally(() => setLoading(false))
   }, [])
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
+  async function save(body: AddressData) {
     setError('')
     setSaving(true)
     setSaved(false)
+    setSuggestion(null)
     try {
-      const res = await api.post('/address', form)
-      setIsVerified(!!res.data.data?.isVerified)
+      const res = await api.post('/address', body)
+      const d = res.data.data
+      setIsVerified(!!d?.isVerified)
+      setVerifyStatus(d?.verifyStatus ?? null)
+      setVerifyReason(d?.verifyReason ?? null)
+      if (d?.suggestion) setSuggestion({ ...d.suggestion, line2: d.suggestion.line2 ?? '', country: 'US' })
       setSaved(true)
     } catch (err: any) {
       setError(err.response?.data?.error ?? 'Something went wrong. Try again.')
     } finally {
       setSaving(false)
     }
+  }
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    await save(form)
+  }
+
+  // One tap: take the post office's spelling and re-check it straight away.
+  async function acceptSuggestion() {
+    if (!suggestion) return
+    setForm(suggestion)
+    await save(suggestion)
   }
 
   return (
@@ -102,10 +127,51 @@ export default function AddressPage() {
                 {error}
               </div>
             )}
-            {saved && (
+            {saved && verifyStatus !== 'BAD' && (
               <div style={{ marginTop: '16px', background: 'var(--lime-tint)', border: '1.5px solid var(--lime-border)', color: 'var(--ink)', borderRadius: '14px', padding: '12px 16px', fontFamily: 'var(--font-body)', fontSize: '14px' }}>
                 Address saved!
               </div>
+            )}
+
+            {/* The post office says this one cannot be delivered to. Cards
+                sent here are held until it is fixed, so say why, and offer
+                the corrected spelling as a single tap. */}
+            {verifyStatus === 'BAD' && (
+              <div style={{ marginTop: '16px', background: 'var(--error-pale)', border: '1.5px solid var(--error)', borderRadius: '14px', padding: '14px 16px', fontFamily: 'var(--font-body)' }}>
+                <p style={{ margin: 0, fontSize: '14px', fontWeight: 700, color: 'var(--error)' }}>
+                  The post office can't deliver here yet.
+                </p>
+                {verifyReason && (
+                  <p style={{ margin: '6px 0 0', fontSize: '14px', lineHeight: '19px', color: 'var(--ink)' }}>{verifyReason}</p>
+                )}
+                <p style={{ margin: '6px 0 0', fontSize: '13px', lineHeight: '18px', color: 'var(--ink-muted)' }}>
+                  It's saved either way, but cards can't be mailed here until it checks out.
+                </p>
+                {suggestion && (
+                  <div style={{ marginTop: '12px', paddingTop: '12px', borderTop: '1px solid var(--error)' }}>
+                    <p style={{ margin: 0, fontSize: '13px', color: 'var(--ink-muted)' }}>Did you mean</p>
+                    <p style={{ margin: '4px 0 0', fontSize: '14px', lineHeight: '19px', fontWeight: 700, color: 'var(--ink)' }}>
+                      {suggestion.line1}{suggestion.line2 ? `, ${suggestion.line2}` : ''}<br />
+                      {suggestion.city}, {suggestion.state} {suggestion.zip}
+                    </p>
+                    <button type="button" onClick={acceptSuggestion} disabled={saving} style={{
+                      marginTop: '10px', border: 'none', cursor: 'pointer', borderRadius: '20px',
+                      background: 'var(--btn)', color: 'var(--ink)', padding: '9px 18px',
+                      fontFamily: 'var(--font-body)', fontSize: '14px', fontWeight: 700,
+                    }}>
+                      Use this instead
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* We could not reach the checker. Never pretend that means the
+                address is wrong — cards still go. */}
+            {saved && verifyStatus === 'UNCHECKED' && (
+              <p style={{ margin: '10px 4px 0', fontFamily: 'var(--font-body)', fontSize: '13px', lineHeight: '18px', color: 'var(--ink-muted)' }}>
+                We couldn't double-check it with the post office just now. Your cards will still go out.
+              </p>
             )}
 
             {/* Fields */}
