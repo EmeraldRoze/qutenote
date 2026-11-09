@@ -85,6 +85,31 @@ model Address {
   encryptedCountry String   @default("US")
   lobAddressId     String?
   isVerified       Boolean  @default(false)
+
+  // Verification, Melissa era (Nov 9 2026). isVerified above is kept as a
+  // mirror of verifyStatus == "GOOD" so older code keeps working.
+  //
+  // THREE states, not two, and the third one is the whole point: a boolean
+  // cannot tell "the post office says this is wrong" apart from "we could not
+  // reach the verifier", and conflating those is what silently blocked every
+  // send in QuteNote's first seven months.
+  //   GOOD      — Melissa returned AS01, deliverable. Cards go.
+  //   BAD       — Melissa named a problem. Cards are blocked and it is flagged.
+  //   UNCHECKED — no key, timeout, outage, out of credits. Cards still go.
+  verifyStatus String    @default("UNCHECKED")
+  verifyCodes  String?   // Melissa's raw codes, verbatim, e.g. "AS01,AC16,GS05"
+  verifyReason String?   // plain-English reason a BAD address failed
+  verifiedAt   DateTime?
+
+  // The USPS-standardised spelling Melissa gives back. This is what Ryan
+  // PRINTS — it is the form the carrier's walk sequence expects — and it is
+  // what we offer as "did you mean…" when a check comes back BAD.
+  stdLine1 String?
+  stdLine2 String?
+  stdCity  String?
+  stdState String?
+  stdZip   String?
+
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 

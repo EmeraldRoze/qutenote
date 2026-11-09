@@ -3,8 +3,17 @@ import { api } from './api'
 // Shrink the picked photo to postcard resolution and store it on the server.
 // Returns a permanent URL that survives app restarts and that the print
 // service can fetch. (A blob: URL dies with the session — learned the hard way.)
+//
+// WHY 2600, NOT 1800 (Emerald, Nov 9): we print in-house now, so this photo is
+// the actual artwork on a 4x6 card with 0.125in bleed = 6.25 x 4.25in, which
+// needs 1875 x 1275 px to hold 300dpi. The old 1800 cap was measured on the
+// LONG edge, so a portrait phone photo (3:4) arrived only ~1350px wide and got
+// stretched across 6.25in at ~216dpi — soft and mushy, with the original
+// already thrown away on the phone. At 2600 the same portrait photo lands
+// ~1950px wide = 312dpi across the card. Quality 0.92 because 0.85 JPEG
+// artefacts are invisible on a phone and visible on paper.
 export async function uploadPhoto(file: File): Promise<string> {
-  const dataUrl = await downscale(file, 1800, 0.85)
+  const dataUrl = await downscale(file, 2600, 0.92)
   const r = await api.post('/uploads', { dataUrl })
   return r.data.data.url as string
 }
