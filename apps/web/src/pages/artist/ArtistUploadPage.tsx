@@ -3,19 +3,38 @@ import { useNavigate } from 'react-router-dom'
 import { api } from '../../lib/api'
 import { trackFunnel } from '../../lib/analytics'
 import QIcon from '../../components/QIcon'
+import { IDEAL_PX, MIN_PX } from '../../lib/printSpec'
 
 // Step 2 of 3: your three cards (her qutenote-artists package, screen 04).
 //
 // These are PRINT files, not previews, so they do not go through the usual
-// photo shrink — a postcard needs its full 1800x1200 or the print is mush.
-// We measure the file in the browser and refuse a small one before it is
-// ever uploaded.
+// photo shrink. We measure the file in the browser and refuse a small one
+// before it is ever uploaded.
+//
+// THE NUMBERS, AND WHY THEY ARE TWO (Emerald, Nov 9 2026 — "raise the artist
+// minimum to whatever is feasible"). We print in-house now and Ryan's
+// InDesign template is built at 600 DPI. A 6x4 card with 0.125in bleed is
+// 6.25 x 4.25in, so:
+//   600 DPI = 3750 x 2550  — what we ask every artist for
+//   300 DPI = 1875 x 1275  — the hard floor, below this it prints as mush
+// The old floor was 1800 x 1200, which is 288 DPI: under the professional
+// standard by a whisker.
+//
+// It is a floor AND a target rather than one hard 600 DPI rule because of who
+// her artists are: iPad illustrators. Procreate caps layers by canvas size, so
+// a huge number of working artists build card art at 300 DPI and physically
+// cannot hand over 600. A 600 DPI wall would turn away good art. So anything
+// between the two uploads fine and gets flagged as lower resolution for
+// Emerald in the review desk and for Ryan in the print data.
 
 const col: React.CSSProperties = {
   width: '100%', maxWidth: '480px', margin: '0 auto', padding: '0 20px', boxSizing: 'border-box',
 }
-const MIN_LONG = 1800
-const MIN_SHORT = 1200
+// Numbers come from lib/printSpec so the card's measurements live in one file.
+const MIN_LONG = MIN_PX.w
+const MIN_SHORT = MIN_PX.h
+const IDEAL_LONG = IDEAL_PX.w
+const IDEAL_SHORT = IDEAL_PX.h
 
 interface CardDraft { title: string; uploadId: string; url: string; width: number; height: number; status?: string }
 
@@ -25,6 +44,7 @@ export default function ArtistUploadPage() {
   const [rights, setRights] = useState(true)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
+  const [notice, setNotice] = useState('')
   const [loading, setLoading] = useState(true)
   const fileRef = useRef<HTMLInputElement>(null)
   const slotRef = useRef(0)
@@ -57,8 +77,15 @@ export default function ArtistUploadPage() {
     try {
       const { width, height, dataUrl } = await readPrintFile(file)
       if (Math.max(width, height) < MIN_LONG || Math.min(width, height) < MIN_SHORT) {
-        setError(`That file is ${width} by ${height}, too small to print. Postcards need at least ${MIN_LONG} by ${MIN_SHORT}.`)
+        setError(`That file is ${width} by ${height}, too small to print. Cards need at least ${MIN_LONG} by ${MIN_SHORT}, and ${IDEAL_LONG} by ${IDEAL_SHORT} is what we'd love.`)
         return
+      }
+      // Printable, but not at the resolution the press is set up for. Say so
+      // plainly and let them decide — it is their name on the card.
+      if (Math.max(width, height) < IDEAL_LONG || Math.min(width, height) < IDEAL_SHORT) {
+        setNotice(`That one is ${width} by ${height}, which will print fine. If you have a bigger export, ${IDEAL_LONG} by ${IDEAL_SHORT} prints sharper.`)
+      } else {
+        setNotice('')
       }
       const r = await api.post('/uploads', { dataUrl })
       const url = r.data.data.url as string
@@ -139,11 +166,16 @@ export default function ArtistUploadPage() {
             {error}
           </div>
         )}
+        {notice && (
+          <div style={{ background: 'var(--light-blush)', border: '1px solid var(--stone)', color: 'var(--ink)', borderRadius: '10px', padding: '12px 16px', marginBottom: '14px', fontSize: '14px', lineHeight: '19px', fontFamily: 'var(--font-body)' }}>
+            {notice}
+          </div>
+        )}
 
         <div className="qn-stamp" style={{ border: '10px solid transparent', padding: '14px 12px' }}>
           <p style={{ margin: 0, fontSize: '15px', fontWeight: 700, fontFamily: 'var(--font-body)' }}>Print-ready files only.</p>
           <p style={{ margin: '4px 0 0', fontSize: '13px', lineHeight: '18px', fontFamily: 'var(--font-body)' }}>
-            4 × 6 inches, at least 1800 × 1200 pixels. JPG or PNG. We check every card before it goes live.
+            4 × 6 inches at 600 DPI, so {IDEAL_LONG} × {IDEAL_SHORT} pixels. JPG or PNG. We'll take {MIN_LONG} × {MIN_SHORT} at a push, but bigger prints sharper. We check every card before it goes live.
           </p>
         </div>
 
@@ -188,7 +220,7 @@ export default function ArtistUploadPage() {
                     }}
                   />
                   <span style={{ fontSize: '12px', fontFamily: 'var(--font-body)', color: 'var(--ink)' }}>
-                    {card ? `${card.width} × ${card.height}` : 'JPG or PNG, 1800 × 1200 or bigger'}
+                    {card ? `${card.width} × ${card.height}` : `JPG or PNG, ${IDEAL_LONG} × ${IDEAL_SHORT} ideally`}
                   </span>
                 </span>
                 {tag(card?.status)}

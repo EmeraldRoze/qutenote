@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { api } from '../../lib/api'
 import QIcon from '../../components/QIcon'
+import { dpiOnCard, isLowRes } from '../../lib/printSpec'
 
 // Emerald's review desk (she asked for it in BOTH places, Oct 26): this is
 // the in-app one, same endpoints as the web admin page. Applications first,
@@ -171,7 +172,19 @@ export default function AdminArtistsPage() {
               <strong style={{ display: 'block', fontFamily: 'var(--font-body)', fontSize: '15px' }}>{c.title}</strong>
               <span style={{ fontFamily: 'var(--font-body)', fontSize: '13px' }}>
                 @{c.artist?.user?.username} · {c.width ?? '?'} × {c.height ?? '?'}
+                {' '}<span style={{ opacity: 0.7 }}>({dpiOnCard(c.width, c.height)} dpi)</span>
               </span>
+              {/* Prints, but under the 600dpi the press is set up for. Her
+                  call whether the art is worth it — she can see the file. */}
+              {isLowRes(c.width, c.height) && (
+                <span style={{
+                  display: 'inline-block', marginTop: '4px', borderRadius: '8px', padding: '2px 8px',
+                  background: 'var(--error-pale)', color: 'var(--error)',
+                  fontFamily: 'var(--font-body)', fontSize: '12px', fontWeight: 700,
+                }}>
+                  Below 600 dpi
+                </span>
+              )}
             </span>
             <span style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
               <button onClick={() => decideCard(c.id, true)} style={btn('var(--highlight)')}>APPROVE</button>

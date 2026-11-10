@@ -2,6 +2,7 @@ import { Router, Response } from 'express'
 import { prisma } from '../lib/prisma'
 import { requireAuth, AuthRequest } from '../middleware/auth'
 import { ARTIST_EARNING_CENTS, monthKey } from '../lib/artistPay'
+import { FULL_PX, MIN_PX } from '../lib/printSpec'
 
 // The artist program (Emerald, Oct 26). An artist profile is switched on
 // inside a normal account: apply → she reviews → upload exactly three
@@ -10,8 +11,18 @@ import { ARTIST_EARNING_CENTS, monthKey } from '../lib/artistPay'
 
 export const artistsRouter = Router()
 
-const MIN_W = 1800
-const MIN_H = 1200
+// Print floor, raised from 1800x1200 on Nov 9 2026 when printing came
+// in-house. A 6x4 card with 0.125in bleed is 6.25 x 4.25in, so 1875 x 1275 is
+// a true 300dpi (the old numbers were 288dpi) and 3750 x 2550 is the 600dpi
+// Ryan's template is built at. Anything between the two is allowed and flagged
+// as lower resolution rather than refused, because iPad artists working in
+// Procreate are commonly capped at 300dpi by its layer limits.
+// The numbers themselves live in lib/printSpec.ts, one source of truth with
+// the app's copy in apps/web/src/pages/artist/ArtistUploadPage.tsx.
+const MIN_W = MIN_PX.w
+const MIN_H = MIN_PX.h
+const IDEAL_W = FULL_PX.w
+const IDEAL_H = FULL_PX.h
 const BIO_MAX = 140
 
 const publicArtist = {
@@ -137,7 +148,7 @@ artistsRouter.put('/me/cards', requireAuth, async (req: AuthRequest, res: Respon
     // 4x6 at print resolution. Reject small files here with a friendly line.
     if (w && h && (Math.max(w, h) < MIN_W || Math.min(w, h) < MIN_H)) {
       return res.status(400).json({
-        error: `"${c.title}" is too small to print (${w}x${h}). Postcards need at least ${MIN_W} by ${MIN_H}.`,
+        error: `"${c.title}" is too small to print (${w}x${h}). Cards need at least ${MIN_W} by ${MIN_H}, and ${IDEAL_W} by ${IDEAL_H} prints sharpest.`,
       })
     }
   }
