@@ -137,10 +137,21 @@ export async function submitNoteToLob(noteId: string): Promise<void> {
   }
 }
 
-// Submit every note whose time has come: scheduled notes go by their mailAt
-// (set ~6 days before the chosen event day); send-now notes keep the classic
-// 2-hour edit window off createdAt.
-export async function submitDueNotes(): Promise<void> {
+// THE AUTOMATIC MAILER IS OFF (Emerald, Nov 9 2026). Printing came in-house:
+// Ryan prints the cards at a print shop from an export, so nothing should be
+// handed to a mail vendor automatically, and nothing may be marked SENT until
+// a card has genuinely been put in the post.
+//
+// THIS WAS ABOUT TO DO REAL DAMAGE. Lob's postcard create SUCCEEDS on a test
+// key — it returns a postcard object that is never printed and never mailed.
+// So the moment the new address rules let a note be created, this loop would
+// have marked it SENT two hours later, credited the artist, and told the
+// sender their card was on its way, for a card that went nowhere. It never
+// fired before only because the old address gate meant no note could exist.
+//
+// `submitNoteToLob` above is left in place, unused, until the print export
+// has proven itself on real cards. Then it goes.
+export async function dueForPrint(limit = 200): Promise<string[]> {
   const now = new Date()
   const due = await prisma.note.findMany({
     where: {
@@ -150,10 +161,11 @@ export async function submitDueNotes(): Promise<void> {
         { mailAt: null, createdAt: { lte: new Date(now.getTime() - EDIT_WINDOW_MS) } },
       ],
     },
+    orderBy: { createdAt: 'asc' },
     select: { id: true },
-    take: 25,
+    take: limit,
   })
-  for (const n of due) await submitNoteToLob(n.id)
+  return due.map((n) => n.id)
 }
 
 // An artist is paid every time one of their cards is mailed.

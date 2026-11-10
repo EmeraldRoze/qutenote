@@ -1,11 +1,11 @@
 import { prisma } from './prisma'
 import { notifyUser } from './notify'
-import { submitDueNotes } from './submitNote'
+
 
 // A tiny in-process scheduler: checks every minute.
-// - Due notes (2-hour edit window closed) get submitted to Lob.
 // - Once a day (15:00 UTC ≈ morning in the US) birthday reminders go out,
 //   seven days ahead, exactly like the nudge promises.
+// It no longer hands cards to a mail vendor; printing is in-house now.
 
 let lastReminderDate = ''
 
@@ -88,11 +88,9 @@ async function dailyUsageDigest(): Promise<void> {
 
 export function startScheduler(): void {
   setInterval(async () => {
-    try {
-      await submitDueNotes()
-    } catch (e: any) {
-      console.error('[scheduler] submitDueNotes error:', e?.message)
-    }
+    // The automatic hand-off to a mail vendor is gone (Nov 9 2026): printing
+    // is in-house, so a card leaves PENDING only when Ryan prints it and is
+    // only marked SENT when it is genuinely in the post. See submitNote.ts.
     try {
       const now = new Date()
       const today = now.toISOString().slice(0, 10)
@@ -114,5 +112,5 @@ export function startScheduler(): void {
       console.error('[scheduler] reminders error:', e?.message)
     }
   }, 60 * 1000)
-  console.log('[scheduler] running — edit-window submits every minute, reminders daily at 15:00 UTC')
+  console.log('[scheduler] running — reminders daily at 15:00 UTC (no auto-mailing; printing is in-house)')
 }
