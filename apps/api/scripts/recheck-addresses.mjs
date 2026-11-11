@@ -44,14 +44,29 @@ const AE_REASONS = {
   AE21: 'That address could not be looked up.',
 }
 
+// Mirrors the AE14 retry in src/lib/verifyAddress.ts — keep the two in step.
+// A bare box number on a mailbox-store address reads as "box number missing"
+// to the post office until it is labelled PMB.
 async function check(a) {
+  const first = await checkOnce(a, a.encryptedLine2)
+  if (first.codes.split(',').includes('AE14')) {
+    const bare = String(a.encryptedLine2 ?? '').trim()
+    if (/^\d+$/.test(bare)) {
+      const retry = await checkOnce(a, `PMB ${bare}`)
+      if (retry.status === 'GOOD') return retry
+    }
+  }
+  return first
+}
+
+async function checkOnce(a, line2) {
   const key = process.env.MELISSA_LICENSE_KEY
   if (!key) throw new Error('MELISSA_LICENSE_KEY is not set — nothing to check with.')
   const url = new URL(ENDPOINT)
   url.searchParams.set('id', key)
   url.searchParams.set('act', 'Check')
   url.searchParams.set('a1', a.encryptedLine1)
-  if (a.encryptedLine2) url.searchParams.set('a2', a.encryptedLine2)
+  if (line2) url.searchParams.set('a2', line2)
   url.searchParams.set('city', a.encryptedCity)
   url.searchParams.set('state', a.encryptedState)
   url.searchParams.set('postal', a.encryptedZip)

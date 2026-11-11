@@ -80,6 +80,27 @@ function pick(codes: string[], table: Record<string, string>): string | null {
 }
 
 export async function verifyAddress(addr: AddressInput): Promise<VerifyResult> {
+  const first = await checkOnce(addr)
+
+  // AE14 means "this is a mailbox store and the box number is missing". Real
+  // case, Nov 11 2026: Bobby's address already HAD its box number, written as
+  // a bare "199" on the second line, and Melissa refused it anyway because the
+  // post office wants it labelled "PMB 199". Blocking him would have been us
+  // refusing an address he typed correctly. So when AE14 comes back and we are
+  // holding a bare number, relabel it and ask once more. Costs 3 extra credits,
+  // and only in this one case.
+  if (first.codes.split(',').includes('AE14')) {
+    const bare = (addr.line2 ?? '').trim()
+    if (/^\d+$/.test(bare)) {
+      const retry = await checkOnce({ ...addr, line2: `PMB ${bare}` })
+      if (retry.status === 'GOOD') return retry
+    }
+  }
+
+  return first
+}
+
+async function checkOnce(addr: AddressInput): Promise<VerifyResult> {
   const key = process.env.MELISSA_LICENSE_KEY
   if (!key) {
     // No key configured yet. Say so honestly rather than condemning the address.
