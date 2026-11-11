@@ -32,7 +32,9 @@ async function requireAdminOrQuery(req: AuthRequest, res: Response, next: NextFu
   }
 }
 
-adminPdfRouter.use(requireAdminOrQuery)
+// Attached to the one route below, not the whole router: this router is
+// mounted on /admin ahead of adminRouter, so a path-less check here would
+// also answer for every other admin request.
 
 // 6x9 postcard in points (72 points per inch)
 const WIDTH = 6 * 72   // 432
@@ -64,7 +66,7 @@ const SECRET_FONT_PATH = path.join(process.cwd(), 'assets', 'QuteNoteSecret.otf'
 const hasSecretFont = fs.existsSync(SECRET_FONT_PATH)
 
 // GET /admin/notes/:id/pdf — generate a printable postcard PDF
-adminPdfRouter.get('/notes/:id/pdf', async (req: AuthRequest, res) => {
+adminPdfRouter.get('/notes/:id/pdf', requireAdminOrQuery, async (req: AuthRequest, res) => {
   const { id } = req.params
 
   const note = await prisma.note.findUnique({

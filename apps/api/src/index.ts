@@ -97,8 +97,11 @@ app.use('/connections', connectionsRouter)
 app.use('/address', addressRouter)
 app.use('/stripe', stripeRouter)
 app.use('/pass-it-forward', passItForwardRouter)
-app.use('/admin', adminRouter)
+// adminPdfRouter first: it accepts the login token in the URL (a downloaded
+// PDF opens in a new window, which cannot carry a header). Mounted after
+// adminRouter, adminRouter's header-only check answered 401 first.
 app.use('/admin', adminPdfRouter)
+app.use('/admin', adminRouter)
 app.use('/feed', feedRouter)
 app.use('/important-dates', importantDatesRouter)
 app.use('/invites', invitesRouter)
