@@ -1,8 +1,8 @@
 import { Router } from 'express'
-import type { Response, NextFunction } from 'express'
 import { prisma } from '../lib/prisma'
+import { requireAdmin } from '../middleware/auth'
 import type { AuthRequest } from '../middleware/auth'
-import { verifyToken } from '../lib/jwt'
+import { isOwnUploadUrl } from '../lib/imageUrl'
 import PDFDocument from 'pdfkit'
 import QRCode from 'qrcode'
 import path from 'path'
@@ -12,29 +12,15 @@ import { drawFlowerText, hasFlowerAssets } from '../lib/flower'
 
 export const adminPdfRouter = Router()
 
-// Allow token via query param (for window.open PDF downloads) or Authorization header
-async function requireAdminOrQuery(req: AuthRequest, res: Response, next: NextFunction) {
-  const tokenFromQuery = req.query.token as string | undefined
-  const authHeader = req.headers.authorization
-  const token = tokenFromQuery ?? (authHeader?.startsWith('Bearer ') ? authHeader.slice(7) : null)
-
-  if (!token) return res.status(401).json({ error: 'Not logged in.' })
-
-  try {
-    const { userId } = verifyToken(token)
-    const user = await prisma.user.findUnique({ where: { id: userId }, select: { id: true, isAdmin: true } })
-    if (!user) return res.status(401).json({ error: 'Account not found.' })
-    if (!user.isAdmin) return res.status(403).json({ error: 'Not authorized.' })
-    req.userId = userId
-    next()
-  } catch {
-    return res.status(401).json({ error: 'Session expired. Please log in again.' })
-  }
-}
-
-// Attached to the one route below, not the whole router: this router is
-// mounted on /admin ahead of adminRouter, so a path-less check here would
-// also answer for every other admin request.
+// This router used to accept the login token from the web address, because a
+// download opens in a new window and a new window cannot carry a header. That
+// put a thirty-day admin session into the address bar, the browser history and
+// the logs of every machine between here and the admin's laptop, where anyone
+// who later read one of those could reuse it. The download now fetches with a
+// header like every other request (see AdminPage.tsx), so the header check is
+// all we need — and it guards the whole router, so a route added here later
+// cannot accidentally arrive with no check on it at all.
+adminPdfRouter.use(requireAdmin)
 
 // 6x9 postcard in points (72 points per inch)
 const WIDTH = 6 * 72   // 432
@@ -66,7 +52,7 @@ const SECRET_FONT_PATH = path.join(process.cwd(), 'assets', 'QuteNoteSecret.otf'
 const hasSecretFont = fs.existsSync(SECRET_FONT_PATH)
 
 // GET /admin/notes/:id/pdf — generate a printable postcard PDF
-adminPdfRouter.get('/notes/:id/pdf', requireAdminOrQuery, async (req: AuthRequest, res) => {
+adminPdfRouter.get('/notes/:id/pdf', async (req: AuthRequest, res) => {
   const { id } = req.params
 
   const note = await prisma.note.findUnique({
@@ -99,7 +85,11 @@ adminPdfRouter.get('/notes/:id/pdf', requireAdminOrQuery, async (req: AuthReques
   doc.pipe(res)
 
   // ─── PAGE 1: FRONT (card design) ───────────────────────────────────────────
-  const imageUrl = note.cardImageUrl ?? note.cardDesign?.imageUrl
+  // Second gate, on purpose. POST /notes refuses a photo address that is not
+  // ours, but rows saved before that check existed are still in the database,
+  // so nothing gets fetched here until it has been checked again.
+  const candidate = note.cardImageUrl ?? note.cardDesign?.imageUrl
+  const imageUrl = isOwnUploadUrl(candidate) ? candidate : null
 
   // Background
   doc.rect(0, 0, WIDTH, HEIGHT).fill('#F1EBE3')

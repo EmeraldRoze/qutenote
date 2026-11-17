@@ -20,6 +20,21 @@ function downloadLaunchSheet(rows: LaunchSignup[]) {
   URL.revokeObjectURL(url)
 }
 
+// The printable card. This used to be a window.open with the login token
+// pasted into the web address, which left a thirty-day admin session sitting
+// in the address bar, the browser history and the logs of every machine in
+// between. Fetching it the ordinary way sends the login in a header where
+// nothing records it, and the file still lands in Downloads.
+async function downloadNotePdf(noteId: string): Promise<void> {
+  const res = await api.get(`/admin/notes/${noteId}/pdf`, { responseType: 'blob' })
+  const url = URL.createObjectURL(res.data as Blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = `qutenote-${noteId.slice(0, 8)}.pdf`
+  a.click()
+  URL.revokeObjectURL(url)
+}
+
 interface NoteItem {
   id: string
   noteText: string
@@ -194,8 +209,9 @@ export default function AdminPage() {
             <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
               <button
                 onClick={() => {
-                  const token = localStorage.getItem('cn_token')
-                  window.open(`/api/admin/notes/${note.id}/pdf?token=${token}`, '_blank')
+                  downloadNotePdf(note.id).catch(() =>
+                    alert("That card's PDF didn't come through. Try again."),
+                  )
                 }}
                 style={{
                   padding: '8px 20px', borderRadius: '20px', fontSize: '13px', fontWeight: 500,

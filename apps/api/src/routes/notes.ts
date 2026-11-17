@@ -6,6 +6,7 @@ import { requireAuth } from '../middleware/auth'
 import type { AuthRequest } from '../middleware/auth'
 import { EDIT_WINDOW_MS } from '../lib/submitNote'
 import { notifyUser } from '../lib/notify'
+import { isOwnUploadUrl } from '../lib/imageUrl'
 // @ts-ignore — lob package has no types
 import Lob from 'lob'
 
@@ -57,6 +58,14 @@ notesRouter.post('/', requireAuth, async (req: AuthRequest, res) => {
     scheduledFor,
     voiceUploadId,
   } = parsed.data
+
+  // The card photo must be one WE stored, same as the voice note below has
+  // always had to be. Without this the sender picks any address on the
+  // internet and the server fetches it later, while building the print PDF,
+  // from inside our own network.
+  if (cardImageUrl !== undefined && !isOwnUploadUrl(cardImageUrl)) {
+    return res.status(400).json({ error: "That photo didn't come through. Try uploading it again." })
+  }
 
   // A voice note must be the sender's own audio upload
   if (voiceUploadId) {

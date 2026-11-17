@@ -1,5 +1,6 @@
 import { prisma } from './prisma'
 import { ARTIST_EARNING_CENTS } from './artistPay'
+import { isOwnUploadUrl } from './imageUrl'
 // @ts-ignore — lob package has no types
 import Lob from 'lob'
 
@@ -83,8 +84,12 @@ export async function submitNoteToLob(noteId: string): Promise<void> {
   }
   const realArt = note.cardDesignId ? CARD_ART[note.cardDesignId] : undefined
   const tint = note.cardDesignId ? CARD_TINTS[note.cardDesignId] : undefined
-  const frontHtml = note.cardImageUrl
-    ? `<html><body style="margin:0;width:6in;height:4in;"><img src="${note.cardImageUrl}" style="width:6in;height:4in;object-fit:cover;display:block;" /></body></html>`
+  // Checked, not escaped: an address that passes isOwnUploadUrl cannot hold a
+  // quote, so it cannot climb out of the src="..." it is dropped into. The
+  // note text on this page is escaped; this was the one value that was not.
+  const frontPhoto = isOwnUploadUrl(note.cardImageUrl) ? note.cardImageUrl : null
+  const frontHtml = frontPhoto
+    ? `<html><body style="margin:0;width:6in;height:4in;"><img src="${frontPhoto}" style="width:6in;height:4in;object-fit:cover;display:block;" /></body></html>`
     : realArt
       ? `<html><body style="margin:0;width:6in;height:4in;"><img src="${SITE}${realArt}" style="width:6in;height:4in;object-fit:cover;display:block;" /></body></html>`
       : tint
