@@ -14,6 +14,19 @@
 
 import { PrismaClient } from '@prisma/client'
 
+// Addresses are scrambled in the database now, so this script has to unlock
+// them to ask Melissa and lock the post office's spelling back up before
+// saving it. It borrows the one real implementation from the built app rather
+// than keeping a second copy here, because a second copy drifts.
+let addressCrypto
+try {
+  addressCrypto = await import('../dist/lib/addressCrypto.js')
+} catch {
+  console.error('Build the app first so this script can share its address lock: cd apps/api && npm run build')
+  process.exit(1)
+}
+const { decryptAddress, encryptStandardized } = addressCrypto
+
 const WRITE = process.argv.includes('--write')
 const prisma = new PrismaClient()
 
@@ -48,9 +61,9 @@ const AE_REASONS = {
 // A bare box number on a mailbox-store address reads as "box number missing"
 // to the post office until it is labelled PMB.
 async function check(a) {
-  const first = await checkOnce(a, a.encryptedLine2)
+  const first = await checkOnce(a, a.line2)
   if (first.codes.split(',').includes('AE14')) {
-    const bare = String(a.encryptedLine2 ?? '').trim()
+    const bare = String(a.line2 ?? '').trim()
     if (/^\d+$/.test(bare)) {
       const retry = await checkOnce(a, `PMB ${bare}`)
       if (retry.status === 'GOOD') return retry
@@ -65,11 +78,11 @@ async function checkOnce(a, line2) {
   const url = new URL(ENDPOINT)
   url.searchParams.set('id', key)
   url.searchParams.set('act', 'Check')
-  url.searchParams.set('a1', a.encryptedLine1)
+  url.searchParams.set('a1', a.line1)
   if (line2) url.searchParams.set('a2', line2)
-  url.searchParams.set('city', a.encryptedCity)
-  url.searchParams.set('state', a.encryptedState)
-  url.searchParams.set('postal', a.encryptedZip)
+  url.searchParams.set('city', a.city)
+  url.searchParams.set('state', a.state)
+  url.searchParams.set('postal', a.zip)
   url.searchParams.set('ctry', 'US')
   url.searchParams.set('format', 'json')
 
@@ -98,7 +111,9 @@ console.log(`${rows.length} saved addresses. ${WRITE ? 'SAVING results.' : 'DRY 
 console.log(`Credits this will spend: ${rows.length * 3}\n`)
 
 const tally = { GOOD: 0, BAD: 0, UNCHECKED: 0 }
-for (const a of rows) {
+for (const row of rows) {
+  // Unlocked only in memory, for the length of one check.
+  const a = { ...decryptAddress(row), id: row.id, user: row.user }
   const v = await check(a)
   tally[v.status]++
   console.log(`@${a.user.username.padEnd(20)} ${v.status.padEnd(9)} ${v.codes}${v.reason ? `  ← ${v.reason}` : ''}`)
@@ -111,11 +126,7 @@ for (const a of rows) {
         verifyReason: v.reason,
         verifiedAt: v.status === 'UNCHECKED' ? null : new Date(),
         isVerified: v.status === 'GOOD',
-        stdLine1: v.std?.line1 ?? null,
-        stdLine2: v.std?.line2 ?? null,
-        stdCity: v.std?.city ?? null,
-        stdState: v.std?.state ?? null,
-        stdZip: v.std?.zip ?? null,
+        ...encryptStandardized(v.std),
       },
     })
   }

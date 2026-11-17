@@ -3,6 +3,7 @@ import { z } from 'zod'
 import { prisma } from '../lib/prisma'
 import { requireAuth, AuthRequest } from '../middleware/auth'
 import { verifyAddress } from '../lib/verifyAddress'
+import { decryptAddress, encryptAddressParts, encryptStandardized } from '../lib/addressCrypto'
 
 export const addressRouter = Router()
 addressRouter.use(requireAuth)
@@ -68,16 +69,16 @@ addressRouter.get('/me', async (req: AuthRequest, res: Response) => {
   })
   if (!address) return res.json({ data: null })
 
-  // Return decrypted fields (encryption layer to be added later)
+  const plain = decryptAddress(address)
   return res.json({
     data: {
       id:      address.id,
-      line1:   address.encryptedLine1,
-      line2:   address.encryptedLine2 ?? null,
-      city:    address.encryptedCity,
-      state:   address.encryptedState,
-      zip:     address.encryptedZip,
-      country: address.encryptedCountry,
+      line1:   plain.line1,
+      line2:   plain.line2,
+      city:    plain.city,
+      state:   plain.state,
+      zip:     plain.zip,
+      country: plain.country,
       isVerified:   address.isVerified,
       verifyStatus: address.verifyStatus,
       verifyReason: address.verifyReason,
@@ -104,21 +105,17 @@ addressRouter.post('/', async (req: AuthRequest, res: Response) => {
     verifyCodes:  check.codes || null,
     verifyReason: check.reason,
     verifiedAt:   check.status === 'UNCHECKED' ? null : new Date(),
-    stdLine1:     check.standardized?.line1 ?? null,
-    stdLine2:     check.standardized?.line2 ?? null,
-    stdCity:      check.standardized?.city ?? null,
-    stdState:     check.standardized?.state ?? null,
-    stdZip:       check.standardized?.zip ?? null,
+    // The post office's own spelling is just as much this person's home
+    // address, so it is scrambled on the same terms as what they typed.
+    ...encryptStandardized(check.standardized),
     // Mirrored for the older code that still reads the boolean.
     isVerified:   check.status === 'GOOD',
   }
 
+  // Scrambled here, on the way in — Melissa has already been asked, using the
+  // plain text, a few lines above.
   const written = {
-    encryptedLine1:   line1,
-    encryptedLine2:   line2 ?? null,
-    encryptedCity:    city,
-    encryptedState:   state,
-    encryptedZip:     zip,
+    ...encryptAddressParts({ line1, line2, city, state, zip }),
     encryptedCountry: country,
     ...verifyFields,
   }
@@ -129,15 +126,16 @@ addressRouter.post('/', async (req: AuthRequest, res: Response) => {
     create: { userId: req.userId!, ...written },
   })
 
+  // Echo back what they typed, not what we stored.
   return res.json({
     data: {
       id:      address.id,
-      line1:   address.encryptedLine1,
-      line2:   address.encryptedLine2 ?? null,
-      city:    address.encryptedCity,
-      state:   address.encryptedState,
-      zip:     address.encryptedZip,
-      country: address.encryptedCountry,
+      line1,
+      line2:   line2 ?? null,
+      city,
+      state,
+      zip,
+      country,
       isVerified:   address.isVerified,
       verifyStatus: address.verifyStatus,
       // Why it failed, and the post office's own spelling of what they think

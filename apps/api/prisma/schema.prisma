@@ -72,7 +72,15 @@ model User {
   receivedCards   ReceivedCard[]
 }
 
-// ─── ADDRESSES (encrypted at app level) ─────────────────────────────────────
+// ─── ADDRESSES ───────────────────────────────────────────────────────────────
+// Scrambled by the app before they are written here, and only unlocked in
+// memory for as long as it takes to print a card or show someone their own
+// address back: see src/lib/addressCrypto.ts. The encrypted* names were here
+// from April but nothing scrambled anything until Nov 17 2026, so rows saved
+// before then hold plain text until scripts/encrypt-existing-addresses.mjs is
+// run. Reading tolerates both. stdLine1..stdZip are the post office's own
+// spelling of the same address and are scrambled on the same terms.
+// encryptedCountry is deliberately left readable: "US" for everyone.
 
 model Address {
   id               String   @id @default(uuid())

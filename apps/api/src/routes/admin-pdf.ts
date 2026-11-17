@@ -3,6 +3,7 @@ import { prisma } from '../lib/prisma'
 import { requireAdmin } from '../middleware/auth'
 import type { AuthRequest } from '../middleware/auth'
 import { isOwnUploadUrl } from '../lib/imageUrl'
+import { decryptAddress } from '../lib/addressCrypto'
 import PDFDocument from 'pdfkit'
 import QRCode from 'qrcode'
 import path from 'path'
@@ -178,15 +179,16 @@ adminPdfRouter.get('/notes/:id/pdf', async (req: AuthRequest, res) => {
 
   // Recipient address
   if (address) {
+    const to = decryptAddress(address)
     const addrY = HEIGHT / 2 - 20
     doc.font('Helvetica').fontSize(11).fillColor('#4A2424')
     doc.text(note.recipient.displayName, midX + 16, addrY, { width: WIDTH / 2 - 40 })
-    doc.text(address.encryptedLine1, midX + 16, addrY + 16, { width: WIDTH / 2 - 40 })
-    if (address.encryptedLine2) {
-      doc.text(address.encryptedLine2, midX + 16, addrY + 32, { width: WIDTH / 2 - 40 })
+    doc.text(to.line1, midX + 16, addrY + 16, { width: WIDTH / 2 - 40 })
+    if (to.line2) {
+      doc.text(to.line2, midX + 16, addrY + 32, { width: WIDTH / 2 - 40 })
     }
-    const cityLine = `${address.encryptedCity}, ${address.encryptedState} ${address.encryptedZip}`
-    const cityY = address.encryptedLine2 ? addrY + 48 : addrY + 32
+    const cityLine = `${to.city}, ${to.state} ${to.zip}`
+    const cityY = to.line2 ? addrY + 48 : addrY + 32
     doc.text(cityLine, midX + 16, cityY, { width: WIDTH / 2 - 40 })
   } else {
     doc.font('Helvetica-Oblique').fontSize(10).fillColor('#A07D7D')

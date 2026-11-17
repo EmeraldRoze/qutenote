@@ -1,6 +1,7 @@
 import { prisma } from './prisma'
 import { ARTIST_EARNING_CENTS } from './artistPay'
 import { isOwnUploadUrl } from './imageUrl'
+import { decryptAddress } from './addressCrypto'
 // @ts-ignore — lob package has no types
 import Lob from 'lob'
 
@@ -25,23 +26,26 @@ export async function submitNoteToLob(noteId: string): Promise<void> {
   }
   const senderAddress = await prisma.address.findUnique({ where: { userId: note.senderId } })
 
+  const to = decryptAddress(recipientAddress)
+  const from = senderAddress ? decryptAddress(senderAddress) : null
+
   const toAddress: any = {
     name: note.recipient.displayName,
-    address_line1: recipientAddress.encryptedLine1,
-    address_city: recipientAddress.encryptedCity,
-    address_state: recipientAddress.encryptedState,
-    address_zip: recipientAddress.encryptedZip,
-    address_country: recipientAddress.encryptedCountry ?? 'US',
+    address_line1: to.line1,
+    address_city: to.city,
+    address_state: to.state,
+    address_zip: to.zip,
+    address_country: to.country,
   }
-  if (recipientAddress.encryptedLine2) toAddress.address_line2 = recipientAddress.encryptedLine2
+  if (to.line2) toAddress.address_line2 = to.line2
 
-  const fromAddress: any = senderAddress ? {
+  const fromAddress: any = from ? {
     name: note.sender.displayName,
-    address_line1: senderAddress.encryptedLine1,
-    address_city: senderAddress.encryptedCity,
-    address_state: senderAddress.encryptedState,
-    address_zip: senderAddress.encryptedZip,
-    address_country: senderAddress.encryptedCountry ?? 'US',
+    address_line1: from.line1,
+    address_city: from.city,
+    address_state: from.state,
+    address_zip: from.zip,
+    address_country: from.country,
   } : {
     name: 'QuteNote',
     address_line1: '123 Main St',
@@ -50,7 +54,7 @@ export async function submitNoteToLob(noteId: string): Promise<void> {
     address_zip: '78701',
     address_country: 'US',
   }
-  if (senderAddress?.encryptedLine2) fromAddress.address_line2 = senderAddress.encryptedLine2
+  if (from?.line2) fromAddress.address_line2 = from.line2
 
   const safeText = note.noteText.replace(/</g, '&lt;').replace(/>/g, '&gt;')
 

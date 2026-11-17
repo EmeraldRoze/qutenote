@@ -1,6 +1,7 @@
 // apps/api/prisma/seed.ts
 import { PrismaClient } from '@prisma/client'
 import bcrypt from 'bcryptjs'
+import { encryptAddressParts } from '../src/lib/addressCrypto'
 
 const prisma = new PrismaClient()
 
@@ -62,18 +63,15 @@ async function main() {
     },
   })
 
-  // ─── Addresses (encrypted placeholder values for now) ────────────────────────
+  // ─── Addresses (scrambled the same way the real app does) ───────────────────
 
   await prisma.address.upsert({
     where: { userId: maya.id },
     update: {},
     create: {
       userId: maya.id,
-      encryptedLine1: 'enc_123_main_st',
-      encryptedCity: 'enc_austin',
-      encryptedState: 'enc_tx',
-      encryptedZip: 'enc_78701',
-      encryptedCountry: 'enc_us',
+      ...encryptAddressParts({ line1: '123 Main St', city: 'Austin', state: 'TX', zip: '78701' }),
+      encryptedCountry: 'US',
     },
   })
 
@@ -82,11 +80,8 @@ async function main() {
     update: {},
     create: {
       userId: sofia.id,
-      encryptedLine1: 'enc_456_elm_ave',
-      encryptedCity: 'enc_denver',
-      encryptedState: 'enc_co',
-      encryptedZip: 'enc_80203',
-      encryptedCountry: 'enc_us',
+      ...encryptAddressParts({ line1: '456 Elm Ave', city: 'Denver', state: 'CO', zip: '80203' }),
+      encryptedCountry: 'US',
     },
   })
 
