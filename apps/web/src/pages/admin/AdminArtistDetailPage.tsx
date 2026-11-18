@@ -99,7 +99,7 @@ export default function AdminArtistDetailPage() {
                   {a.portfolioUrl && <a href={a.portfolioUrl} target="_blank" rel="noreferrer" style={{ color: 'var(--ink)' }}>{a.portfolioUrl}</a>}
                 </>
               ))}
-              {field('Confirmed the work is theirs', a.rightsConfirmed ? 'Yes' : 'NO — they did not tick it')}
+              {field('Confirmed the work is theirs', a.rightsConfirmed ? 'Yes' : 'NO, they did not tick it')}
               {a.status === 'APPROVED' && field('Since approved', `${a.cardsSent} card${a.cardsSent === 1 ? '' : 's'} sent · $${(a.earnedCents / 100).toFixed(2)} earned`)}
               {a.reviewNote && field('Your note', a.reviewNote)}
             </div>
@@ -120,7 +120,7 @@ export default function AdminArtistDetailPage() {
 
             {a.idUploadId && (
               <div style={panel}>
-                <div style={{ ...rowLabel, marginBottom: '10px' }}>Photo ID — deleted the moment you decide</div>
+                <div style={{ ...rowLabel, marginBottom: '10px' }}>Photo ID, deleted the moment you decide</div>
                 <a href={a.idUploadId} target="_blank" rel="noreferrer">
                   <img src={a.idUploadId} alt="" style={{ width: '100%', maxWidth: '420px', borderRadius: '10px', border: '1.5px solid var(--outline)', display: 'block' }} />
                 </a>

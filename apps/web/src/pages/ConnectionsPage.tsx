@@ -328,7 +328,7 @@ export default function ConnectionsPage() {
                 None of your contacts are on QuteNote yet. Invite them and you both get a free card.
               </p>
             ) : (
-              <div style={{ ...listCard, marginTop: '10px' }}>
+              <div data-crumb-private="contacts already on QuteNote" style={{ ...listCard, marginTop: '10px' }}>
                 {suggestedMatches.map((m, i) => (
                   <div key={m.id} style={row(i === suggestedMatches.length - 1)}>
                     {avatar()}
@@ -348,7 +348,7 @@ export default function ConnectionsPage() {
         {newResults.length > 0 && (
           <div style={{ marginTop: '20px' }}>
             <p style={{ ...label, margin: '0 0 10px' }}>On QuteNote</p>
-            <div style={listCard}>
+            <div data-crumb-private="search results" style={listCard}>
               {newResults.map((r, i) => (
                 <div key={r.id} style={row(i === newResults.length - 1)}>
                   {avatar()}
@@ -371,7 +371,7 @@ export default function ConnectionsPage() {
                 Nobody's asked yet.
               </p>
             ) : (
-              <div style={listCard}>
+              <div data-crumb-private="QT requests" style={listCard}>
                 {pendingRequests.map((r, i) => (
                   <div key={r.requestId} style={{ ...row(i === pendingRequests.length - 1), background: 'var(--selected-fill)' }}>
                     {avatar()}
@@ -379,8 +379,8 @@ export default function ConnectionsPage() {
                       <span style={{ fontFamily: 'var(--font-body)', fontSize: '16px', fontWeight: 700 }}>{r.displayName}</span>
                       <span style={{ fontFamily: 'var(--font-body)', fontSize: '14px' }}>@{r.username}</span>
                     </span>
-                    <button onClick={() => acceptRequest(r.requestId)} style={{ height: '34px', padding: '0 12px', borderRadius: '999px', border: '1.5px solid var(--outline)', background: 'var(--btn)', color: 'var(--ink)', fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '12px', letterSpacing: '0.12em', cursor: 'pointer' }}>Yes</button>
-                    <button onClick={() => declineRequest(r.requestId)} style={{ height: '34px', padding: '0 10px', borderRadius: '999px', border: '1.5px solid var(--outline)', background: 'var(--card)', color: 'var(--ink)', fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '12px', letterSpacing: '0.12em', cursor: 'pointer' }}>No</button>
+                    <button data-crumb="accept a QT request" onClick={() => acceptRequest(r.requestId)} style={{ height: '34px', padding: '0 12px', borderRadius: '999px', border: '1.5px solid var(--outline)', background: 'var(--btn)', color: 'var(--ink)', fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '12px', letterSpacing: '0.12em', cursor: 'pointer' }}>Yes</button>
+                    <button data-crumb="decline a QT request" onClick={() => declineRequest(r.requestId)} style={{ height: '34px', padding: '0 10px', borderRadius: '999px', border: '1.5px solid var(--outline)', background: 'var(--card)', color: 'var(--ink)', fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '12px', letterSpacing: '0.12em', cursor: 'pointer' }}>No</button>
                   </div>
                 ))}
               </div>
@@ -392,7 +392,7 @@ export default function ConnectionsPage() {
                 You haven't asked anyone yet.
               </p>
             ) : (
-              <div style={listCard}>
+              <div data-crumb-private="requests you sent" style={listCard}>
                 {sentRequests.map((r, i) => (
                   <div key={r.requestId} style={row(i === sentRequests.length - 1)}>
                     {avatar()}
@@ -418,7 +418,7 @@ export default function ConnectionsPage() {
             {query.length >= 2 ? 'No QTs match that.' : 'No QTs yet. Search for someone above, or send an invite.'}
           </p>
         ) : (
-          <div style={{ ...listCard, marginTop: '10px' }}>
+          <div data-crumb-private="your QT list" style={{ ...listCard, marginTop: '10px' }}>
             {shownConnections.map((c, i) => {
               const d = dateFor(c.displayName)
               const bMonth = c.birthdayMonth ?? d?.month ?? null

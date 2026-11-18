@@ -12,7 +12,7 @@ export default function ExtraCardSuccessPage() {
         <p style={{ fontFamily: 'var(--font-body)', fontSize: '15px', color: 'var(--ink-mid)', lineHeight: '18px', margin: 0 }}>
           {cancelled
             ? 'Nothing was charged. Head back to the QuteNote app whenever you like.'
-            : 'Head back to the QuteNote app — your card is ready to mail.'}
+            : 'Head back to the QuteNote app, your card is ready to mail.'}
         </p>
       </div>
     </div>

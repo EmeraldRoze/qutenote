@@ -64,7 +64,7 @@ export default function NotificationPreferencesPage() {
   return (
     <div style={{ minHeight: '100vh' }}>
       <nav style={{
-        background: 'var(--cream)', borderBottom: '1px solid var(--stone)', padding: '14px 18px',
+        background: 'var(--cream)', borderBottom: '1px solid var(--stone)', height: '72px', boxSizing: 'border-box', padding: '0 18px',
         display: 'flex', alignItems: 'center', gap: '14px',
       }}>
         <button onClick={() => navigate(-1)} aria-label="Back" style={{
@@ -76,7 +76,12 @@ export default function NotificationPreferencesPage() {
         <span style={{ fontFamily: 'var(--font-display)', fontSize: '18px', fontWeight: 300, color: 'var(--ink)' }}>Notifications</span>
       </nav>
 
-      <div style={{ maxWidth: '480px', margin: '0 auto', padding: '24px 20px' }}>
+      {/* ON THE RULING: text sits on an 18px rhythm, two lines between each
+          pair of ruled lines. A 73px header (14 + 44 + 14 + a 1px border)
+          plus 24 below is 97, which is 7 off the grid and strikes every
+          other line through. 72 + 36 = 108 keeps the count a multiple of 18
+          (Emerald, Nov 18). */}
+      <div style={{ maxWidth: '480px', margin: '0 auto', padding: '36px 20px' }}>
         {error && <p style={{ fontSize: '13px', fontFamily: 'var(--font-body)', color: 'var(--error)', marginBottom: '14px' }}>{error}</p>}
 
         {!prefs ? (

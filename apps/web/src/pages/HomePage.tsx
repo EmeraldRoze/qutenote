@@ -490,12 +490,14 @@ export default function HomePage() {
           </div>
         )}
 
+        {/* Every card here names a person, so the whole feed is marked and
+            taps inside report what was tapped, not who (Emerald, Nov 18). */}
         {feed.map((item) => (
           item.kind === 'status' ? (
             /* One calm card per status (Emerald's pick, Oct 27): who and when
                in a quiet line, the status itself as the headline, and the wax
                heart on the right — no circle around it. */
-            <div key={`${item.kind}-${item.id}`} style={{
+            <div data-crumb-private="your feed" key={`${item.kind}-${item.id}`} style={{
               display: 'flex', alignItems: 'center', gap: '14px',
               background: 'var(--card)', borderRadius: '20px', padding: '16px 18px',
               marginBottom: '12px', boxShadow: '0 4px 14px rgba(74,36,36,0.07)',
@@ -527,7 +529,7 @@ export default function HomePage() {
               </button>
             </div>
           ) : (
-            <div key={`${item.kind}-${item.id}`} style={{
+            <div data-crumb-private="your feed" key={`${item.kind}-${item.id}`} style={{
               display: 'flex', alignItems: 'center', gap: '14px',
               background: 'var(--card)', borderRadius: '20px', padding: '16px 18px',
               marginBottom: '12px', boxShadow: '0 4px 14px rgba(74,36,36,0.07)',

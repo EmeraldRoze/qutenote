@@ -477,7 +477,22 @@ export default function ProfilePage() {
 
   return (
     <div style={{ minHeight: '100vh', paddingBottom: '120px' }}>
-      <div className="title-band" style={{ height: '288px', boxSizing: 'border-box' }}>
+      <div className="title-band" style={{ height: '288px', boxSizing: 'border-box', position: 'relative' }}>
+        {/* Someone else's profile was a dead end — you could tap a QT and then
+            had no way back except the tab bar (Emerald, Nov 18). Sits over the
+            band rather than in the column so the stamp stays centred. */}
+        <button
+          onClick={() => navigate(-1)}
+          aria-label="Back"
+          style={{
+            position: 'absolute', left: '20px', top: '14px',
+            width: '44px', height: '44px', borderRadius: '50%', background: '#E3D5CC',
+            border: 'none', cursor: 'pointer', color: '#4A2424',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0, zIndex: 2,
+          }}
+        >
+          <QIcon name="chevron-left" size={18} />
+        </button>
         <div style={{ maxWidth: '480px', width: '100%', margin: '0 auto', boxSizing: 'border-box', padding: '14px 20px 0', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
           <div style={{ position: 'relative', width: '230px', height: '138px', transform: 'translateX(56px) rotate(-4deg)' }}>
             <img src="/brand/postmark_stamp_heartless.png" alt="" style={{ width: '230px', height: 'auto', display: 'block' }} />
@@ -498,18 +513,24 @@ export default function ProfilePage() {
           {profile.bio && <p style={{ fontFamily: 'var(--font-body)', fontSize: '14px', color: 'var(--ink-mid)', marginTop: '14px', textAlign: 'center' }}>{profile.bio}</p>}
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '16px' }}>
-            <button
-              onClick={addQT}
-              disabled={requested || profile.connectionStatus === 'ACCEPTED' || profile.connectionStatus === 'PENDING'}
-              style={{
-                height: '44px', padding: '0 20px', borderRadius: '999px', cursor: 'pointer',
-                boxSizing: 'border-box',
-                background: profile.connectionStatus === 'ACCEPTED' ? 'var(--selected-fill)' : 'var(--btn)',
-                color: 'var(--ink)', fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '13px', letterSpacing: '0.08em',
-              }}
-            >
-              {profile.connectionStatus === 'ACCEPTED' ? 'Your QT ✓' : requested || profile.connectionStatus === 'PENDING' ? 'Requested' : 'Add QT'}
-            </button>
+            {/* "Your QT ✓" is gone (Emerald, Nov 18). It looked like a button
+                but did nothing — it was the disabled state of Add QT — and
+                "Remove QT" already says you are connected. Add QT and
+                Requested still show for people who are not your QT yet. */}
+            {profile.connectionStatus !== 'ACCEPTED' && (
+              <button
+                onClick={addQT}
+                disabled={requested || profile.connectionStatus === 'PENDING'}
+                style={{
+                  height: '44px', padding: '0 20px', borderRadius: '999px', cursor: 'pointer',
+                  boxSizing: 'border-box',
+                  background: 'var(--btn)',
+                  color: 'var(--ink)', fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '13px', letterSpacing: '0.08em',
+                }}
+              >
+                {requested || profile.connectionStatus === 'PENDING' ? 'Requested' : 'Add QT'}
+              </button>
+            )}
             {profile.connectionStatus === 'ACCEPTED' && (
               <button
                 onClick={removeQT}

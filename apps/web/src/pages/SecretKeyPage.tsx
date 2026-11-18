@@ -50,7 +50,13 @@ export default function SecretKeyPage() {
 
   return (
     <div style={{ minHeight: '100vh', paddingBottom: '60px' }}>
-      <nav style={{ background: 'var(--cream)', borderBottom: '1px solid var(--stone)', padding: '14px 18px', display: 'flex', alignItems: 'center', gap: '14px' }}>
+      {/* ON THE RULING (Emerald, Nov 18): text sits on an 18px rhythm so two
+          lines fall between each pair of ruled lines. This header used to be
+          73px tall (14 + 44 + 14 + a 1px border) and the body then added 24,
+          which is 97 — seven pixels off the grid, so every other line came
+          out struck through. 72 here and 36 below keeps the count a multiple
+          of 18 all the way down to the first paragraph. */}
+      <nav style={{ height: '72px', boxSizing: 'border-box', background: 'var(--cream)', borderBottom: '1px solid var(--stone)', padding: '0 18px', display: 'flex', alignItems: 'center', gap: '14px' }}>
         <button onClick={() => navigate(-1)} aria-label="Back" style={{
           width: '44px', height: '44px', borderRadius: '50%', background: '#E3D5CC',
           border: 'none', cursor: 'pointer', color: '#4A2424', display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -60,7 +66,7 @@ export default function SecretKeyPage() {
         <span style={{ fontFamily: 'var(--font-display)', fontSize: '18px', fontWeight: 300, color: 'var(--ink)' }}>The Secret Language</span>
       </nav>
 
-      <div style={{ maxWidth: '480px', margin: '0 auto', padding: '24px 20px' }}>
+      <div style={{ maxWidth: '480px', margin: '0 auto', padding: '36px 20px' }}>
         <p className="on-paper" style={{ fontFamily: 'var(--font-body)', fontSize: '15px', color: 'var(--ink-mid)', lineHeight: '18px', margin: '0 0 18px' }}>
           Cards written with the Secret 🤫 pen use this alphabet. Decode by hand with the key below — or just reply in it and start a very qute conspiracy.
         </p>

@@ -35,7 +35,10 @@ export default function ArtistApplyPage() {
   const [bio, setBio] = useState('')
   const [link, setLink] = useState('')
   const [phone, setPhone] = useState('')
-  const [rights, setRights] = useState(true)
+  // Starts UNCHECKED, on purpose (Emerald, Nov 18). It was ticked for you the
+  // moment the page opened, which makes the promise worthless: nobody can be
+  // said to have confirmed the work is theirs if they never touched it.
+  const [rights, setRights] = useState(false)
   const [samples, setSamples] = useState<string[]>([])
   const [idPhoto, setIdPhoto] = useState('')
   const [uploadingAt, setUploadingAt] = useState<number | null>(null)
@@ -90,7 +93,8 @@ export default function ArtistApplyPage() {
         instagram: isHandle ? link.trim() : undefined,
         portfolioUrl: isHandle ? undefined : link.trim(),
         phone: phone.trim() || undefined,
-        rightsConfirmed: true,
+        // what they actually ticked, not a hardcoded yes
+        rightsConfirmed: rights,
         sampleUploadIds: samples,
         idUploadId: idPhoto || undefined,
       })

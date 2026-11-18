@@ -47,7 +47,7 @@ export default function ScheduledCardsPage() {
 
   return (
     <div style={{ minHeight: '100vh', paddingBottom: '60px' }}>
-      <nav style={{ background: 'var(--cream)', borderBottom: '1px solid var(--stone)', padding: '14px 18px', display: 'flex', alignItems: 'center', gap: '14px' }}>
+      <nav style={{ background: 'var(--cream)', borderBottom: '1px solid var(--stone)', height: '72px', boxSizing: 'border-box', padding: '0 18px', display: 'flex', alignItems: 'center', gap: '14px' }}>
         <button onClick={() => navigate(-1)} aria-label="Back" style={{
           width: '44px', height: '44px', borderRadius: '50%', background: '#E3D5CC',
           border: 'none', cursor: 'pointer', color: '#4A2424', display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -57,7 +57,12 @@ export default function ScheduledCardsPage() {
         <span style={{ fontFamily: 'var(--font-display)', fontSize: '18px', fontWeight: 300, color: 'var(--ink)' }}>Scheduled cards</span>
       </nav>
 
-      <div style={{ maxWidth: '480px', margin: '0 auto', padding: '24px 20px' }}>
+      {/* ON THE RULING: text sits on an 18px rhythm, two lines between each
+          pair of ruled lines. A 73px header (14 + 44 + 14 + a 1px border)
+          plus 24 below is 97, which is 7 off the grid and strikes every
+          other line through. 72 + 36 = 108 keeps the count a multiple of 18
+          (Emerald, Nov 18). */}
+      <div style={{ maxWidth: '480px', margin: '0 auto', padding: '36px 20px' }}>
         <p style={{ fontFamily: 'var(--font-body)', fontSize: '14px', color: 'var(--ink-mid)', margin: '0 0 18px', lineHeight: '18px' }}>
           Cards waiting for their moment. We mail each one a few days ahead so it lands close to the date — editable until it goes to print.
         </p>

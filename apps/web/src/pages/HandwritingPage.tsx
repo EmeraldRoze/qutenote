@@ -196,7 +196,7 @@ function WordFlow({ session, onSaved, glyphs }: {
       const isLastWord = atIndex + 1 >= session.words.length
       if (smudged.length && attemptsRef.current < 3 && !isLastWord) {
         attemptsRef.current += 1
-        setRetryNote(`One more “${forWord}” — the ${smudged.join(' and ')} smudged.`)
+        setRetryNote(`One more “${forWord}”, the ${smudged.join(' and ')} smudged.`)
         return
       }
       attemptsRef.current = 0
@@ -237,7 +237,7 @@ function WordFlow({ session, onSaved, glyphs }: {
               ? 'Done? Tap Save.'
               : isSingleMark
                 ? 'Just tap for a dot.'
-                : 'Sit the word on the dashed line. Flow is good — that is the whole point.'}
+                : 'Sit the word on the dashed line. Flow is good, that is the whole point.'}
       </p>
 
       {error && <p style={{ fontSize: '13px', fontFamily: 'var(--font-body)', color: 'var(--error)', marginTop: '12px' }}>{error}</p>}
@@ -319,7 +319,7 @@ function FixLetter({ char, glyphs, onSaved, onClose }: {
     <div style={{ position: 'fixed', inset: 0, zIndex: 100, background: 'rgba(74,36,36,0.45)', display: 'flex', alignItems: 'flex-end' }} onClick={onClose}>
       <div style={{ width: '100%', background: 'var(--cream)', borderRadius: '16px 16px 0 0', padding: '22px 22px calc(26px + env(safe-area-inset-bottom))', textAlign: 'center' }} onClick={(e) => e.stopPropagation()}>
         <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '40px', fontWeight: 300, margin: 0 }}>{char}</h2>
-        <p className="on-paper" style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--ink-mid)', margin: '0 0 12px' }}>{charName(sessionKey, char)} — redo just this one</p>
+        <p className="on-paper" style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--ink-mid)', margin: '0 0 12px' }}>{charName(sessionKey, char)}, redo just this one</p>
         <canvas
           ref={canvasRef}
           style={{ width: 'min(280px, 100%)', aspectRatio: '1', borderRadius: '20px', background: '#FBF8F3', border: '1.5px solid #B4897A', touchAction: 'none', display: 'block', margin: '0 auto' }}
@@ -428,7 +428,7 @@ export default function HandwritingPage() {
         </nav>
         <WordFlow
           key={`redo-${redoWord}`}
-          session={{ key: `redo-${redoWord}`, label: 'Rewrite', detail: 'Write it fresh — this take becomes the one your font uses', words: [redoWord] }}
+          session={{ key: `redo-${redoWord}`, label: 'Rewrite', detail: 'Write it fresh, this take becomes the one your font uses', words: [redoWord] }}
           glyphs={glyphs}
           onSaved={(g) => { setGlyphs(g); setRedoWord(null) }}
         />
@@ -449,11 +449,17 @@ export default function HandwritingPage() {
       <div style={{ maxWidth: '480px', margin: '0 auto', padding: '35px 20px 24px' }}>
         <p className="on-paper" style={{ fontFamily: 'var(--font-body)', fontSize: '15px', color: 'var(--ink-mid)', lineHeight: '18px', marginBottom: '18px' }}>
           {doneCount >= TOTAL_CHARS
-            ? 'Yay — your handwriting is all learned! Go write a bunch of Qute Notes in it. 🖋️'
-            : 'Write a few little words and QuteNote learns your real handwriting — flow and all — then turns it into your own font.'}
+            ? 'Yay, your handwriting is all learned! Go write a bunch of Qute Notes in it. 🖋️'
+            : 'Write a few little words and QuteNote learns your real handwriting, flow and all, then turns it into your own font.'}
         </p>
-        <p className="on-paper" style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--ink-muted)', lineHeight: '18px', marginBottom: '18px' }}>
-          {doneCount} of {TOTAL_CHARS} letters learned.{doneCount >= TOTAL_CHARS ? ' Rewrite any word anytime to freshen it up.' : ' Do it all now, or come back anytime.'} <span style={{ fontSize: '12px' }}>· build {WEB_BUILD || 'dev'}</span>
+        {/* Same size and colour as the paragraph above (Emerald, Nov 18): at
+            13px in a lighter ink it read as a different typeface sitting
+            under the first one. */}
+        <p className="on-paper" style={{ fontFamily: 'var(--font-body)', fontSize: '15px', color: 'var(--ink-mid)', lineHeight: '18px', marginBottom: '18px' }}>
+          {/* The "26 of 26 letters learned" count is gone (Emerald, Nov 18):
+              you write little WORDS here, not letters, so counting letters
+              described a screen this no longer is. */}
+          {doneCount >= TOTAL_CHARS ? 'Rewrite any word anytime to freshen it up.' : 'Do it all now, or come back anytime.'} <span style={{ fontSize: '12px' }}>· build {WEB_BUILD || 'dev'}</span>
         </p>
 
         {WORD_SESSIONS.map((s) => {

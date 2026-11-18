@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { api } from '../lib/api'
+import { trackDismissed } from '../lib/analytics'
 import { postSocialAuthRoute, setSetupNext, clearSetupNext } from '../lib/postAuthRoute'
 import { useAuth } from '../context/AuthContext'
 import { isNativeApp } from '../lib/native'
@@ -164,7 +165,9 @@ export default function LoginPage() {
                     const code = String(err?.code ?? '')
                     const message = String(err?.message ?? '')
                     const canceled = code === '1001' || /cancel/i.test(message)
-                    if (canceled) return
+                    // Backing out of the Apple sheet was a silent no-op, so it left no
+                    // trace at all. Seven dismissals and no account IS the finding.
+                    if (canceled) { trackDismissed('backed out of the Apple sign-in sheet'); return }
                     setError(err?.response?.data?.error ?? `Apple sign-in didn't go through (${message || 'unknown error'}). Try again.`)
                   }
                 }}

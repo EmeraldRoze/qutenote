@@ -68,9 +68,9 @@ export default function SettingsPage() {
       </div>
 
       <div style={{ maxWidth: '480px', margin: '0 auto' }}>
-        <h2 className="on-paper" style={{ margin: '24px 20px 8px', fontFamily: 'var(--font-body)', fontSize: '14px', fontWeight: 700, color: 'var(--ink)' }}>Your account</h2>
-
-        <div style={{ background: 'var(--card)', borderTop: '1.5px solid var(--stone)', borderBottom: '1.5px solid var(--stone)' }}>
+        {/* "Your account" sat directly above a row called "Account" and just
+            said the same thing twice (Emerald, Nov 18). The list starts here. */}
+        <div style={{ marginTop: '24px', background: 'var(--card)', borderTop: '1.5px solid var(--stone)', borderBottom: '1.5px solid var(--stone)' }}>
           <button style={rowStyle} onClick={() => navigate('/settings/account')}>
             <span style={rowLabel}>Account</span>
             <span style={rowValue} />

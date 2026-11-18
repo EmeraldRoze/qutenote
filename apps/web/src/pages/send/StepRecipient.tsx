@@ -110,6 +110,9 @@ export default function StepRecipient({ note, onChangeCard, onNext, initialQuery
     return (
       <button
         key={c.id}
+        /* the visible text of this row is a person's name, so the crumb says
+           what was tapped instead (Emerald, Nov 18) */
+        data-crumb="pick a recipient"
         role="radio"
         aria-checked={isSelected}
         onClick={() => setSelectedId(isSelected ? null : c.id)}
