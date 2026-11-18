@@ -22,8 +22,12 @@ const fieldStyle: React.CSSProperties = {
   fontFamily: 'var(--font-body)', fontSize: '16px', color: 'var(--ink)', width: '100%',
 }
 const fieldLabel: React.CSSProperties = { fontSize: '13px', color: 'var(--ink)' }
+// Emerald, Nov 18: the Apple and Google circles had no edge at all, so on the
+// cream paper they read as two floating logos rather than as buttons. Oxblood
+// outline, the same ink as every other line in the app.
 const roundBtn: React.CSSProperties = {
-  width: '68px', height: '68px', borderRadius: '50%', 
+  width: '68px', height: '68px', borderRadius: '50%',
+  border: '1.5px solid var(--ink)',
   background: 'var(--card)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
 }
 
