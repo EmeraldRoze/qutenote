@@ -4,6 +4,7 @@ import { api } from '../../lib/api'
 import { PROMPTS, OCCASIONS } from '../../lib/prompts'
 import { ARTISTS, CARD_LOOKUP } from '../../lib/cards'
 import { uploadPhoto } from '../../lib/uploadPhoto'
+import PaintPicker from '../../components/PaintPicker'
 import { HANDWRITING_PEN, PENS, penStyle, DEFAULT_PEN } from '../../lib/pens'
 import { useHandwritingFontFace } from '../../lib/handwriting/useHandwritingFontFace'
 import { fetchHandwritingProgress } from '../../lib/handwriting/api'
@@ -409,6 +410,8 @@ function CardPicker({ note, update, onWrite }: {
   const [cardIdx, setCardIdx] = useState(0)
   const [uploading, setUploading] = useState(false)
   const [uploadError, setUploadError] = useState('')
+  // which stored photo the paint step should work from
+  const [photoUploadId, setPhotoUploadId] = useState<string | null>(null)
   const panelRef = useRef<HTMLDivElement>(null)
   const fileRef = useRef<HTMLInputElement>(null)
 
@@ -476,11 +479,22 @@ function CardPicker({ note, update, onWrite }: {
     setUploading(true); setUploadError('')
     try {
       const url = await uploadPhoto(file)
+      // the id is the last part of the address: the paint step needs it to
+      // tell the server WHICH stored photo to repaint
+      setPhotoUploadId(url.split('/').pop() ?? null)
       update({ cardDesignType: 'USER_UPLOAD', cardImageUrl: url, cardDesignId: undefined })
       setCardIdx(0)
       requestAnimationFrame(() => panelRef.current?.scrollTo({ left: 0, behavior: 'smooth' }))
     } catch (err: any) {
       const detail = err?.response?.data?.error ?? err?.message ?? 'unknown'
+      // Record it as well as show it (Emerald, Nov 18): a photo upload failed
+      // on her phone and left NOTHING behind — the message went to the screen
+      // and nowhere else, so there was no way to tell what had gone wrong.
+      trackError(`photo upload failed: ${detail}`, {
+        status: err?.response?.status ?? null,
+        fileType: file.type || 'unknown',
+        fileSizeKb: Math.round(file.size / 1024),
+      })
       setUploadError(`That photo didn't upload (${detail}). Try again, or pick a different one.`)
     } finally {
       setUploading(false)
@@ -565,7 +579,31 @@ function CardPicker({ note, update, onWrite }: {
             {uploading ? 'Uploading…' : 'Your photo is on it. Tap to swap.'}
           </button>
         </div>
-      ) : (
+      ) : null}
+
+      {/* The painting step only appears once there IS a photo to paint. */}
+      {note.cardImageUrl && photoUploadId && (
+        <PaintPicker
+          photoUrl={note.cardImageUrl}
+          uploadId={photoUploadId}
+          onApply={async (dataUrl, medium, strength) => {
+            setUploading(true); setUploadError('')
+            try {
+              // The blend the person actually chose is what gets printed, so
+              // it is uploaded as a real picture rather than kept as a canvas.
+              const r = await api.post('/uploads', { dataUrl })
+              update({ cardDesignType: 'USER_UPLOAD', cardImageUrl: r.data.data.url, cardDesignId: undefined })
+              trackFunnel('send', `painted-${medium}-${strength}`)
+            } catch (err: any) {
+              setUploadError("That painting didn't save. Try again.")
+            } finally {
+              setUploading(false)
+            }
+          }}
+        />
+      )}
+
+      {!note.cardImageUrl && (
         <button className="qn-stamp" onClick={() => fileRef.current?.click()} style={{
           marginTop: '24px', width: '100%', minHeight: '84px', borderRadius: '18px', boxSizing: 'border-box',
           border: '10px solid transparent', background: 'transparent',

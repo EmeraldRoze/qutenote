@@ -13,10 +13,20 @@ const APPLE_BUNDLE_ID = process.env.APPLE_BUNDLE_ID ?? 'club.cutenote.app'
 // its tokens for that audience, so accept both (same team, same app).
 const APPLE_AUDIENCES = [APPLE_BUNDLE_ID, `${APPLE_BUNDLE_ID}.dev`]
 
+// birthday MUST be in here (Emerald, Nov 18). Leaving it out did three
+// things, none of them obvious:
+//   1. every Apple sign-in was sent back to the "add your birthday" step,
+//      even for people who had already given one, because the app checks
+//      `!user.birthday` to decide where to land;
+//   2. Home's setup checklist never ticked the birthday box off;
+//   3. and because that box could never be ticked, the checklist never
+//      completed, so the "add your address" safety net underneath it — which
+//      only appears once the checklist is finished — never appeared at all.
+// The email login route had birthday all along; this one did not.
 const userSelect = {
   id: true, email: true, username: true, displayName: true,
   avatarUrl: true, subscriptionStatus: true, points: true,
-  currentStreak: true, isAdmin: true,
+  currentStreak: true, isAdmin: true, birthday: true,
   notesAllowance: true, notesUsed: true, giftedCredits: true, isPrivate: true,
 } as const
 

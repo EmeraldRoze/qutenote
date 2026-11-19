@@ -2,6 +2,7 @@ import { Router, Request, Response } from 'express'
 import express from 'express'
 import { prisma } from '../lib/prisma'
 import { requireAuth, AuthRequest } from '../middleware/auth'
+import { paintUpload, MEDIA, MEDIUM_LIMITS, type Medium } from '../lib/paintPhoto'
 
 export const uploadsRouter = Router()
 
@@ -28,6 +29,44 @@ uploadsRouter.post('/', bigJson, requireAuth, async (req: AuthRequest, res: Resp
 })
 
 // GET /uploads/:id — public (the print service fetches postcard fronts here)
+// POST /uploads/:id/paint — repaint a photo in one of the five media.
+//
+// Each render costs real money (about 4c on Google, 8c on OpenAI for the
+// risograph), so there is a hard daily cap per person. Without one, a stuck
+// retry loop on somebody's phone could run up a bill overnight with nobody
+// watching. The cap is deliberately generous for a human and tight for a bug.
+const PAINTS_PER_DAY = 25
+
+uploadsRouter.post('/:id/paint', requireAuth, async (req: AuthRequest, res: Response) => {
+  const medium = String(req.body?.medium ?? '') as Medium
+  if (!MEDIA.includes(medium)) {
+    return res.status(400).json({ error: 'Pick one of the painting styles.' })
+  }
+
+  const since = new Date(Date.now() - 24 * 60 * 60 * 1000)
+  const usedToday = await prisma.upload.count({
+    where: { userId: req.userId!, mime: 'image/png', createdAt: { gte: since } },
+  })
+  if (usedToday >= PAINTS_PER_DAY) {
+    return res.status(429).json({ error: "You've made a lot of paintings today. Try again tomorrow." })
+  }
+
+  // The photo must be the person's own.
+  const own = await prisma.upload.findFirst({
+    where: { id: req.params.id, userId: req.userId! },
+    select: { id: true },
+  })
+  if (!own) return res.status(404).json({ error: 'That photo is no longer here.' })
+
+  try {
+    const painted = await paintUpload(req.params.id, medium, req.userId!)
+    return res.json({ data: { ...painted, medium, ...MEDIUM_LIMITS[medium] } })
+  } catch (err: any) {
+    console.error('[paint]', medium, err?.message ?? err)
+    return res.status(502).json({ error: "The painting didn't come back. Try again in a moment." })
+  }
+})
+
 uploadsRouter.get('/:id', async (req: Request, res: Response) => {
   const upload = await prisma.upload.findUnique({ where: { id: req.params.id } })
   if (!upload) return res.status(404).json({ error: 'Not found.' })

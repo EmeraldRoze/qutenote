@@ -89,10 +89,16 @@ export default function NotificationsPage() {
           </p>
         ) : (
           <div>
-            {notes.map((n, i) => (
+            {/* Each one its own bubble, the same card as a status on Home
+                (Emerald, Nov 18): white, 20px corners, the same soft shadow.
+                The hairline divider goes with it, because the gap between
+                bubbles now does that job. A side benefit: the card covers the
+                ruled paper, so no line can cross the words. */}
+            {notes.map((n) => (
               <div key={n.id} style={{
-                display: 'flex', alignItems: 'flex-start', gap: '11px', padding: '12px 0',
-                borderBottom: i === notes.length - 1 ? 'none' : '1.5px solid rgba(180,137,122,0.3)',
+                display: 'flex', alignItems: 'flex-start', gap: '11px',
+                background: 'var(--card)', borderRadius: '20px', padding: '16px 18px',
+                marginBottom: '12px', boxShadow: '0 4px 14px rgba(74,36,36,0.07)',
               }}>
                 <QEmoji name={NOTE_ART[n.type] ?? 'thought-bubble'} size={28} style={{ flex: 'none', height: 'auto', marginTop: '2px' }} />
                 <span style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column' }}>
