@@ -53,7 +53,12 @@ const KEEP_LOOSE =
   'Keep the face exactly the same shape: the same nose and nostrils, any nose ring, the same closed lips, the same eyes and eyebrows, the same expression, the same hair, the same pose and framing. The colours must change completely to suit the printing process, but no feature may move or change shape.'
 
 const PROMPTS: Record<Medium, string> = {
-  watercolour: `Repaint this photograph as a traditional watercolour painting on cold-pressed paper: soft transparent washes, visible brush strokes, pigment pooling and drying darker at the edges of washes, the white of the paper showing through the highlights, visible paper grain, no outlines. ${FACE_RULE} ${KEEP}`,
+  // NO FACE_RULE HERE, on purpose. Her rule is about big thick strokes, which
+  // is an OIL problem: watercolour has no impasto to begin with. Including it
+  // (first live test, Nov 19) made the watercolour timid and barely painted,
+  // because the wording is all about palette knives and slabs of paint. The
+  // rule belongs where the danger is.
+  watercolour: `Repaint this photograph as a traditional watercolour painting on cold-pressed paper: generous soft transparent washes, clearly visible brush strokes, pigment pooling and drying darker at the edges of washes, the white of the paper showing through the highlights, visible paper grain, colours bleeding gently into one another, no outlines. It must clearly read as a painting rather than a photograph. ${KEEP}`,
   oil: `Repaint this photograph as a traditional oil painting on canvas. Visible brush strokes and real paint texture throughout, impasto catching the light in the background and the hair, visible canvas weave. ${FACE_RULE} ${KEEP}`,
   pencil: `Redraw this photograph as a hand-drawn graphite pencil sketch. Every part of the drawing must be visibly built from individual pencil strokes: directional hatching and cross-hatching you can clearly see, loose sketchy lines, the grain of the paper breaking up the graphite. It must look hand-drawn, NOT like a black and white photograph and NOT like smooth airbrushed shading. Leave the paper white in the highlights and let the strokes get denser in the shadows. Monochrome graphite on white textured paper. ${KEEP}`,
   ink: `Redraw this photograph as a pen and ink drawing on cream paper: confident dark ink lines, cross hatching for the shadows, no grey wash, the paper left bare in the light areas. ${KEEP}`,
