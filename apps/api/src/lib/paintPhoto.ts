@@ -11,9 +11,10 @@
 //    Risograph is the one exception and comes from OpenAI — see below.
 //
 // 2. THE FACE RULE is hers, verbatim: "on faces we don't ever want those big
-//    thick strokes". It is in every painterly prompt. The model treats it as
-//    a strong preference rather than a law, so the oil is ALSO capped in the
-//    app — belt and braces.
+//    thick strokes". It applies to the OIL ONLY — watercolour has no impasto,
+//    and including it there made the painting timid (proven on the first live
+//    render). The model treats it as a preference rather than a law, so the
+//    oil slider is ALSO capped at 60 in the app.
 //
 // 3. REGISTRATION is the non-obvious one. The model hands back a picture
 //    that is subtly zoomed and shifted, roughly 2-5% bigger and a dozen
@@ -40,31 +41,44 @@ export const MEDIUM_LIMITS: Record<Medium, { max: number; default: number }> = {
   risograph: { max: 100, default: 85 },
 }
 
+// PROTECT THE PERSON, NOT THE PIXELS (Emerald, Nov 19).
+//
+// The first version said "change only the medium, keep everything pixel for
+// pixel". That is so strict the model never dared commit to being a painting,
+// and the watercolour came back looking like a lightly retouched photograph.
+// Her ruling: the 100% end should be an unmistakable painting, and the SLIDER
+// is what brings it back toward the photo for anyone who wants less.
+//
+// So the clause now guards identity — the face, the features, the expression,
+// no beautifying — and leaves the medium free to take over completely.
+const PERSON =
+  'The person must remain clearly and unmistakably the same individual: same face shape, same nose and nostrils, any nose ring or piercing, same closed lips, same eyes and eyebrows, same expression, same hair colour and the same pose and framing. Do not beautify, do not slim, do not change their age, do not open the mouth, do not add makeup.'
+
+// Her rule, verbatim: "on faces we don't ever want those big thick strokes".
+// OIL ONLY. Watercolour has no impasto, and including this there just made
+// the painting timid — proven on the first live render.
 const FACE_RULE =
   'THE FACE IS NEVER PAINTED WITH BIG THICK STROKES. On all skin, and especially the face, use only small, fine, controlled brush strokes that follow the form. No wide streaks, no palette-knife slabs, no thick blobs of paint anywhere on the face, the neck or the hands, at any point. Large, loose, heavily loaded brushwork is allowed ONLY in the background, the hair and the clothing.'
 
-const KEEP =
-  "Change only the medium, nothing else. Keep the face the same shape: the same nostril width and nose shape, any nose ring or piercing, the same closed lips with the same cupid's bow, the same eyes and eyebrows, the same jawline and expression. Keep the hair falling exactly as it does, the same pose, the same framing and the same clothing. Do not beautify, do not slim, do not open the mouth, do not add makeup."
-
-// Risograph has to throw nearly all the colour away, so the strict clause
-// above fought the medium and the model simply handed the photo straight
-// back, three times. This one protects the SHAPES and frees the colour.
+// Risograph has to throw nearly all the colour away, so even the clause above
+// fought the medium and the model handed the photo straight back, three
+// times. This protects shapes only and frees the colour entirely.
 const KEEP_LOOSE =
   'Keep the face exactly the same shape: the same nose and nostrils, any nose ring, the same closed lips, the same eyes and eyebrows, the same expression, the same hair, the same pose and framing. The colours must change completely to suit the printing process, but no feature may move or change shape.'
 
 const PROMPTS: Record<Medium, string> = {
-  // NO FACE_RULE HERE, on purpose. Her rule is about big thick strokes, which
-  // is an OIL problem: watercolour has no impasto to begin with. Including it
-  // (first live test, Nov 19) made the watercolour timid and barely painted,
-  // because the wording is all about palette knives and slabs of paint. The
-  // rule belongs where the danger is.
-  watercolour: `Repaint this photograph as a traditional watercolour painting on cold-pressed paper: generous soft transparent washes, clearly visible brush strokes, pigment pooling and drying darker at the edges of washes, the white of the paper showing through the highlights, visible paper grain, colours bleeding gently into one another, no outlines. It must clearly read as a painting rather than a photograph. ${KEEP}`,
-  oil: `Repaint this photograph as a traditional oil painting on canvas. Visible brush strokes and real paint texture throughout, impasto catching the light in the background and the hair, visible canvas weave. ${FACE_RULE} ${KEEP}`,
-  pencil: `Redraw this photograph as a hand-drawn graphite pencil sketch. Every part of the drawing must be visibly built from individual pencil strokes: directional hatching and cross-hatching you can clearly see, loose sketchy lines, the grain of the paper breaking up the graphite. It must look hand-drawn, NOT like a black and white photograph and NOT like smooth airbrushed shading. Leave the paper white in the highlights and let the strokes get denser in the shadows. Monochrome graphite on white textured paper. ${KEEP}`,
-  ink: `Redraw this photograph as a pen and ink drawing on cream paper: confident dark ink lines, cross hatching for the shadows, no grey wash, the paper left bare in the light areas. ${KEEP}`,
-  // OpenAI, not Google: Google refused this one three times, handing the
-  // photograph back almost unchanged. OpenAI's high-fidelity edit does a
-  // genuine two-ink print. Emerald's call, Nov 19.
+  // Her pick of two, Nov 19: loose washes. (The other, "wet edges", had
+  // drips running down the paper — "looks weird".)
+  watercolour: `Paint this photograph again as a real watercolour painting on heavy cold-pressed paper. It must look like an actual painting made by an artist with a wet brush: generous loose washes, obvious brush strokes, pigment pooling and drying darker at the edges, colours bleeding into one another where they meet, and large areas where the bare white paper is simply left showing. Let the background dissolve into loose abstract washes. Visible paper texture throughout. It should be immediately obvious to anyone that this is a painting and not a photograph. ${PERSON}`,
+
+  oil: `Paint this photograph again as a real oil painting on canvas. It must look like an actual painting: confident visible brush strokes everywhere, thick paint standing off the canvas and catching the light, loose almost abstract brushwork in the background, visible canvas weave. Not photorealistic. ${FACE_RULE} ${PERSON}`,
+
+  pencil: `Redraw this photograph as a hand-drawn graphite pencil sketch. Every part of it must be visibly built from individual pencil strokes: directional hatching and cross-hatching you can clearly see, loose sketchy lines, the grain of the paper breaking up the graphite, the paper left bare and white in the highlights. It must look hand-drawn, NOT like a black and white photograph and NOT like smooth airbrushed shading. Let the background fall away into a few loose strokes. Monochrome graphite on white textured paper. ${PERSON}`,
+
+  ink: `Redraw this photograph as a pen and ink drawing on cream paper. Confident dark ink lines, cross hatching for the shadows, no grey wash at all, large areas of the paper simply left bare. Loose and hand-drawn, with the background barely suggested. ${PERSON}`,
+
+  // OpenAI, not Google: Google refused this one three times and handed the
+  // photograph back almost unchanged. Emerald's call, Nov 19.
   risograph: `Reprint this photograph as a two colour risograph print. Two ink layers slightly out of registration, coarse grain, flat areas of ink, limited palette of one warm red and one blue on off white paper. ${KEEP_LOOSE}`,
 }
 
