@@ -78,8 +78,11 @@ export default function PaintPicker({ photoUrl, uploadId, onApply }: {
     let loaded = 0
     const draw = () => {
       if (++loaded < 2) return
-      canvas.width = base.naturalWidth
-      canvas.height = base.naturalHeight
+      // Draw at the PAINTING's resolution, not the photo's. The painting is
+      // where the brush texture lives, and sizing the canvas to a smaller
+      // photo would throw that away on the way to the card.
+      canvas.width = Math.max(base.naturalWidth, art.naturalWidth)
+      canvas.height = Math.max(base.naturalHeight, art.naturalHeight)
       const ctx = canvas.getContext('2d')
       if (!ctx) return
       ctx.clearRect(0, 0, canvas.width, canvas.height)

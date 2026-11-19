@@ -174,9 +174,18 @@ export async function registerToPhoto(painted: Buffer, photo: Buffer): Promise<B
   // The painting is padded first so the box can sit partly outside the
   // original edges, which happens whenever the scale is above 1. Getting
   // this wrong is what made the first version a silent no-op.
-  const meta = await sharp(photo).metadata()
-  const W = meta.width ?? 1024
-  const H = meta.height ?? 1024
+  // Work at the LARGER of the two sizes. Registering down to the photo's
+  // pixel size sanded the brushwork straight off: a 1024px painting shrunk to
+  // a 448px photo came back looking like a retouched snapshot, which is
+  // exactly what she kept telling me about (Emerald, Nov 19). The painting's
+  // own resolution is where its texture lives, so that is what we keep.
+  const pMeta = await sharp(photo).metadata()
+  const aMeta = await sharp(painted).metadata()
+  const pw = pMeta.width ?? 1024
+  const ph = pMeta.height ?? 1024
+  const scaleUp = Math.max(1, (aMeta.width ?? pw) / pw)
+  const W = Math.round(pw * scaleUp)
+  const H = Math.round(ph * scaleUp)
   const k = W / N // the search ran on thumbnails; scale its offsets up
 
   const pad = Math.ceil(W * 0.25)
