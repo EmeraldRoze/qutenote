@@ -37,7 +37,12 @@ uploadsRouter.post('/', bigJson, requireAuth, async (req: AuthRequest, res: Resp
 // watching. The cap is deliberately generous for a human and tight for a bug.
 const PAINTS_PER_DAY = 25
 
-uploadsRouter.post('/:id/paint', requireAuth, async (req: AuthRequest, res: Response) => {
+// /uploads is deliberately skipped by the app-wide JSON parser (see index.ts:
+// photos arrive as huge data URLs), so this route has to parse its own body.
+// Without this it silently received nothing and rejected every style.
+const smallJson = express.json({ limit: '32kb' })
+
+uploadsRouter.post('/:id/paint', smallJson, requireAuth, async (req: AuthRequest, res: Response) => {
   const medium = String(req.body?.medium ?? '') as Medium
   if (!MEDIA.includes(medium)) {
     return res.status(400).json({ error: 'Pick one of the painting styles.' })
