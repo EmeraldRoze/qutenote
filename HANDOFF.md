@@ -1,7 +1,9 @@
 # QuteNote — Handoff / Status Board
 Written: 2026-10-06 (replaces stale April 10 handoff). Last updated: 2026-11-20 (~1:40am).
 
-## BUILD 65 SHIPPED Nov 20 ~1:35am (FIREFLY "ship everything") — PHOTO PAINTING, THE EXACT-FACE ROUND
+## ⚠️ WRONG-65 LANDMINE (Nov 20 ~11am): the dead Nov 19 session had ALREADY uploaded a build "65" (old UI). The Nov 20 upload was silently RENUMBERED TO 66 by Apple (exportOptions manages build numbers), and `qutenote_testflight.js 65` distributed the PHANTOM old build to everyone. Caught by Emerald on her phone. Fix: 66 attached + APPROVED, phantom 65 removed from the group. RULES: after any upload read the number Apple assigned (`sort=-uploadedDate`), never trust pbxproj; a dead session may have uploaded builds you don't know about. Note: 66's in-app build stamp reads 65 (baked pre-rename), harmless.
+
+## BUILD 66 SHIPPED Nov 20 (FIREFLY "ship everything") — PHOTO PAINTING, THE EXACT-FACE ROUND
 - PAINTER: gpt-image-1.5 + input_fidelity high + QUALITY HIGH — the only combo that keeps an exact face AND looks painted (bake-off on her family photo; chatgpt-image-latest re-stages scenes, fidelity-without-quality looks photographic). Prompts stay her one-liners. Pencil RETIRED (her call). Styles: watercolour, oil paint (cap 60/default 25), pen & ink, risograph.
 - SCREEN: PaintPhotoPage full screen (back, change-photo camera, status+slider centred under photo, WRITE ON IT centred, tiles 88px full labels "Oil paint"/"Pen & ink"). Live percent while painting (tuned estimate, holds at 95). Styles CACHE on-screen (no re-billing when clicking through; per-style slider memory). Tiles stay clickable mid-render; render outliving a photo swap is discarded.
 - INK GHOSTING FIX: registerToPhoto now matches standardised EDGE maps (brightness is meaningless for line art) with range 0.90–1.125/±10 — the ink drift (1.10) sat outside the old 1.085 fence. Proven on her failing dog pair.
