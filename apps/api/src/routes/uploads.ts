@@ -48,9 +48,13 @@ uploadsRouter.post('/:id/paint', smallJson, requireAuth, async (req: AuthRequest
     return res.status(400).json({ error: 'Pick one of the painting styles.' })
   }
 
+  // Counted from a crumb we write ourselves, NOT from the stored images.
+  // The first version counted PNG uploads, which broke the moment paintings
+  // started being stored as JPEG, and would have counted unrelated uploads
+  // anyway. A server-written record is the only honest count.
   const since = new Date(Date.now() - 24 * 60 * 60 * 1000)
-  const usedToday = await prisma.upload.count({
-    where: { userId: req.userId!, mime: 'image/png', createdAt: { gte: since } },
+  const usedToday = await prisma.usageEvent.count({
+    where: { userId: req.userId!, name: 'feature', target: 'photo-paint:server', createdAt: { gte: since } },
   })
   if (usedToday >= PAINTS_PER_DAY) {
     return res.status(429).json({ error: "You've made a lot of paintings today. Try again tomorrow." })
@@ -64,6 +68,9 @@ uploadsRouter.post('/:id/paint', smallJson, requireAuth, async (req: AuthRequest
   if (!own) return res.status(404).json({ error: 'That photo is no longer here.' })
 
   try {
+    await prisma.usageEvent.create({
+      data: { userId: req.userId!, sessionId: 'server', name: 'feature', target: 'photo-paint:server', props: { medium } },
+    }).catch(() => {})
     const painted = await paintUpload(req.params.id, medium, req.userId!)
     return res.json({ data: { ...painted, medium, ...MEDIUM_LIMITS[medium] } })
   } catch (err: any) {

@@ -3,12 +3,17 @@
 // WHY IT IS BUILT THIS WAY, because it took a whole evening of testing and
 // the reasons are not obvious:
 //
-// 1. WHICH MODEL. Google's editor (nano-banana, via fal) keeps a person's
-//    face better than anything else tried, and costs about half what OpenAI
-//    charges. OpenAI widened her nose every single time. Plain image-to-image
-//    with a strength dial was worse still: one dial moved style and identity
-//    together, so by the time it looked painted she was a different woman.
-//    Risograph is the one exception and comes from OpenAI — see below.
+// 1. WHICH MODEL: `gpt-image-1.5` with input_fidelity high AND quality high.
+//    Settled by a three-way bake-off on her family photo (Nov 20). The long
+//    road, so nobody walks it again:
+//    - Google (nano-banana): "they kinda look like when AI first came out."
+//    - chatgpt-image-latest, no fidelity: gorgeous paintings that quietly
+//      re-stage the scene. Her: "Nooo you're changing the image!"
+//    - chatgpt-image-latest + fidelity: closer, "still changes her face."
+//    - gpt-image-1.5 + fidelity + QUALITY HIGH: the only one that kept her
+//      exact laugh and head angle, and still arrives as a painting. The two
+//      switches were only ever tested separately before; fidelity WITHOUT
+//      quality high is what looked photographic on Nov 19.
 //
 // 2. THE FACE RULE is hers, verbatim: "on faces we don't ever want those big
 //    thick strokes". It applies to the OIL ONLY — watercolour has no impasto,
@@ -25,9 +30,16 @@
 //    eyes and mouth land back where the camera put them.
 import { prisma } from './prisma'
 
-export type Medium = 'watercolour' | 'oil' | 'pencil' | 'ink' | 'risograph'
+// Pencil was cut on her call (Emerald, Nov 20: "i dont think its good").
+export type Medium = 'watercolour' | 'oil' | 'ink' | 'risograph'
 
-export const MEDIA: Medium[] = ['watercolour', 'oil', 'pencil', 'ink', 'risograph']
+// What we hand the model. It paints at about this size whatever we send.
+const SEND_PX = 1024
+// What we keep. A 6x4 card at 300dpi needs 1875px, so this clears print with
+// room to spare without storing pointless upscaled pixels.
+const MAX_STORED_PX = 2048
+
+export const MEDIA: Medium[] = ['watercolour', 'oil', 'ink', 'risograph']
 
 // How far the strength slider may travel, per medium. The oil stops early on
 // purpose: past about 60% the model starts leaving pale stroke marks on skin
@@ -36,87 +48,61 @@ export const MEDIA: Medium[] = ['watercolour', 'oil', 'pencil', 'ink', 'risograp
 export const MEDIUM_LIMITS: Record<Medium, { max: number; default: number }> = {
   watercolour: { max: 100, default: 75 },
   oil: { max: 60, default: 25 },
-  pencil: { max: 100, default: 80 },
   ink: { max: 100, default: 85 },
   risograph: { max: 100, default: 85 },
 }
 
-// PROTECT THE PERSON, NOT THE PIXELS (Emerald, Nov 19).
+// HER WORDING (Emerald, Nov 19). This is the whole prompt, and it beat
+// every long one I wrote.
 //
-// The first version said "change only the medium, keep everything pixel for
-// pixel". That is so strict the model never dared commit to being a painting,
-// and the watercolour came back looking like a lightly retouched photograph.
-// Her ruling: the 100% end should be an unmistakable painting, and the SLIDER
-// is what brings it back toward the photo for anyone who wants less.
+// I had grown these to two hundred words of rules: protect the face, protect
+// the scene, do not beautify, do not re-pose, no slabs of paint. Her note:
+// "You need to change the prompt and just say something like without
+// changing anything to this photo make it look like it is an oil painting."
 //
-// So the clause now guards identity — the face, the features, the expression,
-// no beautifying — and leaves the medium free to take over completely.
-const PERSON =
-  'The person must remain clearly and unmistakably the same individual: same face shape, same nose and nostrils, any nose ring or piercing, same closed lips, same eyes and eyebrows, same expression, same hair colour and the same pose and framing. Do not beautify, do not slim, do not change their age, do not open the mouth, do not add makeup.'
-
-// Her rule, verbatim: "on faces we don't ever want those big thick strokes".
-// OIL ONLY. Watercolour has no impasto, and including this there just made
-// the painting timid — proven on the first live render.
-const FACE_RULE =
-  'THE FACE IS NEVER PAINTED WITH BIG THICK STROKES. On all skin, and especially the face, use only small, fine, controlled brush strokes that follow the form. No wide streaks, no palette-knife slabs, no thick blobs of paint anywhere on the face, the neck or the hands, at any point. Large, loose, heavily loaded brushwork is allowed ONLY in the background, the hair and the clothing.'
-
-// Risograph has to throw nearly all the colour away, so even the clause above
-// fought the medium and the model handed the photo straight back, three
-// times. This protects shapes only and frees the colour entirely.
-const KEEP_LOOSE =
-  'Keep the face exactly the same shape: the same nose and nostrils, any nose ring, the same closed lips, the same eyes and eyebrows, the same expression, the same hair, the same pose and framing. The colours must change completely to suit the printing process, but no feature may move or change shape.'
-
+// She was right, and the evidence was not subtle. The long prompts sat in a
+// trap where locking the composition tightly left almost no medium, and
+// loosening it let the model re-stage the whole picture (it once turned a
+// framed print on a wall into a portrait, deleting the room). One plain
+// sentence does BOTH: the scene survives intact and the medium actually
+// arrives. It also rescued the risograph, which had refused three times
+// under the longer wording.
+//
+// So: resist padding these. If a medium misbehaves, change the NOUN, do not
+// add rules.
 const PROMPTS: Record<Medium, string> = {
-  // Her pick of two, Nov 19: loose washes. (The other, "wet edges", had
-  // drips running down the paper — "looks weird".)
-  watercolour: `Paint this photograph again as a real watercolour painting on heavy cold-pressed paper. It must look like an actual painting made by an artist with a wet brush: generous loose washes, obvious brush strokes, pigment pooling and drying darker at the edges, colours bleeding into one another where they meet, and large areas where the bare white paper is simply left showing. Let the background dissolve into loose abstract washes. Visible paper texture throughout. It should be immediately obvious to anyone that this is a painting and not a photograph. ${PERSON}`,
-
-  oil: `Paint this photograph again as a real oil painting on canvas. It must look like an actual painting: confident visible brush strokes everywhere, thick paint standing off the canvas and catching the light, loose almost abstract brushwork in the background, visible canvas weave. Not photorealistic. ${FACE_RULE} ${PERSON}`,
-
-  pencil: `Redraw this photograph as a hand-drawn graphite pencil sketch. Every part of it must be visibly built from individual pencil strokes: directional hatching and cross-hatching you can clearly see, loose sketchy lines, the grain of the paper breaking up the graphite, the paper left bare and white in the highlights. It must look hand-drawn, NOT like a black and white photograph and NOT like smooth airbrushed shading. Let the background fall away into a few loose strokes. Monochrome graphite on white textured paper. ${PERSON}`,
-
-  ink: `Redraw this photograph as a pen and ink drawing on cream paper. Confident dark ink lines, cross hatching for the shadows, no grey wash at all, large areas of the paper simply left bare. Loose and hand-drawn, with the background barely suggested. ${PERSON}`,
-
-  // OpenAI, not Google: Google refused this one three times and handed the
-  // photograph back almost unchanged. Emerald's call, Nov 19.
-  risograph: `Reprint this photograph as a two colour risograph print. Two ink layers slightly out of registration, coarse grain, flat areas of ink, limited palette of one warm red and one blue on off white paper. ${KEEP_LOOSE}`,
+  watercolour: 'Without changing anything to this photo, can you make it look like it is a watercolor painting?',
+  oil: 'Without changing anything to this photo, can you make it look like it is an oil painting?',
+  ink: 'Without changing anything to this photo, can you make it look like it is a pen and ink drawing?',
+  risograph: 'Without changing anything to this photo, can you make it look like it is a two colour risograph print?',
 }
 
 // ─── The models ─────────────────────────────────────────────────────────────
 
-async function paintWithGoogle(dataUri: string, medium: Medium): Promise<Buffer> {
-  const key = process.env.FAL_KEY
-  if (!key) throw new Error('FAL_KEY is not set.')
-  const r = await fetch('https://fal.run/fal-ai/nano-banana/edit', {
-    method: 'POST',
-    headers: { Authorization: `Key ${key}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ prompt: PROMPTS[medium], image_urls: [dataUri], num_images: 1 }),
-  })
-  const j: any = await r.json().catch(() => null)
-  const url = j?.images?.[0]?.url
-  if (!url) throw new Error(`Google returned no image (${r.status}).`)
-  return Buffer.from(await (await fetch(url)).arrayBuffer())
-}
-
-async function paintWithOpenAI(photo: Buffer, medium: Medium): Promise<Buffer> {
+async function paint(photo: Buffer, medium: Medium): Promise<Buffer> {
   const key = process.env.OPENAI_API_KEY
   if (!key) throw new Error('OPENAI_API_KEY is not set.')
   const form = new FormData()
   form.append('model', 'gpt-image-1.5')
-  form.append('image', new Blob([new Uint8Array(photo)], { type: 'image/png' }), 'photo.png')
+  form.append('image', new Blob([new Uint8Array(photo)], { type: 'image/jpeg' }), 'photo.jpg')
   form.append('prompt', PROMPTS[medium])
-  form.append('size', '1024x1024')
+  form.append('size', 'auto')
   form.append('n', '1')
-  // the only setting that stops it redrawing the face
+  // QUALITY HIGH, and it is the single biggest lever here (Emerald, Nov 19).
+  // Left unset the API picks something lower and the result comes back muddy
+  // and dark — that was the whole gap between our renders and the one she
+  // got out of ChatGPT. It costs roughly three times as much per image and
+  // it is worth every cent; without it the feature is not worth shipping.
+  form.append('quality', 'high')
+  // Fidelity high is what stops it redrawing her face. It only reads as
+  // "too photographic" when quality high is MISSING — see note 1 above.
   form.append('input_fidelity', 'high')
   const r = await fetch('https://api.openai.com/v1/images/edits', {
-    method: 'POST',
-    headers: { Authorization: `Bearer ${key}` },
-    body: form,
+    method: 'POST', headers: { Authorization: `Bearer ${key}` }, body: form,
   })
   const j: any = await r.json().catch(() => null)
   const b64 = j?.data?.[0]?.b64_json
-  if (!b64) throw new Error(`OpenAI returned no image (${r.status}): ${String(j?.error?.message ?? '').slice(0, 120)}`)
+  if (!b64) throw new Error(`No image came back (${r.status}): ${String(j?.error?.message ?? '').slice(0, 120)}`)
   return Buffer.from(b64, 'base64')
 }
 
@@ -137,18 +123,46 @@ export async function registerToPhoto(painted: Buffer, photo: Buffer): Promise<B
   const grey = async (buf: Buffer) =>
     sharp(buf).resize(N, N, { fit: 'fill' }).greyscale().raw().toBuffer()
 
-  const [a, b] = await Promise.all([grey(photo), grey(painted)])
+  const [ga, gb] = await Promise.all([grey(photo), grey(painted)])
 
-  const sample = (img: Buffer, x: number, y: number) => {
+  // Match on EDGES, not brightness. A pen-and-ink drawing is black lines on
+  // white paper, so its brightness map looks nothing like the photo and the
+  // old brightness match happily chose a wrong zoom — her two-dogs-at-53%
+  // screenshot (Emerald, Nov 20). Edges exist in both pictures in the same
+  // places, whatever the medium. Oil and watercolour were already fine and
+  // stay fine; ink is why this exists. Each map is standardised so the two
+  // mediums' very different edge strengths cannot bias the comparison.
+  const edges = (img: Buffer) => {
+    const e = new Float32Array(N * N)
+    let sum = 0, sumSq = 0
+    for (let y = 1; y < N - 1; y++) {
+      for (let x = 1; x < N - 1; x++) {
+        const i = y * N + x
+        const v = Math.abs(img[i + 1] - img[i - 1]) + Math.abs(img[i + N] - img[i - N])
+        e[i] = v; sum += v; sumSq += v * v
+      }
+    }
+    const n = (N - 2) * (N - 2)
+    const mean = sum / n
+    const sd = Math.sqrt(Math.max(1e-6, sumSq / n - mean * mean))
+    for (let i = 0; i < e.length; i++) e[i] = (e[i] - mean) / sd
+    return e
+  }
+  const a = edges(ga)
+  const b = edges(gb)
+
+  const sample = (img: Float32Array, x: number, y: number) => {
     const xi = x < 0 ? 0 : x > N - 1 ? N - 1 : x | 0
     const yi = y < 0 ? 0 : y > N - 1 ? N - 1 : y | 0
     return img[yi * N + xi]
   }
 
+  // Slightly wider net than before: the ink drift that slipped through was
+  // sitting just past the old search's fence.
   let best = { score: Infinity, scale: 1, dx: 0, dy: 0 }
-  for (let s = 0.92; s <= 1.085; s += 0.01) {
-    for (let dx = -8; dx <= 8; dx += 1) {
-      for (let dy = -8; dy <= 8; dy += 1) {
+  for (let s = 0.9; s <= 1.125; s += 0.01) {
+    for (let dx = -10; dx <= 10; dx += 1) {
+      for (let dy = -10; dy <= 10; dy += 1) {
         let sum = 0
         // every 3rd pixel is plenty and keeps this fast
         for (let y = 4; y < N - 4; y += 3) {
@@ -219,17 +233,32 @@ export async function paintUpload(uploadId: string, medium: Medium, userId: stri
   if (!original) throw new Error('That photo is no longer here.')
   if (!original.mime.startsWith('image/')) throw new Error('That is not a photo.')
 
+  const sharp = (await import('sharp')).default
   const photo = Buffer.from(original.data)
-  const dataUri = `data:${original.mime};base64,${photo.toString('base64')}`
 
-  const raw = medium === 'risograph'
-    ? await paintWithOpenAI(photo, medium)
-    : await paintWithGoogle(dataUri, medium)
+  // Send the model a sensibly sized photo. It paints at about 1024 whatever
+  // we give it, so posting a 2600px base64 only makes the request slow (the
+  // oil timed out at 41 seconds doing exactly this) and costs more.
+  const forModel = await sharp(photo)
+    .resize(SEND_PX, SEND_PX, { fit: 'inside', withoutEnlargement: true })
+    .jpeg({ quality: 92 })
+    .toBuffer()
+
+  const raw = await paint(forModel, medium)
 
   const registered = await registerToPhoto(raw, photo)
 
+  // JPEG, not PNG, and capped. The first version stored a 12MB PNG per
+  // painting: slow to send to the phone and the likely cause of the oil
+  // failing with a network error. 2048 still clears the 1875px a 6x4 card
+  // needs for 300dpi, and the model never had more detail than that anyway.
+  const stored = await sharp(registered)
+    .resize(MAX_STORED_PX, MAX_STORED_PX, { fit: 'inside', withoutEnlargement: true })
+    .jpeg({ quality: 92 })
+    .toBuffer()
+
   const saved = await prisma.upload.create({
-    data: { userId, mime: 'image/png', data: registered },
+    data: { userId, mime: 'image/jpeg', data: stored },
     select: { id: true },
   })
   const base = process.env.WEB_URL ?? 'https://qutenote.com'

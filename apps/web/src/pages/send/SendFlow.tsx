@@ -4,7 +4,7 @@ import { api } from '../../lib/api'
 import { PROMPTS, OCCASIONS } from '../../lib/prompts'
 import { ARTISTS, CARD_LOOKUP } from '../../lib/cards'
 import { uploadPhoto } from '../../lib/uploadPhoto'
-import PaintPicker from '../../components/PaintPicker'
+import PaintPhotoPage from './PaintPhotoPage'
 import { HANDWRITING_PEN, PENS, penStyle, DEFAULT_PEN } from '../../lib/pens'
 import { useHandwritingFontFace } from '../../lib/handwriting/useHandwritingFontFace'
 import { fetchHandwritingProgress } from '../../lib/handwriting/api'
@@ -410,8 +410,10 @@ function CardPicker({ note, update, onWrite }: {
   const [cardIdx, setCardIdx] = useState(0)
   const [uploading, setUploading] = useState(false)
   const [uploadError, setUploadError] = useState('')
-  // which stored photo the paint step should work from
+  // which stored photo the paint step should work from, and whether its
+  // full screen is open
   const [photoUploadId, setPhotoUploadId] = useState<string | null>(null)
+  const [painting, setPainting] = useState(false)
   const panelRef = useRef<HTMLDivElement>(null)
   const fileRef = useRef<HTMLInputElement>(null)
 
@@ -483,6 +485,10 @@ function CardPicker({ note, update, onWrite }: {
       // tell the server WHICH stored photo to repaint
       setPhotoUploadId(url.split('/').pop() ?? null)
       update({ cardDesignType: 'USER_UPLOAD', cardImageUrl: url, cardDesignId: undefined })
+      // Straight into editing (Emerald, Nov 19): picking a photo and then
+      // having to find a separate button to do anything with it was a step
+      // nobody asked for.
+      setPainting(true)
       setCardIdx(0)
       requestAnimationFrame(() => panelRef.current?.scrollTo({ left: 0, behavior: 'smooth' }))
     } catch (err: any) {
@@ -500,6 +506,37 @@ function CardPicker({ note, update, onWrite }: {
       setUploading(false)
       e.target.value = ''
     }
+  }
+
+  // The painting step takes over the whole screen rather than sitting under
+  // the carousel, so it gets its own back button and room to breathe.
+  if (painting && note.cardImageUrl && photoUploadId) {
+    return (
+      <PaintPhotoPage
+        photoUrl={note.cardImageUrl}
+        uploadId={photoUploadId}
+        onBack={() => setPainting(false)}
+        onPhotoChanged={(url, id) => {
+          setPhotoUploadId(id)
+          update({ cardDesignType: 'USER_UPLOAD', cardImageUrl: url, cardDesignId: undefined })
+        }}
+        onDone={async (dataUrl, medium, strength) => {
+          try {
+            if (dataUrl) {
+              // The blend they chose is what gets printed, so it is uploaded
+              // as a real picture rather than left on a canvas.
+              const r = await api.post('/uploads', { dataUrl })
+              update({ cardDesignType: 'USER_UPLOAD', cardImageUrl: r.data.data.url, cardDesignId: undefined })
+              trackFunnel('send', `painted-${medium}-${strength}`)
+            }
+            setPainting(false)
+            onWrite()
+          } catch {
+            setUploadError("That painting didn't save. Try again.")
+          }
+        }}
+      />
+    )
   }
 
   return (
@@ -580,28 +617,6 @@ function CardPicker({ note, update, onWrite }: {
           </button>
         </div>
       ) : null}
-
-      {/* The painting step only appears once there IS a photo to paint. */}
-      {note.cardImageUrl && photoUploadId && (
-        <PaintPicker
-          photoUrl={note.cardImageUrl}
-          uploadId={photoUploadId}
-          onApply={async (dataUrl, medium, strength) => {
-            setUploading(true); setUploadError('')
-            try {
-              // The blend the person actually chose is what gets printed, so
-              // it is uploaded as a real picture rather than kept as a canvas.
-              const r = await api.post('/uploads', { dataUrl })
-              update({ cardDesignType: 'USER_UPLOAD', cardImageUrl: r.data.data.url, cardDesignId: undefined })
-              trackFunnel('send', `painted-${medium}-${strength}`)
-            } catch (err: any) {
-              setUploadError("That painting didn't save. Try again.")
-            } finally {
-              setUploading(false)
-            }
-          }}
-        />
-      )}
 
       {!note.cardImageUrl && (
         <button className="qn-stamp" onClick={() => fileRef.current?.click()} style={{
