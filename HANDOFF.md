@@ -1,5 +1,10 @@
 # QuteNote — Handoff / Status Board
-Written: 2026-10-06 (replaces stale April 10 handoff). Last updated: 2026-11-20 (~1:40am).
+Written: 2026-10-06 (replaces stale April 10 handoff). Last updated: 2026-11-20 (~12:45pm).
+
+## BUILD 67 SHIPPED Nov 20 ~12:40pm (same FIREFLY round) — FAST PAINTS + CLEAN EDGES + USERNAMES
+- Her build-66 feedback, all four fixed and VERIFIED LIVE: (1) painter now runs WITHOUT the quality setting — 17-22s renders (was 40-60s), a third the cost, and the default came back as bold as "high" on gpt-image-1.5 (the muddy-without-high finding belonged to chatgpt-image-latest); her pick after side-by-side sheets on dog + family photo ("implement the fast version"). (2) STRIATIONS dead: registerToPhoto no longer pads/smears — photo backfills any unreachable sliver with a feathered hand-off; also fixed vertical drift being scaled by W/N instead of H/N. Live-proven: ink at 53% = one dog, clean edges. (3) OIL UNCAPPED to max 100/default 75 (the 60 cap was old-painter armor and made oil "weird and blurry"). (4) USERNAMES: 2-char minimum everywhere (HANDLE_RE, zod x2, PickHandle x3) + `await refreshUser()` so the new name greets you instantly — her EMA rename HAD worked, the greeting was stale.
+- Tiles regenerated from the FAST dog renders. Deploy 23fb90e ACTIVE; build 67 VALID, in Public Beta, review APPROVED (number verified via sort=-uploadedDate per the wrong-65 rule).
+- STILL CHASING: watercolour on the DOG is not at her reference's sun-drenched level (the family photo is); next experiment = richer watercolour noun. References: design/watercolour-reference-dog.png + oil-reference-dog.png (both made in ChatGPT with our exact sentence).
 
 ## ⚠️ WRONG-65 LANDMINE (Nov 20 ~11am): the dead Nov 19 session had ALREADY uploaded a build "65" (old UI). The Nov 20 upload was silently RENUMBERED TO 66 by Apple (exportOptions manages build numbers), and `qutenote_testflight.js 65` distributed the PHANTOM old build to everyone. Caught by Emerald on her phone. Fix: 66 attached + APPROVED, phantom 65 removed from the group. RULES: after any upload read the number Apple assigned (`sort=-uploadedDate`), never trust pbxproj; a dead session may have uploaded builds you don't know about. Note: 66's in-app build stamp reads 65 (baked pre-rename), harmless.
 
