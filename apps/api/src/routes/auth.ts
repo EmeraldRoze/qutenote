@@ -28,7 +28,7 @@ const signUpSchema = z.object({
   displayName: z.string().min(1, 'Please enter your name.').max(50),
   username: z
     .string()
-    .min(3, 'Username must be at least 3 characters.')
+    .min(2, 'Username must be at least 2 characters.')
     .max(30)
     .regex(/^[a-z0-9_]+$/, 'Username can only contain lowercase letters, numbers, and underscores.'),
   birthday: z.string().optional(),

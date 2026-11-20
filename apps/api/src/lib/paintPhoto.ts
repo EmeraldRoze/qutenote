@@ -41,13 +41,14 @@ const MAX_STORED_PX = 2048
 
 export const MEDIA: Medium[] = ['watercolour', 'oil', 'ink', 'risograph']
 
-// How far the strength slider may travel, per medium. The oil stops early on
-// purpose: past about 60% the model starts leaving pale stroke marks on skin
-// no matter what the prompt says, so the cap enforces her rule where the
-// words alone do not. Her chosen default is 25.
+// How far the strength slider may travel, per medium. Oil UNCAPPED Nov 20 on
+// her word: the 60 cap guarded against the OLD painter's thick slabs on
+// faces; the current painter puts fine strokes on faces and thick ones in
+// the scenery on its own (see design/oil-reference-dog.png), and the cap was
+// why oil read as "weird and blurry" — a full oil painting was unreachable.
 export const MEDIUM_LIMITS: Record<Medium, { max: number; default: number }> = {
   watercolour: { max: 100, default: 75 },
-  oil: { max: 60, default: 25 },
+  oil: { max: 100, default: 75 },
   ink: { max: 100, default: 85 },
   risograph: { max: 100, default: 85 },
 }
@@ -88,14 +89,14 @@ async function paint(photo: Buffer, medium: Medium): Promise<Buffer> {
   form.append('prompt', PROMPTS[medium])
   form.append('size', 'auto')
   form.append('n', '1')
-  // QUALITY HIGH, and it is the single biggest lever here (Emerald, Nov 19).
-  // Left unset the API picks something lower and the result comes back muddy
-  // and dark — that was the whole gap between our renders and the one she
-  // got out of ChatGPT. It costs roughly three times as much per image and
-  // it is worth every cent; without it the feature is not worth shipping.
-  form.append('quality', 'high')
-  // Fidelity high is what stops it redrawing her face. It only reads as
-  // "too photographic" when quality high is MISSING — see note 1 above.
+  // NO quality setting, on purpose (Emerald, Nov 20: "implement the fast
+  // version"). Side-by-side on her dog AND a family photo, the default came
+  // back as bold as the "high" renders (the watercolour arguably bolder),
+  // in 17-21s instead of 40-60s, at a third of the cost. The old "muddy
+  // without quality high" finding belonged to chatgpt-image-latest, not to
+  // this model. Sheets from the bake-off: scratchpad judge-dog/judge-family.
+  //
+  // Fidelity high is what stops it redrawing her face. Non-negotiable.
   form.append('input_fidelity', 'high')
   const r = await fetch('https://api.openai.com/v1/images/edits', {
     method: 'POST', headers: { Authorization: `Bearer ${key}` }, body: form,
@@ -185,14 +186,17 @@ export async function registerToPhoto(painted: Buffer, photo: Buffer): Promise<B
   // box `scale` of the full size, centred `d` away from the middle, which is
   // then stretched back to fill the frame.
   //
-  // The painting is padded first so the box can sit partly outside the
-  // original edges, which happens whenever the scale is above 1. Getting
-  // this wrong is what made the first version a silent no-op.
   // Work at the LARGER of the two sizes. Registering down to the photo's
-  // pixel size sanded the brushwork straight off: a 1024px painting shrunk to
-  // a 448px photo came back looking like a retouched snapshot, which is
-  // exactly what she kept telling me about (Emerald, Nov 19). The painting's
-  // own resolution is where its texture lives, so that is what we keep.
+  // pixel size sanded the brushwork straight off (Emerald, Nov 19): the
+  // painting's own resolution is where its texture lives.
+  //
+  // NO PADDING, EVER. The first version padded the painting by smearing its
+  // edge pixels outward so the box could land partly outside, and whenever
+  // the scale ran above 1 those smears were kept in the final picture — her
+  // "weird striations around the edge" (Emerald, Nov 20, build 66 feedback).
+  // Now only REAL painting pixels are used, and any sliver at the edge the
+  // painting cannot reach is backfilled with the photo itself, which blends
+  // invisibly at every slider position.
   const pMeta = await sharp(photo).metadata()
   const aMeta = await sharp(painted).metadata()
   const pw = pMeta.width ?? 1024
@@ -200,28 +204,60 @@ export async function registerToPhoto(painted: Buffer, photo: Buffer): Promise<B
   const scaleUp = Math.max(1, (aMeta.width ?? pw) / pw)
   const W = Math.round(pw * scaleUp)
   const H = Math.round(ph * scaleUp)
-  const k = W / N // the search ran on thumbnails; scale its offsets up
-
-  const pad = Math.ceil(W * 0.25)
-  const padded = await sharp(painted)
-    .resize(W, H, { fit: 'fill' })
-    .extend({ top: pad, bottom: pad, left: pad, right: pad, extendWith: 'copy' })
-    .toBuffer()
-
-  const cropW = Math.max(8, Math.round(W * best.scale))
-  const cropH = Math.max(8, Math.round(H * best.scale))
-  const cx = pad + W / 2 + best.dx * k
-  const cy = pad + H / 2 + best.dy * k
+  // The search ran on N×N squished thumbnails, so a horizontal step is W/N
+  // real pixels but a vertical step is H/N. (The old code used W/N for both,
+  // which quietly under-corrected vertical drift on portrait photos.)
+  const s = best.scale
+  const ox = best.dx * (W / N)
+  const oy = best.dy * (H / N)
   const clamp = (v: number, lo: number, hi: number) => (v < lo ? lo : v > hi ? hi : v)
 
-  return sharp(padded)
-    .extract({
-      left: clamp(Math.round(cx - cropW / 2), 0, W + 2 * pad - cropW),
-      top: clamp(Math.round(cy - cropH / 2), 0, H + 2 * pad - cropH),
-      width: cropW,
-      height: cropH,
-    })
+  const paintFull = await sharp(painted).resize(W, H, { fit: 'fill' }).toBuffer()
+
+  // Where in the OUTPUT the real painting can supply pixels.
+  const x0 = clamp(Math.ceil((0 - W / 2 - ox) / s + W / 2), 0, W - 8)
+  const x1 = clamp(Math.floor((W - W / 2 - ox) / s + W / 2), x0 + 8, W)
+  const y0 = clamp(Math.ceil((0 - H / 2 - oy) / s + H / 2), 0, H - 8)
+  const y1 = clamp(Math.floor((H - H / 2 - oy) / s + H / 2), y0 + 8, H)
+  const outW = x1 - x0
+  const outH = y1 - y0
+
+  // The painting region that maps onto that rectangle.
+  const px = clamp(Math.round((x0 - W / 2) * s + W / 2 + ox), 0, W - 8)
+  const py = clamp(Math.round((y0 - H / 2) * s + H / 2 + oy), 0, H - 8)
+  const rw = clamp(Math.round(outW * s), 8, W - px)
+  const rh = clamp(Math.round(outH * s), 8, H - py)
+
+  const region = await sharp(paintFull)
+    .extract({ left: px, top: py, width: rw, height: rh })
+    .resize(outW, outH, { fit: 'fill' })
+    .toBuffer()
+
+  // Feather the painting into the photo wherever a sliver was trimmed, so
+  // the hand-off is a soft fade rather than a visible straight seam. Sides
+  // that reach the true edge of the frame stay crisp.
+  const F = Math.max(12, Math.round(W * 0.015))
+  const alpha = Buffer.alloc(outW * outH, 255)
+  const fadeL = x0 > 0, fadeR = x1 < W, fadeT = y0 > 0, fadeB = y1 < H
+  for (let y = 0; y < outH; y++) {
+    for (let x = 0; x < outW; x++) {
+      let a = 1
+      if (fadeL && x < F) a = Math.min(a, x / F)
+      if (fadeR && outW - 1 - x < F) a = Math.min(a, (outW - 1 - x) / F)
+      if (fadeT && y < F) a = Math.min(a, y / F)
+      if (fadeB && outH - 1 - y < F) a = Math.min(a, (outH - 1 - y) / F)
+      if (a < 1) alpha[y * outW + x] = Math.round(a * 255)
+    }
+  }
+  const feathered = await sharp(region)
+    .removeAlpha()
+    .joinChannel(alpha, { raw: { width: outW, height: outH, channels: 1 } })
+    .png()
+    .toBuffer()
+
+  return sharp(photo)
     .resize(W, H, { fit: 'fill' })
+    .composite([{ input: feathered, left: x0, top: y0 }])
     .png()
     .toBuffer()
 }

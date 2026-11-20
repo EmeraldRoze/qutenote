@@ -39,7 +39,9 @@ usersRouter.post('/match-contacts', requireAuth, async (req: AuthRequest, res: R
 // Must be registered BEFORE '/:username' so "handle-check" isn't read as a
 // username parameter.
 
-const HANDLE_RE = /^[a-z0-9_]{3,20}$/
+// Two characters is enough — her rule (TestFlight, Nov 18: "maybe we just
+// say that it needs to be at least two characters").
+const HANDLE_RE = /^[a-z0-9_]{2,20}$/
 
 usersRouter.get('/handle-check', requireAuth, async (req: AuthRequest, res: Response) => {
   const u = String(req.query.u ?? '').trim().toLowerCase()
@@ -140,7 +142,7 @@ const updateSchema = z.object({
   displayName: z.string().min(1).max(50).optional(),
   username: z
     .string()
-    .min(3, 'Handles need at least 3 characters.')
+    .min(2, 'Handles need at least 2 characters.')
     .max(20, 'Handles max out at 20 characters.')
     .regex(/^[a-z0-9_]+$/, 'Handles can only use lowercase letters, numbers, and underscores.')
     .optional(),

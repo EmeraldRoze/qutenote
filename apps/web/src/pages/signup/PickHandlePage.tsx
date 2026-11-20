@@ -37,7 +37,7 @@ export default function PickHandlePage() {
 
   // Live availability check (debounced)
   useEffect(() => {
-    if (!/^[a-z0-9_]{3,20}$/.test(handle)) { setStatus('idle'); return }
+    if (!/^[a-z0-9_]{2,20}$/.test(handle)) { setStatus('idle'); return }
     setStatus('checking')
     const t = setTimeout(async () => {
       try {
@@ -56,7 +56,9 @@ export default function PickHandlePage() {
     setSaving(true)
     try {
       await api.put('/users/me', { username: handle })
-      refreshUser()
+      // Await it, or the next screen greets them by the OLD name — her
+      // "the one that is populating here at the top" (Nov 18 feedback).
+      await refreshUser()
       setSetupNext('/signup/address')
       navigate('/signup/address')
     } catch (err: any) {
@@ -162,14 +164,14 @@ export default function PickHandlePage() {
 
         <button
           onClick={save}
-          disabled={saving || status === 'taken' || !/^[a-z0-9_]{3,20}$/.test(handle)}
+          disabled={saving || status === 'taken' || !/^[a-z0-9_]{2,20}$/.test(handle)}
           style={{
             marginTop: 'auto', height: '56px', borderRadius: '28px', border: '2px solid #B4897A', boxSizing: 'border-box',
             cursor: saving ? 'not-allowed' : 'pointer',
             background: saving ? 'var(--light-blush)' : 'var(--btn)', color: 'var(--ink)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             fontFamily: 'var(--font-body)', fontSize: '15px', fontWeight: 700, letterSpacing: '0.08em',
-            opacity: status === 'taken' || !/^[a-z0-9_]{3,20}$/.test(handle) ? 0.5 : 1,
+            opacity: status === 'taken' || !/^[a-z0-9_]{2,20}$/.test(handle) ? 0.5 : 1,
           }}
         >
           {saving ? 'SAVING…' : 'CONTINUE'}
